@@ -425,6 +425,7 @@
     <Content Include="codemirror\addon\fold\markdown-fold.js" />
     <Content Include="codemirror\addon\fold\xml-fold.js" />
     <Content Include="codemirror\addon\hint\anyword-hint.js" />
+    <Content Include="codemirror\addon\hint\CsCompleter.js" />
     <Content Include="codemirror\addon\hint\css-hint.js" />
     <Content Include="codemirror\addon\hint\html-hint.js" />
     <Content Include="codemirror\addon\hint\javascript-hint.js" />
@@ -643,6 +644,7 @@
     <Content Include="codemirror\mode\yaml\yaml.js" />
     <Content Include="codemirror\mode\z80\index.html" />
     <Content Include="codemirror\mode\z80\z80.js" />
+    <Content Include="codemirror\test.html" />
     <Content Include="codemirror\theme\3024-day.css" />
     <Content Include="codemirror\theme\3024-night.css" />
     <Content Include="codemirror\theme\ambiance-mobile.css" />
@@ -686,6 +688,8 @@
     <Content Include="Jsdifflib\jsdifflib.css" />
     <Content Include="katex\katex.min.css" />
     <Content Include="katex\katex.min.js" />
+    <Content Include="qunit\qunit-1.15.0.css" />
+    <Content Include="qunit\qunit-1.15.0.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="codemirror\README.md" />

@@ -172,7 +172,7 @@ function arrayContains(arr, item) {
 }
 
 function SamePrefixArray(prefix) {
-	this.prefix = typeof this.prefix == "undefined" ? '' : prefix.toLowerCase();
+	this.prefix = typeof prefix == "undefined" ? '' : prefix.toLowerCase();
 	this.container = [];
 
 	this.AddAll = function(list) {

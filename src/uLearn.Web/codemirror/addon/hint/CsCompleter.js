@@ -5,7 +5,7 @@
 	+ " Add Contains ContainsKey Directory FullName Extension ToLower"
 	+ " Where Select SelectMany ToArray ToList ToDictionary ToLookup Join Zip Aggregate GroupBy OrderBy OrderByDescending ThenBy ThenByDescending ").split(" ");
 
-	this.types = ['int', 'string', 'double', 'Console', 'Math', 'long', 'Boolean', 'double', 'Enumerable', 'Array', 'List'];
+	this.types = ['int', 'string', 'double', 'Console', 'Math', 'long', 'Boolean', 'double', 'Enumerable', 'Array', 'List', 'Dictionary', 'char'];
 
 	this.dictWithStatic = [];
 	this.dictWithStatic['int'] = ['MaxValue', 'MinValue', 'Parse', 'TryParse'];
@@ -18,6 +18,7 @@
 	this.dictWithStatic['double'] = ['Epsilon', 'IsInfinity', 'IsNaN', 'IsNegativeInfinity', 'IsPositiveInfinity', 'MaxValue', 'MinValue', 'NaN', 'NegativeInfinity', 'Parse', 'PositiveInfinity', 'TryParse'];
 	this.dictWithStatic['Enumerable'] = ['Aggregate', 'All', 'Any', 'AsEnumerable', 'Average', 'Cast', 'Concat', 'Contains', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt', 'ElementAtOrDefault', 'Empty', 'Except', 'First', 'FirstOrDefault', 'GroupBy', 'GroupJoin', 'Intersect', 'Join', 'Last', 'LastOrDefault', 'LongCount', 'Max', 'Min', 'OfType', 'OrderBy', 'OrderByDescending', 'Range', 'Repeat', 'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Sum', 'Take', 'TakeWhile', 'ThenBy', 'ThenByDescending', 'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'Union', 'Where', 'Zip'];
 	this.dictWithStatic['Array'] = ['AsReadOnly', 'BinarySearch', 'Clear', 'ConstrainedCopy', 'ConvertAll', 'Copy', 'CreateInstance', 'Exists', 'Find', 'FindAll', 'FindIndex', 'FindLast', 'FindLastIndex', 'ForEach', 'IndexOf', 'LastIndexOf', 'Resize', 'Reverse', 'Sort', 'TrueForAll'];
+	this.dictWithStatic['char'] = ['ConvertFromUtf32', 'ConvertToUtf32', 'GetNumericValue', 'GetUnicodeCategory', 'IsControl', 'IsDigit', 'IsHighSurrogate', 'IsLetter', 'IsLetterOrDigit', 'IsLower', 'IsLowSurrogate', 'IsNumber', 'IsPunctuation', 'IsSeparator', 'IsSurrogate', 'IsSurrogatePair', 'IsSymbol', 'IsUpper', 'IsWhiteSpace', 'MaxValue', 'MinValue', 'Parse', 'ToLower', 'ToLowerInvariant', 'ToString', 'ToUpper', 'ToUpperInvariant', 'TryParse'];
 
 
 	this.dictWithNonStatic = [];
@@ -32,14 +33,16 @@
 	this.dictWithNonStatic['Enumerable'] = ['Equals', 'GetHashCode', 'GetType', 'ToString'];
 	this.dictWithNonStatic['Array'] = ['Clone', 'CopyTo', 'Equals', 'GetEnumerator', 'GetHashCode', 'GetLength', 'GetLongLength', 'GetLowerBound', 'GetType', 'GetUpperBound', 'GetValue', 'Initialize', 'IsFixedSize', 'IsReadOnly', 'IsSynchronized', 'Length', 'LongLength', 'Rank', 'SetValue', 'SyncRoot', 'ToString'];
 	this.dictWithNonStatic['List'] = ['Add', 'AddRange', 'AsReadOnly', 'BinarySearch', 'Capacity', 'Clear', 'Contains', 'ConvertAll', 'CopyTo', 'Count', 'Equals', 'Exists', 'Find', 'FindAll', 'FindIndex', 'FindLast', 'FindLastIndex', 'ForEach', 'GetEnumerator', 'GetHashCode', 'GetRange', 'GetType', 'IndexOf', 'Insert', 'InsertRange', 'Item', 'LastIndexOf', 'Remove', 'RemoveAll', 'RemoveAt', 'RemoveRange', 'Reverse', 'Sort', 'ToArray', 'ToString', 'TrimExcess', 'TrueForAll'];
+	this.dictWithNonStatic['Dictionary'] = ['Add', 'Clear', 'Comparer', 'ContainsKey', 'ContainsValue', 'Count', 'Equals', 'GetEnumerator', 'GetHashCode', 'GetObjectData', 'GetType', 'Item', 'Keys', 'OnDeserialization', 'Remove', 'ToString', 'TryGetValue', 'Values'];
+	this.dictWithNonStatic['char'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
 
 
 	this.returnTypeDict = [];
-	this.returnTypeDict['int'] = ['Parse', 'MaxValue', 'MinValue', 'Compare', 'CompareOrdinal', 'Read', 'BufferHeight', 'BufferWidth', 'WindowHeight', 'WindowWidth', 'LargestWindowWidth', 'LargestWindowHeight', 'WindowLeft', 'WindowTop', 'CursorLeft', 'CursorTop', 'CursorSize', 'Abs', 'Max', 'Min', 'Sign', 'DivRem', 'Count', 'Sum', 'BinarySearch', 'FindIndex', 'FindLastIndex', 'IndexOf', 'LastIndexOf', 'CompareTo', 'GetHashCode', 'IndexOfAny', 'LastIndexOfAny', 'Length', 'GetLength', 'GetUpperBound', 'GetLowerBound', 'Rank', 'RemoveAll', 'Capacity'];
-	this.returnTypeDict['Boolean'] = ['TryParse', 'Equals', 'IsNullOrEmpty', 'IsNullOrWhiteSpace', 'IsInfinity', 'IsPositiveInfinity', 'IsNegativeInfinity', 'IsNaN', 'IsInputRedirected', 'IsOutputRedirected', 'IsErrorRedirected', 'CursorVisible', 'KeyAvailable', 'NumberLock', 'CapsLock', 'TreatControlCAsInput', 'Parse', 'SequenceEqual', 'Any', 'All', 'Contains', 'Exists', 'TrueForAll', 'IsNormalized', 'EndsWith', 'StartsWith', 'IsReadOnly', 'IsFixedSize', 'IsSynchronized', 'Remove'];
-	this.returnTypeDict['string'] = ['Join', 'Format', 'Copy', 'Concat', 'Intern', 'IsInterned', 'Empty', 'ReadLine', 'Title', 'TrueString', 'FalseString', 'ToString', 'Split', 'Substring', 'Trim', 'TrimStart', 'TrimEnd', 'Normalize', 'PadLeft', 'PadRight', 'ToLower', 'ToLowerInvariant', 'ToUpper', 'ToUpperInvariant', 'Insert', 'Replace', 'Remove'];
-	this.returnTypeDict['double'] = ['Parse', 'MinValue', 'MaxValue', 'Epsilon', 'NegativeInfinity', 'PositiveInfinity', 'NaN', 'Acos', 'Asin', 'Atan', 'Atan2', 'Ceiling', 'Cos', 'Cosh', 'Floor', 'Sin', 'Tan', 'Sinh', 'Tanh', 'Round', 'Truncate', 'Sqrt', 'Log', 'Log10', 'Exp', 'Pow', 'IEEERemainder', 'Abs', 'Max', 'Min', 'PI', 'E', 'Sum', 'Average'];
-	this.returnTypeDict['Void'] = ['Beep', 'Clear', 'ResetColor', 'MoveBufferArea', 'SetBufferSize', 'SetWindowSize', 'SetWindowPosition', 'SetCursorPosition', 'SetIn', 'SetOut', 'SetError', 'WriteLine', 'Write', 'Resize', 'Copy', 'ConstrainedCopy', 'ForEach', 'Reverse', 'Sort', 'CopyTo', 'SetValue', 'Initialize', 'Add', 'AddRange', 'Insert', 'InsertRange', 'RemoveAt', 'RemoveRange', 'TrimExcess'];
+	this.returnTypeDict['int'] = ['Parse', 'MaxValue', 'MinValue', 'Compare', 'CompareOrdinal', 'Read', 'BufferHeight', 'BufferWidth', 'WindowHeight', 'WindowWidth', 'LargestWindowWidth', 'LargestWindowHeight', 'WindowLeft', 'WindowTop', 'CursorLeft', 'CursorTop', 'CursorSize', 'Abs', 'Max', 'Min', 'Sign', 'DivRem', 'Count', 'Sum', 'BinarySearch', 'FindIndex', 'FindLastIndex', 'IndexOf', 'LastIndexOf', 'ConvertToUtf32', 'CompareTo', 'GetHashCode', 'IndexOfAny', 'LastIndexOfAny', 'Length', 'GetLength', 'GetUpperBound', 'GetLowerBound', 'Rank', 'RemoveAll', 'Capacity'];
+	this.returnTypeDict['Boolean'] = ['TryParse', 'Equals', 'IsNullOrEmpty', 'IsNullOrWhiteSpace', 'IsInfinity', 'IsPositiveInfinity', 'IsNegativeInfinity', 'IsNaN', 'IsInputRedirected', 'IsOutputRedirected', 'IsErrorRedirected', 'CursorVisible', 'KeyAvailable', 'NumberLock', 'CapsLock', 'TreatControlCAsInput', 'Parse', 'SequenceEqual', 'Any', 'All', 'Contains', 'Exists', 'TrueForAll', 'IsDigit', 'IsLetter', 'IsWhiteSpace', 'IsUpper', 'IsLower', 'IsPunctuation', 'IsLetterOrDigit', 'IsControl', 'IsNumber', 'IsSeparator', 'IsSurrogate', 'IsSymbol', 'IsHighSurrogate', 'IsLowSurrogate', 'IsSurrogatePair', 'IsNormalized', 'EndsWith', 'StartsWith', 'IsReadOnly', 'IsFixedSize', 'IsSynchronized', 'Remove', 'ContainsKey', 'TryGetValue', 'ContainsValue'];
+	this.returnTypeDict['string'] = ['Join', 'Format', 'Copy', 'Concat', 'Intern', 'IsInterned', 'Empty', 'ReadLine', 'Title', 'TrueString', 'FalseString', 'ToString', 'ConvertFromUtf32', 'Split', 'Substring', 'Trim', 'TrimStart', 'TrimEnd', 'Normalize', 'PadLeft', 'PadRight', 'ToLower', 'ToLowerInvariant', 'ToUpper', 'ToUpperInvariant', 'Insert', 'Replace', 'Remove'];
+	this.returnTypeDict['double'] = ['Parse', 'MinValue', 'MaxValue', 'Epsilon', 'NegativeInfinity', 'PositiveInfinity', 'NaN', 'Acos', 'Asin', 'Atan', 'Atan2', 'Ceiling', 'Cos', 'Cosh', 'Floor', 'Sin', 'Tan', 'Sinh', 'Tanh', 'Round', 'Truncate', 'Sqrt', 'Log', 'Log10', 'Exp', 'Pow', 'IEEERemainder', 'Abs', 'Max', 'Min', 'PI', 'E', 'Sum', 'Average', 'GetNumericValue'];
+	this.returnTypeDict['Void'] = ['Beep', 'Clear', 'ResetColor', 'MoveBufferArea', 'SetBufferSize', 'SetWindowSize', 'SetWindowPosition', 'SetCursorPosition', 'SetIn', 'SetOut', 'SetError', 'WriteLine', 'Write', 'Resize', 'Copy', 'ConstrainedCopy', 'ForEach', 'Reverse', 'Sort', 'CopyTo', 'SetValue', 'Initialize', 'Add', 'AddRange', 'Insert', 'InsertRange', 'RemoveAt', 'RemoveRange', 'TrimExcess', 'GetObjectData', 'OnDeserialization'];
 	this.returnTypeDict['ConsoleKeyInfo'] = ['ReadKey'];
 	this.returnTypeDict['IO.Stream'] = ['OpenStandardError', 'OpenStandardInput', 'OpenStandardOutput'];
 	this.returnTypeDict['IO.TextReader'] = ['In'];
@@ -50,19 +53,21 @@
 	this.returnTypeDict['SByte'] = ['Abs', 'Max', 'Min'];
 	this.returnTypeDict['long'] = ['Abs', 'Max', 'Min', 'BigMul', 'DivRem', 'Parse', 'MaxValue', 'MinValue', 'LongCount', 'Sum', 'GetLongLength', 'LongLength'];
 	this.returnTypeDict['Byte'] = ['Max', 'Min'];
-	this.returnTypeDict['Enumerable'] = ['Sum', 'Min', 'Max', 'Average', 'Except', 'Reverse', 'AsEnumerable', 'ToArray', 'ToDictionary', 'ToLookup', 'DefaultIfEmpty', 'OfType', 'Cast', 'Range', 'Repeat', 'Empty', 'Where', 'Select', 'SelectMany', 'Take', 'TakeWhile', 'Skip', 'SkipWhile', 'Join', 'GroupJoin', 'OrderBy', 'OrderByDescending', 'ThenBy', 'ThenByDescending', 'GroupBy', 'Concat', 'Zip', 'Distinct', 'Union', 'Intersect', 'AsReadOnly', 'ConvertAll', 'FindAll', 'ToCharArray'];
+	this.returnTypeDict['Enumerable'] = ['Sum', 'Min', 'Max', 'Average', 'Except', 'Reverse', 'AsEnumerable', 'ToArray', 'ToLookup', 'DefaultIfEmpty', 'OfType', 'Cast', 'Range', 'Repeat', 'Empty', 'Where', 'Select', 'SelectMany', 'Take', 'TakeWhile', 'Skip', 'SkipWhile', 'Join', 'GroupJoin', 'OrderBy', 'OrderByDescending', 'ThenBy', 'ThenByDescending', 'GroupBy', 'Concat', 'Zip', 'Distinct', 'Union', 'Intersect', 'AsReadOnly', 'ConvertAll', 'FindAll', 'Comparer'];
 	this.returnTypeDict['TSource'] = ['Min', 'Max', 'First', 'FirstOrDefault', 'Last', 'LastOrDefault', 'Single', 'SingleOrDefault', 'ElementAt', 'ElementAtOrDefault', 'Aggregate'];
 	this.returnTypeDict['TResult'] = ['Min', 'Max', 'Aggregate'];
 	this.returnTypeDict['List'] = ['ToList', 'ConvertAll', 'FindAll', 'GetEnumerator', 'GetRange'];
+	this.returnTypeDict['Dictionary'] = ['ToDictionary', 'GetEnumerator', 'Keys', 'Values'];
 	this.returnTypeDict['TAccumulate'] = ['Aggregate'];
 	this.returnTypeDict['Array'] = ['CreateInstance'];
 	this.returnTypeDict['T'] = ['Find', 'FindLast', 'Item'];
+	this.returnTypeDict['char'] = ['Parse', 'ToUpper', 'ToUpperInvariant', 'ToLower', 'ToLowerInvariant', 'MaxValue', 'MinValue', 'ToCharArray', 'GetEnumerator', 'Chars'];
+	this.returnTypeDict['Globalization.UnicodeCategory'] = ['GetUnicodeCategory'];
 	this.returnTypeDict['TypeCode'] = ['GetTypeCode'];
 	this.returnTypeDict['Type'] = ['GetType'];
 	this.returnTypeDict['Object'] = ['Clone', 'GetValue', 'SyncRoot'];
-	this.returnTypeDict['CharEnumerator'] = ['GetEnumerator'];
-	this.returnTypeDict['Char'] = ['Chars'];
 	this.returnTypeDict['Collections.IEnumerator'] = ['GetEnumerator'];
+	this.returnTypeDict['TValue'] = ['Item'];
 
 
 	this.getCompletions = function (beforeDot, start, afterDot) {

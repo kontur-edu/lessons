@@ -28,7 +28,9 @@ namespace uLearn.tests
 				typeof (float),
 				typeof (Enumerable),
 				typeof (Array),
-				typeof (List<>)
+				typeof (List<>),
+				typeof (Dictionary<,>),
+				typeof (char),
 			};
 			Console.WriteLine("this.types = [{0}];\n", ToArrayString(myTypes.Select(ToPrettyString)));
 			WalkThroughTypes(myTypes);
@@ -80,6 +82,8 @@ namespace uLearn.tests
 			var type = myType.ToString().Replace("System.", "").Replace("Linq.", "");
 			if (type.Contains("List"))
 				return "List";
+			if (type.Contains("Dictionary"))
+				return "Dictionary";
 			if (type.Contains("Enumerable"))
 				return "Enumerable";
 			if (type.Contains("List"))
@@ -94,6 +98,8 @@ namespace uLearn.tests
 				return "double";
 			if (type.Contains("Single"))
 				return "double";
+			if (type.Contains("Char"))
+				return "char";
 			if (type.Contains("["))
 				return "Enumerable";
 			return type;

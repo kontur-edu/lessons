@@ -83,12 +83,12 @@
 				beforeDot = this.synonym[beforeDot];
 			res = this.AutocompliteAfterDotWords(beforeDot, start);
 		} else {
-			if (beforeDot != undefined) {
+			if (typeof beforeDot != "undefined" && beforeDot != "") {
 				if (typeof this.synonym[beforeDot] != "undefined")
 					beforeDot = this.synonym[beforeDot];
 				res = this.AutocompliteAfterDotWords(beforeDot, start);
 			} else {
-				res = new SamePrefixArray('');
+				res = new SamePrefixArray(start);
 				res.AddAll(this.types);
 				res.AddAll(this.keywords);
 			}

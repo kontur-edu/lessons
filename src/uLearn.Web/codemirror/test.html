@@ -36,7 +36,13 @@
 					'Math', 'Console', 'Int32', 'Int64', 'Double', 'Boolean', 'Char', 'Array', 'Enumerable', 'List', 'Dictionary'
 				);
 				res.sort();
-				assert.deepEqual(completer.getCompletions(undefined, undefined, false), res, 'all');
+				assert.deepEqual(completer.getCompletions("", "", false), res, 'all');
+				var resV = [];
+				for (var i = 0; i < res.length; ++i) {
+					if (res[i].charAt(0) == 'v')
+						resV.push(res[i]);
+				}
+				assert.deepEqual(completer.getCompletions("", "v", false), resV, 'all');
 			});
 
 			QUnit.module('Static classes completion');

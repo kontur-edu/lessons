@@ -55,20 +55,21 @@
 	this.returnTypeDict['SByte'] = ['Abs', 'Max', 'Min'];
 	this.returnTypeDict['long'] = ['Abs', 'Max', 'Min', 'BigMul', 'DivRem', 'Parse', 'MaxValue', 'MinValue', 'LongCount', 'Sum', 'GetLongLength', 'LongLength'];
 	this.returnTypeDict['Byte'] = ['Max', 'Min'];
-	this.returnTypeDict['Enumerable'] = ['Sum', 'Min', 'Max', 'Average', 'Except', 'Reverse', 'AsEnumerable', 'ToArray', 'ToLookup', 'DefaultIfEmpty', 'OfType', 'Cast', 'Range', 'Repeat', 'Empty', 'Where', 'Select', 'SelectMany', 'Take', 'TakeWhile', 'Skip', 'SkipWhile', 'Join', 'GroupJoin', 'OrderBy', 'OrderByDescending', 'ThenBy', 'ThenByDescending', 'GroupBy', 'Concat', 'Zip', 'Distinct', 'Union', 'Intersect', 'AsReadOnly', 'ConvertAll', 'FindAll', 'Comparer'];
 	this.returnTypeDict['TSource'] = ['Min', 'Max', 'First', 'FirstOrDefault', 'Last', 'LastOrDefault', 'Single', 'SingleOrDefault', 'ElementAt', 'ElementAtOrDefault', 'Aggregate'];
 	this.returnTypeDict['TResult'] = ['Min', 'Max', 'Aggregate'];
+	this.returnTypeDict['Enumerable'] = ['Except', 'Reverse', 'AsEnumerable', 'ToLookup', 'DefaultIfEmpty', 'OfType', 'Cast', 'Range', 'Repeat', 'Empty', 'Where', 'Select', 'SelectMany', 'Take', 'TakeWhile', 'Skip', 'SkipWhile', 'Join', 'GroupJoin', 'OrderBy', 'OrderByDescending', 'ThenBy', 'ThenByDescending', 'GroupBy', 'Concat', 'Zip', 'Distinct', 'Union', 'Intersect', 'AsReadOnly'];
+	this.returnTypeDict['Array'] = ['ToArray', 'CreateInstance', 'ConvertAll', 'FindAll'];
 	this.returnTypeDict['List'] = ['ToList', 'ConvertAll', 'FindAll', 'GetEnumerator', 'GetRange'];
 	this.returnTypeDict['Dictionary'] = ['ToDictionary', 'GetEnumerator', 'Keys', 'Values'];
 	this.returnTypeDict['TAccumulate'] = ['Aggregate'];
-	this.returnTypeDict['Array'] = ['CreateInstance'];
 	this.returnTypeDict['T'] = ['Find', 'FindLast', 'Item'];
 	this.returnTypeDict['char'] = ['Parse', 'ToUpper', 'ToUpperInvariant', 'ToLower', 'ToLowerInvariant', 'MaxValue', 'MinValue', 'ToCharArray', 'GetEnumerator', 'Chars'];
 	this.returnTypeDict['Globalization.UnicodeCategory'] = ['GetUnicodeCategory'];
 	this.returnTypeDict['TypeCode'] = ['GetTypeCode'];
 	this.returnTypeDict['Type'] = ['GetType'];
 	this.returnTypeDict['Object'] = ['Clone', 'GetValue', 'SyncRoot'];
-	this.returnTypeDict['Collections.IEnumerator'] = ['GetEnumerator'];
+	this.returnTypeDict['IEnumerator'] = ['GetEnumerator'];
+	this.returnTypeDict['IEqualityComparer'] = ['Comparer'];
 	this.returnTypeDict['TValue'] = ['Item'];
 
 

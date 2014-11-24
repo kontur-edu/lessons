@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -9,6 +10,25 @@ namespace uLearn.tests
 	static class CreateDictForAutocomplete
 	{
 		private static readonly Dictionary<string, List<string>> returnTypeDictionary = new Dictionary<string, List<string>>();
+		private static readonly List<Tuple<string, string>> prettyNames = new List<Tuple<string, string>>
+		{
+			Tuple.Create("ReadOnlyCollection", "Enumerable"),
+			Tuple.Create("Lookup", "Enumerable"),
+			Tuple.Create("Enumerable", "Enumerable"),
+			Tuple.Create("Int16", "int"),
+			Tuple.Create("Int32", "int"),
+			Tuple.Create("Int64", "long"),
+			Tuple.Create("String", "string"),
+			Tuple.Create("Single", "double"),
+			Tuple.Create("Double", "double"),
+			Tuple.Create("Decimal", "Decimal"),
+			Tuple.Create("Char", "char"),
+			Tuple.Create("List", "List"),
+			Tuple.Create("Dictionary", "Dictionary"),
+			Tuple.Create("[]", "Array"),
+			Tuple.Create("IEqualityComparer", "IEqualityComparer"),
+			Tuple.Create("IEnumerator", "IEnumerator"),
+		};
 
 		private static int totalWordCount;
 
@@ -78,28 +98,11 @@ namespace uLearn.tests
 		private static string ToPrettyString(Type myType)
 		{
 			var type = myType.ToString().Replace("System.", "").Replace("Linq.", "");
-			if (type.Contains("List"))
-				return "List";
-			if (type.Contains("Dictionary"))
-				return "Dictionary";
-			if (type.Contains("Enumerable"))
-				return "Enumerable";
-			if (type.Contains("List"))
-				return "List";
-			if (type.Contains("Int32") || type.Contains("Int16"))
-				return "int";
-			if (type.Contains("Int64"))
-				return "long";
-			if (type.Contains("String"))
-				return "string";
-			if (type.Contains("Double"))
-				return "double";
-			if (type.Contains("Single"))
-				return "double";
-			if (type.Contains("Char"))
-				return "char";
-			if (type.Contains("["))
-				return "Enumerable";
+			foreach (var prettyName in prettyNames)
+			{
+				if (type.Contains(prettyName.Item1))
+					return prettyName.Item2;
+			}
 			return type;
 		}
 

@@ -5,7 +5,9 @@
 	+ " Add Contains ContainsKey Directory FullName Extension ToLower"
 	+ " Where Select SelectMany ToArray ToList ToDictionary ToLookup Join Zip Aggregate GroupBy OrderBy OrderByDescending ThenBy ThenByDescending ").split(" ");
 
-	this.types = ['int', 'string', 'double', 'Console', 'Math', 'long', 'Boolean', 'double', 'Enumerable', 'Array', 'List', 'Dictionary', 'char'];
+	this.types = ['int', 'string', 'double', 'Console', 'Math', 'long', 'bool', 'double', 'Enumerable', 'Array', 'List', 'Dictionary', 'char'];
+
+	this.synonym = { 'ReadOnlyCollection': 'Enumerable', 'Lookup': 'Enumerable', 'Int16': 'int', 'Int32': 'int', 'Int64': 'long', 'String': 'string', 'Single': 'double', 'Double': 'double', 'Decimal': 'double', 'Boolean': 'bool', 'Char': 'char', '[]': 'Array' };
 
 	this.dictWithStatic = [];
 	this.dictWithStatic['int'] = ['MaxValue', 'MinValue', 'Parse', 'TryParse'];
@@ -14,7 +16,7 @@
 	this.dictWithStatic['Console'] = ['BackgroundColor', 'Beep', 'BufferHeight', 'BufferWidth', 'CapsLock', 'Clear', 'CursorLeft', 'CursorSize', 'CursorTop', 'CursorVisible', 'Error', 'ForegroundColor', 'In', 'InputEncoding', 'IsErrorRedirected', 'IsInputRedirected', 'IsOutputRedirected', 'KeyAvailable', 'LargestWindowHeight', 'LargestWindowWidth', 'MoveBufferArea', 'NumberLock', 'OpenStandardError', 'OpenStandardInput', 'OpenStandardOutput', 'Out', 'OutputEncoding', 'Read', 'ReadKey', 'ReadLine', 'ResetColor', 'SetBufferSize', 'SetCursorPosition', 'SetError', 'SetIn', 'SetOut', 'SetWindowPosition', 'SetWindowSize', 'Title', 'TreatControlCAsInput', 'WindowHeight', 'WindowLeft', 'WindowTop', 'WindowWidth', 'Write', 'WriteLine'];
 	this.dictWithStatic['Math'] = ['Abs', 'Acos', 'Asin', 'Atan', 'Atan2', 'BigMul', 'Ceiling', 'Cos', 'Cosh', 'DivRem', 'E', 'Exp', 'Floor', 'IEEERemainder', 'Log', 'Log10', 'Max', 'Min', 'PI', 'Pow', 'Round', 'Sign', 'Sin', 'Sinh', 'Sqrt', 'Tan', 'Tanh', 'Truncate'];
 	this.dictWithStatic['long'] = ['MaxValue', 'MinValue', 'Parse', 'TryParse'];
-	this.dictWithStatic['Boolean'] = ['FalseString', 'Parse', 'TrueString', 'TryParse'];
+	this.dictWithStatic['bool'] = ['FalseString', 'Parse', 'TrueString', 'TryParse'];
 	this.dictWithStatic['double'] = ['Epsilon', 'IsInfinity', 'IsNaN', 'IsNegativeInfinity', 'IsPositiveInfinity', 'MaxValue', 'MinValue', 'NaN', 'NegativeInfinity', 'Parse', 'PositiveInfinity', 'TryParse'];
 	this.dictWithStatic['Enumerable'] = ['Aggregate', 'All', 'Any', 'AsEnumerable', 'Average', 'Cast', 'Concat', 'Contains', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt', 'ElementAtOrDefault', 'Empty', 'Except', 'First', 'FirstOrDefault', 'GroupBy', 'GroupJoin', 'Intersect', 'Join', 'Last', 'LastOrDefault', 'LongCount', 'Max', 'Min', 'OfType', 'OrderBy', 'OrderByDescending', 'Range', 'Repeat', 'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Sum', 'Take', 'TakeWhile', 'ThenBy', 'ThenByDescending', 'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'Union', 'Where', 'Zip'];
 	this.dictWithStatic['Array'] = ['AsReadOnly', 'BinarySearch', 'Clear', 'ConstrainedCopy', 'ConvertAll', 'Copy', 'CreateInstance', 'Exists', 'Find', 'FindAll', 'FindIndex', 'FindLast', 'FindLastIndex', 'ForEach', 'IndexOf', 'LastIndexOf', 'Resize', 'Reverse', 'Sort', 'TrueForAll'];
@@ -30,7 +32,7 @@
 	this.dictWithNonStatic['Console'] = ['Equals', 'GetHashCode', 'GetType', 'ToString'];
 	this.dictWithNonStatic['Math'] = ['Equals', 'GetHashCode', 'GetType', 'ToString'];
 	this.dictWithNonStatic['long'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
-	this.dictWithNonStatic['Boolean'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
+	this.dictWithNonStatic['bool'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
 	this.dictWithNonStatic['double'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
 	this.dictWithNonStatic['Enumerable'] = ['Equals', 'GetHashCode', 'GetType', 'ToString'];
 	this.dictWithNonStatic['Array'] = ['Clone', 'CopyTo', 'Equals', 'GetEnumerator', 'GetHashCode', 'GetLength', 'GetLongLength', 'GetLowerBound', 'GetType', 'GetUpperBound', 'GetValue', 'Initialize', 'IsFixedSize', 'IsReadOnly', 'IsSynchronized', 'Length', 'LongLength', 'Rank', 'SetValue', 'SyncRoot', 'ToString'];
@@ -41,7 +43,7 @@
 
 	this.returnTypeDict = [];
 	this.returnTypeDict['int'] = ['Parse', 'MaxValue', 'MinValue', 'Compare', 'CompareOrdinal', 'Read', 'BufferHeight', 'BufferWidth', 'WindowHeight', 'WindowWidth', 'LargestWindowWidth', 'LargestWindowHeight', 'WindowLeft', 'WindowTop', 'CursorLeft', 'CursorTop', 'CursorSize', 'Abs', 'Max', 'Min', 'Sign', 'DivRem', 'Count', 'Sum', 'BinarySearch', 'FindIndex', 'FindLastIndex', 'IndexOf', 'LastIndexOf', 'ConvertToUtf32', 'CompareTo', 'GetHashCode', 'IndexOfAny', 'LastIndexOfAny', 'Length', 'GetLength', 'GetUpperBound', 'GetLowerBound', 'Rank', 'RemoveAll', 'Capacity'];
-	this.returnTypeDict['Boolean'] = ['TryParse', 'Equals', 'IsNullOrEmpty', 'IsNullOrWhiteSpace', 'IsInfinity', 'IsPositiveInfinity', 'IsNegativeInfinity', 'IsNaN', 'IsInputRedirected', 'IsOutputRedirected', 'IsErrorRedirected', 'CursorVisible', 'KeyAvailable', 'NumberLock', 'CapsLock', 'TreatControlCAsInput', 'Parse', 'SequenceEqual', 'Any', 'All', 'Contains', 'Exists', 'TrueForAll', 'IsDigit', 'IsLetter', 'IsWhiteSpace', 'IsUpper', 'IsLower', 'IsPunctuation', 'IsLetterOrDigit', 'IsControl', 'IsNumber', 'IsSeparator', 'IsSurrogate', 'IsSymbol', 'IsHighSurrogate', 'IsLowSurrogate', 'IsSurrogatePair', 'IsNormalized', 'EndsWith', 'StartsWith', 'IsReadOnly', 'IsFixedSize', 'IsSynchronized', 'Remove', 'ContainsKey', 'TryGetValue', 'ContainsValue'];
+	this.returnTypeDict['bool'] = ['TryParse', 'Equals', 'IsNullOrEmpty', 'IsNullOrWhiteSpace', 'IsInfinity', 'IsPositiveInfinity', 'IsNegativeInfinity', 'IsNaN', 'IsInputRedirected', 'IsOutputRedirected', 'IsErrorRedirected', 'CursorVisible', 'KeyAvailable', 'NumberLock', 'CapsLock', 'TreatControlCAsInput', 'Parse', 'SequenceEqual', 'Any', 'All', 'Contains', 'Exists', 'TrueForAll', 'IsDigit', 'IsLetter', 'IsWhiteSpace', 'IsUpper', 'IsLower', 'IsPunctuation', 'IsLetterOrDigit', 'IsControl', 'IsNumber', 'IsSeparator', 'IsSurrogate', 'IsSymbol', 'IsHighSurrogate', 'IsLowSurrogate', 'IsSurrogatePair', 'IsNormalized', 'EndsWith', 'StartsWith', 'IsReadOnly', 'IsFixedSize', 'IsSynchronized', 'Remove', 'ContainsKey', 'TryGetValue', 'ContainsValue'];
 	this.returnTypeDict['string'] = ['Join', 'Format', 'Copy', 'Concat', 'Intern', 'IsInterned', 'Empty', 'ReadLine', 'Title', 'TrueString', 'FalseString', 'ToString', 'ConvertFromUtf32', 'Split', 'Substring', 'Trim', 'TrimStart', 'TrimEnd', 'Normalize', 'PadLeft', 'PadRight', 'ToLower', 'ToLowerInvariant', 'ToUpper', 'ToUpperInvariant', 'Insert', 'Replace', 'Remove'];
 	this.returnTypeDict['double'] = ['Parse', 'MinValue', 'MaxValue', 'Epsilon', 'NegativeInfinity', 'PositiveInfinity', 'NaN', 'Acos', 'Asin', 'Atan', 'Atan2', 'Ceiling', 'Cos', 'Cosh', 'Floor', 'Sin', 'Tan', 'Sinh', 'Tanh', 'Round', 'Truncate', 'Sqrt', 'Log', 'Log10', 'Exp', 'Pow', 'IEEERemainder', 'Abs', 'Max', 'Min', 'PI', 'E', 'Sum', 'Average', 'GetNumericValue'];
 	this.returnTypeDict['Void'] = ['Beep', 'Clear', 'ResetColor', 'MoveBufferArea', 'SetBufferSize', 'SetWindowSize', 'SetWindowPosition', 'SetCursorPosition', 'SetIn', 'SetOut', 'SetError', 'WriteLine', 'Write', 'Resize', 'Copy', 'ConstrainedCopy', 'ForEach', 'Reverse', 'Sort', 'CopyTo', 'SetValue', 'Initialize', 'Add', 'AddRange', 'Insert', 'InsertRange', 'RemoveAt', 'RemoveRange', 'TrimExcess', 'GetObjectData', 'OnDeserialization'];
@@ -51,7 +53,6 @@
 	this.returnTypeDict['IO.TextWriter'] = ['Out', 'Error'];
 	this.returnTypeDict['Text.Encoding'] = ['InputEncoding', 'OutputEncoding'];
 	this.returnTypeDict['ConsoleColor'] = ['BackgroundColor', 'ForegroundColor'];
-	this.returnTypeDict['Decimal'] = ['Ceiling', 'Floor', 'Round', 'Truncate', 'Abs', 'Max', 'Min', 'Sum', 'Average'];
 	this.returnTypeDict['SByte'] = ['Abs', 'Max', 'Min'];
 	this.returnTypeDict['long'] = ['Abs', 'Max', 'Min', 'BigMul', 'DivRem', 'Parse', 'MaxValue', 'MinValue', 'LongCount', 'Sum', 'GetLongLength', 'LongLength'];
 	this.returnTypeDict['Byte'] = ['Max', 'Min'];
@@ -76,9 +77,13 @@
 	this.getCompletions = function (beforeDot, start, afterDot) {
 		var res;
 		if (afterDot) {
+			if (typeof this.synonym[beforeDot] != "undefined")
+				beforeDot = this.synonym[beforeDot];
 			res = this.AutocompliteAfterDotWords(beforeDot, start);
 		} else {
 			if (beforeDot != undefined) {
+				if (typeof this.synonym[beforeDot] != "undefined")
+					beforeDot = this.synonym[beforeDot];
 				res = this.AutocompliteAfterDotWords(beforeDot, start);
 			} else {
 				res = new SamePrefixArray('');

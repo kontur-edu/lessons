@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
@@ -21,7 +20,8 @@ namespace uLearn.tests
 			Tuple.Create("String", "string"),
 			Tuple.Create("Single", "double"),
 			Tuple.Create("Double", "double"),
-			Tuple.Create("Decimal", "Decimal"),
+			Tuple.Create("Decimal", "double"),
+			Tuple.Create("Boolean", "bool"),
 			Tuple.Create("Char", "char"),
 			Tuple.Create("List", "List"),
 			Tuple.Create("Dictionary", "Dictionary"),
@@ -50,10 +50,20 @@ namespace uLearn.tests
 				typeof (Array),
 				typeof (List<>),
 				typeof (Dictionary<,>),
-				typeof (char),
+				typeof (char)
 			};
 			Console.WriteLine("this.types = [{0}];\n", ToArrayString(myTypes.Select(ToPrettyString)));
+			Console.WriteLine("this.synonym = {{{0}}};\n", ToDictionary(prettyNames));
 			WalkThroughTypes(myTypes);
+		}
+
+		private static string ToDictionary(IEnumerable<Tuple<string, string>> tuples)
+		{
+			return String.Join(", ", 
+				tuples
+					.Where(tuple => !tuple.Item1.Equals(tuple.Item2))
+					.Select(tuple => String.Format("'{0}' : '{1}'", tuple.Item1, tuple.Item2))
+			);
 		}
 
 		private static void WalkThroughTypes(Type[] myTypes)

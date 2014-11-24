@@ -70,9 +70,7 @@ namespace uLearn.tests
 			{
 				var collection = func(myType).ToList();
 				totalWordCount += collection.Count();
-				if (!collection.Any())
-					continue;
-				Console.WriteLine("this.{0}['{1}'] = [{2}];", dictName, ToPrettyString(myType), ToArrayString(collection));
+				Console.WriteLine("this.{0}['{1}'] = [{2}];", dictName, ToPrettyString(myType), collection.Any() ? ToArrayString(collection) : "");
 			}
 			Console.WriteLine();
 		}

@@ -1,10 +1,6 @@
 ﻿function CsCompleter(keywords) {
 	this.keywords = keywords;
 
-	this.methods = (" WriteLine Write Format Substring Length Parse TryParse ToString Split Join Round Min Max Ceiling Floor"
-	+ " Add Contains ContainsKey Directory FullName Extension ToLower"
-	+ " Where Select SelectMany ToArray ToList ToDictionary ToLookup Join Zip Aggregate GroupBy OrderBy OrderByDescending ThenBy ThenByDescending ").split(" ");
-
 	this.types = ['int', 'string', 'double', 'Console', 'Math', 'long', 'bool', 'double', 'Enumerable', 'Array', 'List', 'Dictionary', 'char'];
 
 	this.synonym = { 'ReadOnlyCollection': 'Enumerable', 'Lookup': 'Enumerable', 'Int16': 'int', 'Int32': 'int', 'Int64': 'long', 'String': 'string', 'Single': 'double', 'Double': 'double', 'Decimal': 'double', 'Boolean': 'bool', 'Char': 'char', '[]': 'Array' };
@@ -75,6 +71,12 @@
 	this.returnTypeDict['IEqualityComparer'] = ['Comparer'];
 	this.returnTypeDict['TValue'] = ['Item'];
 
+	var unknowns = new SamePrefixArray();
+	for (var type in this.dictWithNonStatic) {
+		unknowns.AddAll(this.dictWithNonStatic[type]);
+	}
+
+	this.unknown = unknowns.getArray();
 
 	this.getCompletions = function (beforeDot, start, afterDot) {
 		var res;
@@ -104,7 +106,7 @@
 				found.AddAll(this.dictWithStatic[beforeDot]);
 			}
 			else {
-				found.AddAll(this.methods);
+				found.AddAll(this.unknown);
 			}
 		} else {
 			var isWasFound = false;
@@ -123,7 +125,7 @@
 				}
 			}
 			if (!isWasFound) {
-				found.AddAll(this.methods);
+				found.AddAll(this.unknown);
 			}
 		}
 		return found;

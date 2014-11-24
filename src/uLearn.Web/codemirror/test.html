@@ -233,6 +233,10 @@
 						'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'ToString', 'TrimExcess', 'TrueForAll', 'Union', 'Where', 'Zip'
 					],
 					'ToList all');
+				assert.deepEqual(completer.getCompletions('ToList', 'I', false), [
+						'IndexOf', 'Insert', 'InsertRange', 'Intersect', 'Item'
+					],
+					'ToList I');
 			});
 
 			QUnit.test('Dictionary', function(assert) {

@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
 
 namespace uLearn.tests
@@ -38,7 +29,7 @@ namespace uLearn.tests
 				typeof (Array),
 				typeof (List<>)
 			};
-			Console.WriteLine("var types = [{0}];\n", ToArrayString(myTypes.Select(ToPrettyString)));
+			Console.WriteLine("this.types = [{0}];\n", ToArrayString(myTypes.Select(ToPrettyString)));
 			WalkThroughTypes(myTypes);
 		}
 
@@ -62,13 +53,13 @@ namespace uLearn.tests
 
 		private static void PrintReturnTypeDictionary()
 		{
-			Console.WriteLine("var returnTypeDict = [];");
+			Console.WriteLine("this.returnTypeDict = [];");
 			foreach (
 				var type in
 					ReturnTypeDictionary.Keys/*.Where(
 						type => !type.ToString().Contains("TSource") && !type.ToString().Contains("TResult") && myTypes.Contains(type))*/)
 			{
-				Console.WriteLine("returnTypeDict['{0}'] = [{1}];", type,
+				Console.WriteLine("this.returnTypeDict['{0}'] = [{1}];", type,
 					ToArrayString(ReturnTypeDictionary[type].Distinct()));
 				TotalWordCount += ReturnTypeDictionary[type].Distinct().Count();
 			}
@@ -77,14 +68,14 @@ namespace uLearn.tests
 
 		private static void VisitTypesElements(string dictName, Func<Type, IEnumerable<string>> func, IEnumerable<Type> myTypes)
 		{
-			Console.WriteLine("var {0} = [];", dictName);
+			Console.WriteLine("this.{0} = [];", dictName);
 			foreach (var myType in myTypes)
 			{
 				var collection = func(myType).ToList();
 				TotalWordCount += collection.Count();
 				if (!collection.Any())
 					continue;
-				Console.WriteLine("{0}['{1}'] = [{2}];", dictName, ToPrettyString(myType), ToArrayString(collection));
+				Console.WriteLine("this.{0}['{1}'] = [{2}];", dictName, ToPrettyString(myType), ToArrayString(collection));
 			}
 			Console.WriteLine();
 		}
@@ -92,13 +83,13 @@ namespace uLearn.tests
 		private static string ToPrettyString(Type myType)
 		{
 			var type = myType.ToString().Replace("System.", "").Replace("Linq.", "");
-			if (type.Contains("["))
-				return "Enumerable";
+			if (type.Contains("List"))
+				return "List";
 			if (type.Contains("Enumerable"))
 				return "Enumerable";
 			if (type.Contains("List"))
 				return "List";
-			if (type.Contains("Int32") || type.Contains("Int16") || type.Contains("Decimal"))
+			if (type.Contains("Int32") || type.Contains("Int16"))
 				return "int";
 			if (type.Contains("Int64"))
 				return "long";
@@ -108,6 +99,8 @@ namespace uLearn.tests
 				return "double";
 			if (type.Contains("Single"))
 				return "double";
+			if (type.Contains("["))
+				return "Enumerable";
 			return type;
 		}
 

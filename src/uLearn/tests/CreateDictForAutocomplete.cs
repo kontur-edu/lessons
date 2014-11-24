@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace uLearn.tests
 {
-	class CreateDictForAutocomplete
+	static class CreateDictForAutocomplete
 	{
-		public static Dictionary<string, List<string>> ReturnTypeDictionary = new Dictionary<string, List<string>>();
+		private static readonly Dictionary<string, List<string>> returnTypeDictionary = new Dictionary<string, List<string>>();
 
-		public static int TotalWordCount = 0;
+		private static int totalWordCount;
 
 		[Explicit]
 		[Test]
@@ -35,20 +36,14 @@ namespace uLearn.tests
 
 		private static void WalkThroughTypes(Type[] myTypes)
 		{
-			const string staticMethodDict = "dictWithStaticMethods";
-			VisitTypesElements(staticMethodDict, GetStaticMethods, myTypes);
+			const string staticDict = "dictWithStatic";
+			VisitTypesElements(staticDict, GetStatic, myTypes);
 
-			const string nonStaticMethodDict = "dictWithNonStaticMethods";
-			VisitTypesElements(nonStaticMethodDict, GetNonStaticMethods, myTypes);
+			const string nonStaticDict = "dictWithNonStatic";
+			VisitTypesElements(nonStaticDict, GetNonStatic, myTypes);
 
-			const string propertiesDict = "dictWithProperties";
-			VisitTypesElements(propertiesDict, GetProperties, myTypes);
-
-			const string constantDict = "dictWithConstants";
-			VisitTypesElements(constantDict, GetConstants, myTypes);
-			
 			PrintReturnTypeDictionary();
-			Console.WriteLine("Total word count in all dictionary: {0}", TotalWordCount);
+			Console.WriteLine("Total word count in all dictionary: {0}", totalWordCount);
 		}
 
 		private static void PrintReturnTypeDictionary()
@@ -56,12 +51,12 @@ namespace uLearn.tests
 			Console.WriteLine("this.returnTypeDict = [];");
 			foreach (
 				var type in
-					ReturnTypeDictionary.Keys/*.Where(
+					returnTypeDictionary.Keys/*.Where(
 						type => !type.ToString().Contains("TSource") && !type.ToString().Contains("TResult") && myTypes.Contains(type))*/)
 			{
 				Console.WriteLine("this.returnTypeDict['{0}'] = [{1}];", type,
-					ToArrayString(ReturnTypeDictionary[type].Distinct()));
-				TotalWordCount += ReturnTypeDictionary[type].Distinct().Count();
+					ToArrayString(returnTypeDictionary[type].Distinct()));
+				totalWordCount += returnTypeDictionary[type].Distinct().Count();
 			}
 			Console.WriteLine();
 		}
@@ -72,7 +67,7 @@ namespace uLearn.tests
 			foreach (var myType in myTypes)
 			{
 				var collection = func(myType).ToList();
-				TotalWordCount += collection.Count();
+				totalWordCount += collection.Count();
 				if (!collection.Any())
 					continue;
 				Console.WriteLine("this.{0}['{1}'] = [{2}];", dictName, ToPrettyString(myType), ToArrayString(collection));
@@ -109,53 +104,65 @@ namespace uLearn.tests
 			return "'" + string.Join("', '", collection) + "'";
 		}
 
-		private static IEnumerable<string> GetStaticMethods(Type myType)
+		private static IEnumerable<string> GetStatic(Type myType)
 		{
-			return GetMethods(myType, true);
+			return GetMembers(myType, true);
 		}
 
-		private static IEnumerable<string> GetNonStaticMethods(Type myType)
+		private static IEnumerable<string> GetNonStatic(Type myType)
 		{
-			return GetMethods(myType, false);
+			return GetMembers(myType, false);
 		}
 
-		private static IEnumerable<string> GetMethods(Type myType, bool isNeedStatic)
+		private static IEnumerable<string> GetMembers(IReflect myType, bool isNeedStatic)
 		{
-			var methods = myType.GetMethods().Where(y => y.Name[0] != y.Name.ToLower()[0]).Where(x => isNeedStatic ? x.IsStatic : !x.IsStatic).ToArray();
+			var flags = BindingFlags.Public;
+			flags |= isNeedStatic ? BindingFlags.Static : BindingFlags.Instance;
+			return GetMethods(myType, flags)
+				.Concat(GetProperties(myType, flags))
+				.Concat(GetConstants(myType, flags))
+				.Distinct()
+				.OrderBy(s => s);
+		}
+
+		private static IEnumerable<string> GetMethods(IReflect myType, BindingFlags flags)
+		{
+			var methods = myType.GetMethods(flags).Where(info => !info.IsSpecialName).ToList();
 			foreach (var methodInfo in methods)
 			{
 				var type = ToPrettyString(methodInfo.ReturnType);
-				if (!ReturnTypeDictionary.ContainsKey(type))
-					ReturnTypeDictionary[type] = new List<string>();
-				ReturnTypeDictionary[type].Add(methodInfo.Name);
+				if (!returnTypeDictionary.ContainsKey(type))
+					returnTypeDictionary[type] = new List<string>();
+				returnTypeDictionary[type].Add(methodInfo.Name);
 			}
 			return methods.Select(x => x.Name).Distinct();
 		}
 
-		private static IEnumerable<string> GetProperties(Type myType)
+		private static IEnumerable<string> GetProperties(IReflect myType, BindingFlags flags)
 		{
-			var properties = myType.GetProperties().Where(y => y.Name[0] != y.Name.ToLower()[0]).ToArray();
+			var properties = myType.GetProperties(flags);
 			foreach (var propertyInfo in properties)
 			{
 				var type = ToPrettyString(propertyInfo.PropertyType);
-				if (!ReturnTypeDictionary.ContainsKey(type))
-					ReturnTypeDictionary[type] = new List<string>();
-				ReturnTypeDictionary[type].Add(propertyInfo.Name);
+				if (!returnTypeDictionary.ContainsKey(type))
+					returnTypeDictionary[type] = new List<string>();
+				returnTypeDictionary[type].Add(propertyInfo.Name);
 			}
 			return properties.Select(x => x.Name).Distinct();
 		}
 
-		private static IEnumerable<string> GetConstants(Type myType)
+		private static IEnumerable<string> GetConstants(IReflect myType, BindingFlags flags)
 		{
-			var fields = myType.GetFields().Where(y => y.Name[0] != y.Name.ToLower()[0]).ToArray();
+			var fields = myType.GetFields(flags);
 			foreach (var fieldInfo in fields)
 			{
 				var type = ToPrettyString(fieldInfo.FieldType);
-				if (!ReturnTypeDictionary.ContainsKey(type))
-					ReturnTypeDictionary[type] = new List<string>();
-				ReturnTypeDictionary[type].Add(fieldInfo.Name);
+				if (!returnTypeDictionary.ContainsKey(type))
+					returnTypeDictionary[type] = new List<string>();
+				returnTypeDictionary[type].Add(fieldInfo.Name);
 			}
 			return fields.Select(x => x.Name).Distinct();
 		}
+
 	}
 }

@@ -33,9 +33,10 @@
 			QUnit.test('', function (assert) {
 				var res = keywords;
 				res.push(
-					'Math', 'Console', 'Int32', 'Int64', 'Double', 'Boolean', 'Char', 'Array', 'Enumarable', 'List', 'Dictionary'
+					'Math', 'Console', 'Int32', 'Int64', 'Double', 'Boolean', 'Char', 'Array', 'Enumerable', 'List', 'Dictionary'
 				);
-				assert.deepEqual(completer.getCompletions('', '', false), res, 'all');
+				res.sort();
+				assert.deepEqual(completer.getCompletions(undefined, undefined, false), res, 'all');
 			});
 
 			QUnit.module('Static classes completion');

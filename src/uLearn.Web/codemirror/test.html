@@ -165,9 +165,9 @@
 			
 			QUnit.module('Non-static class completion');
 			QUnit.test('int', function (assert) {
-				assert.deepEqual(completer.getCompletions('length', '', true), [
+				assert.deepEqual(completer.getCompletions('Length', '', true), [
 					'CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'
-				], 'length all');
+				], 'Length all');
 			});
 
 			QUnit.test('long', function (assert) {
@@ -211,10 +211,10 @@
 
 			QUnit.test('Array', function (assert) {
 				assert.deepEqual(completer.getCompletions('ToArray', '', true), [
-					'AsParallel', 'AsQueryable', 'Cast', 'Clone', 'CopyTo', 'Equals', 'Finalize',
+					'AsParallel', 'AsQueryable', 'Cast', 'Clone', 'CopyTo', 'Equals',
 					'GetEnumerator', 'GetHashCode', 'GetLength', 'GetLongLength', 'GetLowerBound',
 					'GetType', 'GetUpperBound', 'GetValue', 'Initialize', 'IsFixedSize', 'IsReadOnly',
-					'IsSynchronized', 'Length', 'LongLength', 'MemberwiseClone', 'OfType', 'Rank',
+					'IsSynchronized', 'Length', 'LongLength', 'OfType', 'Rank',
 					'SetValue', 'SyncRoot', 'ToString'
 				], 'ToArray all');
 			});
@@ -224,10 +224,10 @@
 						'Add', 'AddRange', 'Aggregate', 'All', 'Any',
 						'AsEnumerable', 'AsParallel', 'AsQueryable', 'AsReadOnly', 'Average', 'BinarySearch', 'Capacity', 'Cast',
 						'Clear', 'Concat', 'Contains', 'ConvertAll', 'CopyTo', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt',
-						'ElementAtOrDefault', 'Equals', 'Except', 'Exists', 'Finalize', 'Find', 'FindAll', 'FindIndex', 'FindLast',
+						'ElementAtOrDefault', 'Equals', 'Except', 'Exists', 'Find', 'FindAll', 'FindIndex', 'FindLast',
 						'FindLastIndex', 'First', 'FirstOrDefault', 'ForEach', 'GetEnumerator', 'GetHashCode', 'GetRange', 'GetType',
 						'GroupBy', 'GroupJoin', 'IndexOf', 'Insert', 'InsertRange', 'Intersect', 'Item', 'Join', 'Last',
-						'LastIndexOf', 'LastOrDefault', 'LongCount', 'Max', 'MemberwiseClone', 'Min', 'OfType', 'OrderBy',
+						'LastIndexOf', 'LastOrDefault', 'LongCount', 'Max', 'Min', 'OfType', 'OrderBy',
 						'OrderByDescending', 'Remove', 'RemoveAll', 'RemoveAt', 'RemoveRange', 'Reverse', 'Select', 'SelectMany',
 						'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Sort', 'Sum', 'Take', 'TakeWhile',
 						'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'ToString', 'TrimExcess', 'TrueForAll', 'Union', 'Where', 'Zip'
@@ -240,9 +240,9 @@
 					'Add', 'Aggregate', 'All', 'Any',
 					'AsEnumerable', 'AsParallel', 'AsQueryable', 'Average', 'Cast', 'Clear', 'Comparer', 'Concat', 'Contains',
 					'ContainsKey', 'ContainsValue', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt', 'ElementAtOrDefault',
-					'Equals', 'Except', 'Finalize', 'First', 'FirstOrDefault', 'GetEnumerator', 'GetHashCode', 'GetObjectData',
+					'Equals', 'Except', 'First', 'FirstOrDefault', 'GetEnumerator', 'GetHashCode', 'GetObjectData',
 					'GetType', 'GroupBy', 'GroupJoin', 'Intersect', 'Item', 'Join', 'Keys', 'Last', 'LastOrDefault', 'LongCount',
-					'Max', 'MemberwiseClone', 'Min', 'OfType', 'OnDeserialization', 'OrderBy', 'OrderByDescending', 'Remove',
+					'Max', 'Min', 'OfType', 'OnDeserialization', 'OrderBy', 'OrderByDescending', 'Remove',
 					'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Sum',
 					'Take', 'TakeWhile', 'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'ToString', 'TryGetValue', 'Union', 'Values',
 					'Where', 'Zip'

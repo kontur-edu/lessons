@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using NUnit.Framework;
 
 namespace uLearn.tests
@@ -9,6 +10,7 @@ namespace uLearn.tests
 	static class CreateDictForAutocomplete
 	{
 		private static readonly Dictionary<string, List<string>> returnTypeDictionary = new Dictionary<string, List<string>>();
+		private static readonly Dictionary<Type, HashSet<Tuple<string, string>>> extensionMethods = new Dictionary<Type, HashSet<Tuple<string, string>>>();
 		private static readonly List<Tuple<string, string>> prettyNames = new List<Tuple<string, string>>
 		{
 			Tuple.Create("ReadOnlyCollection", "Enumerable"),
@@ -28,6 +30,8 @@ namespace uLearn.tests
 			Tuple.Create("[]", "Array"),
 			Tuple.Create("IEqualityComparer", "IEqualityComparer"),
 			Tuple.Create("IEnumerator", "IEnumerator"),
+			Tuple.Create("ParallelQuery", "ParallelQuery"),
+			Tuple.Create("Queryable", "Queryable")
 		};
 
 		private static int totalWordCount;
@@ -52,10 +56,46 @@ namespace uLearn.tests
 				typeof (Dictionary<,>),
 				typeof (char)
 			};
+
+			var extendedTypes = new[]
+			{
+				typeof(Enumerable),
+				typeof(ParallelEnumerable),
+				typeof(Queryable)
+			};
+
 			Console.WriteLine("this.types = [{0}];\n", ToArrayString(myTypes.Select(ToPrettyString)));
 			Console.WriteLine("this.synonym = {{{0}}};\n", ToDictionary(prettyNames));
+			GetExtensionMethods(extendedTypes);
 			WalkThroughTypes(myTypes);
 		}
+
+		private static void GetExtensionMethods(IEnumerable<Type> extendedTypes)
+		{
+			foreach (var type in extendedTypes)
+			{
+				GetExtensionMethods(type);
+			}
+		}
+
+		private static void GetExtensionMethods(IReflect type)
+		{
+			var methods = type
+				.GetMethods(BindingFlags.Public | BindingFlags.Static)
+				.Where(info => info.IsDefined(typeof(ExtensionAttribute), true))
+				.Where(info => info.GetParameters().Length > 0);
+			foreach (var info in methods)
+			{
+				var t = info.GetParameters()[0].ParameterType;
+				if (t.IsGenericType)
+					t = t.GetGenericTypeDefinition();
+				if (!extensionMethods.ContainsKey(t))
+					extensionMethods[t] = new HashSet<Tuple<string, string>>();
+				var returnType = info.ReturnParameter == null ? "null" : ToPrettyString(info.ReturnParameter.ParameterType);
+				extensionMethods[t].Add(Tuple.Create(info.Name, returnType));
+			}
+		}
+
 
 		private static string ToDictionary(IEnumerable<Tuple<string, string>> tuples)
 		{
@@ -128,7 +168,22 @@ namespace uLearn.tests
 
 		private static IEnumerable<string> GetNonStatic(Type myType)
 		{
-			return GetMembers(myType, false);
+			var res = new List<string>();
+			res.AddRange(GetMembers(myType, false));
+			foreach (var type in myType.GetInterfaces().Select(type => type.IsGenericType ? type.GetGenericTypeDefinition() : type))
+			{
+				if (!extensionMethods.ContainsKey(type))
+					continue;
+				res.AddRange(extensionMethods[type].Select(tuple => tuple.Item1));
+				var returnTypes = extensionMethods[type].GroupBy(tuple => tuple.Item2);
+				foreach (var returnType in returnTypes)
+				{
+					if (!returnTypeDictionary.ContainsKey(returnType.Key))
+						returnTypeDictionary[returnType.Key] = new List<string>();
+					returnTypeDictionary[returnType.Key].AddRange(returnType.Select(tuple => tuple.Item1));
+				}
+			}
+			return res.Distinct().OrderBy(s => s);
 		}
 
 		private static IEnumerable<string> GetMembers(IReflect myType, bool isNeedStatic)

@@ -27,7 +27,7 @@
 
 	this.dictWithNonStatic = [];
 	this.dictWithNonStatic['int'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
-	this.dictWithNonStatic['string'] = ['Chars', 'Clone', 'CompareTo', 'Contains', 'CopyTo', 'EndsWith', 'Equals', 'GetEnumerator', 'GetHashCode', 'GetType', 'GetTypeCode', 'IndexOf', 'IndexOfAny', 'Insert', 'IsNormalized', 'LastIndexOf', 'LastIndexOfAny', 'Length', 'Normalize', 'PadLeft', 'PadRight', 'Remove', 'Replace', 'Split', 'StartsWith', 'Substring', 'ToCharArray', 'ToLower', 'ToLowerInvariant', 'ToString', 'ToUpper', 'ToUpperInvariant', 'Trim', 'TrimEnd', 'TrimStart'];
+	this.dictWithNonStatic['string'] = ['Aggregate', 'All', 'Any', 'AsEnumerable', 'AsParallel', 'AsQueryable', 'Average', 'Cast', 'Chars', 'Clone', 'CompareTo', 'Concat', 'Contains', 'CopyTo', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt', 'ElementAtOrDefault', 'EndsWith', 'Equals', 'Except', 'First', 'FirstOrDefault', 'GetEnumerator', 'GetHashCode', 'GetType', 'GetTypeCode', 'GroupBy', 'GroupJoin', 'IndexOf', 'IndexOfAny', 'Insert', 'Intersect', 'IsNormalized', 'Join', 'Last', 'LastIndexOf', 'LastIndexOfAny', 'LastOrDefault', 'Length', 'LongCount', 'Max', 'Min', 'Normalize', 'OfType', 'OrderBy', 'OrderByDescending', 'PadLeft', 'PadRight', 'Remove', 'Replace', 'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Split', 'StartsWith', 'Substring', 'Sum', 'Take', 'TakeWhile', 'ToArray', 'ToCharArray', 'ToDictionary', 'ToList', 'ToLookup', 'ToLower', 'ToLowerInvariant', 'ToString', 'ToUpper', 'ToUpperInvariant', 'Trim', 'TrimEnd', 'TrimStart', 'Union', 'Where', 'Zip'];
 	this.dictWithNonStatic['double'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
 	this.dictWithNonStatic['Console'] = ['Equals', 'GetHashCode', 'GetType', 'ToString'];
 	this.dictWithNonStatic['Math'] = ['Equals', 'GetHashCode', 'GetType', 'ToString'];
@@ -35,9 +35,9 @@
 	this.dictWithNonStatic['bool'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
 	this.dictWithNonStatic['double'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
 	this.dictWithNonStatic['Enumerable'] = ['Equals', 'GetHashCode', 'GetType', 'ToString'];
-	this.dictWithNonStatic['Array'] = ['Clone', 'CopyTo', 'Equals', 'GetEnumerator', 'GetHashCode', 'GetLength', 'GetLongLength', 'GetLowerBound', 'GetType', 'GetUpperBound', 'GetValue', 'Initialize', 'IsFixedSize', 'IsReadOnly', 'IsSynchronized', 'Length', 'LongLength', 'Rank', 'SetValue', 'SyncRoot', 'ToString'];
-	this.dictWithNonStatic['List'] = ['Add', 'AddRange', 'AsReadOnly', 'BinarySearch', 'Capacity', 'Clear', 'Contains', 'ConvertAll', 'CopyTo', 'Count', 'Equals', 'Exists', 'Find', 'FindAll', 'FindIndex', 'FindLast', 'FindLastIndex', 'ForEach', 'GetEnumerator', 'GetHashCode', 'GetRange', 'GetType', 'IndexOf', 'Insert', 'InsertRange', 'Item', 'LastIndexOf', 'Remove', 'RemoveAll', 'RemoveAt', 'RemoveRange', 'Reverse', 'Sort', 'ToArray', 'ToString', 'TrimExcess', 'TrueForAll'];
-	this.dictWithNonStatic['Dictionary'] = ['Add', 'Clear', 'Comparer', 'ContainsKey', 'ContainsValue', 'Count', 'Equals', 'GetEnumerator', 'GetHashCode', 'GetObjectData', 'GetType', 'Item', 'Keys', 'OnDeserialization', 'Remove', 'ToString', 'TryGetValue', 'Values'];
+	this.dictWithNonStatic['Array'] = ['AsParallel', 'AsQueryable', 'Cast', 'Clone', 'CopyTo', 'Equals', 'GetEnumerator', 'GetHashCode', 'GetLength', 'GetLongLength', 'GetLowerBound', 'GetType', 'GetUpperBound', 'GetValue', 'Initialize', 'IsFixedSize', 'IsReadOnly', 'IsSynchronized', 'Length', 'LongLength', 'OfType', 'Rank', 'SetValue', 'SyncRoot', 'ToString'];
+	this.dictWithNonStatic['List'] = ['Add', 'AddRange', 'Aggregate', 'All', 'Any', 'AsEnumerable', 'AsParallel', 'AsQueryable', 'AsReadOnly', 'Average', 'BinarySearch', 'Capacity', 'Cast', 'Clear', 'Concat', 'Contains', 'ConvertAll', 'CopyTo', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt', 'ElementAtOrDefault', 'Equals', 'Except', 'Exists', 'Find', 'FindAll', 'FindIndex', 'FindLast', 'FindLastIndex', 'First', 'FirstOrDefault', 'ForEach', 'GetEnumerator', 'GetHashCode', 'GetRange', 'GetType', 'GroupBy', 'GroupJoin', 'IndexOf', 'Insert', 'InsertRange', 'Intersect', 'Item', 'Join', 'Last', 'LastIndexOf', 'LastOrDefault', 'LongCount', 'Max', 'Min', 'OfType', 'OrderBy', 'OrderByDescending', 'Remove', 'RemoveAll', 'RemoveAt', 'RemoveRange', 'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Sort', 'Sum', 'Take', 'TakeWhile', 'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'ToString', 'TrimExcess', 'TrueForAll', 'Union', 'Where', 'Zip'];
+	this.dictWithNonStatic['Dictionary'] = ['Add', 'Aggregate', 'All', 'Any', 'AsEnumerable', 'AsParallel', 'AsQueryable', 'Average', 'Cast', 'Clear', 'Comparer', 'Concat', 'Contains', 'ContainsKey', 'ContainsValue', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt', 'ElementAtOrDefault', 'Equals', 'Except', 'First', 'FirstOrDefault', 'GetEnumerator', 'GetHashCode', 'GetObjectData', 'GetType', 'GroupBy', 'GroupJoin', 'Intersect', 'Item', 'Join', 'Keys', 'Last', 'LastOrDefault', 'LongCount', 'Max', 'Min', 'OfType', 'OnDeserialization', 'OrderBy', 'OrderByDescending', 'Remove', 'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Sum', 'Take', 'TakeWhile', 'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'ToString', 'TryGetValue', 'Union', 'Values', 'Where', 'Zip'];
 	this.dictWithNonStatic['char'] = ['CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'];
 
 
@@ -69,6 +69,8 @@
 	this.returnTypeDict['TypeCode'] = ['GetTypeCode'];
 	this.returnTypeDict['Type'] = ['GetType'];
 	this.returnTypeDict['Object'] = ['Clone', 'GetValue', 'SyncRoot'];
+	this.returnTypeDict['ParallelQuery'] = ['AsParallel'];
+	this.returnTypeDict['Queryable'] = ['AsQueryable'];
 	this.returnTypeDict['IEnumerator'] = ['GetEnumerator'];
 	this.returnTypeDict['IEqualityComparer'] = ['Comparer'];
 	this.returnTypeDict['TValue'] = ['Item'];

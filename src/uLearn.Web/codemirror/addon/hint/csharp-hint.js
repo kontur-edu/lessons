@@ -61,13 +61,16 @@
 	function getPrevToken(editor, pos) {
 		var res = { ch: pos.ch, line: pos.line };
 		var token = editor.getTokenAt(res);
-		res.ch = token.start;
-		if (res.ch === 0) {
-			res = CodeMirror.Pos(res.line - 1);
-		}
+		do {
+			res.ch = token.start;
+			if (res.ch === 0) {
+				res = CodeMirror.Pos(res.line - 1);
+			}
+			token = editor.getTokenAt(res);
+		} while (token.string.length == 0 || !/\S/.test(token.string));
 		return {
 			pos: res,
-			token: editor.getTokenAt(res)
+			token: token
 		};
 	}
 

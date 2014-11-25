@@ -45,7 +45,7 @@
 			completionList = completer.getCompletions("", "", false);
 		} else {
 			var beforeDot = "";
-			cur.ch = cur.ch - token.string.length;
+			cur.ch = token.start;
 			var lastDot = editor.getTokenAt(cur);
 			if (lastDot.string == '.') {
 				cur.ch = cur.ch - 1;

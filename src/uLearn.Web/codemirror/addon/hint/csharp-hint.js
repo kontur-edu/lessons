@@ -9,69 +9,27 @@
 	"use strict";
 
 	function csharpHint(editor) {
-		var cur = editor.getCursor(), token = editor.getTokenAt(cur), tprop = token;
+		var cur = editor.getCursor(), token = editor.getTokenAt(cur);
 		var from = CodeMirror.Pos(cur.line, token.start);
-		var bracketsCount = 0;
-		var totalLen = 0;
+		var to = CodeMirror.Pos(cur.line, token.end);
 		var completionList;
 		if (token.string === ".") {
-			var lastToken = "";
-			from = CodeMirror.Pos(cur.line, token.start + 1);
-			cur.ch = cur.ch - 1;
-			lastToken = editor.getTokenAt(cur);
-			if (lastToken.string == ')') {
-				bracketsCount++;
-				totalLen = 0;
-				while (bracketsCount != 0) {
-					cur.ch = cur.ch - lastToken.string.length;
-					totalLen += lastToken.string.length;
-					lastToken = editor.getTokenAt(cur);
-					if (lastToken.string == ')')
-						bracketsCount++;
-					if (lastToken.string == '(')
-						bracketsCount--;
-					if (cur.ch == 0)
-						break;
-				}
-				cur.ch = cur.ch - 1;
-				lastToken = editor.getTokenAt(cur);
-				cur.ch = cur.ch + totalLen + 1;
-			}
-			cur.ch = cur.ch + 1;
+			from = to;
+			var lastTokenPos = skipBrackets(editor, cur);
+			var lastToken = editor.getTokenAt(lastTokenPos);
 			completionList = completer.getCompletions(lastToken.string, "", true);
 		}
 		else if (!/^[\w@_]*$/.test(token.string)) {
 			from = cur;
+			to = cur;
 			completionList = completer.getCompletions("", "", false);
 		} else {
 			var beforeDot = "";
-			cur.ch = token.start;
-			var lastDot = editor.getTokenAt(cur);
-			if (lastDot.string == '.') {
-				cur.ch = cur.ch - 1;
-				beforeDot = editor.getTokenAt(cur);
-				if (beforeDot.string == ')') {
-				bracketsCount++;
-				totalLen = 0;
-					while (bracketsCount != 0) {
-						cur.ch = cur.ch - beforeDot.string.length;
-						totalLen += beforeDot.string.length;
-						beforeDot = editor.getTokenAt(cur);
-						if (beforeDot.string == ')')
-							bracketsCount++;
-						if (beforeDot.string == '(')
-							bracketsCount--;
-						if (cur.ch == 0)
-							break;
-					}
-					cur.ch = cur.ch - 1;
-					beforeDot = editor.getTokenAt(cur);
-					cur.ch = cur.ch + totalLen + 1;
-				}
-				cur.ch = cur.ch + 1;
+			var lastDot = getPrevToken(editor, cur);
+			if (lastDot.token.string == '.') {
+				var beforeDotCur = skipBrackets(editor, lastDot.pos);
+				beforeDot = editor.getTokenAt(beforeDotCur);
 			}
-			cur.ch = cur.ch + token.string.length;
-
 			completionList = completer.getCompletions(beforeDot.string, token.string, false);
 		}
 
@@ -80,10 +38,38 @@
 		return {
 			list: completionList,
 			from: from,
-			to: CodeMirror.Pos(cur.line, token.end)
+			to: to
 		};
 	}
 	var completer = new CsCompleter(Object.keys(CodeMirror.resolveMode("text/x-csharp").keywords));
+
+	function skipBrackets(editor, pos) {
+		var cursor = getPrevToken(editor, pos);
+		if (cursor.token.string !== ')')
+			return cursor.pos;
+		var balance = 1;
+		while (balance) {
+			cursor = getPrevToken(editor, cursor.pos);
+			if (cursor.token.string === ')')
+				balance++;
+			if (cursor.token.string === '(')
+				balance--;
+		}
+		return getPrevToken(editor, cursor.pos).pos;
+	}
+
+	function getPrevToken(editor, pos) {
+		var res = { ch: pos.ch, line: pos.line };
+		var token = editor.getTokenAt(res);
+		res.ch = token.start;
+		if (res.ch === 0) {
+			res = CodeMirror.Pos(res.line - 1);
+		}
+		return {
+			pos: res,
+			token: editor.getTokenAt(res)
+		};
+	}
 
 
 	CodeMirror.registerHelper("hint", "csharp", csharpHint);

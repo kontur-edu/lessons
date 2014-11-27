@@ -28,7 +28,9 @@
 			];
 
 			var completer = new CsCompleter(keywords);
+		</script>
 
+		<script>
 			QUnit.module('Empty completion');
 			QUnit.test('', function (assert) {
 				var res = keywords;
@@ -44,7 +46,9 @@
 				}
 				assert.deepEqual(completer.getCompletions("", "v", false), resV, 'all');
 			});
+		</script>
 
+		<script>
 			QUnit.module('Static classes completion');
 			QUnit.test('Math', function(assert) {
 				assert.deepEqual(completer.getCompletions('Math', '', true), [
@@ -167,8 +171,9 @@
 				], 'Dictionary all');
 			});
 
+		</script>
 
-			
+		<script>
 			QUnit.module('Non-static class completion');
 			QUnit.test('int', function (assert) {
 				assert.deepEqual(completer.getCompletions('Length', '', true), [
@@ -259,45 +264,36 @@
 				], 'ToDictionary all');
 			});
 
+		</script>
 
+		<script>
 			QUnit.module("Completeness of complition");
-			var date = '25.11.14';
-			QUnit.test('generated: ' + date, function(assert) {
+			var date = '26.11.14';
+			QUnit.test('generated: ' + date, function (assert) {
 				var tokens = {
-					'var': 34, 'num1': 2, 'num2': 2, 'num3': 2, 'num4': 2, 'Console': 23,
-					'WriteLine': 18, 'pi': 2, 'Math': 12, 'PI': 4, 'tenThousand': 2, 'floatPi': 2,
-					'tenThousandPi': 3, 'roundedTenThousandPi': 2, 'Round': 2,
-					'integerPartOfTenThousadnPi': 2, 'amount': 2, 'peopleCount': 2, 'totalMoney': 2,
-					'doubleNumber': 2, 'number': 9, 'Parse': 6, 'CultureInfo': 2, 'InvariantCulture': 2,
-					'a': 4, 'i': 54, 'Print': 1, 'text': 11, 'StringBuilder': 2, 'Replace': 2,
-					'name': 8, 'Append': 2, 'Ceiling': 1, 'salary': 1, 'ToString': 5, 'code': 2,
-					'Substring': 5, 'Length': 18, 'dx': 8, 'Abs': 2, 'to': 2, 'from': 2, 'dy': 8,
-					'enemyInFront': 4, 'enemyName': 4, 'enemyHealth': 6, 'robotFirePower': 4, 'robotHealth': 7,
-					'shouldFire': 5, 'Test': 1, 'Check': 1, 'ShouldFire': 1, 'ShouldFire2': 1, 'twoPowered': 6,
-					'IsWhiteSpace': 1, 'bar': 6, 'y': 6, 'size': 2, 'x': 6, 'Write': 5, 'res': 3, 'count': 6,
-					'maxIndex': 4, 'array': 17, 'item': 2, 'items': 3, 'itemToFind': 1, 'subArray': 5,
-					'ContainsAtIndex': 2, 'startIndex': 5, 'ToArray': 6, 'circleWin': 3, 'HasWinSequence': 3,
-					'field': 13, 'Mark': 6, 'Circle': 1, 'crossWin': 3, 'Cross': 1, 'GameResult': 4, 'Draw': 2,
-					'CircleWin': 1, 'CrossWin': 1, 'mark': 11, 'IsLine': 9, 'x0': 2, 'y0': 2, 'words': 4, 'List': 4,
-					'String': 1, 'line': 2, 'lines': 1, 'word': 21, 'Split': 2, 'Char': 1, 'IsUpper': 2, 'Add': 3,
-					'Reverse': 1, 'Join': 1, 'dictionary': 5, 'Dictionary': 1, 'record': 3, 'contacts': 1, 'First': 1,
-					'Min': 1, 'ContainsKey': 1, 'str': 5, 'command': 4, 'commands': 1, 'spaceIndex': 3, 'IndexOf': 2,
-					'cmd': 3, 'arg': 3, 'len': 6, 'Remove': 1, 'WriteReversed': 1, 'MakeSubsets': 3, 'subset': 5,
-					'position': 21, 'permutation': 4, 'index': 2, 'Array': 2, 'MakePermutations': 1, 'result': 4,
-					'caseChangesLeft': 5, 'passwords': 5, 'password': 8, 'initialWord': 8, 'ToLower': 4,
-					'MakePasswords': 3, 'IsLower': 1, 'ToUpper': 1, 'm': 4, 'left': 4, 'right': 4, 'value': 3,
-					'BinSearchLeftBorder': 2, 'j': 13, 't': 2, 'Latitude': 1, 'Longitude': 1, 'City': 1,
-					'GeoLocation': 1, 'Location': 1, 'Name': 1, 'GenerateMenuRight': 1, 'ToInt': 1, 'Int32': 1,
-					'GetAlbumsEthalon': 1, 'files': 1, 'ImageName': 2, 'GaussianParameter': 2, 'Run': 1,
-					'firstTime': 3, 'e': 2, 'arguments': 1, 'type': 3, 'arrays': 6, 'GetType': 2, 'GetElementType': 2,
-					'Any': 1, 'z': 4, 'CreateInstance': 1, 'Sum': 1, 'ptr': 2, 'SetValue': 1, 'GetValue': 4,
-					'IComparable': 3, 'min': 4, 'args': 4, 'CompareTo': 5, 'Title': 3, 'Theme': 3, 'obj': 2,
-					'book': 3, 'Book': 1, 'themeCmp': 3, 'GetOrdinal': 3, 'Point': 8, 'p': 6, 'Atan2': 1, 'Y': 5,
-					'X': 5, 'Compare': 1, 'A': 2, 'B': 2, 'C': 2, 'Format': 1, 'Select': 7, 'ToList': 3, 'nums': 3,
-					'd': 3, 'SelectMany': 1, 'Where': 5, 'n': 2, 'Equals': 1, 'Distinct': 3, 'OrderBy': 2, 'Tuple': 3,
-					'Create': 3, 'GroupBy': 1, 'w': 2, 'group': 3, 'Key': 1, 'Count': 1, 'OrderByDescending': 1, 'tuple': 4,
-					'Item2': 2, 'ThenBy': 1, 'Item1': 2, 'Take': 1, 'doc': 1, 'Id': 1, 'ToLookup': 1, 'wd': 4, 'Sqrt': 1,
-					'Vector': 1
+					'Main': 7, 'Console': 27, 'WriteLine': 22, 'Math': 13, 'PI': 4, 'Round': 2, 'Parse': 6, 'CultureInfo': 2,
+					'InvariantCulture': 2, 'GetLastHalf': 1, 'Substring': 6, 'Length': 25, 'GetSquare': 1, 'Print': 2, 'PrintGreeting': 1,
+					'StringBuilder': 2, 'Replace': 2, 'Append': 2, 'Ceiling': 1, 'ToString': 5, 'WriteParabolaMinX': 1,
+					'Decode': 1, 'IsLeapYear': 1, 'MiddleOf': 1, 'IsCorrectMove': 1, 'Abs': 2, 'ShouldFire': 2, 'Test': 1,
+					'Check': 1, 'ShouldFire2': 1, 'GetMinPowerOfTwoLargerThan': 1, 'RemoveStartSpaces': 1, 'IsWhiteSpace': 1,
+					'WriteTextWithBorder': 1, 'WriteBoard': 1, 'Write': 5, 'GetFirstEvenNumbers': 1, 'MaxIndex': 1, 'GetElementCount': 1,
+					'FindSubarrayStartIndex': 1, 'ContainsAtIndex': 2, 'DigitToText': 1, 'GetPoweredArray': 1, 'Select': 9,
+					'Pow': 1, 'ToArray': 7, 'GameResult': 5, 'GetGameResult': 1, 'Mark': 7, 'HasWinSequence': 3, 'Circle': 1,
+					'Cross': 1, 'Draw': 2, 'CircleWin': 1, 'CrossWin': 1, 'IsLine': 9, 'DecodeMessage': 1, 'List': 11, 'String': 1,
+					'Split': 7, 'Char': 1, 'IsUpper': 2, 'Add': 4, 'Reverse': 1, 'Join': 1, 'Dictionary': 2, 'OptimizeContacts': 1,
+					'First': 1, 'Min': 3, 'ContainsKey': 1, 'ApplyCommands': 1, 'IndexOf': 2, 'Remove': 1, 'WriteReversed': 2,
+					'MakeSubsets': 4, 'MakePermutations': 2, 'Array': 5, 'MakePasswords': 4, 'ToLower': 5, 'IsLower': 1,
+					'ToUpper': 1, 'BinSearchLeftBorder': 3, 'BubbleSortRange': 1, 'GeoLocation': 2, 'Latitude': 1, 'Longitude': 1,
+					'City': 1, 'Location': 1, 'Name': 1, 'MenuItem': 1, 'GenerateMenu': 1, 'GenerateMenuRight': 1, 'StringExtensions': 1,
+					'ToInt': 1, 'Int32': 1, 'DirectoryInfo': 1, 'GetAlbums': 1, 'FileInfo': 1, 'GetAlbumsEthalon': 1, 'SuperBeautyImageFilter': 1,
+					'ImageName': 2, 'GaussianParameter': 2, 'Run': 1, 'Combine': 1, 'GetType': 2, 'GetElementType': 2, 'Any': 1,
+					'CreateInstance': 1, 'Sum': 1, 'SetValue': 1, 'GetValue': 4, 'IComparable': 8, 'MiddleOfThree': 1, 'CompareTo': 10,
+					'Book': 2, 'Title': 3, 'Theme': 3, 'ClockwiseComparer': 1, 'IComparer': 1, 'GetOrdinal': 3, 'Point': 11,
+					'Atan2': 1, 'Y': 5, 'X': 5, 'Compare': 1, 'Triangle': 1, 'A': 2, 'B': 2, 'C': 2, 'Format': 1, 'ParseNumbers': 1,
+					'IEnumerable': 4, 'Where': 6, 'ParsePoints': 1, 'ToList': 3, 'GetAllStudents': 1, 'Classroom': 1, 'SelectMany': 4,
+					'Students': 1, 'GetNeighbours': 1, 'Equals': 1, 'GetSortedWords': 2, 'Regex': 4, 'Distinct': 3, 'OrderBy': 2,
+					'Tuple': 5, 'Create': 4, 'GetLongest': 1, 'Item2': 3, 'GetMostFrequentWords': 1, 'GroupBy': 1, 'Key': 1,
+					'Count': 1, 'OrderByDescending': 1, 'ThenBy': 1, 'Item1': 2, 'Take': 1, 'ILookup': 1, 'BuildInvertedIndex': 1,
 				};
 
 				var knownTokens = new SamePrefixArray();
@@ -312,15 +308,15 @@
 				}
 				knownTokens = knownTokens.getArray();
 
-				var unknownTokens = [];
+				var unknownTokens = {};
 				for (var str in tokens) {
 					if (!arrayContains(knownTokens, str)) {
-						unknownTokens.push(str);
+						unknownTokens[str] = tokens[str];
 					}
 				}
 
-				assert.equal(unknownTokens.length, 0, 'count of unknown tokens');
-				assert.deepEqual(unknownTokens.sort(), [], 'list of unknown tokens');
+				assert.equal(Object.keys(unknownTokens).length, 0, 'count of unknown tokens');
+				assert.deepEqual(unknownTokens, [], 'list of unknown tokens');
 			});
 		</script>
 

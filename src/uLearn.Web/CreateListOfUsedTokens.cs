@@ -15,8 +15,7 @@ namespace uLearn.Web
 			var solutions = WebCourseManager.Instance
 				.GetCourses()
 				.SelectMany(course => course.Slides.OfType<ExerciseSlide>())
-				.Select(slide => slide.EthalonSolution)
-				.Select(solution => solution.Split(new[] { '\r', '\n' }, 2)[1]); // remove method declarations
+				.Select(slide => slide.EthalonSolution);
 			var domProvider = CodeDomProvider.CreateProvider("C#");
 			var tokensDict = solutions
 				.SelectMany(s => CSharpSyntaxTree
@@ -25,10 +24,22 @@ namespace uLearn.Web
 					.DescendantTokens())
 				.Select(token => token.Text)
 				.Where(domProvider.IsValidIdentifier)
+				.Where(s => Char.IsUpper(s[0]))
 				.GroupBy(token => token)
 				.ToDictionary(grouping => grouping.Key, grouping => grouping.Count());
 			Console.Out.WriteLine("var date = '{0}';", DateTime.Now.ToString("dd.MM.yy"));
-			Console.Out.WriteLine("var tokens = {{{0}}};", String.Join(", ", tokensDict.Select(pair => String.Format("'{0}': {1}", pair.Key, pair.Value))));
+			Console.Out.WriteLine("var tokens = {");
+			var output = "\t";
+			foreach (var str in tokensDict.Select(pair => String.Format("'{0}': {1}", pair.Key, pair.Value)))
+			{
+				if (output.Length > 100)
+				{
+					Console.Out.WriteLine(output);
+					output = "\t";
+				}
+				output += str + ", ";
+			}
+			Console.Out.WriteLine("};");
 		}
 	}
 }

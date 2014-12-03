@@ -106,6 +106,36 @@
     <Compile Include="Slides\U03_DataStructure\S050_Generics.cs" />
     <Compile Include="Slides\U03_DataStructure\S060_LimitedAutocompleteService.cs" />
     <Compile Include="CoursesTests.cs" />
+    <Compile Include="Slides\U04_UI\S015_Contorls.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U04_UI\S030_SimpleUITask.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U04_UI\S020_Layouts.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U04_UI\S010_Intro.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U05_UI2\S050_Observable.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U05_UI2\S060_ChartTask.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U05_UI2\S040_ParametersTask.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U05_UI2\S030_ListTask.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U05_UI2\S010_FunctionsExplorer.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Slides\U05_UI2\S020_SeparatedPresentation.cs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\uLearn\uLearn.csproj">
@@ -125,7 +155,17 @@
     <Content Include="Slides\U02_Polymorphism\Title.txt" />
     <Content Include="Slides\U03_DataStructure\heap.png" />
     <Content Include="Slides\U03_DataStructure\Title.txt" />
+    <Content Include="Slides\U04_UI\anchors.png" />
+    <Content Include="Slides\U04_UI\controls.png" />
+    <Content Include="Slides\U04_UI\Title.txt" />
+    <Content Include="Slides\U04_UI\ui.png" />
+    <Content Include="Slides\U05_UI2\mockup-list.png" />
+    <Content Include="Slides\U05_UI2\mockup-params.png" />
+    <Content Include="Slides\U05_UI2\mockup.png" />
+    <Content Include="Slides\U05_UI2\separated-presentation.png" />
+    <Content Include="Slides\U05_UI2\Title.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>REM copy this post build step to new course

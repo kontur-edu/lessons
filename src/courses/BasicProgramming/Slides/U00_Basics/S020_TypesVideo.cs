@@ -1,7 +1,6 @@
 ﻿using System;
-using uLearn.CSharp;
 
-namespace uLearn.Courses.BasicProgramming.Slides
+namespace uLearn.Courses.BasicProgramming.Slides.U00_Basics
 {
 	[Slide("Числовые типы данных", "{f1953527-ac7a-4bb7-93fc-14bb9d2de249}")]
 	public class S020_TypesVideo

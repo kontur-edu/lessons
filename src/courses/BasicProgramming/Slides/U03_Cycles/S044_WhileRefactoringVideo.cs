@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace uLearn.Courses.BasicProgramming.Slides.Slides.U03_Cycles
+namespace uLearn.Courses.BasicProgramming.Slides.U03_Cycles
 {
 	[Slide("Рефакторинг while", "{24A35F8B-CF3D-4F38-A509-7C69FA53E654}")]
 	class S044_WhileRefactoringVideo

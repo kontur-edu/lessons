@@ -1,7 +1,6 @@
 ﻿using System;
-using uLearn;
 
-namespace Slide01
+namespace uLearn.Courses.BasicProgramming.Slides.U04_Arrays
 {
 	[Slide("Массивы и foreach", "{345ABA53-6896-4F19-92BE-3C102D09DEF6}")]
 	public class S010_ArrayAndForeach

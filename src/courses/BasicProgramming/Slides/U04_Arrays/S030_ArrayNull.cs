@@ -1,7 +1,6 @@
 ﻿using System;
-using uLearn;
 
-namespace Slide04
+namespace uLearn.Courses.BasicProgramming.Slides.U04_Arrays
 {
 	[Slide("Типы ссылки и типы значения", "{09364518-7781-43A3-BC0E-C37686D890C8}")]
     public class ArrayNull

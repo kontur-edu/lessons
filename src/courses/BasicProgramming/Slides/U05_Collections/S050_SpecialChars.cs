@@ -1,7 +1,6 @@
 ﻿using System;
-using uLearn;
 
-namespace Slide07
+namespace uLearn.Courses.BasicProgramming.Slides.U05_Collections
 {
 	//#video 8iMakRG35i4
 	/*

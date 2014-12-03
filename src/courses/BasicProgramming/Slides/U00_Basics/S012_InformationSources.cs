@@ -1,7 +1,4 @@
-﻿using System;
-using uLearn.CSharp;
-
-namespace uLearn.Courses.BasicProgramming.Slides
+﻿namespace uLearn.Courses.BasicProgramming.Slides.U00_Basics
 {
 	[Slide("Источники информации", "{a36a9029-b83f-436e-a2b9-81e519d9a32d}")]
 	public class S012_InformationSources

@@ -15,7 +15,7 @@
 	{
 		<label>@userSolution.GetVerdict()</label> @userSolution.Timestamp 
 
-		@Html.Partial("DisplayTemplates/CodeBlock", new CodeBlock(userSolution.Code))
+		@Html.Partial("DisplayTemplates/CodeBlock", new CodeBlock(userSolution.SolutionCode.Text))
 		<hr/>
 	}
 </div>

@@ -1,7 +1,4 @@
-﻿using System;
-using uLearn;
-
-namespace Slide02
+﻿namespace uLearn.Courses.BasicProgramming.Slides.U04_Arrays
 {
 	[Slide("Короткая форма записи", "{35FAAFF9-E319-4135-9A64-DA018601A605}")]
 	public class S030_ShortForm

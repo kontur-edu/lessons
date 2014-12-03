@@ -1,7 +1,7 @@
 ﻿using System;
 using uLearn.CSharp;
 
-namespace uLearn.Courses.BasicProgramming.Slides
+namespace uLearn.Courses.BasicProgramming.Slides.U00_Basics
 {
 	[Slide("Использование var", "{956A2160-CEB6-4485-8A94-C39DFE364F48}")]
 	public class S061_Operations : SlideTestBase

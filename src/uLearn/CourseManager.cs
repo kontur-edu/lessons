@@ -10,10 +10,8 @@ namespace uLearn
 {
 	public class CourseManager
 	{
-		private readonly DirectoryInfo stagedDirectory;
 		private readonly DirectoryInfo coursesDirectory;
 		private readonly Dictionary<string, Course> courses = new Dictionary<string, Course>(StringComparer.InvariantCultureIgnoreCase);
-		private DateTime lastReloadTime = DateTime.MinValue;
 
 		private static readonly IList<ISlideLoader> SlideLoaders = new ISlideLoader[]{new CSharpSlideLoader(), new QuizSlideLoader()};
 
@@ -26,26 +24,34 @@ namespace uLearn
 
 		public CourseManager(DirectoryInfo stagedDirectory, DirectoryInfo coursesDirectory)
 		{
-			this.stagedDirectory = stagedDirectory;
+			StagedDirectory = stagedDirectory;
 			this.coursesDirectory = coursesDirectory;
 		}
 
+		public DirectoryInfo StagedDirectory { get; private set; }
+
 		public IEnumerable<Course> GetCourses()
 		{
-			ReloadNewStagedCourses();
+			LoadCoursesIfNotYet();
 			return courses.Values;
+		}
+
+		public Course GetCourse(string courseId)
+		{
+			LoadCoursesIfNotYet();
+			return courses.Get(courseId);
 		}
 
 		public IEnumerable<StagingPackage> GetStagingPackages()
 		{
-			return stagedDirectory.GetFiles("*.zip").Select(f => new StagingPackage(f.Name, f.LastWriteTime));
+			return StagedDirectory.GetFiles("*.zip").Select(f => new StagingPackage(f.Name, f.LastWriteTime));
 		}
 
 		public string GetStagingPackagePath(string name)
 		{
 			if (Path.GetInvalidFileNameChars().Any(name.Contains)) 
 				throw new Exception(name);
-			return stagedDirectory.GetFile(name).FullName;
+			return StagedDirectory.GetFile(name).FullName;
 		}
 
 		public ExerciseSlide GetExerciseSlide(string courseId, int slideIndex)
@@ -54,20 +60,14 @@ namespace uLearn
 			return (ExerciseSlide)course.Slides[slideIndex];
 		}
 		
-		public Course GetCourse(string courseId)
-		{
-			ReloadNewStagedCourses();
-			return courses.Get(courseId);
-		}
-
 		private static readonly object ReloadLock = new object();
 		
-		private void ReloadNewStagedCourses()
+		private void LoadCoursesIfNotYet()
 		{
 			lock (ReloadLock)
 			{
-				var reloadTime = DateTime.Now;
-				var courseZips = stagedDirectory.GetFiles("*.zip").Where(d => d.LastWriteTime > lastReloadTime);
+				if (courses.Count != 0) return;
+				var courseZips = StagedDirectory.GetFiles("*.zip");
 				foreach (var zipFile in courseZips)
 					try
 					{
@@ -75,10 +75,15 @@ namespace uLearn
 					}
 					catch (Exception e)
 					{
-						throw new Exception("Error loading course from " + zipFile.Name, e);
+						//throw new Exception("Error loading course from " + zipFile.Name, e);
 					}
-				lastReloadTime = reloadTime;
 			}
+		}
+
+		public void ReloadCourse(string packageName)
+		{
+			var file = StagedDirectory.GetFile(packageName);
+			ReloadCourseFromZip(file);
 		}
 
 		private void ReloadCourseFromZip(FileInfo zipFile)
@@ -94,12 +99,12 @@ namespace uLearn
 			}
 		}
 
-		private void ReloadCourse(DirectoryInfo dir)
+		public void ReloadCourse(DirectoryInfo dir)
 		{
 			var course = LoadCourse(dir);
 			courses[course.Id] = course;
 		}
-
+		
 		public static Course LoadCourse(DirectoryInfo dir)
 		{
 			var slides = LoadSlides(dir).ToArray();

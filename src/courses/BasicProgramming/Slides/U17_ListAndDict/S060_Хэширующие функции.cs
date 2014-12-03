@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using uLearn; 
-
-namespace U17_ListAndDict
+﻿namespace uLearn.Courses.BasicProgramming.Slides.U17_ListAndDict
 {
 	[Slide("Хэширующие функции", "a3ad3c77-8b5a-4789-9640-059fc1530bca")]
 	class S060_Хэширующие_функции

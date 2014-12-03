@@ -32,10 +32,11 @@ namespace uLearn.Web.Controllers
 		public UserManager<ApplicationUser> UserManager { get; private set; }
 
 		[Authorize(Roles = LmsRoles.Admin)]
-		public ActionResult List()
+		public ActionResult List(string role = null)
 		{
-			var applicationUsers = new ULearnDb().Users.OrderBy(u => u.UserName).ToList();
-			return View(applicationUsers);
+			IQueryable<ApplicationUser> applicationUsers = new ULearnDb().Users;
+			if (!string.IsNullOrEmpty(role)) applicationUsers = applicationUsers.Where(u => u.Roles.Any(r => r.Role.Name == role));
+			return View(applicationUsers.OrderBy(u => u.UserName).ToList());
 		}
 
 

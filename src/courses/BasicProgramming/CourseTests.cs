@@ -1,4 +1,5 @@
 ﻿using uLearn.Courses.BasicProgramming.Slides;
+using uLearn.Courses.BasicProgramming.Slides.U00_Basics;
 
 namespace uLearn.Courses.BasicProgramming
 {

@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Quiz
+	xmlns="https://ulearn.azurewebsites.net/quiz"
+	id="6C811FB1289E49B6B5F914698F2C25CA">
+	<title>Использование private</title>
+	<p>Изучите следующий код:</p>
+	<code xml:space="preserve">
+class A
+{
+	private int a;
+	public int B;
+	public void PublicMethod(){
+		a = 1; // строка 1
+		B = 2; // строка 2
+	}
+	private void PrivateMethod(){
+		a = 3; // строка 3
+		B = 4; // строка 4
+	}
+}
+
+class B
+{
+	private A privateA = new A();
+	public A PublicA = new A();
+	
+	public void M(){
+		privateA.a = 5; // строка 5
+		PublicA.a = 7;  // строка 6
+		privateA.B = 6; // строка 7
+		PublicA.B = 8;  // строка 8
+		PublicA.PublicMethod();   // строка 9
+		privateA.PublicMethod();  // строка 10
+		PublicA.PrivateMethod();  // строка 11
+		privateA.PrivateMethod(); // строка 12
+	}
+}
+
+	</code>
+	<choice id="1" multiple="true">
+		<text>Отметьте корректные строки (номера строк подписаны в комментариях в коде)</text>
+		<item id="1" isCorrect="true"  >строка 1</item>
+		<item id="2" isCorrect="true"  >строка 2</item>
+		<item id="3" isCorrect="true"  >строка 3</item>
+		<item id="4" isCorrect="true"  >строка 4</item>
+		<item id="5" isCorrect="false" >строка 5</item>
+		<item id="6" isCorrect="false" >строка 6</item>
+		<item id="7" isCorrect="true"  >строка 7</item>
+		<item id="8" isCorrect="true"  >строка 8</item>
+		<item id="9" isCorrect="true"  >строка 9</item>
+		<item id="10" isCorrect="true" >строка 10</item>
+		<item id="11" isCorrect="false">строка 11</item>
+		<item id="12" isCorrect="false">строка 12</item>
+	</choice>
+</Quiz>

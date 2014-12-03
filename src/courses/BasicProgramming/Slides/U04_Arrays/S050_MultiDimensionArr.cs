@@ -1,7 +1,6 @@
 ﻿using System;
-using uLearn;
 
-namespace Slide06
+namespace uLearn.Courses.BasicProgramming.Slides.U04_Arrays
 {
 	[Slide("Многомерные массивы", "{04957308-829A-41FE-AA60-7D553E2AAC1E}")]
     public class S060_MultiDimensionalArray

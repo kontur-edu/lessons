@@ -2,7 +2,7 @@
 <Quiz
  xmlns="https://ulearn.azurewebsites.net/quiz"
  id="{0B02B282-CFB1-4955-AE6B-981CA80AE3F0}">
-	<title>Работа файлами</title>
+	<title>Работа с файлами</title>
 
 
 	<fillIn id="1">

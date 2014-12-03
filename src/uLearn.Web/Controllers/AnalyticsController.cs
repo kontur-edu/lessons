@@ -19,7 +19,7 @@ namespace uLearn.Web.Controllers
 		private readonly SlideRateRepo slideRateRepo = new SlideRateRepo();
 		private readonly UserSolutionsRepo userSolutionsRepo = new UserSolutionsRepo();
 		private readonly SlideHintRepo slideHintRepo = new SlideHintRepo();
-		private readonly UserQuizzesRepo userQuizzessRepo = new UserQuizzesRepo(); //TODO use in statistics
+		private readonly UserQuizzesRepo userQuizzesRepo = new UserQuizzesRepo(); //TODO use in statistics
 
 
 		public AnalyticsController()
@@ -70,9 +70,9 @@ namespace uLearn.Web.Controllers
 					SolversPercent = isExercise
 						? (visitersCount == 0 ? 0 : (int)((double)userSolutionsRepo.GetAcceptedSolutionsCount(slide.Id, course.Id) / visitersCount) * 100)
 						: isQuiz
-							? (visitersCount == 0 ? 0 : (int)((double)userQuizzessRepo.GetSubmitQuizCount(slide.Id, course.Id) / visitersCount) * 100)
+							? (visitersCount == 0 ? 0 : (int)((double)userQuizzesRepo.GetSubmitQuizCount(slide.Id, course.Id) / visitersCount) * 100)
 							: 0,
-					SuccessQuizPercentage = isQuiz ? userQuizzessRepo.GetAverageStatistics(slide.Id, course.Id) : 0,
+					SuccessQuizPercentage = isQuiz ? userQuizzesRepo.GetAverageStatistics(slide.Id, course.Id) : 0,
 					TotalHintCount = hintsCountOnSlide,
 					HintUsedPercent = isExercise ? slideHintRepo.GetHintUsedPercent(slide.Id, course.Id, hintsCountOnSlide, db.Users.Count()) : 0
 				});
@@ -202,7 +202,7 @@ namespace uLearn.Web.Controllers
 							SlideIndex = slideIndex,
 							IsExercise = slide is ExerciseSlide,
 							IsQuiz = slide is QuizSlide,
-							IsSolved = userSolutionsRepo.IsUserPassedTask(course.Id, slide.Id, userId) || userQuizzessRepo.IsQuizSlidePassed(course.Id, userId, slide.Id),
+							IsSolved = userSolutionsRepo.IsUserPassedTask(course.Id, slide.Id, userId) || userQuizzesRepo.IsQuizSlidePassed(course.Id, userId, slide.Id),
 							IsVisited = visitersRepo.IsUserVisit(course.Id, slide.Id, userId),
 							UserRate = slideRateRepo.GetUserRate(course.Id, slide.Id, userId),
 							HintsCountOnSlide = slide is ExerciseSlide ? (slide as ExerciseSlide).HintsMd.Count() : 0,

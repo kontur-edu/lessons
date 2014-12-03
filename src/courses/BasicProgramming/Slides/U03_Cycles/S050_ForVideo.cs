@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace uLearn.Courses.BasicProgramming.Slides.Slides.U03_Cycles
+namespace uLearn.Courses.BasicProgramming.Slides.U03_Cycles
 {
 	[Slide("Циклы for", "{034E49E8-FB81-4973-8FCE-9AE5AEB2046F}")]
 	class S050_ForVideo

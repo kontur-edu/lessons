@@ -36,7 +36,7 @@ namespace uLearn.Web
 		{
 			var solution = slide.Solution.BuildSolution(slide.EthalonSolution);
 			if (solution.HasErrors)
-				Assert.Fail("Template solution: " + slide.EthalonSolution + "\n\n" + "sourse code: " + solution.SourceCode + "\n\n" + "solution has error in: " +
+				Assert.Fail("Template solution: " + slide.EthalonSolution + "\n\n" + "source code: " + solution.SourceCode + "\n\n" + "solution has error in: " +
 				            slide.Info.UnitName + " - " + slide.Title +
 				            "\n" + "\terror: " + solution.ErrorMessage + "\n\n");
 			else

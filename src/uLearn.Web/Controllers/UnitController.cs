@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using uLearn.Web.DataContexts;
 using uLearn.Web.Models;
@@ -29,6 +31,13 @@ namespace uLearn.Web.Controllers
 				PackageNames = courseManager.GetStagingPackages().ToList()
 			};
 			return View(model);
+		}
+		
+		[HttpPost]
+		public ActionResult ReloadCourse(string packageName)
+		{
+			courseManager.ReloadCourse(packageName);
+			return RedirectToAction("CourseList");
 		}
 
 		public ActionResult List(string courseId)
@@ -77,6 +86,21 @@ namespace uLearn.Web.Controllers
 		public ActionResult DownloadPackage(string packageName)
 		{
 			return File(courseManager.GetStagingPackagePath(packageName), "application/zip", packageName);
+		}
+
+		[HttpPost]
+		public ActionResult UploadCourse(HttpPostedFileBase file)
+		{
+			if (file != null && file.ContentLength > 0)
+			{
+				var fileName = Path.GetFileName(file.FileName);
+				if (fileName != null && fileName.ToLower().EndsWith(".zip"))
+				{
+					var destinationFile = courseManager.StagedDirectory.GetFile(fileName);
+					file.SaveAs(destinationFile.FullName);
+				}
+			}
+			return RedirectToAction("CourseList");
 		}
 	}
 

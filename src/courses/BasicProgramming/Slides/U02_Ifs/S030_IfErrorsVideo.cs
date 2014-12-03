@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace uLearn.Courses.BasicProgramming.Slides.Slides.U03_Cycles
+namespace uLearn.Courses.BasicProgramming.Slides.U02_Ifs
 {
 	[Slide("Типичные ошибки ветвлений", "{45E4CE73-C9E2-44D9-A5EB-559F3214183B}")]
 	class S030_IfErrorsVideo

@@ -210,6 +210,12 @@
     <Compile Include="Controllers\SlideNavigationController.cs" />
     <Compile Include="Controllers\ExerciseController.cs" />
     <Compile Include="Controllers\HintController.cs" />
+    <Compile Include="DataContexts\TextsRepo.cs" />
+    <Compile Include="Migrations\201411140847550_extract large text fields.cs" />
+    <Compile Include="Migrations\201411140847550_extract large text fields.Designer.cs">
+      <DependentUpon>201411140847550_extract large text fields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\TextBlob.cs" />
     <Compile Include="CreateListOfUsedTokens.cs" />
     <Compile Include="Ideone\ExecutionService.Settings.Sample.cs" />
     <Compile Include="Migrations\201408220628510_AddUnitAppearance.cs" />
@@ -408,6 +414,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410280605055_add index for Quizzes.resx">
       <DependentUpon>201410280605055_add index for Quizzes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411140847550_extract large text fields.resx">
+      <DependentUpon>201411140847550_extract large text fields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -697,6 +706,7 @@
     <Content Include="Jsdifflib\jsdifflib.css" />
     <Content Include="katex\katex.min.css" />
     <Content Include="katex\katex.min.js" />
+    <Content Include="Scripts\bootstrap.file-input.js" />
     <Content Include="qunit\qunit-1.15.0.css" />
     <Content Include="qunit\qunit-1.15.0.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -778,25 +788,105 @@
     <Content Include="Scripts\slide-tex.js" />
     <Content Include="Scripts\slide-stats.js" />
     <Content Include="Scripts\table-configurator.js" />
-    <Content Include="Scripts\invertedTablesorter.js" />
     <Content Include="Scripts\user-group-name-change.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="tablesorter-master\.gitattributes" />
     <Content Include="tablesorter-master\.gitignore" />
+    <Content Include="tablesorter-master\addons\pager\icons\first.png" />
+    <Content Include="tablesorter-master\addons\pager\icons\last.png" />
+    <Content Include="tablesorter-master\addons\pager\icons\loading.gif" />
+    <Content Include="tablesorter-master\addons\pager\icons\next.png" />
+    <Content Include="tablesorter-master\addons\pager\icons\prev.png" />
     <Content Include="tablesorter-master\addons\pager\jquery.tablesorter.pager.css" />
     <Content Include="tablesorter-master\addons\pager\jquery.tablesorter.pager.js" />
-    <Content Include="tablesorter-master\build.xml" />
-    <Content Include="tablesorter-master\jquery-latest.js" />
-    <Content Include="tablesorter-master\jquery.metadata.js" />
-    <Content Include="tablesorter-master\jquery.tablesorter.js" />
-    <Content Include="tablesorter-master\jquery.tablesorter.min.js" />
-    <Content Include="tablesorter-master\themes\blue\asc.gif" />
-    <Content Include="tablesorter-master\themes\blue\bg.gif" />
-    <Content Include="tablesorter-master\themes\blue\desc.gif" />
-    <Content Include="tablesorter-master\themes\blue\style.css" />
-    <Content Include="tablesorter-master\themes\green\asc.png" />
-    <Content Include="tablesorter-master\themes\green\bg.png" />
-    <Content Include="tablesorter-master\themes\green\desc.png" />
-    <Content Include="tablesorter-master\themes\green\style.css" />
+    <Content Include="tablesorter-master\addons\pager\jquery.tablesorter.pager.min.js" />
+    <Content Include="tablesorter-master\bower.json" />
+    <Content Include="tablesorter-master\changelog.txt" />
+    <Content Include="tablesorter-master\css\filter.formatter.css" />
+    <Content Include="tablesorter-master\css\images\black-asc.gif" />
+    <Content Include="tablesorter-master\css\images\black-desc.gif" />
+    <Content Include="tablesorter-master\css\images\black-unsorted.gif" />
+    <Content Include="tablesorter-master\css\images\bootstrap-black-unsorted.png" />
+    <Content Include="tablesorter-master\css\images\bootstrap-white-unsorted.png" />
+    <Content Include="tablesorter-master\css\images\dropbox-asc-hovered.png" />
+    <Content Include="tablesorter-master\css\images\dropbox-asc.png" />
+    <Content Include="tablesorter-master\css\images\dropbox-desc-hovered.png" />
+    <Content Include="tablesorter-master\css\images\dropbox-desc.png" />
+    <Content Include="tablesorter-master\css\images\green-asc.gif" />
+    <Content Include="tablesorter-master\css\images\green-desc.gif" />
+    <Content Include="tablesorter-master\css\images\green-header.gif" />
+    <Content Include="tablesorter-master\css\images\green-unsorted.gif" />
+    <Content Include="tablesorter-master\css\images\ice-asc.gif" />
+    <Content Include="tablesorter-master\css\images\ice-desc.gif" />
+    <Content Include="tablesorter-master\css\images\ice-unsorted.gif" />
+    <Content Include="tablesorter-master\css\images\metro-black-asc.png" />
+    <Content Include="tablesorter-master\css\images\metro-black-desc.png" />
+    <Content Include="tablesorter-master\css\images\metro-loading.gif" />
+    <Content Include="tablesorter-master\css\images\metro-unsorted.png" />
+    <Content Include="tablesorter-master\css\images\metro-white-asc.png" />
+    <Content Include="tablesorter-master\css\images\metro-white-desc.png" />
+    <Content Include="tablesorter-master\css\images\white-asc.gif" />
+    <Content Include="tablesorter-master\css\images\white-desc.gif" />
+    <Content Include="tablesorter-master\css\images\white-unsorted.gif" />
+    <Content Include="tablesorter-master\css\theme.black-ice.css" />
+    <Content Include="tablesorter-master\css\theme.blue.css" />
+    <Content Include="tablesorter-master\css\theme.bootstrap.css" />
+    <Content Include="tablesorter-master\css\theme.bootstrap_2.css" />
+    <Content Include="tablesorter-master\css\theme.dark.css" />
+    <Content Include="tablesorter-master\css\theme.default.css" />
+    <Content Include="tablesorter-master\css\theme.dropbox.css" />
+    <Content Include="tablesorter-master\css\theme.green.css" />
+    <Content Include="tablesorter-master\css\theme.grey.css" />
+    <Content Include="tablesorter-master\css\theme.ice.css" />
+    <Content Include="tablesorter-master\css\theme.jui.css" />
+    <Content Include="tablesorter-master\css\theme.metro-dark.css" />
+    <Content Include="tablesorter-master\index.html" />
+    <Content Include="tablesorter-master\js\extras\jquery.quicksearch.js" />
+    <Content Include="tablesorter-master\js\extras\semver-mod.js" />
+    <Content Include="tablesorter-master\js\extras\semver.js" />
+    <Content Include="tablesorter-master\js\jquery.metadata.js" />
+    <Content Include="tablesorter-master\js\jquery.tablesorter.js" />
+    <Content Include="tablesorter-master\js\jquery.tablesorter.min.js" />
+    <Content Include="tablesorter-master\js\jquery.tablesorter.widgets-filter-formatter-select2.js" />
+    <Content Include="tablesorter-master\js\jquery.tablesorter.widgets-filter-formatter.js" />
+    <Content Include="tablesorter-master\js\jquery.tablesorter.widgets-filter-formatter.min.js" />
+    <Content Include="tablesorter-master\js\jquery.tablesorter.widgets.js" />
+    <Content Include="tablesorter-master\js\jquery.tablesorter.widgets.min.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-date-extract.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-date-iso8601.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-date-month.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-date-two-digit-year.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-date-weekday.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-date.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-duration.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-feet-inch-fraction.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-file-type.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-ignore-articles.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-image.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-input-select.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-metric.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-named-numbers.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-network.js" />
+    <Content Include="tablesorter-master\js\parsers\parser-roman.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-alignChar.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-build-table.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-columnSelector.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-cssStickyHeaders.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-editable.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-grouping.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-headerTitles.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-math.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-output.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-pager.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-print.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-reflow.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-repeatheaders.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-scroller.js" />
+    <Content Include="tablesorter-master\js\widgets\widget-staticRow.js" />
+    <Content Include="tablesorter-master\package.json" />
+    <Content Include="tablesorter-master\README.md" />
+    <Content Include="tablesorter-master\tablesorter.jquery.json" />
+    <Content Include="tablesorter-master\test.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -828,11 +918,6 @@
     <Content Include="Views\Course\_AskBar.cshtml" />
     <Content Include="Views\Analytics\TotalStatistics.cshtml" />
     <Content Include="Views\Course\_RatesBar.cshtml" />
-    <Content Include="tablesorter-master\changelog" />
-    <Content Include="tablesorter-master\LICENSE" />
-    <Content Include="tablesorter-master\README.md" />
-    <Content Include="tablesorter-master\themes\blue\blue.zip" />
-    <Content Include="tablesorter-master\themes\green\green.zip" />
     <Content Include="Views\Analytics\UsersStatistics.cshtml" />
     <Content Include="Views\Analytics\PersonalStatistics.cshtml" />
     <Content Include="Views\Course\_SolutionControl.cshtml" />
@@ -861,10 +946,18 @@
     <Content Include="Views\Account\ChangeDetailsPartial.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\TexBlock.cshtml" />
     <Content Include="Views\Quiz\Quiz.cshtml" />
+    <Content Include="tablesorter-master\css\bootstrap.less" />
+    <Content Include="tablesorter-master\css\metro.less" />
+    <Content Include="tablesorter-master\css\psd\green-asc.psd" />
+    <Content Include="tablesorter-master\css\psd\green-desc.psd" />
+    <Content Include="tablesorter-master\css\psd\green-unsorted.psd" />
+    <Content Include="tablesorter-master\css\psd\metro-style.psd" />
+    <Content Include="tablesorter-master\css\theme.less" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Courses\" />
+    <Folder Include="tablesorter-master\docs\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

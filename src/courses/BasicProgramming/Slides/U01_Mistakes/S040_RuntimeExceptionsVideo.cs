@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace uLearn.Courses.BasicProgramming.Slides.Slides.U02_Mistakes
+namespace uLearn.Courses.BasicProgramming.Slides.U01_Mistakes
 {
 	[Slide("Ошибки на этапе выполнения", "{F3C57AC8-D153-4E3A-A898-1668205AFBFC}")]
 	class S040_RuntimeExceptionsVideo

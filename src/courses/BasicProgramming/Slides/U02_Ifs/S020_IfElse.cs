@@ -2,7 +2,7 @@
 using System.IO;
 using NUnit.Framework;
 
-namespace uLearn.Courses.BasicProgramming.Slides.Slides.U03_Cycles
+namespace uLearn.Courses.BasicProgramming.Slides.U02_Ifs
 {
 	[Slide("Операторы If и Else", "{BEB02065-75DF-4443-B0DA-DE00971DC36B}")]
 	class S020_IfElse

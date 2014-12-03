@@ -4,25 +4,18 @@
 	xmlns="https://ulearn.azurewebsites.net/quiz"
 	id="3D1A92AB5D8940239175F7CEEB69F2A6">
 	<title>Наследование</title>
-  <p>Изучите следующий код:</p>
+	<p>Изучите следующий код:</p>
 	<code xml:space="preserve">
-class ClassA
-{
+class ClassA {
   public string FieldA;
 }
-
-class ClassB : ClassA
-{
+class ClassB : ClassA {
   public string FieldB;
 }
-
-class ClassC : ClassA
-{
+class ClassC : ClassA {
   public string FieldC;
 }
-
-class ClassD : ClassC 
-{
+class ClassD : ClassC {
   public string FieldD;
 }
 	</code>
@@ -31,63 +24,63 @@ class ClassD : ClassC
 		<item id="1" isCorrect="true" explanation="Это поле объявлено в ClassA непосредственно">
 			FieldA
 		</item>
-    <item id="2" isCorrect="false" explanation="ClassA не наследует других классов, поэтому содержит только поля, объявленные непосредственно в нем">
-      FieldB
-    </item>
-    <item id="3" isCorrect="false" explanation="ClassA не наследует других классов, поэтому содержит только поля, объявленные непосредственно в нем">
-      FieldC
-    </item>
-    <item id="4" isCorrect="false" explanation="ClassA не наследует других классов, поэтому содержит только поля, объявленные непосредственно в нем">
-      FieldD
-    </item>
-  </choice>
+		<item id="2" isCorrect="false" explanation="ClassA не наследует других классов, поэтому содержит только поля, объявленные непосредственно в нем">
+			FieldB
+		</item>
+		<item id="3" isCorrect="false" explanation="ClassA не наследует других классов, поэтому содержит только поля, объявленные непосредственно в нем">
+			FieldC
+		</item>
+		<item id="4" isCorrect="false" explanation="ClassA не наследует других классов, поэтому содержит только поля, объявленные непосредственно в нем">
+			FieldD
+		</item>
+	</choice>
 
-  <choice id="2" multiple="true">
-    <text>Какие поля содержатся в классе ClassB?</text>
-    <item id="1" isCorrect="true" explanation="Это поле унаследовано от ClassA">
-      FieldA
-    </item>
-    <item id="2" isCorrect="true" explanation="Это поле объявлено в ClassB непосредственно">
-      FieldB
-    </item>
-    <item id="3" isCorrect="false" explanation="Этого поля нет в цепочке наследования ClassB">
-      FieldC
-    </item>
-    <item id="4" isCorrect="false" explanation="Этого поля нет в цепочке наследования ClassB">
-      FieldD
-    </item>
-  </choice>
+	<choice id="2" multiple="true">
+		<text>Какие поля содержатся в классе ClassB?</text>
+		<item id="1" isCorrect="true" explanation="Это поле унаследовано от ClassA">
+			FieldA
+		</item>
+		<item id="2" isCorrect="true" explanation="Это поле объявлено в ClassB непосредственно">
+			FieldB
+		</item>
+		<item id="3" isCorrect="false" explanation="Этого поля нет в цепочке наследования ClassB">
+			FieldC
+		</item>
+		<item id="4" isCorrect="false" explanation="Этого поля нет в цепочке наследования ClassB">
+			FieldD
+		</item>
+	</choice>
 
-  <choice id="3" multiple="true">
-    <text>Какие поля содержатся в классе ClassC?</text>
-    <item id="1" isCorrect="true" explanation="Это поле унаследовано от ClassA">
-      FieldA
-    </item>
-    <item id="2" isCorrect="false" explanation="Этого поля нет в цепочке наследования ClassC, поскольку ClassC наследует ClassA, а не ClassB">
-      FieldB
-    </item>
-    <item id="3" isCorrect="true" explanation="Это поле объявлено в ClassC непосредственно">
-      FieldC
-    </item>
-    <item id="4" isCorrect="false" explanation="Этого поля нет в цепочке наследования ClassC">
-      FieldD
-    </item>
-  </choice>
+	<choice id="3" multiple="true">
+		<text>Какие поля содержатся в классе ClassC?</text>
+		<item id="1" isCorrect="true" explanation="Это поле унаследовано от ClassA">
+			FieldA
+		</item>
+		<item id="2" isCorrect="false" explanation="Этого поля нет в цепочке наследования ClassC, поскольку ClassC наследует ClassA, а не ClassB">
+			FieldB
+		</item>
+		<item id="3" isCorrect="true" explanation="Это поле объявлено в ClassC непосредственно">
+			FieldC
+		</item>
+		<item id="4" isCorrect="false" explanation="Этого поля нет в цепочке наследования ClassC">
+			FieldD
+		</item>
+	</choice>
 
-  <choice id="4" multiple="true">
-    <text>Какие поля содержатся в классе ClassD?</text>
-    <item id="1" isCorrect="true" explanation="Это поле унаследовано от ClassA">
-      FieldA
-    </item>
-    <item id="2" isCorrect="false" explanation="Это поле объявлено в ClassB, и он не входит в цепочку наследования">
-      FieldB
-    </item>
-    <item id="3" isCorrect="true" explanation="Это поле унаследовано от ClassС">
-      FieldC
-    </item>
-    <item id="4" isCorrect="true" explanation="Это поле объявлено в ClassD непосредственно">
-      FieldD
-    </item>
-  </choice>
+	<choice id="4" multiple="true">
+		<text>Какие поля содержатся в классе ClassD?</text>
+		<item id="1" isCorrect="true" explanation="Это поле унаследовано от ClassA">
+			FieldA
+		</item>
+		<item id="2" isCorrect="false" explanation="Это поле объявлено в ClassB, и он не входит в цепочку наследования">
+			FieldB
+		</item>
+		<item id="3" isCorrect="true" explanation="Это поле унаследовано от ClassС">
+			FieldC
+		</item>
+		<item id="4" isCorrect="true" explanation="Это поле объявлено в ClassD непосредственно">
+			FieldD
+		</item>
+	</choice>
 
 </Quiz>

@@ -24,9 +24,11 @@ namespace uLearn.Web.Models
 		[StringLength(64)]
 		public string UserId { get; set; }
 
+		public virtual TextBlob SolutionCode { get; set; }
+
+		[StringLength(40)]
 		[Required]
-		[StringLength(4096)]
-		public string Code { get; set; }
+		public string SolutionCodeHash { get; set; }
 
 		[Required]
 		public int CodeHash { get; set; }
@@ -43,11 +45,15 @@ namespace uLearn.Web.Models
 		[Required]
 		public bool IsCompilationError { get; set; }
 
-		[StringLength(4096)]
-		public string CompilationError { get; set; }
+		public virtual TextBlob CompilationError { get; set; }
 
-		[StringLength(4096)]
-		public string Output { get; set; }
+		[StringLength(40)]
+		public string CompilationErrorHash { get; set; }
+
+		public virtual TextBlob Output { get; set; }
+
+		[StringLength(40)]
+		public string OutputHash { get; set; }
 
 		public string GetVerdict()
 		{

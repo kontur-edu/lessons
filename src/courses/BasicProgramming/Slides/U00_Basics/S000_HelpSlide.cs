@@ -1,6 +1,4 @@
-﻿using uLearn;
-
-namespace Lectures
+﻿namespace uLearn.Courses.BasicProgramming.Slides.U00_Basics
 {
 	[Slide("Краткая справка перед началом", "{69a2e121-e58f-4cd0-8221-7affb7dc796e}")]
 	class S000_HelpSlide

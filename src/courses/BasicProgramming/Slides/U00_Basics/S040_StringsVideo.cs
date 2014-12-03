@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace uLearn.Courses.BasicProgramming.Slides
+namespace uLearn.Courses.BasicProgramming.Slides.U00_Basics
 {
 	[Slide("Строки", "{ad432c0f-e475-4381-9072-0b55ffd574db}")]
 	class S040_StringsVideo

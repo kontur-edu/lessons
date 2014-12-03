@@ -7,3 +7,6 @@ $('.btn-hover').hover(
 		$(this).removeClass($(this).data("hover-class"));
 	}
 );
+
+$('input[type=file]').bootstrapFileInput();
+$('.file-inputs').bootstrapFileInput();

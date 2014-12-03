@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using uLearn;
+﻿using System;
 
-namespace U14_Structures
+namespace uLearn.Courses.BasicProgramming.Slides.U14_Structures
 {
     [Slide("Инициализация полей структуры", "7dfdab8b-0a71-4984-b084-ebebf81c2191")]
     class S020_Инициализация_полей_структуры

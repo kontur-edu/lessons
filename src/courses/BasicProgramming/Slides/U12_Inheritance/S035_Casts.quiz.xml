@@ -4,7 +4,7 @@
 	xmlns="https://ulearn.azurewebsites.net/quiz"
 	id="0AE816310A724FA182246DD88A79B3CA">
 	<title>Касты</title>
-  <p>Изучите следующий код:</p>
+	<p>Изучите следующий код:</p>
 	<code xml:space="preserve">
 class ClassA { }
 
@@ -14,91 +14,91 @@ class ClassC : ClassA { }
 
 class Program 
 {
-  public static void Main()
-  {
-    var a = new ClassA();
-    var b = new ClassB();
-    var c = new ClassC();
-    var d = (ClassA) b;
-  }
+	public static void Main()
+	{
+		var a = new ClassA();
+		var b = new ClassB();
+		var c = new ClassC();
+		var d = (ClassA) b;
+	}
 }
 
 	</code>
 	<choice id="1" multiple="false">
-		<text>Конверсия переменной b к ClassA - это...</text>
-		<item id="1" isCorrect="true" explanation="B - это объект ClassB, который наследует ClassA - каст идет вверх по иерархии наследования">
+		<text>Конверсия переменной b к ClassA — это...</text>
+		<item id="1" isCorrect="true" explanation="B — это объект ClassB, который наследует ClassA — каст идет вверх по иерархии наследования">
 			Upcast
 		</item>
-    <item id="2" isCorrect="false" explanation="">
-      Downcast
-    </item>
-    <item id="3" isCorrect="false" explanation="">
-      Ни то, ни другое
-    </item>
-  </choice>
+		<item id="2" isCorrect="false" explanation="">
+			Downcast
+		</item>
+		<item id="3" isCorrect="false" explanation="">
+			Ни то, ни другое
+		</item>
+	</choice>
 
-  <choice id="2" multiple="false">
-    <text>Конверсия переменной c к ClassA...</text>
-    <item id="1" isCorrect="true" explanation="Это upcast, он всегда возможен и проходит без ошибок">
-      Пройдет без ошибок
-    </item>
-    <item id="2" isCorrect="false" explanation="">
-      Вызовет ошибку компиляции
-    </item>
-    <item id="3" isCorrect="false" explanation="">
-      Вызовет ошибку выполнения
-    </item>
-  </choice>
+	<choice id="2" multiple="false">
+		<text>Конверсия переменной c к ClassA...</text>
+		<item id="1" isCorrect="true" explanation="Это upcast, он всегда возможен и проходит без ошибок">
+			Пройдет без ошибок
+		</item>
+		<item id="2" isCorrect="false" explanation="">
+			Вызовет ошибку компиляции
+		</item>
+		<item id="3" isCorrect="false" explanation="">
+			Вызовет ошибку выполнения
+		</item>
+	</choice>
 
-  <choice id="3" multiple="false">
-    <text>Конверсия переменной a к ClassB - это</text>
-    <item id="1" isCorrect="false" explanation="">
-      Upcast
-    </item>
-    <item id="2" isCorrect="true" explanation="ClassB - это наследник ClassA, поэтому каст идет по иерархии вниз">
-      Downcast
-    </item>
-    <item id="3" isCorrect="false" explanation="">
-      Ни то, ни другое
-    </item>
-  </choice>
+	<choice id="3" multiple="false">
+		<text>Конверсия переменной a к ClassB - это</text>
+		<item id="1" isCorrect="false" explanation="">
+			Upcast
+		</item>
+		<item id="2" isCorrect="true" explanation="ClassB — это наследник ClassA, поэтому каст идет по иерархии вниз">
+			Downcast
+		</item>
+		<item id="3" isCorrect="false" explanation="">
+			Ни то, ни другое
+		</item>
+	</choice>
 
-  <choice id="4" multiple="false">
-    <text>Конверсия переменной d к ClassC...</text>
-    <item id="1" isCorrect="false" explanation="">
-      Пройдет без ошибок
-    </item>
-    <item id="2" isCorrect="false" explanation="">
-      Вызовет ошибку компиляции
-    </item>
-    <item id="3" isCorrect="true" explanation="d указывает на тот же объект, что и b, т.е. на объект класса B. Ее downcast к ClassC невозможен">
-      Вызовет ошибку выполнения
-    </item>
-  </choice>
+	<choice id="4" multiple="false">
+		<text>Конверсия переменной d к ClassC...</text>
+		<item id="1" isCorrect="false" explanation="">
+			Пройдет без ошибок
+		</item>
+		<item id="2" isCorrect="false" explanation="">
+			Вызовет ошибку компиляции
+		</item>
+		<item id="3" isCorrect="true" explanation="d указывает на тот же объект, что и b, т.е. на объект класса B. Его downcast к ClassC невозможен">
+			Вызовет ошибку выполнения
+		</item>
+	</choice>
 
-  <choice id="5" multiple="true">
-    <text>К каким типам можно привести переменную d?</text>
-    <item id="1" isCorrect="true" explanation="Переменная d имеет тип ClassA">
-      ClassA
-    </item>
-    <item id="2" isCorrect="true" explanation="Переменная d указывает на объект типа ClassB, downcast возможен">
-      ClassB
-    </item>
-    <item id="3" isCorrect="false" explanation="Этот каст невозможнен">
-      ClassС
-    </item>
-  </choice>
+	<choice id="5" multiple="true">
+		<text>К каким типам можно привести переменную d?</text>
+		<item id="1" isCorrect="true" explanation="Переменная d имеет тип ClassA">
+			ClassA
+		</item>
+		<item id="2" isCorrect="true" explanation="Переменная d указывает на объект типа ClassB, downcast возможен">
+			ClassB
+		</item>
+		<item id="3" isCorrect="false" explanation="Этот каст невозможен">
+			ClassС
+		</item>
+	</choice>
 
-  <choice id="6" multiple="false">
-    <text>Конверсия переменной c к ClassB...</text>
-    <item id="1" isCorrect="false" explanation="">
-      Upcast
-    </item>
-    <item id="2" isCorrect="false" explanation="">
-      Downcast
-    </item>
-    <item id="3" isCorrect="true" explanation="Ни один из классов ClassB и ClassC не наследуют другой">
-      Ни то, ни другое
-    </item>
-  </choice>
+	<choice id="6" multiple="false">
+		<text>Конверсия переменной c к ClassB...</text>
+		<item id="1" isCorrect="false" explanation="">
+			Upcast
+		</item>
+		<item id="2" isCorrect="false" explanation="">
+			Downcast
+		</item>
+		<item id="3" isCorrect="true" explanation="Ни один из классов ClassB и ClassC не наследуют другой">
+			Ни то, ни другое
+		</item>
+	</choice>
 </Quiz>

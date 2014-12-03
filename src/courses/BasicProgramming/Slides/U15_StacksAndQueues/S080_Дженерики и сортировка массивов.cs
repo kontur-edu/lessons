@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using uLearn;
+﻿using System;
 
-namespace U15_StacksAndQueues
+namespace uLearn.Courses.BasicProgramming.Slides.U15_StacksAndQueues
 {
 
 

@@ -42,6 +42,7 @@ namespace uLearn.Web.DataContexts
 	public class UserSolutionsRepo
 	{
 		private readonly ULearnDb db;
+		private readonly TextsRepo textsRepo = new TextsRepo();
 
 		public UserSolutionsRepo() : this(new ULearnDb())
 		{
@@ -57,15 +58,19 @@ namespace uLearn.Web.DataContexts
 			string compilationError,
 			string output, string userId)
 		{
+			var hash = (await textsRepo.AddText(code)).Hash;
+			var compilationErrorHash = (await textsRepo.AddText(compilationError)).Hash;
+			var outputHash = (await textsRepo.AddText(output)).Hash;
+
 			var userSolution = db.UserSolutions.Add(new UserSolution
 			{
-				Code = code,
-				CompilationError = compilationError,
+				SolutionCodeHash = hash,
+				CompilationErrorHash = compilationErrorHash,
 				CourseId = courseId,
 				SlideId = slideId,
 				IsCompilationError = !string.IsNullOrWhiteSpace(compilationError),
 				IsRightAnswer = isRightAnswer,
-				Output = output,
+				OutputHash = outputHash,
 				Timestamp = DateTime.Now,
 				UserId = userId,
 				CodeHash = code.Split('\n').Select(x => x.Trim()).Aggregate("", (x, y) => x + y).GetHashCode(),
@@ -129,7 +134,7 @@ namespace uLearn.Web.DataContexts
 				.OrderByDescending(x => x.sol.Timestamp);
 			var answer = best.Take(3).Concat(trending.Take(3)).Concat(newest).Distinct().Take(10).Select(x => x.sol);
 			return answer
-				.Select(x => new AcceptedSolutionInfo(x.Code, x.Id, x.Likes.Select(y => y.UserId)))
+				.Select(x => new AcceptedSolutionInfo(x.SolutionCode.Text, x.Id, x.Likes.Select(y => y.UserId)))
 				.ToList();
 		}
 
@@ -145,7 +150,7 @@ namespace uLearn.Web.DataContexts
 			var answer = allUserSolutionOnThisTask
 				.OrderByDescending(x => x.Timestamp)
 				.FirstOrDefault();
-			return answer == null ? null : answer.Code;
+			return answer == null ? null : answer.SolutionCode.Text;
 		}
 
 		public int GetAcceptedSolutionsCount(string slideId, string courseId)

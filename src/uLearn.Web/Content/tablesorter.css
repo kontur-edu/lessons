@@ -50,15 +50,15 @@
 }
 
 .analytics.visited {
-	background-color: lightgreen;
+	background-color: lightgreen !important;
 }
 
 .analytics.not-solved {
-	background-color: lightcoral;
+	background-color: lightcoral !important;
 }
 
 .analytics.solved {
-	background-color: lightgreen;
+	background-color: lightgreen !important;
 }
 
 .bounce-effect {	

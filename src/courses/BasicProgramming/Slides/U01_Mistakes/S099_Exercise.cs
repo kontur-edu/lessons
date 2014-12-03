@@ -1,4 +1,4 @@
-﻿namespace uLearn.Courses.BasicProgramming.Slides
+﻿namespace uLearn.Courses.BasicProgramming.Slides.U01_Mistakes
 {
 	[Slide("Практика", "{3AD2D195-94B7-457C-A508-AA95EB70ED37}")]
 	class S099_Exercise

@@ -1,7 +1,6 @@
 ﻿using System;
-using uLearn.CSharp;
 
-namespace uLearn.Courses.BasicProgramming.Slides
+namespace uLearn.Courses.BasicProgramming.Slides.U00_Basics
 {
 	[Slide("Арифметические операции и var", "{778bd3b0-243a-423d-a1c4-9230557979ff}")]
 	public class S060_OperationsVideo

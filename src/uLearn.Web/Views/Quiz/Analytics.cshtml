@@ -22,12 +22,12 @@
 <h2>Статистика ответов</h2>
 <div>
 	@{ var maxQuestionIndex = Model.QuizSlide.Quiz.Blocks.OfType<AbstractQuestionBlock>().OrderBy(x => x.QuestionIndex).Max(x => x.QuestionIndex);}
-	<table id="myTable" class="invertedTablesorter">
+	<table id="myTable" class="tablesorter">
 		<thead>
 			<tr>
 				<th style="border-bottom: none" title="при наведении на шапку таблицы, можно прочитать условие задания и вариант ответа" data-sorter="true">наведи на меня!</th>
-				<th style="border-bottom: none" data-sorter="true">Группа</th>
-				<th style="border-bottom: none"></th>
+				<th style="border-bottom: none">Группа</th>
+				<th style="border-bottom: none" data-sorter="false"></th>
 				@foreach (var block in Model.QuizSlide.Quiz.Blocks.OfType<AbstractQuestionBlock>().OrderBy(x => x.QuestionIndex))
 				{
 					int count;
@@ -37,13 +37,13 @@
 					{
 						break;
 					}
-					<th style="border-bottom: none"></th>
+					<th style="border-bottom: none" data-sorter="false"></th>
 				}
 			</tr>
 			<tr>
-				<th style="border-top: none" title="при наведении на шапку таблицы, можно прочитать условие задания и вариант ответа" data-sorter="true"></th>
-				<th style="border-top: none" data-sorter="true"></th>
-				<th style="border-top: none; border-bottom: none"></th>
+				<th style="border-top: none" title="при наведении на шапку таблицы, можно прочитать условие задания и вариант ответа"></th>
+				<th style="border-top: none"></th>
+				<th style="border-top: none; border-bottom: none" data-sorter="false"></th>
 				@foreach (var block in Model.QuizSlide.Quiz.Blocks.OfType<AbstractQuestionBlock>().OrderBy(x => x.QuestionIndex))
 				{
 					if (block is ChoiceBlock)
@@ -66,7 +66,7 @@
 					{
 						break;
 					}
-					<th style="border-top: none;border-bottom: none"></th>
+					<th style="border-top: none;border-bottom: none" data-sorter="false"></th>
 				}
 			</tr>
 		</thead>
@@ -126,9 +126,10 @@
 *@
 			@foreach (var user in Model.UserAnswers.Keys)
 			{
+				var group = Model.Group[user];
 				<tr>
 					<td>@user</td>
-					<td>@Model.Group[user]</td>
+					<td data-sort-value="@(String.IsNullOrEmpty(group) ? "-" : group)">@group</td>
 					<td style="border-top: none; border-bottom: none"></td>
 					@foreach (var ans in Model.UserAnswers[user])
 					{
@@ -141,7 +142,7 @@
 						else if (ans is IsTrueBlockAnswerInfo)
 						{
 							var answer = ((IsTrueBlockAnswerInfo)ans);
-							<td class="@(answer.IsRight ? "rightQuizAnswer" : "falseQuizAnswer")"><i class="@(answer.Answer ? "glyphicon glyphicon-ok" : "")"></i></td>
+							<td class="@(answer.IsRight ? "rightQuizAnswer" : "falseQuizAnswer")" data-sort-value="@answer.Answer"><i class="@(answer.Answer ? "glyphicon glyphicon-ok" : "")"></i></td>
 						}
 						else
 						{
@@ -151,7 +152,7 @@
 								var isContain = answer.RealyRightAnswer.Contains(item.Key);
 								var classForCell = ((isContain && item.Value) || (!isContain && !item.Value)) ? "rightQuizAnswer" : "falseQuizAnswer";
 								var itemClass = item.Value ? "glyphicon glyphicon-ok" : "";
-								<td class="@classForCell"><i class="@itemClass"></i></td>
+								<td class="@classForCell" data-sort-value="@item.Value"><i class="@itemClass"></i></td>
 							}
 						}
 						if (maxQuestionIndex == int.Parse(ans.Id))
@@ -165,5 +166,5 @@
 		</tbody>
 	</table>
 </div>
-<script src="~/tablesorter-master/jquery.tablesorter.js"></script>
-<script src="~/Scripts/invertedTablesorter.js"></script>
+<script src="~/tablesorter-master/js/jquery.tablesorter.js"></script>
+<script src="~/Scripts/table-configurator.js"></script>

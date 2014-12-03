@@ -6,9 +6,10 @@
 <div class="container">
 	<h2>Роли пользователей</h2>
 
-	<p><span class="label label-danger">admin</span> может видеть служебную информацию и управлять ролями других пользователей.</p>
-	<p><span class="label label-info">instructor</span> может видеть статистику по успеваемости на разных слайдах, задачах, тестах. Читать заданные вопросы.</p>
-	<p><span class="label label-success">tester</span> может видеть ещё не опубликованные для всех материалы.</p>
+	<p><a class="label label-danger" href="@Url.Action("List", new{role=LmsRoles.Admin})">admin</a> может видеть служебную информацию и управлять ролями других пользователей.</p>
+	<p><a class="label label-info" href="@Url.Action("List", new{role=LmsRoles.Instructor})">instructor</a> может видеть статистику по успеваемости на разных слайдах, задачах, тестах. Читать заданные вопросы.</p>
+	<p><a class="label label-success" href="@Url.Action("List", new{role=LmsRoles.Tester})">tester</a> может видеть ещё не опубликованные для всех материалы.</p>
+	<p><a class="label label-default" href="@Url.Action("List")">обычный пользователь</a> может видеть только опубликованные материалы.</p>
 
 	<table class="table table-condensed">
 		@foreach (var user in Model)

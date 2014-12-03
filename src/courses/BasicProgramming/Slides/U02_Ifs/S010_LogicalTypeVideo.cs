@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace uLearn.Courses.BasicProgramming.Slides.Slides.U03_Cycles
+namespace uLearn.Courses.BasicProgramming.Slides.U02_Ifs
 {
 	[Slide("Сравнение и логический тип", "{2C4919E2-42BF-4B32-93DC-5D54A8FDB25C}")]
 	class S010_LogicalTypeVideo

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace uLearn.Courses.BasicProgramming.Slides.Slides.U03_Cycles
+namespace uLearn.Courses.BasicProgramming.Slides.U03_Cycles
 {
 	[Slide("Сравнение for и while", "{65707781-7344-4805-81DA-C4A5199A7412}")]
 	class S060_ForVsWhileVideo

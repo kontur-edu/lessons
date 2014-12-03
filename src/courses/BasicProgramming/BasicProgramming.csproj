@@ -81,6 +81,7 @@
     <Compile Include="Slides\U11_OOP\S099_Exercise.cs" />
     <Compile Include="Slides\U11_OOP\_Fields.cs" />
     <Compile Include="Slides\U12_Inheritance\S010_Why.cs" />
+    <Compile Include="Slides\U12_Inheritance\S999_Exercise.cs" />
     <Compile Include="Slides\U12_Inheritance\S105_ToString.cs" />
     <Compile Include="Slides\U12_Inheritance\S085_IComparerTask.cs" />
     <Compile Include="Slides\U12_Inheritance\S075_IComparableTask.cs" />
@@ -96,14 +97,19 @@
     <Compile Include="Slides\U12_Inheritance\S080_IComparer.cs" />
     <Compile Include="Slides\U12_Inheritance\S090_Polymorphism.cs" />
     <Compile Include="Slides\U12_Inheritance\S100_VirtualMethods.cs" />
-    <Compile Include="Slides\U13_Consistancy\S010_Целостность данных.cs" />
-    <Compile Include="Slides\U13_Consistancy\S020_Ключевое слово private.cs" />
-    <Compile Include="Slides\U13_Consistancy\S030_Отложенные ошибки.cs" />
-    <Compile Include="Slides\U13_Consistancy\S040_Свойства.cs" />
-    <Compile Include="Slides\U13_Consistancy\S050_Больше свойств.cs" />
-    <Compile Include="Slides\U13_Consistancy\S060_Конструкторы.cs" />
-    <Compile Include="Slides\U13_Consistancy\S070_Поля readonly.cs" />
-    <Compile Include="Slides\U13_Consistancy\S080_Статические конструкторы.cs" />
+    <Compile Include="Slides\U13_Consistency\S010_Целостность данных.cs" />
+    <Compile Include="Slides\U13_Consistency\S020_Ключевое слово private.cs" />
+    <Compile Include="Slides\U13_Consistency\S055_Свойство_вместо_поля_задача.cs" />
+    <Compile Include="Slides\U13_Consistency\S045_Не_откладывать_ошибки_задача.cs" />
+    <Compile Include="Slides\U13_Consistency\S030_Отложенные ошибки.cs" />
+    <Compile Include="Slides\U13_Consistency\S040_Свойства.cs" />
+    <Compile Include="Slides\U13_Consistency\S050_Больше свойств.cs" />
+    <Compile Include="Slides\U13_Consistency\S075_Дробь_задача.cs" />
+    <Compile Include="Slides\U13_Consistency\S065_Конструктор_вектора_задача.cs" />
+    <Compile Include="Slides\U13_Consistency\S060_Конструкторы.cs" />
+    <Compile Include="Slides\U13_Consistency\S070_Поля readonly.cs" />
+    <Compile Include="Slides\U13_Consistency\S080_Статические конструкторы.cs" />
+    <Compile Include="Slides\U13_Consistency\S099_Exercise.cs" />
     <Compile Include="Slides\U14_Structures\S010_Объявление структуры.cs" />
     <Compile Include="Slides\U14_Structures\S020_Инициализация полей структуры.cs" />
     <Compile Include="Slides\U14_Structures\S030_Передача структуры в метод.cs" />
@@ -211,6 +217,7 @@
     </Content>
     <Content Include="Slides\U11_OOP\Title.txt" />
     <Content Include="Slides\U11_OOP\triangle.png" />
+    <Content Include="Slides\U12_Inheritance\digger.png" />
     <Content Include="Slides\U12_Inheritance\S035_Casts.quiz.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -218,6 +225,10 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Slides\U12_Inheritance\Title.txt" />
+    <Content Include="Slides\U13_Consistency\digger2.png" />
+    <Content Include="Slides\U13_Consistency\S025_private.quiz.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Slides\U14_Structures\Title.txt" />
     <Content Include="Slides\U15_StacksAndQueues\Title.txt" />
     <Content Include="Slides\U16_yield_return\Title.txt" />
@@ -370,6 +381,9 @@
     <None Include="Slides\U10_Practice\InstructorNotes.md" />
     <None Include="Slides\U10_Practice\manipulator.zip" />
     <None Include="Slides\U11_OOP\InstructorNotes.md" />
+    <None Include="Slides\U12_Inheritance\digger.zip" />
+    <None Include="Slides\U12_Inheritance\InstructorNotes.md" />
+    <None Include="Slides\U13_Consistency\InstructorNotes.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\uLearn\uLearn.csproj">
@@ -391,7 +405,7 @@
     <None Include="Slides\U07_Complexity\InstructorNotes.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Slides\U13_Consistancy\Title.txt" />
+    <Content Include="Slides\U13_Consistency\Title.txt" />
     <Content Include="Slides\U00_Basics\Title.txt" />
     <Content Include="Slides\Prelude.cs" />
     <Content Include="Slides\U01_Mistakes\Title.txt" />
@@ -404,7 +418,6 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>REM copy this post build step to new course
-$(SolutionDir)packages\NUnit.Runners.2.6.3\tools\nunit-console.exe $(TargetPath) /exclude:Long || exit /b
 del "$(OutDir)$(ProjectName).zip"
 "$(SolutionDir)..\tools\7z\7za.exe" a "$(OutDir)$(ProjectName).zip" "$(ProjectDir)Slides\*"
 copy "$(OutDir)$(ProjectName).zip" $(SolutionDir)uLearn.Web\Courses.Staging\</PostBuildEvent>

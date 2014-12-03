@@ -39,8 +39,10 @@ namespace uLearn.Web
 
 			bundles.Add(new ScriptBundle("~/bootstrap-js").Include(
 				"~/Scripts/bootstrap.js",
+				"~/Scripts/bootstrap.file-input.js",
 				"~/Scripts/buttons.js",
-				"~/Scripts/respond.js"));
+				"~/Scripts/respond.js"
+				));
 
 			bundles.Add(new StyleBundle("~/css").Include(
 				"~/katex/katex.min.css",

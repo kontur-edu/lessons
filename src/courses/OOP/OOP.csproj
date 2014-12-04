@@ -162,6 +162,7 @@
     <Content Include="Slides\U05_UI2\mockup-list.png" />
     <Content Include="Slides\U05_UI2\mockup-params.png" />
     <Content Include="Slides\U05_UI2\mockup.png" />
+    <Content Include="Slides\U05_UI2\observable.png" />
     <Content Include="Slides\U05_UI2\separated-presentation.png" />
     <Content Include="Slides\U05_UI2\Title.txt" />
   </ItemGroup>

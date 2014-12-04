@@ -1,0 +1,324 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>c# completition testing</title>
+	<link rel="stylesheet" href="../qunit/qunit-1.15.0.css">
+	<script src="../Scripts/jquery-1.10.2.min.js"></script>
+	<script src="../qunit/qunit-1.15.0.js"></script>
+	<script src="addon/hint/CsCompleter.js"> </script>
+	</head>
+	<body>
+		<div id="qunit"></div>
+		<div id="qunit-fixture"></div>
+
+		<script>
+
+			var keywords = [
+				'abstract', 'add', 'alias', 'as', 'ascending', 'async', 'await', 'base', 'bool', 'break', 'byte',
+				'case', 'catch', 'char', 'checked', 'class', 'const', 'continue', 'decimal', 'default', 'delegate',
+				'descending', 'do', 'double', 'dynamic', 'else', 'enum', 'event', 'explicit', 'extern', 'false',
+				'finally', 'fixed', 'float', 'for', 'foreach', 'from', 'get', 'global', 'goto', 'group', 'if',
+				'implicit', 'in ', 'in', 'int', 'interface', 'internal', 'into', 'is', 'join', 'let', 'lock',
+				'long', 'namespace', 'new', 'null', 'object', 'operator', 'orderby', 'out ', 'out', 'override',
+				'params', 'partial ', 'private', 'protected', 'public', 'readonly', 'ref', 'remove', 'return',
+				'sbyte', 'sealed', 'select', 'set', 'short', 'sizeof', 'stackalloc', 'static', 'string', 'struct',
+				'switch', 'this', 'throw', 'true', 'try', 'typeof', 'uint', 'ulong', 'unchecked', 'unsafe', 'ushort',
+				'using', 'value', 'var', 'virtual', 'void', 'volatile', 'where ', 'while', 'yield'
+			];
+
+			var completer = new CsCompleter(keywords);
+		</script>
+
+		<script>
+			QUnit.module('Empty completion');
+			QUnit.test('', function (assert) {
+				var res = keywords;
+				res.push(
+					'Math', 'Console', 'Int32', 'Int64', 'Double', 'Boolean', 'Char', 'Array', 'Enumerable', 'List', 'Dictionary'
+				);
+				res.sort();
+				assert.deepEqual(completer.getCompletions("", "", false), res, 'all');
+				var resV = [];
+				for (var i = 0; i < res.length; ++i) {
+					if (res[i].charAt(0) == 'v')
+						resV.push(res[i]);
+				}
+				assert.deepEqual(completer.getCompletions("", "v", false), resV, 'all');
+			});
+		</script>
+
+		<script>
+			QUnit.module('Static classes completion');
+			QUnit.test('Math', function(assert) {
+				assert.deepEqual(completer.getCompletions('Math', '', true), [
+					'Abs', 'Acos', 'Asin', 'Atan', 'Atan2', 'BigMul', 'Ceiling', 'Cos', 'Cosh', 'DivRem', 'E',
+					'Exp', 'Floor', 'IEEERemainder', 'Log', 'Log10', 'Max', 'Min', 'PI', 'Pow', 'Round', 'Sign',
+					'Sin', 'Sinh', 'Sqrt', 'Tan', 'Tanh', 'Truncate'
+				], 'Math all');
+			});
+
+			QUnit.test('Console', function(assert) {
+				assert.deepEqual(completer.getCompletions('Console', '', true), [
+					'BackgroundColor', 'Beep', 'BufferHeight', 'BufferWidth', 'CapsLock', 'Clear', 'CursorLeft',
+					'CursorSize', 'CursorTop', 'CursorVisible', 'Error', 'ForegroundColor', 'In', 'InputEncoding',
+					'IsErrorRedirected', 'IsInputRedirected', 'IsOutputRedirected', 'KeyAvailable', 'LargestWindowHeight',
+					'LargestWindowWidth', 'MoveBufferArea', 'NumberLock', 'OpenStandardError', 'OpenStandardInput',
+					'OpenStandardOutput', 'Out', 'OutputEncoding', 'Read', 'ReadKey', 'ReadLine', 'ResetColor',
+					'SetBufferSize', 'SetCursorPosition', 'SetError', 'SetIn', 'SetOut', 'SetWindowPosition',
+					'SetWindowSize', 'Title', 'TreatControlCAsInput', 'WindowHeight', 'WindowLeft', 'WindowTop',
+					'WindowWidth', 'Write', 'WriteLine'
+				], 'Console all');
+			});
+
+			QUnit.test('int', function(assert) {
+				assert.deepEqual(completer.getCompletions('int', '', true), [
+					'MaxValue', 'MinValue', 'Parse', 'TryParse'
+				], 'int all');
+				assert.deepEqual(completer.getCompletions('Int32', '', true), [
+					'MaxValue', 'MinValue', 'Parse', 'TryParse'
+				], 'Int32 all');
+			});
+
+			QUnit.test('long', function (assert) {
+				assert.deepEqual(completer.getCompletions('long', '', true), [
+					'MaxValue', 'MinValue', 'Parse', 'TryParse'
+				], 'long all');
+				assert.deepEqual(completer.getCompletions('Int64', '', true), [
+					'MaxValue', 'MinValue', 'Parse', 'TryParse'
+				], 'Int64 all');
+			});
+
+			QUnit.test('double', function (assert) {
+				assert.deepEqual(completer.getCompletions('double', '', true), [
+					'Epsilon', 'IsInfinity', 'IsNaN', 'IsNegativeInfinity', 'IsPositiveInfinity',
+					'MaxValue', 'MinValue', 'NaN', 'NegativeInfinity', 'Parse', 'PositiveInfinity',
+					'TryParse'
+				], 'double all');
+				assert.deepEqual(completer.getCompletions('Double', '', true), [
+					'Epsilon', 'IsInfinity', 'IsNaN', 'IsNegativeInfinity', 'IsPositiveInfinity',
+					'MaxValue', 'MinValue', 'NaN', 'NegativeInfinity', 'Parse', 'PositiveInfinity',
+					'TryParse'
+				], 'Double all');
+			});
+
+			QUnit.test('bool', function (assert) {
+				assert.deepEqual(completer.getCompletions('bool', '', true), [
+					'FalseString', 'Parse', 'TrueString', 'TryParse'
+				], 'bool all');
+				assert.deepEqual(completer.getCompletions('Boolean', '', true), [
+					'FalseString', 'Parse', 'TrueString', 'TryParse'
+				], 'Boolean all');
+			});
+
+			QUnit.test('char', function (assert) {
+				assert.deepEqual(completer.getCompletions('char', '', true), [
+					'ConvertFromUtf32', 'ConvertToUtf32', 'GetNumericValue', 'GetUnicodeCategory',
+					'IsControl', 'IsDigit', 'IsHighSurrogate', 'IsLetter', 'IsLetterOrDigit',
+					'IsLowSurrogate', 'IsLower', 'IsNumber', 'IsPunctuation', 'IsSeparator',
+					'IsSurrogate', 'IsSurrogatePair', 'IsSymbol', 'IsUpper', 'IsWhiteSpace',
+					'MaxValue', 'MinValue', 'Parse', 'ToLower', 'ToLowerInvariant', 'ToString',
+					'ToUpper', 'ToUpperInvariant', 'TryParse'
+				], 'char all');
+				assert.deepEqual(completer.getCompletions('Char', '', true), [
+					'ConvertFromUtf32', 'ConvertToUtf32', 'GetNumericValue', 'GetUnicodeCategory',
+					'IsControl', 'IsDigit', 'IsHighSurrogate', 'IsLetter', 'IsLetterOrDigit',
+					'IsLowSurrogate', 'IsLower', 'IsNumber', 'IsPunctuation', 'IsSeparator',
+					'IsSurrogate', 'IsSurrogatePair', 'IsSymbol', 'IsUpper', 'IsWhiteSpace',
+					'MaxValue', 'MinValue', 'Parse', 'ToLower', 'ToLowerInvariant', 'ToString',
+					'ToUpper', 'ToUpperInvariant', 'TryParse'
+				], 'Char all');
+			});
+
+			QUnit.test('string', function (assert) {
+				assert.deepEqual(completer.getCompletions('string', '', true), [
+					'Compare', 'CompareOrdinal', 'Concat', 'Copy', 'Empty', 'Equals', 'Format', 'Intern',
+					'IsInterned', 'IsNullOrEmpty', 'IsNullOrWhiteSpace', 'Join'
+				], 'string all');
+				assert.deepEqual(completer.getCompletions('String', '', true), [
+					'Compare', 'CompareOrdinal', 'Concat', 'Copy', 'Empty', 'Equals', 'Format', 'Intern',
+					'IsInterned', 'IsNullOrEmpty', 'IsNullOrWhiteSpace', 'Join'
+				], 'String all');
+			});
+
+			QUnit.test('Array', function (assert) {
+				assert.deepEqual(completer.getCompletions('Array', '', true), [
+					'AsReadOnly', 'BinarySearch', 'Clear', 'ConstrainedCopy', 'ConvertAll', 'Copy',
+					'CreateInstance', 'Exists', 'Find', 'FindAll', 'FindIndex', 'FindLast', 'FindLastIndex',
+					'ForEach', 'IndexOf', 'LastIndexOf', 'Resize', 'Reverse', 'Sort', 'TrueForAll'
+				], 'Array all');
+			});
+
+			QUnit.test('Enumerable', function (assert) {
+				assert.deepEqual(completer.getCompletions('Enumerable', '', true), [
+					'Aggregate', 'All', 'Any', 'AsEnumerable', 'Average', 'Cast', 'Concat', 'Contains', 'Count',
+					'DefaultIfEmpty', 'Distinct', 'ElementAt', 'ElementAtOrDefault', 'Empty', 'Except', 'First',
+					'FirstOrDefault', 'GroupBy', 'GroupJoin', 'Intersect', 'Join', 'Last', 'LastOrDefault',
+					'LongCount', 'Max', 'Min', 'OfType', 'OrderBy', 'OrderByDescending', 'Range', 'Repeat',
+					'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip',
+					'SkipWhile', 'Sum', 'Take', 'TakeWhile', 'ThenBy', 'ThenByDescending', 'ToArray', 'ToDictionary',
+					'ToList', 'ToLookup', 'Union', 'Where', 'Zip'
+				], 'Enumerable all');
+			});
+
+			QUnit.test('List', function(assert) {
+				assert.deepEqual(completer.getCompletions('List', '', true), [
+				], 'List all');
+			});
+
+			QUnit.test('Dictionary', function (assert) {
+				assert.deepEqual(completer.getCompletions('Dictionary', '', true), [
+				], 'Dictionary all');
+			});
+
+		</script>
+
+		<script>
+			QUnit.module('Non-static class completion');
+			QUnit.test('int', function (assert) {
+				assert.deepEqual(completer.getCompletions('Length', '', true), [
+					'CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'
+				], 'Length all');
+			});
+
+			QUnit.test('long', function (assert) {
+				assert.deepEqual(completer.getCompletions('BigMul', '', true), [
+					'CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'
+				], 'BigMul all');
+			});
+
+			QUnit.test('double', function (assert) {
+				assert.deepEqual(completer.getCompletions('Acos', '', true), [
+					'CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'
+				], 'Acos all');
+			});
+
+			QUnit.test('bool', function (assert) {
+				assert.deepEqual(completer.getCompletions('TryParse', '', true), [
+					'CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'
+				], 'TryParse all');
+			});
+
+			QUnit.test('char', function (assert) {
+				assert.deepEqual(completer.getCompletions('Chars', '', true), [
+					'CompareTo', 'Equals', 'GetHashCode', 'GetType', 'GetTypeCode', 'ToString'
+				], 'Chars all');
+			});
+
+			QUnit.test('string', function (assert) {
+				assert.deepEqual(completer.getCompletions('ToString', '', true), [
+					'Aggregate', 'All', 'Any', 'AsEnumerable', 'AsParallel', 'AsQueryable', 'Average', 'Cast', 'Chars', 'Clone',
+					'CompareTo', 'Concat', 'Contains', 'CopyTo', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt',
+					'ElementAtOrDefault', 'EndsWith', 'Equals', 'Except', 'First', 'FirstOrDefault', 'GetEnumerator',
+					'GetHashCode', 'GetType', 'GetTypeCode', 'GroupBy', 'GroupJoin', 'IndexOf', 'IndexOfAny', 'Insert',
+					'Intersect', 'IsNormalized', 'Join', 'Last', 'LastIndexOf', 'LastIndexOfAny', 'LastOrDefault', 'Length',
+					'LongCount', 'Max', 'Min', 'Normalize', 'OfType', 'OrderBy', 'OrderByDescending', 'PadLeft', 'PadRight',
+					'Remove', 'Replace', 'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip',
+					'SkipWhile', 'Split', 'StartsWith', 'Substring', 'Sum', 'Take', 'TakeWhile', 'ToArray', 'ToCharArray',
+					'ToDictionary', 'ToList', 'ToLookup', 'ToLower', 'ToLowerInvariant', 'ToString', 'ToUpper', 'ToUpperInvariant',
+					'Trim', 'TrimEnd', 'TrimStart', 'Union', 'Where', 'Zip'
+				], 'ToString all');
+			});
+
+			QUnit.test('Array', function (assert) {
+				assert.deepEqual(completer.getCompletions('ToArray', '', true), [
+					'AsParallel', 'AsQueryable', 'Cast', 'Clone', 'CopyTo', 'Equals',
+					'GetEnumerator', 'GetHashCode', 'GetLength', 'GetLongLength', 'GetLowerBound',
+					'GetType', 'GetUpperBound', 'GetValue', 'Initialize', 'IsFixedSize', 'IsReadOnly',
+					'IsSynchronized', 'Length', 'LongLength', 'OfType', 'Rank',
+					'SetValue', 'SyncRoot', 'ToString'
+				], 'ToArray all');
+			});
+
+			QUnit.test('List', function(assert) {
+				assert.deepEqual(completer.getCompletions('ToList', '', true), [
+						'Add', 'AddRange', 'Aggregate', 'All', 'Any',
+						'AsEnumerable', 'AsParallel', 'AsQueryable', 'AsReadOnly', 'Average', 'BinarySearch', 'Capacity', 'Cast',
+						'Clear', 'Concat', 'Contains', 'ConvertAll', 'CopyTo', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt',
+						'ElementAtOrDefault', 'Equals', 'Except', 'Exists', 'Find', 'FindAll', 'FindIndex', 'FindLast',
+						'FindLastIndex', 'First', 'FirstOrDefault', 'ForEach', 'GetEnumerator', 'GetHashCode', 'GetRange', 'GetType',
+						'GroupBy', 'GroupJoin', 'IndexOf', 'Insert', 'InsertRange', 'Intersect', 'Item', 'Join', 'Last',
+						'LastIndexOf', 'LastOrDefault', 'LongCount', 'Max', 'Min', 'OfType', 'OrderBy',
+						'OrderByDescending', 'Remove', 'RemoveAll', 'RemoveAt', 'RemoveRange', 'Reverse', 'Select', 'SelectMany',
+						'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Sort', 'Sum', 'Take', 'TakeWhile',
+						'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'ToString', 'TrimExcess', 'TrueForAll', 'Union', 'Where', 'Zip'
+					],
+					'ToList all');
+				assert.deepEqual(completer.getCompletions('ToList', 'I', false), [
+						'IndexOf', 'Insert', 'InsertRange', 'Intersect', 'Item'
+					],
+					'ToList I');
+			});
+
+			QUnit.test('Dictionary', function(assert) {
+				assert.deepEqual(completer.getCompletions('ToDictionary', '', true), [
+					'Add', 'Aggregate', 'All', 'Any',
+					'AsEnumerable', 'AsParallel', 'AsQueryable', 'Average', 'Cast', 'Clear', 'Comparer', 'Concat', 'Contains',
+					'ContainsKey', 'ContainsValue', 'Count', 'DefaultIfEmpty', 'Distinct', 'ElementAt', 'ElementAtOrDefault',
+					'Equals', 'Except', 'First', 'FirstOrDefault', 'GetEnumerator', 'GetHashCode', 'GetObjectData',
+					'GetType', 'GroupBy', 'GroupJoin', 'Intersect', 'Item', 'Join', 'Keys', 'Last', 'LastOrDefault', 'LongCount',
+					'Max', 'Min', 'OfType', 'OnDeserialization', 'OrderBy', 'OrderByDescending', 'Remove',
+					'Reverse', 'Select', 'SelectMany', 'SequenceEqual', 'Single', 'SingleOrDefault', 'Skip', 'SkipWhile', 'Sum',
+					'Take', 'TakeWhile', 'ToArray', 'ToDictionary', 'ToList', 'ToLookup', 'ToString', 'TryGetValue', 'Union', 'Values',
+					'Where', 'Zip'
+				], 'ToDictionary all');
+			});
+
+		</script>
+
+		<script>
+			QUnit.module("Completeness of complition");
+			var date = '26.11.14';
+			QUnit.test('generated: ' + date, function (assert) {
+				var tokens = {
+					'Main': 7, 'Console': 27, 'WriteLine': 22, 'Math': 13, 'PI': 4, 'Round': 2, 'Parse': 6, 'CultureInfo': 2,
+					'InvariantCulture': 2, 'GetLastHalf': 1, 'Substring': 6, 'Length': 25, 'GetSquare': 1, 'Print': 2, 'PrintGreeting': 1,
+					'StringBuilder': 2, 'Replace': 2, 'Append': 2, 'Ceiling': 1, 'ToString': 5, 'WriteParabolaMinX': 1,
+					'Decode': 1, 'IsLeapYear': 1, 'MiddleOf': 1, 'IsCorrectMove': 1, 'Abs': 2, 'ShouldFire': 2, 'Test': 1,
+					'Check': 1, 'ShouldFire2': 1, 'GetMinPowerOfTwoLargerThan': 1, 'RemoveStartSpaces': 1, 'IsWhiteSpace': 1,
+					'WriteTextWithBorder': 1, 'WriteBoard': 1, 'Write': 5, 'GetFirstEvenNumbers': 1, 'MaxIndex': 1, 'GetElementCount': 1,
+					'FindSubarrayStartIndex': 1, 'ContainsAtIndex': 2, 'DigitToText': 1, 'GetPoweredArray': 1, 'Select': 9,
+					'Pow': 1, 'ToArray': 7, 'GameResult': 5, 'GetGameResult': 1, 'Mark': 7, 'HasWinSequence': 3, 'Circle': 1,
+					'Cross': 1, 'Draw': 2, 'CircleWin': 1, 'CrossWin': 1, 'IsLine': 9, 'DecodeMessage': 1, 'List': 11, 'String': 1,
+					'Split': 7, 'Char': 1, 'IsUpper': 2, 'Add': 4, 'Reverse': 1, 'Join': 1, 'Dictionary': 2, 'OptimizeContacts': 1,
+					'First': 1, 'Min': 3, 'ContainsKey': 1, 'ApplyCommands': 1, 'IndexOf': 2, 'Remove': 1, 'WriteReversed': 2,
+					'MakeSubsets': 4, 'MakePermutations': 2, 'Array': 5, 'MakePasswords': 4, 'ToLower': 5, 'IsLower': 1,
+					'ToUpper': 1, 'BinSearchLeftBorder': 3, 'BubbleSortRange': 1, 'GeoLocation': 2, 'Latitude': 1, 'Longitude': 1,
+					'City': 1, 'Location': 1, 'Name': 1, 'MenuItem': 1, 'GenerateMenu': 1, 'GenerateMenuRight': 1, 'StringExtensions': 1,
+					'ToInt': 1, 'Int32': 1, 'DirectoryInfo': 1, 'GetAlbums': 1, 'FileInfo': 1, 'GetAlbumsEthalon': 1, 'SuperBeautyImageFilter': 1,
+					'ImageName': 2, 'GaussianParameter': 2, 'Run': 1, 'Combine': 1, 'GetType': 2, 'GetElementType': 2, 'Any': 1,
+					'CreateInstance': 1, 'Sum': 1, 'SetValue': 1, 'GetValue': 4, 'IComparable': 8, 'MiddleOfThree': 1, 'CompareTo': 10,
+					'Book': 2, 'Title': 3, 'Theme': 3, 'ClockwiseComparer': 1, 'IComparer': 1, 'GetOrdinal': 3, 'Point': 11,
+					'Atan2': 1, 'Y': 5, 'X': 5, 'Compare': 1, 'Triangle': 1, 'A': 2, 'B': 2, 'C': 2, 'Format': 1, 'ParseNumbers': 1,
+					'IEnumerable': 4, 'Where': 6, 'ParsePoints': 1, 'ToList': 3, 'GetAllStudents': 1, 'Classroom': 1, 'SelectMany': 4,
+					'Students': 1, 'GetNeighbours': 1, 'Equals': 1, 'GetSortedWords': 2, 'Regex': 4, 'Distinct': 3, 'OrderBy': 2,
+					'Tuple': 5, 'Create': 4, 'GetLongest': 1, 'Item2': 3, 'GetMostFrequentWords': 1, 'GroupBy': 1, 'Key': 1,
+					'Count': 1, 'OrderByDescending': 1, 'ThenBy': 1, 'Item1': 2, 'Take': 1, 'ILookup': 1, 'BuildInvertedIndex': 1,
+				};
+
+				var knownTokens = new SamePrefixArray();
+				knownTokens.container = completer.unknown;
+				for (var ind in completer.dictWithStatic) {
+					knownTokens.AddAll(completer.dictWithStatic[ind]);
+				}
+				knownTokens.AddAll(completer.keywords);
+				knownTokens.AddAll(completer.types);
+				for (var str in completer.synonym) {
+					knownTokens.Add(str);
+				}
+				knownTokens = knownTokens.getArray();
+
+				var unknownTokens = {};
+				for (var str in tokens) {
+					if (!arrayContains(knownTokens, str)) {
+						unknownTokens[str] = tokens[str];
+					}
+				}
+
+				assert.equal(Object.keys(unknownTokens).length, 0, 'count of unknown tokens');
+				assert.deepEqual(unknownTokens, [], 'list of unknown tokens');
+			});
+		</script>
+
+	</body>
+</html>

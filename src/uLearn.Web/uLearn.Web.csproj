@@ -67,6 +67,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.1.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis, Version=0.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.0.6.4033103-beta\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=0.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.0.6.4033103-beta\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="NLog">
       <HintPath>..\packages\NLog.3.1.0.0\lib\net45\NLog.dll</HintPath>
@@ -208,6 +216,7 @@
       <DependentUpon>201411140847550_extract large text fields.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\TextBlob.cs" />
+    <Compile Include="CreateListOfUsedTokens.cs" />
     <Compile Include="Ideone\ExecutionService.Settings.Sample.cs" />
     <Compile Include="Migrations\201408220628510_AddUnitAppearance.cs" />
     <Compile Include="Migrations\201408220628510_AddUnitAppearance.Designer.cs">
@@ -434,6 +443,7 @@
     <Content Include="codemirror\addon\fold\markdown-fold.js" />
     <Content Include="codemirror\addon\fold\xml-fold.js" />
     <Content Include="codemirror\addon\hint\anyword-hint.js" />
+    <Content Include="codemirror\addon\hint\CsCompleter.js" />
     <Content Include="codemirror\addon\hint\css-hint.js" />
     <Content Include="codemirror\addon\hint\html-hint.js" />
     <Content Include="codemirror\addon\hint\javascript-hint.js" />
@@ -652,6 +662,7 @@
     <Content Include="codemirror\mode\yaml\yaml.js" />
     <Content Include="codemirror\mode\z80\index.html" />
     <Content Include="codemirror\mode\z80\z80.js" />
+    <Content Include="codemirror\test.html" />
     <Content Include="codemirror\theme\3024-day.css" />
     <Content Include="codemirror\theme\3024-night.css" />
     <Content Include="codemirror\theme\ambiance-mobile.css" />
@@ -696,6 +707,8 @@
     <Content Include="katex\katex.min.css" />
     <Content Include="katex\katex.min.js" />
     <Content Include="Scripts\bootstrap.file-input.js" />
+    <Content Include="qunit\qunit-1.15.0.css" />
+    <Content Include="qunit\qunit-1.15.0.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="codemirror\README.md" />

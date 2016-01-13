@@ -45,7 +45,8 @@ namespace uLearn.Web
 					"~/Scripts/bootstrap.file-input.js",
 					"~/Scripts/buttons.js",
 					"~/Scripts/respond.js",
-					"~/Scripts/slide-*"
+					"~/Scripts/slide-*",
+					"~/Scripts/users-list.js"
 				}
 				);
 		}

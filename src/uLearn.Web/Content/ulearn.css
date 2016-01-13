@@ -423,3 +423,19 @@ body.lti-component {
 	margin-top: 0;
 	overflow-x: hidden;
 }
+
+li.li-danger {
+	background: #f5d8d6;
+}
+
+li.li-warning {
+	background: #fbe9d0;
+}
+
+li.li-info {
+	background: #d5eff6;
+}
+
+li.li-success {
+	background: #dbf0db;
+}

@@ -28,24 +28,11 @@ namespace uLearn.CourseTool
 			throw new OperationFailedGracefully();
 		}
 
-		public static void Download(string edxStudioUrl, string email, string password, string organization, string course, string time, string filename)
+		private static void Download(string edxStudioUrl, string email, string password, string organization, string course, string time, string filename)
 		{
 			var downloadUrl = string.Format("{0}/export/{1}/{2}/{3}?_accept=application/x-tgz", edxStudioUrl, organization, course, time);
 			var client = LogIn(edxStudioUrl, email, password);
-			try
-			{
-				client.DownloadFile(downloadUrl, filename);
-			}
-			catch (WebException e)
-			{
-				var response = e.Response.GetResponseStream().GetString();
-				Console.WriteLine("Download failed");
-				Console.WriteLine(downloadUrl);
-				Console.WriteLine(e.Message);
-				File.WriteAllText("errorResponse.html", response);
-				Console.WriteLine("Error details in errorResponse.html");
-				throw new OperationFailedGracefully();
-			}
+			client.TryDownloadFile(downloadUrl, filename);
 		}
 
 		public static void Download(string baseDir, Config config, string edxStudioUrl, Credentials credentials)
@@ -59,7 +46,7 @@ namespace uLearn.CourseTool
 			Directory.Move(baseDir + "/" + config.CourseRun, baseDir + "/olx");
 		}
 
-		public static void Upload(string edxStudioUrl, string email, string password, string organization, string course, string time, string filename)
+		private static void Upload(string edxStudioUrl, string email, string password, string organization, string course, string time, string filename)
 		{
 			var uploadUrl = string.Format("{0}/import/{1}/{2}/{3}", edxStudioUrl, organization, course, time);
 			var client = LogIn(edxStudioUrl, email, password);

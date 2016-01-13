@@ -29,17 +29,19 @@
 			</div>
 			<div class="greeting-collapse-class navbar-collapse collapse">
 				<ul class="top-navigation nav navbar-nav">
-					@if (User.IsInRole(LmsRoles.Admin))
+					@if (User.HasAccess(CourseRoles.CourseAdmin))
 					{
 						<li>@Html.ActionLink("Admin courses", "CourseList", "Unit")</li>
 					}
-					@if (User.IsInRole(LmsRoles.Admin) || User.IsInRole(LmsRoles.Instructor))
+					@if (User.IsSystemAdministrator())
 					{
-						<li>@Html.ActionLink("Пользователи", "List", "Account", new { role = LmsRoles.Admin }, null)</li>
 						<li>@Html.ActionLink("Статистика", "SystemStatistics", "Analytics")</li>
+					}
+					@if (User.HasAccess(CourseRoles.Instructor))
+					{
+						<li>@Html.ActionLink("Пользователи", "List", "Account", new { role = LmsRoles.SysAdmin }, null)</li>
 						<li>@Html.ActionLink("CsSandbox", "Index", "Sandbox")</li>
 					}
-
 				</ul>
 				@Html.Partial("_LoginPartial")
 			</div>

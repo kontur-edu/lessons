@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -12,7 +13,7 @@ using uLearn.Web.Models;
 
 namespace uLearn.Web.Controllers
 {
-	[PostAuthorize(Roles = LmsRoles.Admin)]
+	[ULearnAuthorize(MinAccessLevel = CourseRoles.CourseAdmin)]
 	public class UnitController : Controller
 	{
 		private readonly CourseManager courseManager;
@@ -26,19 +27,24 @@ namespace uLearn.Web.Controllers
 
 		public ActionResult CourseList(string courseId = "")
 		{
+			var courses = new HashSet<string>(User.GetControllableCoursesId());
 			var model = new CourseListViewModel
 			{
-				Courses = courseManager.GetCourses().ToList(), 
-				PackageNames = courseManager.GetStagingPackages().ToList(),
+				Courses = courseManager.GetCourses().Where(course => courses.Contains(course.Id)).Select(course => new CourseViewModel
+				{
+					Id = course.Id,
+					Title = course.Title,
+					LastWriteTime = courseManager.GetLastWriteTime(course)
+				}).ToList(), 
 				LastLoadedCourse = courseId
 			};
 			return View(model);
 		}
 		
 		[HttpPost]
-		public ActionResult ReloadCourse(string packageName, string returnUrl = null)
+		public ActionResult ReloadCourse(string courseId, string returnUrl = null)
 		{
-			var courseId = courseManager.ReloadCourse(packageName);
+			courseManager.ReloadCourse(courseId);
 			if (returnUrl != null) return Redirect(returnUrl);
 			return RedirectToAction("CourseList", new { courseId });
 		}
@@ -51,9 +57,9 @@ namespace uLearn.Web.Controllers
 
 		public ActionResult List(string courseId)
 		{
-			Course course = courseManager.GetCourse(courseId);
-			List<UnitAppearance> appearances = db.Units.Where(u => u.CourseId == course.Id).ToList();
-			List<Tuple<string, UnitAppearance>> unitAppearances =
+			var course = courseManager.GetCourse(courseId);
+			var appearances = db.Units.Where(u => u.CourseId == course.Id).ToList();
+			var unitAppearances =
 				course.Slides
 					.Select(s => s.Info.UnitName)
 					.Distinct()
@@ -92,24 +98,29 @@ namespace uLearn.Web.Controllers
 			return RedirectToAction("List", new { courseId });
 		}
 
-		public ActionResult DownloadPackage(string packageName)
+		public ActionResult DownloadPackage(string courseId)
 		{
-			return File(courseManager.GetStagingPackagePath(packageName), "application/zip", packageName);
+			var packageName = courseManager.GetPackageName(courseId);
+			return File(courseManager.GetStagingCoursePath(courseId), "application/zip", packageName);
 		}
 
 		[HttpPost]
 		public ActionResult UploadCourse(HttpPostedFileBase file)
 		{
-			if (file != null && file.ContentLength > 0)
-			{
-				var fileName = Path.GetFileName(file.FileName);
-				if (fileName != null && fileName.ToLower().EndsWith(".zip"))
-				{
-					var destinationFile = courseManager.StagedDirectory.GetFile(fileName);
-					file.SaveAs(destinationFile.FullName);
-				}
-			}
-			return RedirectToAction("CourseList");
+			if (file == null || file.ContentLength <= 0)
+				return RedirectToAction("CourseList");
+
+			var fileName = Path.GetFileName(file.FileName);
+			if (fileName == null || !fileName.ToLower().EndsWith(".zip"))
+				return RedirectToAction("CourseList");
+			var courseId = CourseManager.GetCourseId(fileName);
+			if (User.HasAccessFor(courseId, CourseRoles.CourseAdmin))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
+			var destinationFile = courseManager.StagedDirectory.GetFile(fileName);
+			file.SaveAs(destinationFile.FullName);
+			courseManager.ReloadCourse(fileName);
+			return RedirectToAction("CourseList", new { courseId });
 		}
 	}
 
@@ -132,9 +143,15 @@ namespace uLearn.Web.Controllers
 
 	public class CourseListViewModel
 	{
-		public List<Course> Courses;
-		public List<StagingPackage> PackageNames;
+		public List<CourseViewModel> Courses;
 		public string LastLoadedCourse { get; set; }
+	}
+
+	public class CourseViewModel
+	{
+		public string Title { get; set; }
+		public string Id { get; set; }
+		public DateTime LastWriteTime { get; set; }
 	}
 
 }

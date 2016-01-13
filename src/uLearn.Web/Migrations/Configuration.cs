@@ -19,9 +19,7 @@ namespace uLearn.Web.Migrations
 		{
 			var roleStore = new RoleStore<IdentityRole>(context);
 			var roleManager = new RoleManager<IdentityRole>(roleStore);
-			roleManager.Create(new IdentityRole(LmsRoles.Instructor));
-			roleManager.Create(new IdentityRole(LmsRoles.Admin));
-			roleManager.Create(new IdentityRole(LmsRoles.Tester));
+			roleManager.Create(new IdentityRole(LmsRoles.SysAdmin));
 			if (!context.Users.Any(u => u.UserName == "user"))
 			{
 				var userStore = new UserStore<ApplicationUser>();
@@ -35,7 +33,7 @@ namespace uLearn.Web.Migrations
 				var manager = new UserManager<ApplicationUser>(userStore);
 				var user = new ApplicationUser { UserName = "admin" };
 				manager.Create(user, "fullcontrol");
-				manager.AddToRole(user.Id, LmsRoles.Admin);
+				manager.AddToRole(user.Id, LmsRoles.SysAdmin);
 			}
 			context.SaveChanges();
 		}

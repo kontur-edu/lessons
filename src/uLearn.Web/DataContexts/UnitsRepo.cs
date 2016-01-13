@@ -24,7 +24,7 @@ namespace uLearn.Web.DataContexts
 
 		public List<string> GetVisibleUnits(string courseId, IPrincipal user)
 		{
-			var canSeeEverything = user.IsInRole(LmsRoles.Tester) || user.IsInRole(LmsRoles.Admin) || user.IsInRole(LmsRoles.Instructor);
+			var canSeeEverything = user.HasAccessFor(courseId, CourseRoles.Tester);
 			if (canSeeEverything)
 				return courseManager.GetCourse(courseId).Slides.Select(s => s.Info.UnitName).Distinct().ToList();
 			return db.Units.Where(u => u.CourseId == courseId && u.PublishTime <= DateTime.Now).Select(u => u.UnitName).ToList();

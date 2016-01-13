@@ -2,9 +2,15 @@
 {
 	public class LmsRoles
 	{
-		public const string Admin = "admin";
-		public const string Student = "student";
-		public const string Tester = "tester";
-		public const string Instructor = "instructor";
+		public const string SysAdmin = "SysAdmin";
+	}
+
+	public enum CourseRoles
+	{
+		
+		CourseAdmin,
+		Instructor,
+		Tester,
+		Student
 	}
 }

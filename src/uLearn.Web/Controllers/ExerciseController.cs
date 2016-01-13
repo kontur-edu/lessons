@@ -9,7 +9,7 @@ using uLearn.Web.Models;
 
 namespace uLearn.Web.Controllers
 {
-	[PostAuthorize]
+	[ULearnAuthorize]
 	public class ExerciseController : Controller
 	{
 		private readonly CourseManager courseManager;

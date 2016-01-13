@@ -136,7 +136,7 @@ namespace uLearn.Web.Controllers
 		//
 		// POST: /Login/LinkLogin
 		[HttpPost]
-		[PostAuthorize]
+		[ULearnAuthorize]
 		[ValidateAntiForgeryToken]
 		public ActionResult LinkLogin(string provider)
 		{
@@ -146,7 +146,7 @@ namespace uLearn.Web.Controllers
 
 		//
 		// GET: /Login/LinkLoginCallback
-		[PostAuthorize]
+		[ULearnAuthorize]
 		public async Task<ActionResult> LinkLoginCallback()
 		{
 			var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync(HttpContext, XsrfKey, User.Identity.GetUserId());

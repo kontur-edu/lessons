@@ -59,7 +59,7 @@ namespace uLearn.Web.Controllers
 				slideIndex);
 			builder.GetUnitInstructionNotesUrl = unitName => Url.Action("InstructorNote", "Course", new { courseId = course.Id, unitName });
 			builder.GetUnitStatisticsUrl = unitName => Url.Action("UnitStatistics", "Analytics", new { courseId = course.Id, unitName });
-			builder.IsInstructor = User.IsInRole(LmsRoles.Instructor);
+			builder.IsInstructor = User.HasAccessFor(course.Id, CourseRoles.Instructor);
 			builder.IsSolved = s => solved.Contains(s.Id);
 			builder.IsVisited = s => visited.Contains(s.Id);
 			builder.IsUnitVisible = visibleUnits.Contains;

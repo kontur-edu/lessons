@@ -26,7 +26,7 @@
 			<p>@login.LoginProvider @login.ProviderKey</p>
 		}
 	</ol>
-	@if (User.IsInRole(LmsRoles.Admin))
+	@if (User.IsSystemAdministrator())
 	{
 		var newPassword = (DateTime.Now.Ticks % 1000000).ToString();
 		<h3>Сброс пароля</h3>

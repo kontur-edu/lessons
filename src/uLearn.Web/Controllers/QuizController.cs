@@ -13,7 +13,7 @@ using uLearn.Web.Models;
 
 namespace uLearn.Web.Controllers
 {
-	[PostAuthorize]
+	[ULearnAuthorize]
 	public class QuizController : Controller
 	{
 		private const int MAX_DROPS_COUNT = 1;
@@ -62,7 +62,7 @@ namespace uLearn.Web.Controllers
 		}
 
 		[HttpPost]
-		[PostAuthorize(Roles = LmsRoles.Tester)]
+		[ULearnAuthorize(MinAccessLevel = CourseRoles.Tester)]
 		public async Task<ActionResult> ClearAnswers(string courseId, string slideId, bool isLti)
 		{
 			var slide = courseManager.GetCourse(courseId).GetSlideById(slideId);
@@ -210,7 +210,7 @@ namespace uLearn.Web.Controllers
 		}
 
 		[HttpGet]
-		[PostAuthorize(Roles = LmsRoles.Instructor)]
+		[ULearnAuthorize(MinAccessLevel = CourseRoles.Instructor)]
 		public ActionResult Analytics(string courseId, int slideIndex, DateTime periodStart)
 		{
 			var course = courseManager.GetCourse(courseId);
@@ -333,7 +333,7 @@ namespace uLearn.Web.Controllers
 		}
 
 		[AllowAnonymous]
-		public ActionResult Quiz(QuizSlide slide, string courseId, string userId, bool isGuest, bool isLti = false)
+		public ActionResult Quiz(QuizSlide slide, string courseId, string userId, bool isGuest = true, bool isLti = false)
 		{
 			if (isGuest)
 				return PartialView(GuestQuiz(slide, courseId));

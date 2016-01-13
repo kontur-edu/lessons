@@ -12,6 +12,7 @@ namespace uLearn.Web.Controllers
 	public class AuthenticationManager
 	{
 		private readonly UserManager<ApplicationUser> userManager;
+		private readonly UserRolesRepo userRoles = new UserRolesRepo();
 
 		public AuthenticationManager()
 		{
@@ -38,6 +39,7 @@ namespace uLearn.Web.Controllers
 			var authenticationManager = GetAuthenticationManager(context);
 			authenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
 			var identity = await userManager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+			identity.AddCourseRoles(userRoles.GetRoles(user.Id));
 			authenticationManager.SignIn(new AuthenticationProperties { IsPersistent = isPersistent }, identity);
 		}
 

@@ -274,7 +274,14 @@
     <Compile Include="DataContexts\RestoreRequestRepo.cs" />
     <Compile Include="DataContexts\TextsRepo.cs" />
     <Compile Include="DataContexts\UnitsRepo.cs" />
-    <Compile Include="FilterAttributes\PostAuthorizeAttribute.cs" />
+    <Compile Include="DataContexts\UserRolesRepo.cs" />
+    <Compile Include="FilterAttributes\ULearnAuthorizeAttribute.cs" />
+    <Compile Include="Migrations\201512240735282_CustomRoleSystem.cs" />
+    <Compile Include="Migrations\201512240735282_CustomRoleSystem.Designer.cs">
+      <DependentUpon>201512240735282_CustomRoleSystem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UserModel.cs" />
+    <Compile Include="UserExtentions.cs" />
     <Compile Include="LTI\LtiAuthenticationExtensions.cs" />
     <Compile Include="LTI\LtiUtils.cs" />
     <Compile Include="LTI\SecurityHandler.cs" />
@@ -450,6 +457,7 @@
     </Compile>
     <Compile Include="Models\UserCourseModel.cs" />
     <Compile Include="Models\Visit.cs" />
+    <Compile Include="Models\UserRole.cs" />
     <Compile Include="Models\WebCourseManager_should.cs" />
     <Compile Include="Views\Course\AcceptedSolutionsHtml.generated.cs">
       <AutoGen>True</AutoGen>
@@ -615,6 +623,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512210814206_RenameTableVisitersToVisits.resx">
       <DependentUpon>201512210814206_RenameTableVisitersToVisits.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512240735282_CustomRoleSystem.resx">
+      <DependentUpon>201512240735282_CustomRoleSystem.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -993,6 +1004,7 @@
     <Content Include="Scripts\slide-utils.js" />
     <Content Include="Scripts\table-configurator.js" />
     <Content Include="Scripts\user-group-name-change.js" />
+    <Content Include="Scripts\users-list.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="tablesorter-master\.gitattributes" />
     <Content Include="tablesorter-master\.gitignore" />

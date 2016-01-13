@@ -12,7 +12,7 @@ using uLearn.Web.Models;
 
 namespace uLearn.Web.Controllers
 {
-	[PostAuthorize(Roles = LmsRoles.Instructor)]
+	[ULearnAuthorize(MinAccessLevel = CourseRoles.Instructor)]
 	public class AnalyticsController : Controller
 	{
 		private readonly ULearnDb db = new ULearnDb();
@@ -22,9 +22,6 @@ namespace uLearn.Web.Controllers
 		private readonly UserSolutionsRepo userSolutionsRepo = new UserSolutionsRepo();
 		private readonly SlideHintRepo slideHintRepo = new SlideHintRepo();
 		private readonly UserQuizzesRepo userQuizzesRepo = new UserQuizzesRepo(); //TODO use in statistics
-
-		private readonly TimeSpan StandardPeriod = TimeSpan.FromDays(365.0 / 2);
-
 
 		public AnalyticsController()
 			: this(WebCourseManager.Instance)
@@ -115,6 +112,7 @@ namespace uLearn.Web.Controllers
 			return PartialView(model);
 		}
 
+		[ULearnAuthorize(Roles = LmsRoles.SysAdmin)]
 		public ActionResult SystemStatistics()
 		{
 			return View();

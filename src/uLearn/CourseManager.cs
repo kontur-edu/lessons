@@ -45,8 +45,9 @@ namespace uLearn
 			return StagedDirectory.GetFiles("*.zip").Select(f => new StagingPackage(f.Name, f.LastWriteTime));
 		}
 
-		public string GetStagingPackagePath(string name)
+		public string GetStagingCoursePath(string name)
 		{
+			var packageName = GetPackageName(name);
 			if (Path.GetInvalidFileNameChars().Any(name.Contains)) 
 				throw new Exception(name);
 			return StagedDirectory.GetFile(name).FullName;
@@ -72,9 +73,9 @@ namespace uLearn
 			}
 		}
 
-		public string ReloadCourse(string packageName)
+		public string ReloadCourse(string courseId)
 		{
-			var file = StagedDirectory.GetFile(packageName);
+			var file = StagedDirectory.GetFile(GetPackageName(courseId));
 			return ReloadCourseFromZip(file);
 		}
 
@@ -83,7 +84,7 @@ namespace uLearn
 			string courseId = "";
 			using (var zip = ZipFile.Read(zipFile.FullName, new ReadOptions {Encoding = Encoding.GetEncoding(866)}))
 			{
-				courseId = Path.GetFileNameWithoutExtension(zipFile.Name);
+				courseId = GetCourseId(zipFile.Name);
 				var courseDir = coursesDirectory.CreateSubdirectory(courseId);
 				Directory.Delete(courseDir.FullName, true);
 				courseDir.Create();
@@ -98,6 +99,20 @@ namespace uLearn
 			var course = loader.LoadCourse(dir);
 			courses[course.Id] = course;
 		}
-		
+
+		public static string GetCourseId(string packageName)
+		{
+			return Path.GetFileNameWithoutExtension(packageName);
+		}
+
+		public string GetPackageName(string courseId)
+		{
+			return courseId + ".zip";
+		}
+
+		public DateTime GetLastWriteTime(Course course)
+		{
+			return StagedDirectory.GetFile(GetPackageName(course.Id)).LastWriteTime;
+		}
 	}
 }

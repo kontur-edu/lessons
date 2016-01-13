@@ -8,17 +8,17 @@
 	<div id="LikeSolutionUrl" data-url="@(model.LikeSolutionUrl)"></div>
 	<p>@MvcHtmlString.Create(model.Slide.Exercise.CommentAfterExerciseIsSolved.RenderMd(model.Slide.Info.SlideFile))</p>
 	<p>Изучите решения ваших коллег. Проголосуйте за решения, в которых вы нашли что-то новое для себя.</p>
-	foreach (AcceptedSolutionInfo solution in model.AcceptedSolutions)
+	foreach (var solution in model.AcceptedSolutions)
 	{
 		var id = "solution_" + solution.Id;
 		var code = new CodeBlock(solution.Code, model.Slide.Exercise.LangId);
 		<div id="@id">
-			<button class="like-left-location btn @(solution.LikedAlready ? "btn-primary" : "btn-default") like-button" onclick="likeSolution(@solution.Id) ">
+			<button class="like-left-location btn @(solution.LikedAlready ? "btn-primary" : "btn-default") like-button" onclick="likeSolution(@solution.Id)">
 				<i class="glyphicon glyphicon-heart"></i>
 				<span class="likes-counter">@solution.UsersWhoLike.Count</span>
 			</button>
 
-			@if (model.User.IsInRole(LmsRoles.Instructor) || model.User.IsInRole(LmsRoles.Admin))
+			@if (model.User.HasAccessFor(model.CourseId, CourseRoles.Instructor))
 			{
 				<form action="@(solution.RemoveSolutionUrl)" method="POST" novalidate="novalidate">
 					<button class="btn btn-danger">

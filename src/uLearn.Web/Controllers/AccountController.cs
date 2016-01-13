@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -12,12 +13,13 @@ using uLearn.Web.Models;
 
 namespace uLearn.Web.Controllers
 {
-	[PostAuthorize]
+	[ULearnAuthorize]
 	public class AccountController : Controller
 	{
 		private readonly ULearnDb db;
 		private readonly CourseManager courseManager;
 		private UserManager<ApplicationUser> userManager;
+		private UserRolesRepo userRolesRepo;
 
 		public AccountController()
 			: this(new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ULearnDb())))
@@ -29,6 +31,7 @@ namespace uLearn.Web.Controllers
 				{
 					AllowOnlyAlphanumericUserNames = false
 				};
+			userRolesRepo = new UserRolesRepo(db);
 		}
 
 		public AccountController(UserManager<ApplicationUser> userManager)
@@ -42,34 +45,97 @@ namespace uLearn.Web.Controllers
 			return RedirectToAction("Index", "Login", new { returnUrl });
 		}
 
-		[PostAuthorize(Roles = LmsRoles.Admin + "," + LmsRoles.Instructor)]
-		public ActionResult List(string namePrefix = null, string role = null)
+		[ULearnAuthorize(MinAccessLevel = CourseRoles.Instructor)]
+		public ActionResult List(string namePrefix = null, string role = null, CourseRoles? courseRole = null)
 		{
 			IQueryable<ApplicationUser> applicationUsers = new ULearnDb().Users;
 			if (!string.IsNullOrEmpty(namePrefix))
 				applicationUsers = applicationUsers.Where(u => u.UserName.StartsWith(namePrefix));
 			if (!string.IsNullOrEmpty(role))
 				applicationUsers = applicationUsers.Where(u => u.Roles.Any(r => r.Role.Name == role));
-			return View(applicationUsers.OrderBy(u => u.UserName).Take(50).ToList());
+			if (courseRole.HasValue)
+			{
+				var users = db.UserRoles.Where(userRole => userRole.Role == courseRole).Select(user => user.UserId).ToList();
+				applicationUsers = applicationUsers.Where(user => users.Contains(user.Id));
+			}
+			var model = GetUserListModel(applicationUsers);
+			return View(model);
+		}
+		
+		private UserListModel GetUserListModel(IQueryable<ApplicationUser> applicationUsers)
+		{
+			var users = applicationUsers
+				.OrderBy(u => u.UserName)
+				.Take(50)
+				.Select(user => new UserModel
+				{
+					UserId = user.Id,
+					UserName = user.UserName,
+					GroupName = user.GroupName,
+					Roles = user.Roles.Select(userRole => userRole.Role.Name).ToList()
+				})
+				.ToList();
+
+			var coursesForUsers = db.UserRoles
+				.GroupBy(userRole => userRole.UserId)
+				.ToDictionary(
+					g => g.Key,
+					g => g
+						.GroupBy(userRole => userRole.Role)
+						.ToDictionary(
+							gg => gg.Key,
+							gg => gg
+								.Select(userRole => userRole.CourseId)
+								.ToList()
+						)
+				);
+
+			foreach (var userModel in users)
+			{
+				Dictionary<CourseRoles, List<string>> coursesForUser;
+				coursesForUsers.TryGetValue(userModel.UserId, out coursesForUser);
+				userModel.Courses = coursesForUser;
+			}
+
+			var courses = User.GetControllableCoursesId().ToList();
+			var model = new UserListModel
+			{
+				Courses = courses,
+				Users = users
+			};
+			return model;
 		}
 
-		[PostAuthorize(Roles = LmsRoles.Admin)]
-		//TODO [ValidateAntiForgeryToken]
-		public async Task<ActionResult> ToggleRole(string userId, string role)
+
+		[ULearnAuthorize(Roles = LmsRoles.SysAdmin)]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> ToggleSystemAdministratorRole(string userId)
 		{
-			if (userManager.IsInRole(userId, role))
-				await userManager.RemoveFromRoleAsync(userId, role);
+			if (userManager.IsInRole(userId, LmsRoles.SysAdmin))
+				await userManager.RemoveFromRoleAsync(userId, LmsRoles.SysAdmin);
 			else
-				await userManager.AddToRolesAsync(userId, role);
-			return RedirectToAction("List");
+				await userManager.AddToRolesAsync(userId, LmsRoles.SysAdmin);
+			return Content(LmsRoles.SysAdmin);
+		}
+
+		[ULearnAuthorize(MinAccessLevel = CourseRoles.CourseAdmin)]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> ToggleRole(string courseId, string userId, CourseRoles role)
+		{
+			if (userManager.FindById(userId) != null)
+			{
+				await userRolesRepo.ToggleRole(courseId, userId, role);
+				return Content(role.ToString());
+			}
+			return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 		}
 
 		[HttpPost]
-		[PostAuthorize(Roles = LmsRoles.Admin)]
+		[ULearnAuthorize(Roles = LmsRoles.SysAdmin)]
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> DeleteUser(string userId)
 		{
-			ApplicationUser user = await db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+			var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userId);
 			if (user != null)
 			{
 				db.Users.Remove(user);
@@ -78,7 +144,7 @@ namespace uLearn.Web.Controllers
 			return RedirectToAction("List");
 		}
 
-		[PostAuthorize(Roles = LmsRoles.Admin + "," + LmsRoles.Instructor)]
+		[ULearnAuthorize(MinAccessLevel = CourseRoles.Instructor)]
 		public ActionResult Info(string userName)
 		{
 			var user = db.Users.FirstOrDefault(u => u.Id == userName || u.UserName == userName);
@@ -88,7 +154,7 @@ namespace uLearn.Web.Controllers
 			return View(new UserInfoModel(user, courseManager.GetCourses().Where(c => courses.Contains(c.Id)).ToArray()));
 		}
 
-		[PostAuthorize(Roles = LmsRoles.Admin + "," + LmsRoles.Instructor)]
+		[ULearnAuthorize(MinAccessLevel = CourseRoles.Instructor)]
 		public ActionResult CourseInfo(string userName, string courseId)
 		{
 			var user = db.Users.FirstOrDefault(u => u.Id == userName || u.UserName == userName);
@@ -324,7 +390,7 @@ namespace uLearn.Web.Controllers
 		}
 
 		[HttpPost]
-		[PostAuthorize(Roles = LmsRoles.Admin)]
+		[ULearnAuthorize(Roles = LmsRoles.SysAdmin)]
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> ResetPassword(string newPassword, string userId)
 		{

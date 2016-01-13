@@ -23,169 +23,220 @@ namespace uLearn.Web.Views.SlideNavigation
     using System.Web.Mvc;
     using System.Web.Mvc.Ajax;
     using System.Web.Mvc.Html;
+    using System.Web.Optimization;
     using System.Web.Routing;
     using System.Web.Security;
     using System.Web.UI;
     using System.Web.WebPages;
     using uLearn;
+    using uLearn.Web;
     using uLearn.Web.Models;
     using uLearn.Web.Views.Course;
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("RazorGenerator", "2.0.0.0")]
-    public static class TableOfContents
+    public class TableOfContents : System.Web.WebPages.HelperPage
     {
 
+#line default
+#line hidden
 public static System.Web.WebPages.HelperResult Toc(TocModel toc)
 {
+#line default
+#line hidden
 return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
-
-
  
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\t<ul class=\"nav\">\r\n\t\t<li class=\"units-list-item full-width units-list-item-text c" +
-"ourse-name\"><a data-score=\"");
+WriteLiteralTo(__razor_helper_writer, "\t<ul");
 
+WriteLiteralTo(__razor_helper_writer, " class=\"nav\"");
 
-                                              WebViewPage.WriteTo(@__razor_helper_writer, SlideHtml.Score(toc.Score, toc.MaxScore));
+WriteLiteralTo(__razor_helper_writer, ">\r\n\t\t<li");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\">");
+WriteLiteralTo(__razor_helper_writer, " class=\"units-list-item full-width units-list-item-text course-name\"");
 
+WriteLiteralTo(__razor_helper_writer, "><a");
 
-                                                                                         WebViewPage.WriteTo(@__razor_helper_writer, toc.Course.Title);
+WriteLiteralTo(__razor_helper_writer, " data-score=\"");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "</a></li>\r\n");
+                                                                 WriteTo(__razor_helper_writer, SlideHtml.Score(toc.Score, toc.MaxScore));
 
+WriteLiteralTo(__razor_helper_writer, "\"");
 
-  		
+WriteLiteralTo(__razor_helper_writer, ">");
+
+                                                                                                            WriteTo(__razor_helper_writer, toc.Course.Title);
+
+WriteLiteralTo(__razor_helper_writer, "</a></li>\r\n");
+
+		
+          
 			int iUnit = 0;
 			foreach (var unit in toc.Units)
 			{
 				
-WebViewPage.WriteTo(@__razor_helper_writer, TocUnit(unit, iUnit));
+WriteTo(__razor_helper_writer, TocUnit(unit, iUnit));
 
-                         
+                                     
 				iUnit++;
 			}
 		
-
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\t</ul>\r\n");
-
+WriteLiteralTo(__razor_helper_writer, "\r\n\t</ul>\r\n");
 
 
 });
 
+#line default
+#line hidden
 }
+#line default
+#line hidden
 
-
+#line default
+#line hidden
 public static System.Web.WebPages.HelperResult TocUnit(TocUnitModel unit, int index)
 {
+#line default
+#line hidden
 return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
-
-
  
 	var collapseOption = unit.IsCurrent ? "collapse in" : "collapse";
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\t<li class=\"units-list-item full-width\">\r\n\t\t<a data-toggle=\"collapse\" href=");
+WriteLiteralTo(__razor_helper_writer, "\t<li");
 
+WriteLiteralTo(__razor_helper_writer, " class=\"units-list-item full-width\"");
 
-WebViewPage.WriteTo(@__razor_helper_writer, "#N" + index);
+WriteLiteralTo(__razor_helper_writer, ">\r\n\t\t<a");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, " class=\"units-list-item-text\" data-score=\"");
+WriteLiteralTo(__razor_helper_writer, " data-toggle=\"collapse\"");
 
+WriteAttributeTo(__razor_helper_writer, "href", Tuple.Create(" href=", 1523), Tuple.Create("", 1544)
+, Tuple.Create(Tuple.Create("", 1529), Tuple.Create<System.Object, System.Int32>("#N" + index
+, 1529), false)
+);
 
-                                               WebViewPage.WriteTo(@__razor_helper_writer, SlideHtml.Score(unit.Score, unit.MaxScore));
+WriteLiteralTo(__razor_helper_writer, " class=\"units-list-item-text\"");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\">");
+WriteLiteralTo(__razor_helper_writer, " data-score=\"");
 
+                                                                  WriteTo(__razor_helper_writer, SlideHtml.Score(unit.Score, unit.MaxScore));
 
-                                                                                            WebViewPage.WriteTo(@__razor_helper_writer, unit.UnitName);
+WriteLiteralTo(__razor_helper_writer, "\"");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "</a>\r\n\t\t<ul id=");
+WriteLiteralTo(__razor_helper_writer, ">");
 
+                                                                                                               WriteTo(__razor_helper_writer, unit.UnitName);
 
-WebViewPage.WriteTo(@__razor_helper_writer, "N" + index);
+WriteLiteralTo(__razor_helper_writer, "</a>\r\n\t\t<ul");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, " class=\"slides-list ");
+WriteAttributeTo(__razor_helper_writer, "id", Tuple.Create(" id=", 1656), Tuple.Create("", 1674)
+, Tuple.Create(Tuple.Create("", 1660), Tuple.Create<System.Object, System.Int32>("N" + index
+, 1660), false)
+);
 
+WriteAttributeTo(__razor_helper_writer, "class", Tuple.Create(" class=\"", 1674), Tuple.Create("\"", 1709)
+, Tuple.Create(Tuple.Create("", 1682), Tuple.Create("slides-list", 1682), true)
+, Tuple.Create(Tuple.Create(" ", 1693), Tuple.Create<System.Object, System.Int32>(collapseOption
+, 1694), false)
+);
 
-WebViewPage.WriteTo(@__razor_helper_writer, collapseOption);
+WriteLiteralTo(__razor_helper_writer, ">\r\n");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\">\r\n");
-
-
- 			foreach (var page in unit.Pages)
+			
+             foreach (var page in unit.Pages)
 			{
 				
-WebViewPage.WriteTo(@__razor_helper_writer, TocItem(page));
+WriteTo(__razor_helper_writer, TocItem(page));
 
-                  
+                              
 			}
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\t\t</ul>\r\n\t</li>\r\n");
-
+WriteLiteralTo(__razor_helper_writer, "\t\t</ul>\r\n\t</li>\r\n");
 
 
 });
 
+#line default
+#line hidden
 }
+#line default
+#line hidden
 
-
+#line default
+#line hidden
 public static System.Web.WebPages.HelperResult TocItem(TocPageInfo page)
 {
+#line default
+#line hidden
 return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
-
-
  
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\t<li class=\"slide-list-item ");
+WriteLiteralTo(__razor_helper_writer, "\t<li");
 
+WriteAttributeTo(__razor_helper_writer, "class", Tuple.Create(" class=\"", 1851), Tuple.Create("\"", 1920)
+, Tuple.Create(Tuple.Create("", 1859), Tuple.Create("slide-list-item", 1859), true)
+, Tuple.Create(Tuple.Create(" ", 1874), Tuple.Create<System.Object, System.Int32>(page.IsCurrent ? "selected" : ""
+, 1875), false)
+, Tuple.Create(Tuple.Create(" ", 1910), Tuple.Create("full-size", 1911), true)
+);
 
-WebViewPage.WriteTo(@__razor_helper_writer, page.IsCurrent ? "selected" : "");
+WriteAttributeTo(__razor_helper_writer, "onclick", Tuple.Create(" onclick=\"", 1921), Tuple.Create("\"", 1963)
+, Tuple.Create(Tuple.Create("", 1931), Tuple.Create("window.location.href=\'", 1931), true)
+                             , Tuple.Create(Tuple.Create("", 1953), Tuple.Create<System.Object, System.Int32>(page.Url
+, 1953), false)
+, Tuple.Create(Tuple.Create("", 1962), Tuple.Create("\'", 1962), true)
+);
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, " full-size\" onclick=\"window.location.href=\'");
+WriteLiteralTo(__razor_helper_writer, " data-slide-id=\"");
 
+                                                                                                          WriteTo(__razor_helper_writer, page.SlideId);
 
-                                                               WebViewPage.WriteTo(@__razor_helper_writer, page.Url);
+WriteLiteralTo(__razor_helper_writer, "\"");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\'\" data-slide-id=\"");
+WriteLiteralTo(__razor_helper_writer, ">\r\n\t\t<i");
 
+WriteAttributeTo(__razor_helper_writer, "class", Tuple.Create(" class=\"", 2001), Tuple.Create("\"", 2045)
+, Tuple.Create(Tuple.Create("", 2009), Tuple.Create<System.Object, System.Int32>(GetPageIconClass(page)
+, 2009), false)
+, Tuple.Create(Tuple.Create(" ", 2032), Tuple.Create("navbar-label", 2033), true)
+);
 
-                                                                                          WebViewPage.WriteTo(@__razor_helper_writer, page.SlideId);
+WriteAttributeTo(__razor_helper_writer, "title", Tuple.Create(" title=\"", 2046), Tuple.Create("\"", 2085)
+, Tuple.Create(Tuple.Create("", 2054), Tuple.Create<System.Object, System.Int32>(GetTocPageTytle(page.PageType)
+, 2054), false)
+);
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\">\r\n\t\t<i class=\"");
+WriteLiteralTo(__razor_helper_writer, "></i>\r\n\t\t<a");
 
+WriteAttributeTo(__razor_helper_writer, "href", Tuple.Create(" href=\"", 2097), Tuple.Create("\"", 2113)
+, Tuple.Create(Tuple.Create("", 2104), Tuple.Create<System.Object, System.Int32>(page.Url
+, 2104), false)
+);
 
-WebViewPage.WriteTo(@__razor_helper_writer, GetPageIconClass(page));
+WriteLiteralTo(__razor_helper_writer, " style=\"margin-right: 5px\"");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, " navbar-label\" title=\"");
+WriteLiteralTo(__razor_helper_writer, ">");
 
+                        WriteTo(__razor_helper_writer, page.Name);
 
-              WebViewPage.WriteTo(@__razor_helper_writer, GetTocPageTytle(page.PageType));
+WriteLiteralTo(__razor_helper_writer, "</a>\r\n\t\t<span");
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\"></i>\r\n\t\t<a href=\"");
+WriteLiteralTo(__razor_helper_writer, " class=\"score right\"");
 
+WriteLiteralTo(__razor_helper_writer, ">");
 
-WebViewPage.WriteTo(@__razor_helper_writer, page.Url);
+    WriteTo(__razor_helper_writer, SlideHtml.Score(page.Score, page.MaxScore));
 
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "\" style=\"margin-right: 5px\">");
-
-
-     WebViewPage.WriteTo(@__razor_helper_writer, page.Name);
-
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "</a>\r\n\t\t<span class=\"score right\">");
-
-
-WebViewPage.WriteTo(@__razor_helper_writer, SlideHtml.Score(page.Score, page.MaxScore));
-
-WebViewPage.WriteLiteralTo(@__razor_helper_writer, "</span>\r\n\t</li>\r\n");
-
+WriteLiteralTo(__razor_helper_writer, "</span>\r\n\t</li>\r\n");
 
 
 });
 
+#line default
+#line hidden
 }
-
-
+#line default
+#line hidden
+ 
 
 	private static string GetTocPageTytle(TocPageType pageType)
 	{
@@ -196,11 +247,13 @@ WebViewPage.WriteLiteralTo(@__razor_helper_writer, "</span>\r\n\t</li>\r\n");
 	}
 
 
+#line default
+#line hidden
 public static System.Web.WebPages.HelperResult GetPageIconClass(TocPageInfo page)
 {
+#line default
+#line hidden
 return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
-
-
  
 	string progressClass;
 	string typeClass;
@@ -219,14 +272,17 @@ return new System.Web.WebPages.HelperResult(__razor_helper_writer => {
 				: (page.IsVisited ? "glyphicon-ok" : "glyphicon-none");
 	}
 	
-WebViewPage.WriteTo(@__razor_helper_writer, progressClass + " glyphicon " + typeClass);
+WriteTo(__razor_helper_writer, progressClass + " glyphicon " + typeClass);
 
-                                             
+                                                
 
 });
 
+#line default
+#line hidden
 }
-
+#line default
+#line hidden
 
     }
 }

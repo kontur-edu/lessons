@@ -13,7 +13,7 @@
 <body class="lti-component">
 	@if (Model != null)
 	{
-		@Html.Action("Quiz", "Quiz", new { slide = Model.Slide, courseId = Model.CourseId, userId = Model.UserId, isLti = true });
+		@Html.Action("Quiz", "Quiz", new { slide = Model.Slide, courseId = Model.CourseId, userId = Model.UserId, isGuest = false, isLti = true });
 		@Scripts.Render("~/main-js")
 	}
 </body>

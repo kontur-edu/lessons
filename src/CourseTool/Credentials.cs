@@ -18,6 +18,9 @@ namespace uLearn.CourseTool
 		[XmlAttribute("profile")]
 		public string Profile;
 
+		[XmlAttribute("service")]
+		public string Service;
+
 		public string Email;
 		public string Password;
 
@@ -25,40 +28,41 @@ namespace uLearn.CourseTool
 		{
 		}
 
-		public Credentials(string profile, string email, string password)
+		public Credentials(string profile, string service, string email, string password)
 		{
 			Profile = profile;
+			Service = service;
 			Email = email;
 			SetPassword(password);
 		}
 
-		public static Credentials GetCredentialsFromIo(string profile)
+		private static Credentials GetCredentialsFromIo(string profile, string service)
 		{
 			Console.WriteLine("Enter email:");
 			var email = Console.ReadLine();
 			Console.WriteLine("Enter password:");
 			var password = Utils.GetPass();
-			return new Credentials(profile, email, password);
+			return new Credentials(profile, service, email, password);
 		}
 
-		public static Credentials GetCredentials(string dir, string profile)
+		public static Credentials GetCredentials(string dir, string profile, string service = null)
 		{
 			Credentials credentials;
 			if (File.Exists(dir + "/credentials.xml"))
 			{
 				var cred = new FileInfo(dir + "/credentials.xml").DeserializeXml<CredentialsArray>();
-				if (cred.Credentials.Any(x => x.Profile == profile))
+				if (cred.Credentials.Any(x => x.Profile == profile && x.Service == service))
 					credentials = cred.Credentials.First(x => x.Profile == profile);
 				else
 				{
-					credentials = GetCredentialsFromIo(profile);
+					credentials = GetCredentialsFromIo(profile, service);
 					cred.Credentials = new List<Credentials>(cred.Credentials) { credentials }.ToArray();
 					File.WriteAllText(dir + "/credentials.xml", cred.XmlSerialize());
 				}
 			}
 			else
 			{
-				credentials = GetCredentialsFromIo(profile);
+				credentials = GetCredentialsFromIo(profile, service);
 				File.WriteAllText(dir + "/credentials.xml", new CredentialsArray { Credentials = new[] { credentials } }.XmlSerialize());
 			}
 			return credentials;

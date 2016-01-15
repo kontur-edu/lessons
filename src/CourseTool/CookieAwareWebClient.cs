@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 
 namespace uLearn.CourseTool
@@ -38,6 +39,24 @@ namespace uLearn.CourseTool
 					CsrfToken = csrfToken.Value;
 			}
 			return response;
+		}
+
+		public void TryDownloadFile(string address, string fileName)
+		{
+			try
+			{
+				DownloadFile(address, fileName);
+			}
+			catch (WebException e)
+			{
+				var response = e.Response.GetResponseStream().GetString();
+				Console.WriteLine("Download failed");
+				Console.WriteLine(address);
+				Console.WriteLine(e.Message);
+				File.WriteAllText("errorResponse.html", response);
+				Console.WriteLine("Error details in errorResponse.html");
+				throw new OperationFailedGracefully();
+			}
 		}
 	}
 }

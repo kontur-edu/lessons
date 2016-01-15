@@ -100,16 +100,17 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		public ActionResult UploadCourse(HttpPostedFileBase file)
 		{
-			if (file != null && file.ContentLength > 0)
-			{
-				var fileName = Path.GetFileName(file.FileName);
-				if (fileName != null && fileName.ToLower().EndsWith(".zip"))
-				{
-					var destinationFile = courseManager.StagedDirectory.GetFile(fileName);
-					file.SaveAs(destinationFile.FullName);
-				}
-			}
-			return RedirectToAction("CourseList");
+			if (file == null || file.ContentLength <= 0)
+				return RedirectToAction("CourseList");
+
+			var fileName = Path.GetFileName(file.FileName);
+			if (fileName == null || !fileName.ToLower().EndsWith(".zip"))
+				return RedirectToAction("CourseList");
+
+			var destinationFile = courseManager.StagedDirectory.GetFile(fileName);
+			file.SaveAs(destinationFile.FullName);
+			var courseId = courseManager.ReloadCourse(fileName);
+			return RedirectToAction("CourseList", new { courseId });
 		}
 	}
 

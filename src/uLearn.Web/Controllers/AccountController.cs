@@ -145,7 +145,9 @@ namespace uLearn.Web.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> ToggleRole(string courseId, string userId, CourseRole role)
 		{
-			if (userManager.FindById(userId) == null || userId == User.Identity.GetUserId())
+			if (userManager.FindById(userId) == null)
+				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			if (userId == User.Identity.GetUserId() && User.IsBestAccessFor(role, courseId))
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			await userRolesRepo.ToggleRole(courseId, userId, role);
 			return Content(role.ToString());

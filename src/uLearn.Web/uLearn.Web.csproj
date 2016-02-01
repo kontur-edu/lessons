@@ -1208,6 +1208,7 @@
     <Content Include="Views\Shared\_UserListPartial.cshtml" />
     <Content Include="Views\Unit\Users.cshtml" />
     <Content Include="Views\Unit\Diagnostics.cshtml" />
+    <Content Include="Views\Unit\CheckSlideIds.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

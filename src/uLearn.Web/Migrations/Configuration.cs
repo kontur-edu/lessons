@@ -24,14 +24,14 @@ namespace uLearn.Web.Migrations
 			{
 				var userStore = new UserStore<ApplicationUser>(context);
 				var manager = new UserManager<ApplicationUser>(userStore);
-				var user = new ApplicationUser { UserName = "user" };
+				var user = new ApplicationUser { UserName = "user", FirstName = "User", LastName = "" };
 				manager.Create(user, "asdasd");
 			}
 			if (!context.Users.Any(u => u.UserName == "admin"))
 			{
 				var userStore = new UserStore<ApplicationUser>(context);
 				var manager = new UserManager<ApplicationUser>(userStore);
-				var user = new ApplicationUser { UserName = "admin" };
+				var user = new ApplicationUser { UserName = "admin", FirstName = "System Administrator", LastName = ""};
 				manager.Create(user, "fullcontrol");
 				manager.AddToRole(user.Id, LmsRoles.SysAdmin);
 			}

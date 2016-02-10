@@ -58,6 +58,8 @@
 				@Html.Partial("_LoginForContinue")
 			}
 			@Html.Action("PrevNextButtons", "SlideNavigation", new { courseId = Model.CourseId, slideIndex = Model.Slide.Index, onSolutionsSlide = false })
+
+			@Html.Action("SlideComments", "Comments", new { courseId = Model.CourseId, slideId=  Model.Slide.Id})
 		</div>
 	</div>
 </div>

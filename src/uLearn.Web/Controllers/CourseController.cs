@@ -191,7 +191,7 @@ namespace uLearn.Web.Controllers
 				Rate = GetRate(course.Id, slideId),
 				Score = score,
 				BlockRenderContext = CreateRenderContext(course, slide, userId, visiter),
-				IsGuest = false
+				IsGuest = false,
 			};
 			return model;
 		}

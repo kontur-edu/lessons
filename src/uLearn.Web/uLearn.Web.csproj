@@ -276,12 +276,19 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="codemirror\CsCompleterGenerator.cs" />
     <Compile Include="Controllers\AuthenticationManager.cs" />
+    <Compile Include="Controllers\CommentsController.cs" />
     <Compile Include="Controllers\ControllerUtils.cs" />
+    <Compile Include="DataContexts\CommentsRepo.cs" />
     <Compile Include="DataContexts\UsersRepo.cs" />
     <Compile Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.cs" />
     <Compile Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.Designer.cs">
       <DependentUpon>201602090753330_UpgradeToAspNetEFIdentity2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602091631219_AddComments.cs" />
+    <Compile Include="Migrations\201602091631219_AddComments.Designer.cs">
+      <DependentUpon>201602091631219_AddComments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\UserSearchQueryModel.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\QuestionsController.cs" />
@@ -656,6 +663,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.resx">
       <DependentUpon>201602090753330_UpgradeToAspNetEFIdentity2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602091631219_AddComments.resx">
+      <DependentUpon>201602091631219_AddComments.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -1234,6 +1244,7 @@
     <Content Include="Views\Shared\_UserListPartial.cshtml" />
     <Content Include="Views\Unit\Users.cshtml" />
     <Content Include="Views\Unit\Diagnostics.cshtml" />
+    <Content Include="Views\Comments\SlideComments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

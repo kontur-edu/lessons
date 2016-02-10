@@ -27,5 +27,6 @@ namespace uLearn.Web.DataContexts
 		public DbSet<LtiSlideRequest> LtiRequests { get; set; }
 		public DbSet<RestoreRequest> RestoreRequests { get; set; }
 		public DbSet<UserRole> UserRoles { get; set; }
-	}
+        public DbSet<Comment> Comments { get; set; }
+    }
 }

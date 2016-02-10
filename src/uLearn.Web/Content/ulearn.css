@@ -439,3 +439,13 @@ li.li-info {
 li.li-success {
 	background: #dbf0db;
 }
+
+/* Comments */
+.comments .comment {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.comments .comment .comment-replies {
+    margin-left: 20px;
+}

@@ -1,0 +1,40 @@
+﻿@using uLearn
+@using uLearn.Web.Controllers
+
+@model SlideCommentsModel
+
+@helper Comment(Comment comment, IEnumerable<Comment> childComments)
+{
+	<div class="comment">
+		<div class="comment-author">
+			@comment.Author.FirstName @comment.Author.LastName
+		</div>
+		<div class="comment-publish-time">
+			@comment.PublishTime
+		</div>
+		<div class="comment-text">
+			@comment.Text
+		</div>
+		<div class="comment-replies">
+			@foreach (var childComment in childComments)
+			{
+				@Comment(childComment, new List<Comment>())
+			}
+		</div>
+	</div>
+}
+
+<div class="comments">
+	@if (!Model.TopLevelComments.Any())
+	{
+		<div class="no-comments">Комментариев пока нет</div>
+	}
+	else
+	{
+		<h3>Комментарии</h3>
+	}
+	@foreach (var topLevelComment in @Model.TopLevelComments)
+	{
+		@Comment(topLevelComment, Model.CommentsByParent.Get(topLevelComment.Id, new List<Comment>()))
+	}
+</div>

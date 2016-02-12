@@ -11,7 +11,15 @@ namespace uLearn.Web.DataContexts
 			: base("DefaultConnection", throwIfV1Schema: false)
 		{
 			Database.SetInitializer(new MigrateDatabaseToLatestVersion<ULearnDb, Configuration>());
+		}
 
+		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+			modelBuilder.Entity<CommentLike>().HasRequired(x => x.Comment)
+				.WithMany(x => x.Likes)
+				.HasForeignKey(x => x.CommentId)
+				.WillCascadeOnDelete(false);
 		}
 
 		public DbSet<UserSolution> UserSolutions { get; set; }
@@ -28,5 +36,6 @@ namespace uLearn.Web.DataContexts
 		public DbSet<RestoreRequest> RestoreRequests { get; set; }
 		public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Comment> Comments { get; set; }
-    }
+		public DbSet<CommentLike> CommentLikes { get; set; }
+	}
 }

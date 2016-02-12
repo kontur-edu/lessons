@@ -30,12 +30,15 @@ namespace uLearn.Web.Controllers
 			else
 				topLevelComments = new List<Comment>();
 
+			var commentsLikesCounts = commentsRepo.GetCommentsLikesCounts(comments);
+
 			var model = new SlideCommentsModel
 			{
 				CourseId = courseId,
 				SlideId = slideId,
 				TopLevelComments = topLevelComments,
 				CommentsByParent = commentsByParent,
+				CommentsLikesCounts = commentsLikesCounts,
 			};
 			return PartialView(model);
 		}
@@ -47,5 +50,6 @@ namespace uLearn.Web.Controllers
 		public string SlideId { get; set; }
 		public List<Comment> TopLevelComments { get; set; }
 		public Dictionary<int, List<Comment>> CommentsByParent { get; set; }
+		public Dictionary<int, int> CommentsLikesCounts { get; set; }
 	}
 }

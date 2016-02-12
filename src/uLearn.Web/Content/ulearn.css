@@ -441,11 +441,28 @@ li.li-success {
 }
 
 /* Comments */
-.comments .comment {
-    margin-top: 10px;
-    margin-bottom: 20px;
+.comments .comment.is-reply,
+.comments .reply-form.is-reply {
+    margin-left: 75px;
 }
 
-.comments .comment .comment-replies {
-    margin-left: 20px;
+.comments .comment .comment__info > div {
+    display: inline-block;
+}
+
+.comments .comment .comment__info > .comment__author-name {
+    font-size: 14pt;
+}
+
+.comments .comment .comment__info > .comment__publish-time {
+    font-size: 10pt;
+    color: #999;
+    padding-left: 5px;
+}
+
+.comments .reply-form input[type=text] {
+    height: 24px;
+    min-width: 90%;
+    margin-left: 7px;
+    padding: 5px;
 }

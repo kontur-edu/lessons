@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.ModelConfiguration.Configuration;
 
 namespace uLearn.Web.Models
 {
@@ -19,7 +19,7 @@ namespace uLearn.Web.Models
 
 		[Required]
 		[StringLength(64)]
-		[Index("CommentBySlide")]
+		[Index("IDX_Comment_CommentBySlide")]
 		public string SlideId { get; set; }
 
 		[Required]
@@ -44,5 +44,12 @@ namespace uLearn.Web.Models
 		/* For top-level comments ParentCommentId = -1 */
 		[Required]
 		public int ParentCommentId { get; set; }
+
+		public ICollection<CommentLike> Likes { get; set; }
+
+		public bool IsTopLevel()
+		{
+			return ParentCommentId == -1;
+		}
 	}
 }

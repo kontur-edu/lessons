@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -88,5 +89,45 @@ namespace uLearn.Web.DataContexts
 				}
 			};
 	    }
-    }
+
+		public async Task LikeComment(Comment comment, ApplicationUser user)
+		{
+			db.CommentLikes.Add(new CommentLike
+			{
+				User = user,
+				Comment = comment,
+				Timestamp = DateTime.Now,
+			});
+			await db.SaveChangesAsync();
+		}
+
+		public IEnumerable<CommentLike> GetCommentLikes(Comment comment)
+		{
+			return db.CommentLikes.Where(x => x.CommentId == comment.Id);
+		}
+
+		public IEnumerable<ApplicationUser> GetCommentLikers(Comment comment)
+		{
+			return GetCommentLikes(comment).Select(x => x.User);
+		}
+
+		public int GetCommentLikesCount(Comment comment)
+		{
+			return db.CommentLikes.Count(x => x.CommentId == comment.Id);
+		}
+
+		/// <returns>{commentId => likesCount}</returns>
+		public Dictionary<int, int> GetCommentsLikesCounts(IEnumerable<Comment> comments)
+		{
+			var commentsIds = comments.Select(x => x.Id).ToImmutableHashSet();
+			return db.CommentLikes.Where(x => commentsIds.Contains(x.CommentId))
+				.GroupBy(x => x.CommentId)
+				.ToDictionary(x => x.Key, x => x.Count());
+		}
+
+	    public IEnumerable<int> GetSlideCommentsLikedByUser(string courseId, string slideId, ApplicationUser user)
+	    {
+		    return db.CommentLikes.Where(x => x.User == user && x.Comment.SlideId == slideId).Select(x => x.CommentId);
+	    }
+	}
 }

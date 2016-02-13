@@ -441,28 +441,94 @@ li.li-success {
 }
 
 /* Comments */
-.comments .comment.is-reply,
-.comments .reply-form.is-reply {
-    margin-left: 75px;
+.comments .comment {
+    width: 638px;
 }
 
-.comments .comment .comment__info > div {
+.comments .comment.is-reply,
+.comments .reply-form.is-reply {
+    margin-left: 68px;
+}
+
+.comments .comment .comment__author-avatar {
+    margin-right: 2px;
+    border-radius: 2px;
+}
+
+.comments .comment .comment__header {
+    margin: 0px;
+}
+
+/*.comments .comment .comment__header > div,*/
+.comments .comment .comment__footer > div {
     display: inline-block;
 }
 
-.comments .comment .comment__info > .comment__author-name {
-    font-size: 14pt;
+.comments .comment .comment__author-name {
+    font-size: 10pt;
+    font-weight: bold;
+    color: #060;
 }
 
-.comments .comment .comment__info > .comment__publish-time {
+.comments .comment .comment__publish-time {
     font-size: 10pt;
-    color: #999;
+    color: #bbb;
     padding-left: 5px;
 }
 
-.comments .reply-form input[type=text] {
+.comments .comment .comment__likes-count {
+    cursor: pointer;
+}
+
+.comments .comment .comment__likes-count:hover {
+    color: #900;
+}
+
+.comments .comment .comment__likes-count .glyphicon {
+    color: #888;
+    font-size: 10pt;
+}
+
+.comments .comment .comment__likes-count:hover .glyphicon {
+    color: #c00;
+}
+
+.comments .comment:not(.is-reply) .comment__text {
+    width: 570px;
+}
+
+.comments .comment.is-reply .comment__text {
+    width: 500px;
+}
+
+.comments .reply-form [name=comment-text] {
     height: 24px;
-    min-width: 90%;
     margin-left: 7px;
-    padding: 5px;
+    padding: 1px 5px;
+    outline: none;
+}
+
+.comments .reply-form textarea[name=comment-text] {
+    height: 60px;
+    padding-left: 6px;
+    padding-top: 1px;
+}
+
+.comments .reply-form:not(.is-reply) [name=comment-text] {
+    min-width: 608px;
+}
+
+.comments .reply-form.is-reply [name=comment-text] {
+    min-width: 540px;
+}
+
+.comments .reply-form .reply-form__send-button {
+    margin-left: 7px;
+    margin-top: 7px;
+    display: block;
+}
+
+.comments .comment:not(.is-reply):not(:nth-child(2)) {
+    border-top: 1px solid rgba(200, 200, 200, 0.5);
+    padding-top: 15px;
 }

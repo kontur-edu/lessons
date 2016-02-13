@@ -1,4 +1,5 @@
 ﻿@using uLearn
+@using uLearn.Web
 @using uLearn.Web.Controllers
 
 @model SlideCommentsModel
@@ -7,30 +8,31 @@
 {
 	<div class="comment @(comment.IsTopLevel() ? "" : "is-reply") media">
 		<a class="pull-left" href="#">
-			<img class="comment__author-avatar media-object" src="//placehold.it/48x48" alt="">
+			<img class="comment__author-avatar media-object" src="//placehold.it/54x54" alt="">
 		</a>
 		<div class="media-body">
-			<div class="comment__info media-heading">
+			<div class="comment__header media-heading">
 				<div class="comment__author-name">
 					@comment.Author.FirstName @comment.Author.LastName
+				</div>
+			</div>
+			<div class="comment__text">
+				@Html.Raw(Html.EncodeMultiLineText(comment.Text))
+			</div>
+			<div class="comment__footer">
+				@{
+					var likesCount = Model.CommentsLikesCounts.Get(comment.Id, 0);
+				}
+				<div class="comment__likes-count">
+					<span class="glyphicon glyphicon-heart"></span>
+					@if (likesCount > 0)
+					{
+						@likesCount
+					}
 				</div>
 				<div class="comment__publish-time">
 					@comment.PublishTime
 				</div>
-			</div>
-			<div class="comment__text">
-				@comment.Text
-			</div>
-			<div class="media-footer">
-				@{
-					var likesCount = Model.CommentsLikesCounts.Get(comment.Id, 0);
-				}
-				@if (likesCount > 0)
-				{
-					<div class="comment__likes-count">
-						@likesCount
-					</div>
-				}
 			</div>
 		</div>
 	</div>
@@ -41,7 +43,7 @@
 	<div class="reply-form @(comment != null ? "is-reply" : "") media">
 		<form>
 			<div class="pull-left">
-				<img src="//placehold.it/24x24"/>
+				<img src="//placehold.it/24x24" />
 			</div>
 			<div class="media-body">
 				<input type="text" name="comment-text" placeholder="Оставьте свой комментарий" />
@@ -73,3 +75,7 @@
 	}
 	@ReplyForm(null)
 </div>
+
+@section scripts {
+	<script src="~/Scripts/slide-comments.js"> </script>
+}

@@ -280,6 +280,7 @@
     <Compile Include="Controllers\ControllerUtils.cs" />
     <Compile Include="DataContexts\CommentsRepo.cs" />
     <Compile Include="DataContexts\UsersRepo.cs" />
+    <Compile Include="HtmlExtensions.cs" />
     <Compile Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.cs" />
     <Compile Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.Designer.cs">
       <DependentUpon>201602090753330_UpgradeToAspNetEFIdentity2.cs</DependentUpon>

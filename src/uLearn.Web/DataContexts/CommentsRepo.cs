@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -53,7 +54,7 @@ namespace uLearn.Web.DataContexts
 					CourseId = courseId,
 					SlideId = slideId,
 					ParentCommentId = -1,
-					Text = "The first comment",
+					Text = "<h1>The first comment</h1>",
 					PublishTime = DateTime.Now.Subtract(TimeSpan.FromHours(1)),
 					Author = userManager.FindByName("user"),
 				},
@@ -63,7 +64,7 @@ namespace uLearn.Web.DataContexts
 					CourseId = courseId,
 					SlideId = slideId,
 					ParentCommentId = 1,
-					Text = "Child comment 1",
+					Text = "Child comment 1\r\nLorem ipsum dolor sit amet, ei eam hinc menandri reprehendunt. In audiam repudiare mel, per id summo accusam. Purto admodum partiendo pro ei, vel ne possit graecis menandri, no omnium mentitum eam. Mel amet atqui et, at vix qualisque necessitatibus. Ignota salutatus no vel. Nemore semper bonorum at eam, vel ex laudem adipisci constituto, eu eos dicunt deleniti.",
 					PublishTime = DateTime.Now.Subtract(TimeSpan.FromMinutes(30)),
 					Author = userManager.FindByName("user"),
 				},
@@ -119,6 +120,8 @@ namespace uLearn.Web.DataContexts
 		/// <returns>{commentId => likesCount}</returns>
 		public Dictionary<int, int> GetCommentsLikesCounts(IEnumerable<Comment> comments)
 		{
+			return comments.ToDictionary(x => x.Id, x => new Random().Next(0, 10));
+
 			var commentsIds = comments.Select(x => x.Id).ToImmutableHashSet();
 			return db.CommentLikes.Where(x => commentsIds.Contains(x.CommentId))
 				.GroupBy(x => x.CommentId)

@@ -275,6 +275,7 @@
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="codemirror\CsCompleterGenerator.cs" />
+    <Compile Include="ControllerExtensions.cs" />
     <Compile Include="Controllers\AuthenticationManager.cs" />
     <Compile Include="Controllers\CommentsController.cs" />
     <Compile Include="Controllers\ControllerUtils.cs" />
@@ -297,8 +298,13 @@
     <Compile Include="Migrations\201602122014339_AddComments2.Designer.cs">
       <DependentUpon>201602122014339_AddComments2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602142028429_AddComments3.cs" />
+    <Compile Include="Migrations\201602142028429_AddComments3.Designer.cs">
+      <DependentUpon>201602142028429_AddComments3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\CommentLike.cs" />
+    <Compile Include="Models\CommentViewModel.cs" />
     <Compile Include="Models\UserSearchQueryModel.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\QuestionsController.cs" />
@@ -683,6 +689,9 @@
     <EmbeddedResource Include="Migrations\201602122014339_AddComments2.resx">
       <DependentUpon>201602122014339_AddComments2.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602142028429_AddComments3.resx">
+      <DependentUpon>201602142028429_AddComments3.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="codemirror\addon\comment\comment.js" />
@@ -1031,6 +1040,7 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\notify-custom.min.js" />
+    <Content Include="Scripts\slide-comments.js" />
     <Content Include="Scripts\slide-diff.js" />
     <Content Include="Scripts\slide-guest.js" />
     <Content Include="Scripts\slide-localvisits.js" />
@@ -1261,6 +1271,7 @@
     <Content Include="Views\Unit\Users.cshtml" />
     <Content Include="Views\Unit\Diagnostics.cshtml" />
     <Content Include="Views\Comments\SlideComments.cshtml" />
+    <Content Include="Views\Comments\_Comment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

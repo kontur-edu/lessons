@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -23,7 +22,10 @@ namespace uLearn.Web.Models
 		public string SlideId { get; set; }
 
 		[Required]
-		public ApplicationUser Author { get; set; }
+		[StringLength(64)]
+		public string AuthorId { get; set; }
+
+		public virtual ApplicationUser Author { get; set; }
 
 		[Required]
 		public DateTime PublishTime { get; set; }
@@ -45,7 +47,7 @@ namespace uLearn.Web.Models
 		[Required]
 		public int ParentCommentId { get; set; }
 
-		public ICollection<CommentLike> Likes { get; set; }
+		public virtual ICollection<CommentLike> Likes { get; set; }
 
 		public bool IsTopLevel()
 		{

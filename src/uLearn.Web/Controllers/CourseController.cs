@@ -24,6 +24,7 @@ namespace uLearn.Web.Controllers
 		private readonly UnitsRepo unitsRepo = new UnitsRepo();
 		private readonly VisitsRepo visitsRepo = new VisitsRepo(); 
 		private readonly LtiRequestsRepo ltiRequestsRepo = new LtiRequestsRepo();
+		private readonly CommentsRepo commentsRepo = new CommentsRepo();
 
 		public CourseController()
 			: this(WebCourseManager.Instance)
@@ -341,6 +342,38 @@ namespace uLearn.Web.Controllers
 			db.Hints.RemoveRange(db.Hints.Where(q => q.UserId == userId && q.SlideId == slideId));
 			await db.SaveChangesAsync();
 			return RedirectToAction("Slide", new { courseId, slideIndex = slide.Index });
+		}
+
+		[ULearnAuthorize]
+		[HttpPost]
+		[ValidateInput(false)]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> AddComment(string courseId, string slideId, string commentText, string parentCommentId)
+		{
+			var userId = User.Identity.GetUserId();
+			var parentCommentIdInt = -1;
+			if (parentCommentId != null)
+				int.TryParse(parentCommentId, out parentCommentIdInt);
+			var comment = await commentsRepo.AddComment(userId, courseId, slideId, parentCommentIdInt, commentText);
+
+			var renderedComment = this.RenderPartialViewToString("~/Views/Comments/_Comment.cshtml", new CommentViewModel
+			{
+				Comment = comment,
+				LikesCount = 0,
+				IsLikedByUser = false,
+			});
+
+			return Json(new { status = "ok", comment = commentText, rendered = renderedComment});
+		}
+
+		[ULearnAuthorize]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> LikeComment(int commentId)
+		{
+			var userId = User.Identity.GetUserId();
+			var res = await commentsRepo.LikeComment(commentId, userId);
+			return Json(new { likesCount = res.Item1, liked = res.Item2 });
 		}
 
 		private static void RemoveFrom<T>(DbSet<T> dbSet, string slideId, string userId) where T : class, ISlideAction

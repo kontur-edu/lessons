@@ -1,0 +1,36 @@
+﻿@model CommentViewModel
+
+<div class="comment @(Model.Comment.IsTopLevel() ? "" : "is-reply") media">
+	<a class="pull-left" href="#">
+		<img class="comment__author-avatar media-object" src="//placehold.it/54x54" alt="">
+	</a>
+	<div class="media-body">
+		<div class="comment__header media-heading">
+			<div class="comment__author-name">
+				@Model.Comment.Author.FirstName @Model.Comment.Author.LastName
+			</div>
+		</div>
+		<div class="comment__text">
+			@Html.Raw(Html.EncodeMultiLineText(Model.Comment.Text))
+		</div>
+		<div class="comment__footer">
+			@{
+				var likesCount = Model.LikesCount;
+			}
+			<div class="comment__likes-count @(Model.IsLikedByUser ? "is-liked": "")"
+			     data-url="@Url.Action("LikeComment", "Course", new { commentId = @Model.Comment.Id })">
+				@Html.AntiForgeryToken()
+				<span class="glyphicon glyphicon-heart"></span>
+				<span class="comment__likes-count__counter">
+					@if (likesCount > 0)
+					{
+						@likesCount
+					}
+				</span>
+			</div>
+			<div class="comment__publish-time">
+				@Model.Comment.PublishTime
+			</div>
+		</div>
+	</div>
+</div>

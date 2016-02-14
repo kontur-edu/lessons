@@ -1,66 +1,43 @@
-﻿@using uLearn
-@using uLearn.Web
+﻿@using System.Web.Mvc.Html
+@using uLearn
 @using uLearn.Web.Controllers
 
 @model SlideCommentsModel
 
 @helper Comment(Comment comment)
 {
-	<div class="comment @(comment.IsTopLevel() ? "" : "is-reply") media">
-		<a class="pull-left" href="#">
-			<img class="comment__author-avatar media-object" src="//placehold.it/54x54" alt="">
-		</a>
-		<div class="media-body">
-			<div class="comment__header media-heading">
-				<div class="comment__author-name">
-					@comment.Author.FirstName @comment.Author.LastName
-				</div>
-			</div>
-			<div class="comment__text">
-				@Html.Raw(Html.EncodeMultiLineText(comment.Text))
-			</div>
-			<div class="comment__footer">
-				@{
-					var likesCount = Model.CommentsLikesCounts.Get(comment.Id, 0);
-				}
-				<div class="comment__likes-count">
-					<span class="glyphicon glyphicon-heart"></span>
-					@if (likesCount > 0)
-					{
-						@likesCount
-					}
-				</div>
-				<div class="comment__publish-time">
-					@comment.PublishTime
-				</div>
-			</div>
-		</div>
-	</div>
+	@Html.Partial("_Comment", new CommentViewModel
+	{
+		Comment = comment,
+		LikesCount = Model.CommentsLikesCounts.Get(comment.Id, 0),
+		IsLikedByUser = Model.CommentsLikedByUser.Contains(comment.Id)
+	})
 }
 
 @helper ReplyForm(Comment comment)
 {
 	<div class="reply-form @(comment != null ? "is-reply" : "") media">
-		<form>
+		@using (Html.BeginForm("AddComment", "Course", FormMethod.Post))
+		{
+			@Html.AntiForgeryToken()
+			@Html.Hidden("courseId", Model.CourseId)
+			@Html.Hidden("slideId", Model.SlideId)
+			if (comment != null)
+			{
+				@Html.Hidden("parentCommentId", comment.Id)
+			}
 			<div class="pull-left">
-				<img src="//placehold.it/24x24" />
+				<img src="//placehold.it/24x24"/>
 			</div>
 			<div class="media-body">
-				<input type="text" name="comment-text" placeholder="Оставьте свой комментарий" />
+				@Html.TextBox("commentText", "", new {placeholder = "Оставьте свой комментарий" })
 			</div>
-		</form>
+		}
 	</div>
 }
 
 <div class="comments">
-	@if (!Model.TopLevelComments.Any())
-	{
-		<div class="no-comments">Комментариев пока нет</div>
-	}
-	else
-	{
-		<h3>Комментарии</h3>
-	}
+	<h3>Комментарии</h3>
 	@foreach (var topLevelComment in @Model.TopLevelComments)
 	{
 		@Comment(topLevelComment)

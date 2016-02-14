@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -31,6 +32,7 @@ namespace uLearn.Web.Controllers
 				topLevelComments = new List<Comment>();
 
 			var commentsLikesCounts = commentsRepo.GetCommentsLikesCounts(comments);
+			var commentsLikedByUser = commentsRepo.GetSlideCommentsLikedByUser(courseId, slideId, User.Identity.GetUserId()).ToImmutableHashSet();
 
 			var model = new SlideCommentsModel
 			{
@@ -39,6 +41,7 @@ namespace uLearn.Web.Controllers
 				TopLevelComments = topLevelComments,
 				CommentsByParent = commentsByParent,
 				CommentsLikesCounts = commentsLikesCounts,
+				CommentsLikedByUser = commentsLikedByUser,
 			};
 			return PartialView(model);
 		}
@@ -51,5 +54,6 @@ namespace uLearn.Web.Controllers
 		public List<Comment> TopLevelComments { get; set; }
 		public Dictionary<int, List<Comment>> CommentsByParent { get; set; }
 		public Dictionary<int, int> CommentsLikesCounts { get; set; }
+		public ImmutableHashSet<int> CommentsLikedByUser { get; set; }
 	}
 }

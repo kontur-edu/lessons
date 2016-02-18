@@ -1,5 +1,24 @@
 ﻿@model CommentViewModel
 
+@helper ReplyForm(Comment comment, bool isFormHidden)
+{
+	<div class="reply-form is-reply media @(isFormHidden ? "collapse" : "")">
+		@using (Html.BeginForm("AddComment", "Course", FormMethod.Post))
+		{
+			@Html.AntiForgeryToken()
+			@Html.Hidden("courseId", comment.CourseId)
+			@Html.Hidden("slideId", comment.SlideId)
+			@Html.Hidden("parentCommentId", comment.Id)
+			<div class="pull-left">
+				<img src="//placehold.it/24x24" />
+			</div>
+			<div class="media-body">
+				@Html.TextBox("commentText", "", new { placeholder = "Ответить.." })
+			</div>
+		}
+	</div>
+}
+
 <div class="comment @(Model.Comment.IsTopLevel() ? "" : "is-reply") media">
 	<a class="pull-left" href="#">
 		<img class="comment__author-avatar media-object" src="//placehold.it/54x54" alt="">
@@ -17,7 +36,7 @@
 			@{
 				var likesCount = Model.LikesCount;
 			}
-			<div class="comment__likes-count @(Model.IsLikedByUser ? "is-liked": "")"
+			<div class="comment__likes-count @(Model.IsLikedByUser ? "is-liked" : "")"
 			     data-url="@Url.Action("LikeComment", "Course", new { commentId = @Model.Comment.Id })">
 				@Html.AntiForgeryToken()
 				<span class="glyphicon glyphicon-heart"></span>
@@ -31,6 +50,22 @@
 			<div class="comment__publish-time">
 				@Model.Comment.PublishTime
 			</div>
+			@if (Model.Comment.IsTopLevel() && ! Model.Replies.Any())
+			{
+				<div class="comment__inline-reply">
+					<a href="">ответить</a>
+				</div>
+			}
 		</div>
 	</div>
 </div>
+
+@foreach (var reply in Model.Replies)
+{
+	@Html.Partial("_Comment", reply);
+}
+
+@if (Model.Comment.IsTopLevel())
+{
+	@ReplyForm(Model.Comment,  ! Model.Replies.Any())
+}

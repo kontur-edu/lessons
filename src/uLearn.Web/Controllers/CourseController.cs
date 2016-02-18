@@ -355,15 +355,14 @@ namespace uLearn.Web.Controllers
 			if (parentCommentId != null)
 				int.TryParse(parentCommentId, out parentCommentIdInt);
 			var comment = await commentsRepo.AddComment(userId, courseId, slideId, parentCommentIdInt, commentText);
-
-			var renderedComment = this.RenderPartialViewToString("~/Views/Comments/_Comment.cshtml", new CommentViewModel
+			
+			return PartialView("~/Views/Comments/_Comment.cshtml", new CommentViewModel
 			{
 				Comment = comment,
 				LikesCount = 0,
 				IsLikedByUser = false,
+				Replies = new List<CommentViewModel>(),
 			});
-
-			return Json(new { status = "ok", comment = commentText, rendered = renderedComment});
 		}
 
 		[ULearnAuthorize]

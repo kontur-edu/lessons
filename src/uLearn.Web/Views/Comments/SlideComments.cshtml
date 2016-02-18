@@ -4,33 +4,37 @@
 
 @model SlideCommentsModel
 
-@helper Comment(Comment comment)
+@functions
 {
-	@Html.Partial("_Comment", new CommentViewModel
+
+	private CommentViewModel BuildCommentViewModel(Comment comment)
 	{
-		Comment = comment,
-		LikesCount = Model.CommentsLikesCounts.Get(comment.Id, 0),
-		IsLikedByUser = Model.CommentsLikedByUser.Contains(comment.Id)
-	})
+		var replies = Model.CommentsByParent.Get(comment.Id, new List<Comment>());
+		return new CommentViewModel
+		{
+			Comment = comment,
+			LikesCount = Model.CommentsLikesCounts.Get(comment.Id, 0),
+			IsLikedByUser = Model.CommentsLikedByUser.Contains(comment.Id),
+			Replies = replies.Select(BuildCommentViewModel),
+		};
+	}
+
 }
 
-@helper ReplyForm(Comment comment)
+@helper TopLevelReplyForm()
 {
-	<div class="reply-form @(comment != null ? "is-reply" : "") media">
+	<div class="reply-form media">
 		@using (Html.BeginForm("AddComment", "Course", FormMethod.Post))
 		{
 			@Html.AntiForgeryToken()
 			@Html.Hidden("courseId", Model.CourseId)
 			@Html.Hidden("slideId", Model.SlideId)
-			if (comment != null)
-			{
-				@Html.Hidden("parentCommentId", comment.Id)
-			}
 			<div class="pull-left">
-				<img src="//placehold.it/24x24"/>
+				<img src="//placehold.it/24x24" />
 			</div>
 			<div class="media-body">
-				@Html.TextBox("commentText", "", new {placeholder = "Оставьте свой комментарий" })
+				@Html.TextArea("commentText", "", new { placeholder = "Комментировать.." })
+				<button class="reply-form__send-button btn btn-primary" disabled="disabled">Отправить</button>
 			</div>
 		}
 	</div>
@@ -40,17 +44,10 @@
 	<h3>Комментарии</h3>
 	@foreach (var topLevelComment in @Model.TopLevelComments)
 	{
-		@Comment(topLevelComment)
-
-		var replies = Model.CommentsByParent.Get(topLevelComment.Id, new List<Comment>());
-		foreach (var replyComment in replies)
-		{
-			@Comment(replyComment)
-		}
-
-		@ReplyForm(topLevelComment)
+		@Html.Partial("_Comment", BuildCommentViewModel(topLevelComment))
 	}
-	@ReplyForm(null)
+
+	@TopLevelReplyForm()
 </div>
 
 @section scripts {

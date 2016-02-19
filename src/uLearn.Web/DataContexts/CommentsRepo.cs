@@ -97,5 +97,45 @@ namespace uLearn.Web.DataContexts
 	    {
 		    return db.CommentLikes.Where(x => x.UserId == userId && x.Comment.SlideId == slideId).Select(x => x.CommentId);
 	    }
+
+	    public CommentsPolicy GetCommentsPolicy(string courseId)
+	    {
+		    var policy = db.CommentsPolicies.FirstOrDefault(x => x.CourseId == courseId);
+		    policy.CourseId = courseId;
+			return policy;
+	    }
+
+	    public async Task SaveCommentsPolicy(CommentsPolicy policy)
+	    {
+		    using (db.Database.BeginTransaction())
+		    {
+			    var query = db.CommentsPolicies.Where(x => x.CourseId == policy.CourseId);
+				if (query.Any())
+					db.CommentsPolicies.Remove(query.First());
+			    db.CommentsPolicies.Add(policy);
+			    await db.SaveChangesAsync();
+		    }
+	    }
+
+	    public async Task ApproveComment(int commentId)
+	    {
+		    var comment = db.Comments.Find(commentId);
+		    comment.IsApproved = true;
+		    await db.SaveChangesAsync();
+	    }
+
+	    public async Task RemoveComment(int commentId)
+	    {
+		    var comment = db.Comments.Find(commentId);
+		    comment.IsDeleted = true;
+		    await db.SaveChangesAsync();
+	    }
+
+		public async Task RestoreComment(int commentId)
+		{
+			var comment = db.Comments.Find(commentId);
+			comment.IsDeleted = false;
+			await db.SaveChangesAsync();
+		}
 	}
 }

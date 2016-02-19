@@ -70,10 +70,35 @@
 		}
 	};
 
+	var approveComment = function(e) {
+		e.preventDefault();
+
+		var $self = $(this);
+		var url = $self.data('url');
+		var token = $self.find('input[name="__RequestVerificationToken"]').val();
+		var $label = $self.closest('.comment').find('.comment__not-approved');
+		
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: { __RequestVerificationToken: token }
+		}).success(function () {
+			console.log($self);
+			$self.hide();
+			$label.removeClass('label-default')
+				.addClass('label-success')
+				.text('опубликовано');
+			setTimeout(function() {
+				$label.fadeOut(300);
+			}, 1000);
+		});
+	};
+
 	$('.comments').on('click', '.reply-form input[name=commentText]', expandReplyForm);
 	$('.comments').on('click', '.comment .comment__likes-count', likeComment);
 	$('.comments').on('keyup', '.reply-form textarea[name=commentText]', disableButtonForEmptyComment);
 	$('.comments').on('blur', '.reply-form.is-reply textarea[name=commentText]', collapseReplyForm);
 	$('.comments').on('click', '.reply-form .reply-form__send-button', sendComment);
 	$('.comments').on('click', '.comment .comment__inline-reply', createReplyForm);
+	$('.comments').on('click', '.comment .comment__approve-link', approveComment);
 })(jQuery);

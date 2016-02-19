@@ -8,5 +8,7 @@ namespace uLearn.Web.Models
 		public int LikesCount;
 		public bool IsLikedByUser;
 		public IEnumerable<CommentViewModel> Replies;
+		public bool CanReply;
+		public bool CanModerateComments;
 	}
 }

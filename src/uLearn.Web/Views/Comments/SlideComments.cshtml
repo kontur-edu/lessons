@@ -9,13 +9,15 @@
 
 	private CommentViewModel BuildCommentViewModel(Comment comment)
 	{
-		var replies = Model.CommentsByParent.Get(comment.Id, new List<Comment>());
+		var replies = Model.CommentsByParent.Get(comment.Id, new List<Comment>()).OrderByDescending(x => x.IsApproved).ThenBy(x => x.PublishTime);
 		return new CommentViewModel
 		{
 			Comment = comment,
 			LikesCount = Model.CommentsLikesCounts.Get(comment.Id, 0),
 			IsLikedByUser = Model.CommentsLikedByUser.Contains(comment.Id),
 			Replies = replies.Select(BuildCommentViewModel),
+			CanReply = Model.CanReply,
+			CanModerateComments = Model.CanModerateComments,
 		};
 	}
 
@@ -42,12 +44,27 @@
 
 <div class="comments">
 	<h3>Комментарии</h3>
-	@foreach (var topLevelComment in @Model.TopLevelComments)
+	@foreach (var topLevelComment in @Model.TopLevelComments.Where(x => x.IsApproved || Model.CanModerateComments))
 	{
 		@Html.Partial("_Comment", BuildCommentViewModel(topLevelComment))
 	}
 
-	@TopLevelReplyForm()
+	@if (Model.IsAuthorizedAndCanComment)
+	{
+		@TopLevelReplyForm()
+	}
+	else if (!User.Identity.IsAuthenticated)
+	{
+		<div class="">
+			Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account")
+		</div>
+	}
+	else
+	{
+		<div class="">
+			Комментарии отключены
+		</div>
+	}
 </div>
 
 @section scripts {

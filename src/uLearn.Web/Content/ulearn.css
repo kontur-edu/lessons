@@ -442,6 +442,7 @@ li.li-success {
 
 /* Comments */
 .comments .comment {
+	margin-top: 10px;
 }
 
 .comments .comment.is-reply,
@@ -455,19 +456,36 @@ li.li-success {
 }
 
 .comments .comment .comment__header {
-    margin: 0px;
+    margin: 0;
 }
 
-/*.comments .comment .comment__header > div,*/
+.comments .comment .comment__header > div,
 .comments .comment .comment__footer > div {
     display: inline-block;
 }
 
-.comments .comment .comment__footer .comment__inline-reply {
+.comments .comment .comment__remove-link {
+	float: right;
+	font-size: 14pt;
+	height: 14pt;
+}
+
+.comments .comment .comment__remove-link :hover {
+	text-decoration: none;	
+}
+
+.comments .comment .comment__not-approved {
+	font-size: 7pt;
+	vertical-align: middle;
+}
+
+.comments .comment .comment__header .show-on-hover,
+.comments .comment .comment__footer .show-on-hover  {
 	display: none;
 }
 
-.comments .comment:hover .comment__footer .comment__inline-reply {
+.comments .comment:hover .comment__header .show-on-hover,
+.comments .comment:hover .comment__footer .show-on-hover {
 	display: inline-block;
 }
 
@@ -505,10 +523,6 @@ li.li-success {
 
 .comments .comment .comment__likes-count:not(.is-liked):hover .glyphicon {
     color: #700;
-}
-
-.comments .comment:not(.is-reply) .comment__text {
-    width: 570px;
 }
 
 .comments .reply-form [name=commentText] {

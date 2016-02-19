@@ -281,6 +281,7 @@
     <Compile Include="Controllers\ControllerUtils.cs" />
     <Compile Include="DataContexts\CommentsRepo.cs" />
     <Compile Include="DataContexts\UsersRepo.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="HtmlExtensions.cs" />
     <Compile Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.cs" />
     <Compile Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.Designer.cs">
@@ -302,8 +303,21 @@
     <Compile Include="Migrations\201602142028429_AddComments3.Designer.cs">
       <DependentUpon>201602142028429_AddComments3.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602181723317_AddComments4.cs" />
+    <Compile Include="Migrations\201602181723317_AddComments4.Designer.cs">
+      <DependentUpon>201602181723317_AddComments4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602181953306_AddComments41.cs" />
+    <Compile Include="Migrations\201602181953306_AddComments41.Designer.cs">
+      <DependentUpon>201602181953306_AddComments41.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602190847123_AddComments42.cs" />
+    <Compile Include="Migrations\201602190847123_AddComments42.Designer.cs">
+      <DependentUpon>201602190847123_AddComments42.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\CommentLike.cs" />
+    <Compile Include="Models\CommentPolicy.cs" />
     <Compile Include="Models\CommentViewModel.cs" />
     <Compile Include="Models\UserSearchQueryModel.cs" />
     <Compile Include="Controllers\LoginController.cs" />
@@ -331,6 +345,7 @@
       <DependentUpon>201512240735282_CustomRoleSystem.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\UserModel.cs" />
+    <Compile Include="PluralizeExtensions.cs" />
     <Compile Include="UserExtentions.cs" />
     <Compile Include="LTI\LtiAuthenticationExtensions.cs" />
     <Compile Include="LTI\LtiUtils.cs" />
@@ -691,6 +706,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602142028429_AddComments3.resx">
       <DependentUpon>201602142028429_AddComments3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602181723317_AddComments4.resx">
+      <DependentUpon>201602181723317_AddComments4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602181953306_AddComments41.resx">
+      <DependentUpon>201602181953306_AddComments41.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602190847123_AddComments42.resx">
+      <DependentUpon>201602190847123_AddComments42.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

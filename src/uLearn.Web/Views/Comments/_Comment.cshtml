@@ -3,7 +3,7 @@
 @helper ReplyForm(Comment comment, bool isFormHidden)
 {
 	<div class="reply-form is-reply media @(isFormHidden ? "collapse" : "")">
-		@using (Html.BeginForm("AddComment", "Course", FormMethod.Post))
+		@using (Html.BeginForm("AddComment", "Comments", FormMethod.Post))
 		{
 			@Html.AntiForgeryToken()
 			@Html.Hidden("courseId", comment.CourseId)
@@ -19,7 +19,7 @@
 	</div>
 }
 
-<div class="comment @(Model.Comment.IsTopLevel() ? "" : "is-reply") media">
+<div class="comment @(Model.Comment.IsTopLevel() ? "" : "is-reply") @(Model.Comment.IsApproved ? "" : "not-approved") media">
 	<a class="pull-left" href="#">
 		<img class="comment__author-avatar media-object" src="//placehold.it/54x54" alt="">
 	</a>
@@ -27,6 +27,15 @@
 		<div class="comment__header media-heading">
 			<div class="comment__author-name">
 				@Model.Comment.Author.FirstName @Model.Comment.Author.LastName
+			</div>
+			@if (!Model.Comment.IsApproved)
+			{
+				<div class="comment__not-approved label label-as-badge label-default">
+					не опубликовано
+				</div>
+			}
+			<div class="comment__remove-link show-on-hover">
+				<a href="" title="удалить комментарий">&times;</a>
 			</div>
 		</div>
 		<div class="comment__text">
@@ -37,7 +46,7 @@
 				var likesCount = Model.LikesCount;
 			}
 			<div class="comment__likes-count @(Model.IsLikedByUser ? "is-liked" : "")"
-			     data-url="@Url.Action("LikeComment", "Course", new { commentId = @Model.Comment.Id })">
+			     data-url="@Url.Action("LikeComment", new { commentId = Model.Comment.Id })">
 				@Html.AntiForgeryToken()
 				<span class="glyphicon glyphicon-heart"></span>
 				<span class="comment__likes-count__counter">
@@ -47,25 +56,32 @@
 					}
 				</span>
 			</div>
-			<div class="comment__publish-time">
-				@Model.Comment.PublishTime
+			<div class="comment__publish-time" title="@Model.Comment.PublishTime.ToPrettyString()">
+				@Model.Comment.PublishTime.ToAgoPrettyString()
 			</div>
-			@if (Model.Comment.IsTopLevel() && ! Model.Replies.Any())
+			@if (Model.Comment.IsTopLevel() && Model.CanReply && ! Model.Replies.Any())
 			{
-				<div class="comment__inline-reply">
+				<div class="comment__inline-reply show-on-hover">
 					<a href="">ответить</a>
+				</div>
+			}
+			@if (Model.CanModerateComments && ! Model.Comment.IsApproved)
+			{
+				<div class="comment__approve-link show-on-hover" data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
+					<a href="">опубликовать</a>
+					@Html.AntiForgeryToken()
 				</div>
 			}
 		</div>
 	</div>
 </div>
 
-@foreach (var reply in Model.Replies)
+@foreach (var reply in Model.Replies.Where(x => x.Comment.IsApproved || Model.CanModerateComments))
 {
 	@Html.Partial("_Comment", reply);
 }
 
-@if (Model.Comment.IsTopLevel())
+@if (Model.Comment.IsTopLevel() && Model.CanReply)
 {
 	@ReplyForm(Model.Comment,  ! Model.Replies.Any())
 }

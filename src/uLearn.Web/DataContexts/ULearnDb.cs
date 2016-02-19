@@ -37,5 +37,6 @@ namespace uLearn.Web.DataContexts
 		public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<Comment> Comments { get; set; }
 		public DbSet<CommentLike> CommentLikes { get; set; }
+		public DbSet<CommentsPolicy> CommentsPolicies { get; set; }
 	}
 }

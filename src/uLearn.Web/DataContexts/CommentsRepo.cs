@@ -131,11 +131,12 @@ namespace uLearn.Web.DataContexts
 		    await db.SaveChangesAsync();
 	    }
 
-		public async Task RestoreComment(int commentId)
+		public async Task<Comment> RestoreComment(int commentId)
 		{
 			var comment = db.Comments.Find(commentId);
 			comment.IsDeleted = false;
 			await db.SaveChangesAsync();
+			return comment;
 		}
 	}
 }

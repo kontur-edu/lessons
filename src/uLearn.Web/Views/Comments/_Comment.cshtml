@@ -34,8 +34,11 @@
 					не опубликовано
 				</div>
 			}
-			<div class="comment__remove-link show-on-hover">
+			<div class="comment__remove-link show-on-hover"
+			    data-url="@Url.Action("RemoveComment", new { commentId = Model.Comment.Id })"
+				data-restore-url="@Url.Action("RestoreComment", new { commentId = Model.Comment.Id })">
 				<a href="" title="удалить комментарий">&times;</a>
+				@Html.AntiForgeryToken()
 			</div>
 		</div>
 		<div class="comment__text">

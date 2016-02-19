@@ -101,6 +101,14 @@ namespace uLearn.Web.Controllers
 		{
 			await commentsRepo.RemoveComment(commentId);
 		}
+
+		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task RestoreComment(int commentId)
+		{
+			await commentsRepo.RestoreComment(commentId);
+		}
 	}
 
 	public class SlideCommentsModel

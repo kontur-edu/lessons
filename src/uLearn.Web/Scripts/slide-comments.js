@@ -83,7 +83,6 @@
 			url: url,
 			data: { __RequestVerificationToken: token }
 		}).success(function () {
-			console.log($self);
 			$self.hide();
 			$label.removeClass('label-default')
 				.addClass('label-success')
@@ -94,6 +93,37 @@
 		});
 	};
 
+	var removeComment = function (e) {
+		e.preventDefault();
+
+		var $self = $(this);
+		var url = $self.data('url');
+		var restoreUrl = $self.data('restore-url');
+		var token = $self.find('input[name="__RequestVerificationToken"]').val();
+		var $comment = $self.closest('.comment');
+
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: { __RequestVerificationToken: token }
+		}).success(function() {
+			var $commentReplacement = $('<div class="comment__removed">Комментарий удалён. <a href="">Восстановить</a></div>')
+				.attr('class', $comment.attr('class'));
+			$commentReplacement.find('a').click(function(e) {
+				e.preventDefault();
+				$.ajax({
+					type: 'post',
+					url: restoreUrl,
+					data: { __RequestVerificationToken: token }
+				}).success(function() {
+					$commentReplacement.hide();
+					$comment.show();
+				});
+			});
+			$comment.hide().after($commentReplacement);
+		});
+	};;
+
 	$('.comments').on('click', '.reply-form input[name=commentText]', expandReplyForm);
 	$('.comments').on('click', '.comment .comment__likes-count', likeComment);
 	$('.comments').on('keyup', '.reply-form textarea[name=commentText]', disableButtonForEmptyComment);
@@ -101,4 +131,5 @@
 	$('.comments').on('click', '.reply-form .reply-form__send-button', sendComment);
 	$('.comments').on('click', '.comment .comment__inline-reply', createReplyForm);
 	$('.comments').on('click', '.comment .comment__approve-link', approveComment);
+	$('.comments').on('click', '.comment .comment__remove-link', removeComment);
 })(jQuery);

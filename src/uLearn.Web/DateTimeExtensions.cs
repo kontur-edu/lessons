@@ -12,9 +12,19 @@ namespace uLearn.Web
 			return string.Format("{0} в {1}", dateTime.ToLongDateString(), dateTime.ToShortTimeString());
 		}
 
+		public static string ToDatePrettyString(this DateTime dateTime, bool withoutYearIfItsCurrent = false)
+		{
+			if (DateTime.Now.Year == dateTime.Year)
+				return dateTime.ToString("dd MMMM");
+			return dateTime.ToLongDateString();
+		}
+
 		public static string ToAgoPrettyString(this DateTime from)
 		{
-			return DateTime.Now.Subtract(from).ToPrettyString();
+			var diff = DateTime.Now.Subtract(from);
+			if (diff.TotalDays > 10)
+				return from.ToDatePrettyString();
+			return diff.ToPrettyString();
 		}
 
 		public static string ToPrettyString(this TimeSpan timeSpan)
@@ -40,11 +50,11 @@ namespace uLearn.Web
 					return string.Format("{0} назад", hoursAgo.PluralizeInRussian(new RussianPluralizationContext {One = "час", Two = "часа", Five = "часов"}));
 				}
 			}
+
 			if (daysAgo == 1)
 				return "вчера";
 
 			return string.Format("{0} назад", daysAgo.PluralizeInRussian(new RussianPluralizationContext { One = "день", Two = "дня", Five = "дней" }));
-			
 		}
 	}
 }

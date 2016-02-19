@@ -463,6 +463,7 @@
     <Compile Include="Models\Visit.cs" />
     <Compile Include="Models\UserRole.cs" />
     <Compile Include="Models\WebCourseManager_should.cs" />
+    <Compile Include="UserExtentions_should.cs" />
     <Compile Include="Views\Course\AcceptedSolutionsHtml.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using uLearn.SlideIdChecking;
 using uLearn.Web.DataContexts;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
@@ -217,22 +218,13 @@ namespace uLearn.Web.Controllers
 
 		public ActionResult CheckSlideIds(string courseId)
 		{
-			var courseTitle = courseManager.GetCourse(courseId).Title;
-			var currentCourseSlideIds = courseManager.GetCourse(courseId).Slides.Select(slide => new { slide.Id, slide.Title }).GroupBy(arg => arg.Id).ToList();
-			var currentCourseErrors = currentCourseSlideIds.Where(g => g.Count() != 1).ToDictionary(g => g.Key, g => g.Select(arg => arg.Title).ToList());
-			var otherCoursesSlideIds = courseManager.GetCourses()
-				.Where(course => course.Id != courseId)
-				.SelectMany(course => course.Slides.Select(slide => new ErrorDescription { SlideId = slide.Id, SlideTitle = slide.Title, CourseId = course.Id, CourseTitle = course.Title }))
-				.GroupBy(arg => arg.SlideId)
-				.ToDictionary(g => g.Key, g => g.ToList());
-			var otherCoursesErrors = currentCourseSlideIds
-				.Where(g => otherCoursesSlideIds.ContainsKey(g.Key))
-				.ToDictionary(g => g.Key, g => g.Select(arg => new ErrorDescription { SlideId = arg.Id, SlideTitle = arg.Title, CourseId = courseId, CourseTitle = courseTitle }).Concat(otherCoursesSlideIds[g.Key]).ToList());
-			return PartialView(new CheckSlideIdsViewModel
+			var course = courseManager.GetCourse(courseId);
+			var model = new CheckSlideIdsViewModel
 			{
-				InnerErrors = currentCourseErrors,
-				OuterErrors = otherCoursesErrors
-			});
+				InnerErrors = course.FindDuplicatedIds(),
+				OuterErrors = courseManager.FindGlobalDuplicatedIdsFor(courseId)
+			};
+			return PartialView(model);
 		}
 
 		public ActionResult Diagnostics(string courseId)
@@ -287,15 +279,7 @@ namespace uLearn.Web.Controllers
 
 	public class CheckSlideIdsViewModel
 	{
-		public Dictionary<string, List<ErrorDescription>> OuterErrors { get; set; }
-		public Dictionary<string, List<string>> InnerErrors { get; set; }
-	}
-
-	public class ErrorDescription
-	{
-		public string SlideId { get; set; }
-		public string SlideTitle { get; set; }
-		public string CourseId { get; set; }
-		public string CourseTitle { get; set; }
+		public List<LocalSlideIdErrorList> InnerErrors { get; set; }
+		public List<GlobalSlideIdErrorList> OuterErrors { get; set; }
 	}
 }

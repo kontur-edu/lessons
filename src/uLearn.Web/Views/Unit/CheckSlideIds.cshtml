@@ -3,8 +3,8 @@
 @foreach (var error in Model.InnerErrors)
 {
 	<pre>
-Идентификатор '@error.Key' встречается у слайдов:
-@foreach (var title in error.Value)
+Идентификатор '@error.SlideId' встречается у слайдов:
+@foreach (var title in error.SlideTitles)
 {
 	@title
 }
@@ -14,10 +14,10 @@
 @foreach (var error in Model.OuterErrors)
 {
 	<pre>
-Идентификатор '@error.Key' встречается у слайдов:
-@foreach (var desc in error.Value)
+Идентификатор '@error.SlideId' встречается у слайдов:
+@foreach (var description in error.SlideDescriptions)
 {
-	<span>'@desc.SlideTitle' в курсе '@desc.CourseTitle' (@desc.CourseId)</span>
+	<span>'@description.Title' в курсе '@description.CourseTitle' (@description.CourseId)</span>
 }
 </pre>
 }

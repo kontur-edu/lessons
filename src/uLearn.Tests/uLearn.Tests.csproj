@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CourseManagerExtention_should.cs" />
     <Compile Include="CourseTool\Config_Test.cs" />
     <Compile Include="CourseTool\Converter_should.cs" />
     <Compile Include="SpellChecking_Tests.cs" />

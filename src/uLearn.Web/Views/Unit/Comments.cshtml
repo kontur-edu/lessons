@@ -1,0 +1,52 @@
+﻿@model uLearn.Web.Controllers.CommentsViewModel
+
+@{
+	ViewBag.Title = "Admin Comments";
+}
+
+@Html.Action("ManageMenu")
+
+<div class="container">
+
+	<h3>Комментарии</h3>
+
+	@using (Html.BeginForm("SaveCommentsPolicy", "Unit", FormMethod.Post, new { @class = "form-horizontal" }))
+	{
+		@Html.AntiForgeryToken()
+		<input type="hidden" name="courseId" value="@Model.CourseId" />
+
+		<div>
+			<label>
+				@Html.CheckBox("isCommentsEnabled", Model.IsCommentsEnabled)
+
+				Комментарии включены
+			</label>
+		</div>
+
+		<div>
+			<label>
+				@Html.CheckBox("onlyInstructorsCanReply", Model.OnlyInstructorsCanReply)
+				Отвечать могут только преподаватели
+			</label>
+		</div>
+
+		<h4>Режим модерации</h4>
+		<div>
+			<label>
+				@Html.RadioButton("moderationPolicy", "Premoderation", Model.ModerationPolicy == CommentModerationPolicy.Premoderation)
+				премодерация
+			</label>
+		</div>
+
+		<div>
+			<label>
+				@Html.RadioButton("moderationPolicy", "Postmoderation", Model.ModerationPolicy == CommentModerationPolicy.Postmoderation)
+				постмодерация
+			</label>
+		</div>
+
+		<div>
+			<button class="btn btn-success" type="submit">Сохранить</button>
+		</div>
+	}
+</div>

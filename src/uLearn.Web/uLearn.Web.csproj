@@ -1296,6 +1296,7 @@
     <Content Include="Views\Unit\Diagnostics.cshtml" />
     <Content Include="Views\Comments\SlideComments.cshtml" />
     <Content Include="Views\Comments\_Comment.cshtml" />
+    <None Include="Views\Unit\Comments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

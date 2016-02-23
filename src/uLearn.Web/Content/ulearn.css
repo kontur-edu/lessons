@@ -459,6 +459,11 @@ li.li-success {
     margin: 0;
 }
 
+.comments .comment .comment__header,
+.comments .comment .comment__footer {
+	font-size: 10pt;
+}
+
 .comments .comment .comment__header > div,
 .comments .comment .comment__footer > div {
     display: inline-block;
@@ -474,7 +479,7 @@ li.li-success {
 	text-decoration: none;	
 }
 
-.comments .comment .comment__not-approved {
+.comments .comment .label {
 	font-size: 7pt;
 	vertical-align: middle;
 }
@@ -500,7 +505,6 @@ li.li-success {
 }
 
 .comments .comment .comment__publish-time {
-    font-size: 10pt;
     color: #bbb;
 }
 
@@ -555,4 +559,37 @@ li.li-success {
 .comments .comment:not(.is-reply):not(:nth-child(2)) {
     border-top: 1px solid rgba(200, 200, 200, 0.5);
     padding-top: 15px;
+}
+
+.comments .comment.is-pinned .comment__footer .comment__pin-link {
+	display: none;
+}
+
+.comments .comment:not(.is-pinned) .comment__footer .comment__unpin-link {
+	display: none;
+}
+
+.comments .comment .comment__header .comment__pinned,
+.comments .comment .comment__header .comment__correct-answer,
+.comments .comment.not-approved .comment__footer .comment__pin-link,
+.comments .comment.not-approved .comment__footer .comment__mark-as-correct-link,
+.comments .comment.is-correct-answer .comment__footer .comment__mark-as-correct-link {
+	display: none;
+}
+
+.comments .comment.is-pinned .comment__header .comment__pinned,
+.comments .comment.is-correct-answer .comment__header .comment__correct-answer {
+	display: initial;
+}
+
+.comments .comment .comment__footer .comment__mark-as-correct-link * {
+	color: #8b0000;
+}
+
+.comments .comment .comment__correct-answer .comment__mark-as-correct-link {
+	margin-left: 3px;
+}
+
+.comments .comment .comment__correct-answer .comment__mark-as-correct-link * {
+	color: inherit;
 }

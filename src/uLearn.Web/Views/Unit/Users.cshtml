@@ -5,7 +5,7 @@
 }
 
 
-@Html.Action("ManageMenu");
+@Html.Action("ManageMenu")
 
 <div class="container">
 	<p><a class="label label-warning" href="@Url.Action("Users", new { Model.CourseId, courseRole = CourseRole.CourseAdmin })">@CourseRole.CourseAdmin</a> может видеть служебную информацию и управлять ролями других пользователей.</p>
@@ -17,7 +17,7 @@
 	{
 		<input type="hidden" name="courseId" value="@Model.CourseId" />
 		<input class="form-control" type="text" name="namePrefix" />
-		<button class="btn btn-default" class="button" type="submit">Фильтровать по имени</button>
+		<button class="btn btn-default button" type="submit">Фильтровать по имени</button>
 	}
 
 	@Html.Action("UsersPartial", Model)

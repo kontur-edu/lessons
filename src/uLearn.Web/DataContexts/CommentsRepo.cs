@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
+using ApprovalTests.Reporters;
+using Microsoft.AspNet.Identity;
 using uLearn.Web.Models;
 
 namespace uLearn.Web.DataContexts
@@ -21,14 +24,24 @@ namespace uLearn.Web.DataContexts
             this.db = db;
         }
 
-        public async Task<Comment> AddComment(string authorId, string courseId, string slideId, int parentCommentId, string commentText)
+        public async Task<Comment> AddComment(IPrincipal author, string courseId, string slideId, int parentCommentId, string commentText)
         {
-	        var comment = db.Comments.Create();
-			comment.AuthorId = authorId;
+			var commentsPolicy = GetCommentsPolicy(courseId);
+	        var isInstructor = author.HasAccessFor(courseId, CourseRole.Instructor);
+	        var isApproved = commentsPolicy.ModerationPolicy == CommentModerationPolicy.Postmoderation || isInstructor;
+
+			/* Instructors' replies are automaticly correct */
+			var isReply = parentCommentId != -1;
+			var isCorrectAnswer = isReply && isInstructor;
+
+			var comment = db.Comments.Create();
+			comment.AuthorId = author.Identity.GetUserId();
 			comment.CourseId = courseId;
 			comment.SlideId = slideId;
 			comment.ParentCommentId = parentCommentId;
 			comment.Text = commentText;
+	        comment.IsApproved = isApproved;
+	        comment.IsCorrectAnswer = isCorrectAnswer;
 			comment.PublishTime = DateTime.Now;
 	        db.Comments.Add(comment);
             await db.SaveChangesAsync();
@@ -36,10 +49,20 @@ namespace uLearn.Web.DataContexts
 	        return db.Comments.Find(comment.Id);
         }
 
+	    public Comment GetCommentById(int commentId)
+	    {
+		    return db.Comments.Find(commentId);
+	    }
+
         public IEnumerable<Comment> GetSlideComments(string courseId, string slideId)
         {
-            return db.Comments.Where(x => x.SlideId == slideId && ! x.IsDeleted);
+            return db.Comments.Where(x => x.SlideId == slideId && !x.IsDeleted);
         }
+
+	    public IEnumerable<Comment> GetCourseComments(string courseId)
+	    {
+		    return db.Comments.Where(x => x.CourseId == courseId && !x.IsDeleted);
+	    }
 
 		///<returns>(likesCount, isLikedByThisUsed)</returns>
 		public async Task<Tuple<int, bool>> LikeComment(int commentId, string userId)
@@ -101,42 +124,66 @@ namespace uLearn.Web.DataContexts
 	    public CommentsPolicy GetCommentsPolicy(string courseId)
 	    {
 		    var policy = db.CommentsPolicies.FirstOrDefault(x => x.CourseId == courseId);
-		    policy.CourseId = courseId;
+		    if (policy == null)
+				policy = new CommentsPolicy
+				{
+					CourseId = courseId,
+				};
 			return policy;
 	    }
 
 	    public async Task SaveCommentsPolicy(CommentsPolicy policy)
 	    {
-		    using (db.Database.BeginTransaction())
+		    using (var transaction = db.Database.BeginTransaction())
 		    {
 			    var query = db.CommentsPolicies.Where(x => x.CourseId == policy.CourseId);
-				if (query.Any())
-					db.CommentsPolicies.Remove(query.First());
+			    if (query.Any())
+			    {
+				    db.CommentsPolicies.Remove(query.First());
+				    await db.SaveChangesAsync();
+			    }
 			    db.CommentsPolicies.Add(policy);
 			    await db.SaveChangesAsync();
+			    transaction.Commit();
 		    }
+	    }
+
+	    public async Task<Comment> ModifyComment(int commentId, Action<Comment> modifyAction)
+	    {
+			var comment = db.Comments.Find(commentId);
+		    modifyAction(comment);
+			await db.SaveChangesAsync();
+		    return comment;
 	    }
 
 	    public async Task ApproveComment(int commentId)
 	    {
-		    var comment = db.Comments.Find(commentId);
-		    comment.IsApproved = true;
-		    await db.SaveChangesAsync();
+		    await ModifyComment(commentId, c => c.IsApproved = true);
 	    }
 
 	    public async Task RemoveComment(int commentId)
 	    {
-		    var comment = db.Comments.Find(commentId);
-		    comment.IsDeleted = true;
-		    await db.SaveChangesAsync();
+			await ModifyComment(commentId, c => c.IsDeleted = true);
 	    }
 
 		public async Task<Comment> RestoreComment(int commentId)
 		{
-			var comment = db.Comments.Find(commentId);
-			comment.IsDeleted = false;
-			await db.SaveChangesAsync();
-			return comment;
+			return await ModifyComment(commentId, c => c.IsDeleted = false);
 		}
-	}
+
+	    public async Task PinComment(int commentId)
+	    {
+		    await ModifyComment(commentId, c => c.IsPinnedToTop = true);
+		}
+
+		public async Task UnpinComment(int commentId)
+		{
+			await ModifyComment(commentId, c => c.IsPinnedToTop = false);
+		}
+
+	    public async Task MarkCommentAsCorrectAnswer(int commentId, bool isCorrect=true)
+	    {
+		    await ModifyComment(commentId, c => c.IsCorrectAnswer = isCorrect);
+	    }
+    }
 }

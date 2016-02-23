@@ -18,68 +18,125 @@
 		}
 	</div>
 }
-
-<div class="comment @(Model.Comment.IsTopLevel() ? "" : "is-reply") @(Model.Comment.IsApproved ? "" : "not-approved") media">
-	<a class="pull-left" href="#">
-		<img class="comment__author-avatar media-object" src="//placehold.it/54x54" alt="">
-	</a>
-	<div class="media-body">
-		<div class="comment__header media-heading">
-			<div class="comment__author-name">
-				@Model.Comment.Author.FirstName @Model.Comment.Author.LastName
-			</div>
-			@if (!Model.Comment.IsApproved)
-			{
-				<div class="comment__not-approved label label-as-badge label-default">
-					не опубликовано
+@if (Model.IsCommentVisibleForUser)
+{
+	<div class="comment
+		 @(Model.Comment.IsTopLevel() ? "" : "is-reply")
+		 @(Model.Comment.IsApproved ? "" : "not-approved")
+		 @(Model.Comment.IsPinnedToTop ? "is-pinned" : "")
+		 @(Model.Comment.IsCorrectAnswer ? "is-correct-answer" : "")
+		 media">
+		<a class="pull-left" href="#">
+			<img class="comment__author-avatar media-object" src="//placehold.it/54x54" alt="">
+		</a>
+		<div class="media-body">
+			<div class="comment__header media-heading">
+				<div class="comment__author-name">
+					@Model.Comment.Author.FirstName @Model.Comment.Author.LastName
 				</div>
-			}
-			<div class="comment__remove-link show-on-hover"
-			    data-url="@Url.Action("RemoveComment", new { commentId = Model.Comment.Id })"
-				data-restore-url="@Url.Action("RestoreComment", new { commentId = Model.Comment.Id })">
-				<a href="" title="удалить комментарий">&times;</a>
-				@Html.AntiForgeryToken()
+				@if (!Model.Comment.IsApproved)
+				{
+					<div class="comment__not-approved label label-as-badge label-default">
+						не опубликовано
+					</div>
+				}
+
+				@if (Model.Comment.IsTopLevel())
+				{
+					<div class="comment__pinned label label-as-badge label-success">
+						закреплено
+					</div>
+				}
+
+				@if (!Model.Comment.IsTopLevel())
+				{
+					<div class="comment__correct-answer label label-as-badge label-primary">
+						правильный ответ
+						<span class="comment__mark-as-correct-link"
+							data-url="@Url.Action("MarkAsCorrectAnswer", new { commentId = Model.Comment.Id, isCorrect = false })"
+							data-correct="false">
+							<a href="">&times;</a>
+						</span>
+					</div>
+				}
+
+				@if (Model.CanDeleteComment)
+				{
+					<div class="comment__remove-link show-on-hover"
+					     data-url="@Url.Action("RemoveComment", new { commentId = Model.Comment.Id })"
+					     data-restore-url="@Url.Action("RestoreComment", new { commentId = Model.Comment.Id })">
+						<a href="" title="удалить комментарий">&times;</a>
+						@Html.AntiForgeryToken()
+					</div>
+				}
 			</div>
-		</div>
-		<div class="comment__text">
-			@Html.Raw(Html.EncodeMultiLineText(Model.Comment.Text))
-		</div>
-		<div class="comment__footer">
-			@{
-				var likesCount = Model.LikesCount;
-			}
-			<div class="comment__likes-count @(Model.IsLikedByUser ? "is-liked" : "")"
-			     data-url="@Url.Action("LikeComment", new { commentId = Model.Comment.Id })">
-				@Html.AntiForgeryToken()
-				<span class="glyphicon glyphicon-heart"></span>
-				<span class="comment__likes-count__counter">
+			<div class="comment__text">
+				@Html.Raw(Html.EncodeMultiLineText(Model.Comment.Text))
+			</div>
+			<div class="comment__footer">
+				@{
+					var likesCount = Model.LikesCount;
+				}
+				<div class="comment__likes-count @(Model.IsLikedByUser ? "is-liked" : "")"
+				     data-url="@Url.Action("LikeComment", new { commentId = Model.Comment.Id })">
+					@Html.AntiForgeryToken()
+					<span class="glyphicon glyphicon-heart"></span>
+					<span class="comment__likes-count__counter">
 					@if (likesCount > 0)
 					{
 						@likesCount
 					}
 				</span>
-			</div>
-			<div class="comment__publish-time" title="@Model.Comment.PublishTime.ToPrettyString()">
-				@Model.Comment.PublishTime.ToAgoPrettyString()
-			</div>
-			@if (Model.Comment.IsTopLevel() && Model.CanReply && ! Model.Replies.Any())
-			{
-				<div class="comment__inline-reply show-on-hover">
-					<a href="">ответить</a>
 				</div>
-			}
-			@if (Model.CanModerateComments && ! Model.Comment.IsApproved)
-			{
-				<div class="comment__approve-link show-on-hover" data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
-					<a href="">опубликовать</a>
-					@Html.AntiForgeryToken()
+				<div class="comment__publish-time" title="@Model.Comment.PublishTime.ToPrettyString()">
+					@Model.Comment.PublishTime.ToAgoPrettyString()
 				</div>
-			}
+				@if (Model.Comment.IsTopLevel() && Model.CanReply && !Model.Replies.Any())
+				{
+					<div class="comment__inline-reply show-on-hover">
+						<a href="">ответить</a>
+					</div>
+				}
+				@if (Model.CanModerateComment && !Model.Comment.IsApproved)
+				{
+					<div class="comment__approve-link show-on-hover" data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
+						<a href="">опубликовать</a>
+						@Html.AntiForgeryToken()
+					</div>
+				}
+
+				@if (Model.CanModerateComment && Model.Comment.IsTopLevel())
+				{
+					<div class="comment__pin-link show-on-hover"
+					     data-url="@Url.Action("PinComment", new { commentId = Model.Comment.Id })"
+					     data-pinned="true">
+						<a href="">закрепить&uarr;</a>
+						@Html.AntiForgeryToken()
+					</div>
+					<div class="comment__unpin-link show-on-hover"
+					     data-url="@Url.Action("UnpinComment", new { commentId = Model.Comment.Id })"
+					     data-pinned="false">
+						<a href="">открепить&darr;</a>
+						@Html.AntiForgeryToken()
+					</div>
+				}
+
+				@if (Model.CanModerateComment && !Model.Comment.IsTopLevel())
+				{
+					<div class="comment__mark-as-correct-link show-on-hover"
+					     data-url="@Url.Action("MarkAsCorrectAnswer", new { commentId = Model.Comment.Id })"
+						 data-correct="true">
+						<a href="">пометить как правильный</a>
+						@Html.AntiForgeryToken()
+					</div>
+				}
+
+			</div>
 		</div>
 	</div>
-</div>
+}
 
-@foreach (var reply in Model.Replies.Where(x => x.Comment.IsApproved || Model.CanModerateComments))
+@foreach (var reply in Model.Replies)
 {
 	@Html.Partial("_Comment", reply);
 }

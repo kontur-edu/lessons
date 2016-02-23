@@ -76,7 +76,8 @@
 		var $self = $(this);
 		var url = $self.data('url');
 		var token = $self.find('input[name="__RequestVerificationToken"]').val();
-		var $label = $self.closest('.comment').find('.comment__not-approved');
+		var $comment = $self.closest('.comment');
+		var $label = $comment.find('.comment__not-approved');
 		
 		$.ajax({
 			type: 'post',
@@ -84,6 +85,7 @@
 			data: { __RequestVerificationToken: token }
 		}).success(function () {
 			$self.hide();
+			$comment.removeClass('not-approved');
 			$label.removeClass('label-default')
 				.addClass('label-success')
 				.text('опубликовано');
@@ -122,7 +124,41 @@
 			});
 			$comment.hide().after($commentReplacement);
 		});
-	};;
+	};
+
+	var pinOrUnpinComment = function (e) {
+		e.preventDefault();
+
+		var $self = $(this);
+		var url = $self.data('url');
+		var token = $self.find('input[name="__RequestVerificationToken"]').val();
+		var $comment = $self.closest('.comment');
+
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: { __RequestVerificationToken: token }
+		}).success(function () {
+			$comment.toggleClass('is-pinned', $self.data('pinned'));
+		});
+	};
+
+	var markCommentAsCorrect = function (e) {
+		e.preventDefault();
+
+		var $self = $(this);
+		var url = $self.data('url');
+		var token = $self.find('input[name="__RequestVerificationToken"]').val();
+		var $comment = $self.closest('.comment');
+
+		$.ajax({
+			type: 'post',
+			url: url,
+			data: { __RequestVerificationToken: token }
+		}).success(function () {
+			$comment.toggleClass('is-correct-answer', $self.data('correct'));
+		});
+	};
 
 	$('.comments').on('click', '.reply-form input[name=commentText]', expandReplyForm);
 	$('.comments').on('click', '.comment .comment__likes-count', likeComment);
@@ -132,4 +168,7 @@
 	$('.comments').on('click', '.comment .comment__inline-reply', createReplyForm);
 	$('.comments').on('click', '.comment .comment__approve-link', approveComment);
 	$('.comments').on('click', '.comment .comment__remove-link', removeComment);
+	$('.comments').on('click', '.comment .comment__pin-link', pinOrUnpinComment);
+	$('.comments').on('click', '.comment .comment__unpin-link', pinOrUnpinComment);
+	$('.comments').on('click', '.comment .comment__mark-as-correct-link', markCommentAsCorrect);
 })(jQuery);

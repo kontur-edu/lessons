@@ -21,6 +21,7 @@ namespace uLearn.Web.Controllers
 		private readonly CourseManager courseManager;
 		private readonly ULearnDb db;
 		private readonly UsersRepo usersRepo;
+		private readonly CommentsRepo commentsRepo;
 		private readonly UserManager<ApplicationUser> userManager;
 
 		public UnitController()
@@ -28,6 +29,7 @@ namespace uLearn.Web.Controllers
 			db = new ULearnDb();
 			courseManager = WebCourseManager.Instance;
 			usersRepo = new UsersRepo(db);
+			commentsRepo = new CommentsRepo(db);
 			userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ULearnDb()));
 		}
 
@@ -160,6 +162,35 @@ namespace uLearn.Web.Controllers
 				LastUpdate = lastUpdate
 			});
 		}
+		
+		public ActionResult Comments(string courseId)
+		{
+			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
+			var comments = commentsRepo.GetCourseComments(courseId);
+			return View(new CommentsViewModel
+			{
+				CourseId = courseId,
+				IsCommentsEnabled = commentsPolicy.IsCommentsEnabled,
+				ModerationPolicy = commentsPolicy.ModerationPolicy,
+				OnlyInstructorsCanReply = commentsPolicy.OnlyInstructorsCanReply,
+			});
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> SaveCommentsPolicy(CommentsViewModel model)
+		{
+			var courseId = model.CourseId;
+			var commentsPolicy = new CommentsPolicy
+			{
+				CourseId = courseId,
+				IsCommentsEnabled = model.IsCommentsEnabled,
+				ModerationPolicy = model.ModerationPolicy,
+				OnlyInstructorsCanReply = model.OnlyInstructorsCanReply
+			};
+			await commentsRepo.SaveCommentsPolicy(commentsPolicy);
+			return RedirectToAction("Comments", new { courseId });
+		}
 
 		public ActionResult Users(UserSearchQueryModel queryModel)
 		{
@@ -167,7 +198,7 @@ namespace uLearn.Web.Controllers
 				return RedirectToAction("CourseList");
 			return View(queryModel);
 		}
-
+		
 		[ChildActionOnly]
 		public ActionResult UsersPartial(UserSearchQueryModel queryModel)
 		{
@@ -267,5 +298,14 @@ namespace uLearn.Web.Controllers
 		public string CourseId { get; set; }
 		public bool HasPackage { get; set; }
 		public DateTime LastUpdate { get; set; }
+	}
+
+	public class CommentsViewModel
+	{
+		public string CourseId { get; set; }
+		public bool IsCommentsEnabled { get; set; }
+		public CommentModerationPolicy ModerationPolicy { get; set; }
+		public bool OnlyInstructorsCanReply { get; set; }
+		public List<CommentViewModel> Comments { get; set; }
 	}
 }

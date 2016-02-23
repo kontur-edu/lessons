@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Net;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -36,9 +38,13 @@ namespace uLearn.Web.Controllers
 			var commentsLikesCounts = commentsRepo.GetCommentsLikesCounts(comments);
 			var commentsLikedByUser = commentsRepo.GetSlideCommentsLikedByUser(courseId, slideId, User.Identity.GetUserId()).ToImmutableHashSet();
 
-			var isAuthorizedAndCanComment = User.Identity.IsAuthenticated;
-			var canReply = User.Identity.IsAuthenticated;
-			var canModerateComments = User.Identity.IsAuthenticated && User.HasAccessFor(courseId, CourseRole.Instructor);
+			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
+			var isInstructor = User.HasAccessFor(courseId, CourseRole.Instructor);
+
+			var isAuthorizedAndCanComment = User.Identity.IsAuthenticated && (commentsPolicy.IsCommentsEnabled || isInstructor);
+			var canReply = User.Identity.IsAuthenticated && commentsPolicy.IsCommentsEnabled && (! commentsPolicy.OnlyInstructorsCanReply || isInstructor);
+			var canModerateComments = User.Identity.IsAuthenticated && isInstructor;
+			var canSeeNotApprovedComments = User.Identity.IsAuthenticated && isInstructor;
 
 			var model = new SlideCommentsModel
 			{
@@ -47,6 +53,7 @@ namespace uLearn.Web.Controllers
 				IsAuthorizedAndCanComment = isAuthorizedAndCanComment,
 				CanReply = canReply,
 				CanModerateComments = canModerateComments,
+				CanSeeNotApprovedComments = canSeeNotApprovedComments,
 				TopLevelComments = topLevelComments,
 				CommentsByParent = commentsByParent,
 				CommentsLikesCounts = commentsLikesCounts,
@@ -61,11 +68,10 @@ namespace uLearn.Web.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> AddComment(string courseId, string slideId, string commentText, string parentCommentId)
 		{
-			var userId = User.Identity.GetUserId();
 			var parentCommentIdInt = -1;
 			if (parentCommentId != null)
 				int.TryParse(parentCommentId, out parentCommentIdInt);
-			var comment = await commentsRepo.AddComment(userId, courseId, slideId, parentCommentIdInt, commentText);
+			var comment = await commentsRepo.AddComment(User, courseId, slideId, parentCommentIdInt, commentText);
 
 			return PartialView("_Comment", new CommentViewModel
 			{
@@ -73,6 +79,9 @@ namespace uLearn.Web.Controllers
 				LikesCount = 0,
 				IsLikedByUser = false,
 				Replies = new List<CommentViewModel>(),
+				IsCommentVisibleForUser = true,
+				CanDeleteComment = true,
+				CanModerateComment = User.HasAccessFor(courseId, CourseRole.Instructor),
 			});
 		}
 
@@ -89,25 +98,82 @@ namespace uLearn.Web.Controllers
 		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task ApproveComment(int commentId)
+		public async Task<ActionResult> ApproveComment(int commentId)
 		{
+			var comment = commentsRepo.GetCommentById(commentId);
+			if (!User.HasAccessFor(comment.CourseId, CourseRole.Instructor))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
 			await commentsRepo.ApproveComment(commentId);
+			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 
 		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task RemoveComment(int commentId)
+		public async Task<ActionResult> PinComment(int commentId)
 		{
+			var comment = commentsRepo.GetCommentById(commentId);
+			if (!User.HasAccessFor(comment.CourseId, CourseRole.Instructor))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
+			await commentsRepo.PinComment(commentId);
+			return new HttpStatusCodeResult(HttpStatusCode.OK);
+		}
+
+		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> UnpinComment(int commentId)
+		{
+			var comment = commentsRepo.GetCommentById(commentId);
+			if (!User.HasAccessFor(comment.CourseId, CourseRole.Instructor))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
+			await commentsRepo.UnpinComment(commentId);
+			return new HttpStatusCodeResult(HttpStatusCode.OK);
+		}
+
+		private bool CanRemoveAndRestoreComment(IPrincipal User, Comment comment)
+		{
+			return User.HasAccessFor(comment.CourseId, CourseRole.Instructor) ||
+					User.Identity.GetUserId() == comment.AuthorId;
+		}
+		
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> RemoveComment(int commentId)
+		{
+			var comment = commentsRepo.GetCommentById(commentId);
+			if (! CanRemoveAndRestoreComment(User, comment))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
 			await commentsRepo.RemoveComment(commentId);
+			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
-
-		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
+		
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task RestoreComment(int commentId)
+		public async Task<ActionResult> RestoreComment(int commentId)
 		{
+			var comment = commentsRepo.GetCommentById(commentId);
+			if (!CanRemoveAndRestoreComment(User, comment))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
 			await commentsRepo.RestoreComment(commentId);
+			return new HttpStatusCodeResult(HttpStatusCode.OK);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> MarkAsCorrectAnswer(int commentId, bool isCorrect=true)
+		{
+			var comment = commentsRepo.GetCommentById(commentId);
+			if (!CanRemoveAndRestoreComment(User, comment))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
+			await commentsRepo.MarkCommentAsCorrectAnswer(commentId, isCorrect);
+			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 	}
 
@@ -118,6 +184,7 @@ namespace uLearn.Web.Controllers
 		public bool IsAuthorizedAndCanComment { get; set; }
 		public bool CanReply { get; set; }
 		public bool CanModerateComments { get; set; }
+		public bool CanSeeNotApprovedComments { get; set; }
 		public List<Comment> TopLevelComments { get; set; }
 		public Dictionary<int, List<Comment>> CommentsByParent { get; set; }
 		public Dictionary<int, int> CommentsLikesCounts { get; set; }

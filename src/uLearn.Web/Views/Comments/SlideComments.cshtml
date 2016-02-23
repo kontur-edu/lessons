@@ -1,4 +1,5 @@
 ﻿@using System.Web.Mvc.Html
+@using Microsoft.AspNet.Identity
 @using uLearn
 @using uLearn.Web.Controllers
 
@@ -10,6 +11,7 @@
 	private CommentViewModel BuildCommentViewModel(Comment comment)
 	{
 		var replies = Model.CommentsByParent.Get(comment.Id, new List<Comment>()).OrderByDescending(x => x.IsApproved).ThenBy(x => x.PublishTime);
+		var isAuthor = comment.AuthorId == User.Identity.GetUserId();
 		return new CommentViewModel
 		{
 			Comment = comment,
@@ -17,16 +19,17 @@
 			IsLikedByUser = Model.CommentsLikedByUser.Contains(comment.Id),
 			Replies = replies.Select(BuildCommentViewModel),
 			CanReply = Model.CanReply,
-			CanModerateComments = Model.CanModerateComments,
+			CanModerateComment = Model.CanModerateComments,
+			IsCommentVisibleForUser = comment.IsApproved || Model.CanSeeNotApprovedComments || isAuthor,
+			CanDeleteComment = Model.CanModerateComments || isAuthor,
 		};
 	}
-
 }
 
 @helper TopLevelReplyForm()
 {
 	<div class="reply-form media">
-		@using (Html.BeginForm("AddComment", "Course", FormMethod.Post))
+		@using (Html.BeginForm("AddComment", "Comments", FormMethod.Post))
 		{
 			@Html.AntiForgeryToken()
 			@Html.Hidden("courseId", Model.CourseId)
@@ -42,30 +45,39 @@
 	</div>
 }
 
-<div class="comments">
-	<h3>Комментарии</h3>
-	@foreach (var topLevelComment in @Model.TopLevelComments.Where(x => x.IsApproved || Model.CanModerateComments))
-	{
-		@Html.Partial("_Comment", BuildCommentViewModel(topLevelComment))
-	}
+@if (Model.TopLevelComments.Any() || Model.IsAuthorizedAndCanComment)
+{
+	<div class="comments">
+		<h3>Комментарии</h3>
+		@foreach (var topLevelComment in @Model.TopLevelComments)
+		{
+			@Html.Partial("_Comment", BuildCommentViewModel(topLevelComment))
+		}
 
-	@if (Model.IsAuthorizedAndCanComment)
-	{
-		@TopLevelReplyForm()
-	}
-	else if (!User.Identity.IsAuthenticated)
-	{
-		<div class="">
-			Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account")
-		</div>
-	}
-	else
-	{
-		<div class="">
-			Комментарии отключены
-		</div>
-	}
-</div>
+		@if (Model.IsAuthorizedAndCanComment)
+		{
+			@TopLevelReplyForm()
+		}
+		else if (!User.Identity.IsAuthenticated)
+		{
+			<div class="">
+				Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account")
+			</div>
+		}
+		else
+		{
+			<div class="">
+				Только преподаватели могут оставлять комментарии
+			</div>
+		}
+	</div>
+}
+else
+{
+	<div class="">
+		Комментарии отключены
+	</div>
+}
 
 @section scripts {
 	<script src="~/Scripts/slide-comments.js"> </script>

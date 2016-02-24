@@ -360,9 +360,9 @@ namespace uLearn.Web.Controllers
 			Error
 		}
 
-		public async Task<PartialViewResult> ChangeDetailsPartial()
+		public PartialViewResult ChangeDetailsPartial()
 		{
-			var user = await userManager.FindByNameAsync(User.Identity.Name);
+			var user = userManager.FindByName(User.Identity.Name);
 			var hasPassword = ControllerUtils.HasPassword(userManager, User);
 			return PartialView(new UserViewModel
 			{

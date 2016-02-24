@@ -1,4 +1,17 @@
 (function ($) {
+	var scrollTo = function ($element, topPadding, duration) {
+		topPadding = topPadding || 100;
+		duration = duration || 500;
+
+		var newScrollTop = $element.offset().top - topPadding;
+		if (Math.abs($('body').scrollTop() - newScrollTop) < 300)
+			return false;
+
+		$('html, body').animate({
+			scrollTop: newScrollTop
+		}, duration);
+	}
+
 	var likeComment = function () {
 		var $self = $(this);
 		var url = $self.data('url');
@@ -20,6 +33,7 @@
 		var $replyForm = $(e.target).closest('.comment').next();
 		$replyForm.fadeIn();
 		$replyForm.find('[name=commentText]').click();
+		scrollTo($replyForm.find('[name=commentText]'));
 	}
 
 	var expandReplyForm = function (e) {
@@ -31,6 +45,7 @@
 
 		$(this).replaceWith($textarea);
 		$textarea.focus().after($button);
+		scrollTo($textarea, 200);
 	}
 
 	var disableButtonForEmptyComment = function() {

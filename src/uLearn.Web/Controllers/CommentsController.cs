@@ -62,6 +62,20 @@ namespace uLearn.Web.Controllers
 			return PartialView(model);
 		}
 
+		private bool CanAddComment(IPrincipal user, string courseId, bool isReply)
+		{
+			var commentPolicy = commentsRepo.GetCommentsPolicy(courseId);
+			var isInstructor = User.HasAccessFor(courseId, CourseRole.Instructor);
+
+			if (!isInstructor && !commentPolicy.IsCommentsEnabled)
+				return false;
+
+			if (isReply && !isInstructor && commentPolicy.OnlyInstructorsCanReply)
+				return false;
+
+			return true;
+		}
+
 		[ULearnAuthorize]
 		[HttpPost]
 		[ValidateInput(false)]
@@ -71,7 +85,12 @@ namespace uLearn.Web.Controllers
 			var parentCommentIdInt = -1;
 			if (parentCommentId != null)
 				int.TryParse(parentCommentId, out parentCommentIdInt);
+
+			if (! CanAddComment(User, courseId, parentCommentIdInt != -1))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
 			var comment = await commentsRepo.AddComment(User, courseId, slideId, parentCommentIdInt, commentText);
+			var canReply = CanAddComment(User, courseId, true);
 
 			return PartialView("_Comment", new CommentViewModel
 			{
@@ -82,7 +101,21 @@ namespace uLearn.Web.Controllers
 				IsCommentVisibleForUser = true,
 				CanDeleteComment = true,
 				CanModerateComment = User.HasAccessFor(courseId, CourseRole.Instructor),
+				CanReply = canReply,
 			});
+		}
+
+		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> EditCommentText(int commentId, string newText)
+		{
+			var comment = commentsRepo.GetCommentById(commentId);
+			if (!User.HasAccessFor(comment.CourseId, CourseRole.Instructor))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
+			await commentsRepo.EditCommentText(commentId, newText);
+			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 
 		[ULearnAuthorize]
@@ -94,7 +127,7 @@ namespace uLearn.Web.Controllers
 			var res = await commentsRepo.LikeComment(commentId, userId);
 			return Json(new { likesCount = res.Item1, liked = res.Item2 });
 		}
-
+		
 		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]

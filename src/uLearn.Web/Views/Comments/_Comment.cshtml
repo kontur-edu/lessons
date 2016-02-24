@@ -52,11 +52,15 @@
 				{
 					<div class="comment__correct-answer label label-as-badge label-primary">
 						правильный ответ
-						<span class="comment__mark-as-correct-link"
-							data-url="@Url.Action("MarkAsCorrectAnswer", new { commentId = Model.Comment.Id, isCorrect = false })"
-							data-correct="false">
-							<a href="">&times;</a>
-						</span>
+						@if (Model.CanModerateComment)
+						{
+							<span class="comment__mark-as-correct-link"
+								data-url="@Url.Action("MarkAsCorrectAnswer", new { commentId = Model.Comment.Id, isCorrect = false })"
+								data-correct="false">
+								<a href=""><span class="glyphicon glyphicon-remove"></span></a>
+								@Html.AntiForgeryToken()
+							</span>
+						}
 					</div>
 				}
 
@@ -110,13 +114,13 @@
 					<div class="comment__pin-link show-on-hover"
 					     data-url="@Url.Action("PinComment", new { commentId = Model.Comment.Id })"
 					     data-pinned="true">
-						<a href="">закрепить&uarr;</a>
+						<a href="">закрепить<span class="glyphicon glyphicon-arrow-up"></span></a>
 						@Html.AntiForgeryToken()
 					</div>
 					<div class="comment__unpin-link show-on-hover"
 					     data-url="@Url.Action("UnpinComment", new { commentId = Model.Comment.Id })"
 					     data-pinned="false">
-						<a href="">открепить&darr;</a>
+						<a href="">открепить<span class="glyphicon glyphicon-arrow-down"></span></a>
 						@Html.AntiForgeryToken()
 					</div>
 				}

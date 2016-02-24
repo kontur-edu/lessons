@@ -464,6 +464,12 @@ li.li-success {
 	font-size: 10pt;
 }
 
+.comments .comment .comment__header .glyphicon,
+.comments .comment .comment__footer .glyphicon:not(.glyphicon-heart){
+	font-size: 80%;
+	margin-left: 3px;
+}
+
 .comments .comment .comment__header > div,
 .comments .comment .comment__footer > div {
     display: inline-block;
@@ -584,10 +590,6 @@ li.li-success {
 
 .comments .comment .comment__footer .comment__mark-as-correct-link * {
 	color: #8b0000;
-}
-
-.comments .comment .comment__correct-answer .comment__mark-as-correct-link {
-	margin-left: 3px;
 }
 
 .comments .comment .comment__correct-answer .comment__mark-as-correct-link * {

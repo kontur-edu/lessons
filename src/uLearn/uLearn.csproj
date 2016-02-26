@@ -89,7 +89,6 @@
     <Compile Include="CommentAfterExerciseIsSolved.cs" />
     <Compile Include="Course.cs" />
     <Compile Include="CourseLoader.cs" />
-    <Compile Include="CourseManagerExtention.cs" />
     <Compile Include="CourseSettings.cs" />
     <Compile Include="CourseManager.cs" />
     <Compile Include="CSharp\BaseNamingChecker.cs" />
@@ -158,6 +157,12 @@
     <Compile Include="Model\RegionRemover.cs" />
     <Compile Include="Model\RegionsExtractor.cs" />
     <Compile Include="RegionsParser.cs" />
+    <Compile Include="SlideIdChecking\GlobalSlideIdErrorList.cs" />
+    <Compile Include="SlideIdChecking\LocalSlideIdErrorList.cs" />
+    <Compile Include="SlideIdChecking\MinimalSlideInfo.cs" />
+    <Compile Include="SlideIdChecking\RequiredSlideInfo.cs" />
+    <Compile Include="SlideIdChecking\SlideDescription.cs" />
+    <Compile Include="SlideIdChecking\SlideIdChecker.cs" />
     <Compile Include="SlideInfo.cs" />
     <Compile Include="Md.cs" />
     <Compile Include="ResourceLoader.cs" />

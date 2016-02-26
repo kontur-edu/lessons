@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using uLearn.SlideIdChecking;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using uLearn.Web.DataContexts;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
@@ -19,12 +21,14 @@ namespace uLearn.Web.Controllers
 		private readonly CourseManager courseManager;
 		private readonly ULearnDb db;
 		private readonly UsersRepo usersRepo;
+		private readonly UserManager<ApplicationUser> userManager;
 
 		public UnitController()
 		{
 			db = new ULearnDb();
 			courseManager = WebCourseManager.Instance;
 			usersRepo = new UsersRepo(db);
+			userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ULearnDb()));
 		}
 
 		public ActionResult CourseList(string courseCreationLastTry = null)
@@ -168,7 +172,7 @@ namespace uLearn.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult UsersPartial(UserSearchQueryModel queryModel)
 		{
-			var userRoles = usersRepo.FilterUsers(queryModel);
+			var userRoles = usersRepo.FilterUsers(queryModel, userManager);
 			var model = GetUserListModel(userRoles, queryModel.CourseId);
 
 			return PartialView("_UserListPartial", model);

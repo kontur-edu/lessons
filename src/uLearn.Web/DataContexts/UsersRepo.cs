@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.AspNet.Identity;
 using uLearn.Web.Models;
 
 namespace uLearn.Web.DataContexts
@@ -19,16 +21,17 @@ namespace uLearn.Web.DataContexts
 			userRolesRepo = new UserRolesRepo(db);
 		}
 
-		public List<UserRolesInfo> FilterUsers(UserSearchQueryModel query)
+		public List<UserRolesInfo> FilterUsers(UserSearchQueryModel query, UserManager<ApplicationUser> userManager)
 		{
+			var role = db.Roles.FirstOrDefault(r => r.Name == query.Role);
 			return db.Users
 				.FilterByName(query.NamePrefix)
-				.FilterByRole(query.Role)
+				.FilterByRole(role, userManager)
 				.FilterByUserIds(
 					userRolesRepo.GetListOfUsersWithCourseRole(query.CourseRole, query.CourseId),
 					userRolesRepo.GetListOfUsersByPrivilege(query.OnlyPrivileged, query.CourseId)
 				)
-				.GetUserRolesInfo(50);
+				.GetUserRolesInfo(50, userManager);
 		}
  
 	}

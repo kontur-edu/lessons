@@ -56,7 +56,7 @@ namespace uLearn.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult ListPartial(UserSearchQueryModel queryModel)
 		{
-			var userRoles = usersRepo.FilterUsers(queryModel);
+			var userRoles = usersRepo.FilterUsers(queryModel, userManager);
 			var model = GetUserListModel(userRoles);
 
 			return PartialView("_UserListPartial", model);
@@ -362,9 +362,9 @@ namespace uLearn.Web.Controllers
 			Error
 		}
 
-		public async Task<PartialViewResult> ChangeDetailsPartial()
+		public PartialViewResult ChangeDetailsPartial()
 		{
-			var user = await userManager.FindByNameAsync(User.Identity.Name);
+			var user = userManager.FindByName(User.Identity.Name);
 			var hasPassword = ControllerUtils.HasPassword(userManager, User);
 			return PartialView(new UserViewModel
 			{

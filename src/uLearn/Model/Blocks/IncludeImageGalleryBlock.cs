@@ -22,7 +22,7 @@ namespace uLearn.Model.Blocks
 
 		public override IEnumerable<SlideBlock> BuildUp(BuildUpContext context, IImmutableSet<string> filesInProgress)
 		{
-			yield return new ImageGaleryBlock(context.FileSystem.GetFilenames(Directory));
+			yield return new ImageGaleryBlock(context.FileSystem.GetFilenames(Directory)) { Hide = Hide };
 		}
 
 		public override Component ToEdxComponent(string displayName, Slide slide, int componentIndex)

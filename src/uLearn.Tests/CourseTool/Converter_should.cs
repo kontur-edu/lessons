@@ -28,7 +28,7 @@ namespace uLearn.CourseTool
 			if (!Directory.Exists(testFolderName))
 				Directory.CreateDirectory(testFolderName);
 			var cm = new CourseManager(new DirectoryInfo(@"..\..\..\uLearn.Web"));
-			cm.ReloadCourse("ForTests.zip");
+			cm.ReloadCourse("ForTests");
 			course = cm.GetCourses().Single();
 		}
 

@@ -25,7 +25,18 @@
 
 .run-style-error, .run-service-error, .run-compile-error, .run-success, .run-wa, .run-wa-no-diff, .run-details {
 }
+
 .code, .code-exercise {
+}
+
+.revealed {
+	background-color: #FDD;
+	padding: 10px;
+	-ms-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.statistic-container {
 }
 
 /* ReSharper restore Html.CssClassElementsNotFound */
@@ -150,7 +161,7 @@
 		cursor: pointer;
 		color: #428bca;
 	}
-	/* ReSharper restore Html.CssClassElementsNotFound */
+/* ReSharper restore Html.CssClassElementsNotFound */
 .side-bar {
 	width: 350px;
 	margin: 0;
@@ -256,7 +267,7 @@
 }
 
 .run-solution-button-lti {
-    width: 50% !important;
+	width: 50% !important;
 }
 
 
@@ -354,11 +365,85 @@ div.tex {
 	font-weight: bold;
 }
 
-.course-name > a:hover {
-	background-color: white !important;
-	color: #428BCA;
-}
+	.course-name > a:hover {
+		background-color: white !important;
+		color: #428BCA;
+	}
 
 .submitions-item {
 	cursor: pointer;
+}
+
+table.diff {
+	border-collapse: collapse;
+	border: 1px solid lightblue /*darkgray*/;
+	white-space: pre-wrap;
+	table-layout: fixed;
+	width: 100%;
+}
+
+	table.diff tbody {
+		font-family: Monaco, Menlo, Consolas, "Courier New", monospace;
+	}
+
+	table.diff thead th:first-child {
+		width: 30px;
+	}
+
+	table.diff th {
+		background: aliceblue;
+		font-weight: normal;
+		border: 1px solid lightblue /*#BBC*/;
+		text-align: center !important;
+		vertical-align: top;
+	}
+
+	table.diff tbody th {
+		font-size: 11px;
+		color: #428bca /*#886*/;
+	}
+
+	table.diff tbody td {
+		padding: 0 .4em;
+		padding-top: .4em;
+		vertical-align: top;
+		border-right: 1px solid aliceblue;
+	}
+
+	table.diff .different:nth-child(odd) td {
+		background-color: #E99;
+	}
+
+	table.diff .different:nth-child(even) td {
+		background-color: #FAA;
+	}
+
+	table.diff .equals:nth-child(odd) td {
+		background-color: #9E9;
+	}
+
+	table.diff .equals:nth-child(even) td {
+		background-color: #AFA;
+	}
+
+body.lti-component {
+	padding-top: 0;
+	margin-top: 0;
+	overflow-x: hidden;
+}
+
+li.li-danger {
+	background: #f5d8d6;
+}
+
+li.li-warning {
+	background: #fbe9d0;
+}
+
+li.li-info {
+	background: #d5eff6;
+}
+
+li.li-success {
+	background: #dbf0db;
 }

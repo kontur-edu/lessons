@@ -80,7 +80,7 @@
 $(SolutionDir)packages\NUnit.Runners.2.6.3\tools\nunit-console.exe $(TargetPath) /exclude:Long || exit /b
 del "$(OutDir)$(ProjectName).zip"
 "$(SolutionDir)..\tools\7z\7za.exe" a "$(OutDir)$(ProjectName).zip" "$(ProjectDir)Slides\*"
-copy "$(OutDir)$(ProjectName).zip" $(SolutionDir)uLearn.Web\Courses.Staging\</PostBuildEvent>
+copy "$(OutDir)$(ProjectName).zip" "$(SolutionDir)uLearn.Web\Courses.Staging\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

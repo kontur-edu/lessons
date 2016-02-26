@@ -165,7 +165,8 @@ namespace uLearn.Web.Controllers
 					slide, 
 					slide.Info.DirectoryRelativePath, 
 					slide.Blocks.Select(block => block is ExerciseBlock ? exerciseBlockData : (dynamic)null).ToArray(),
-					true),
+					true,
+					false),
 				IsGuest = true,
 			};
 		}
@@ -203,7 +204,10 @@ namespace uLearn.Web.Controllers
 				course,
 				slide,
 				slide.Info.DirectoryRelativePath,
-				blockData);
+				blockData,
+				false,
+				User.HasAccessFor(course.Id, CourseRole.Instructor)
+				);
 		}
 
 		private dynamic CreateBlockData(Course course, Slide slide, SlideBlock slideBlock, Visit visit, bool isLti)

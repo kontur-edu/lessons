@@ -19,6 +19,23 @@ namespace uLearn
 		public virtual bool ShouldBeSolved { get { return false; } }
 		public int MaxScore { get; protected set; }
 
+		public IEnumerable<SlideBlock[]> GetBlocksRangesWithSameVisibility()
+		{
+			if (Blocks.Length == 0)
+				yield break;
+			var range = new List<SlideBlock> {Blocks[0]};
+			foreach (var block in Blocks.Skip(1))
+			{
+				if (block.Hide != range.Last().Hide)
+				{
+					yield return range.ToArray();
+					range.Clear();
+				}
+				range.Add(block);
+			}
+			yield return range.ToArray();
+		}
+
 
 		public Slide(IEnumerable<SlideBlock> blocks, SlideInfo info, string title, string id)
 		{

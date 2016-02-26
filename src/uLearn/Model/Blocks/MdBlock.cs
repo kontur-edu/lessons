@@ -15,6 +15,7 @@ namespace uLearn.Model.Blocks
 			set { markdown = value.RemoveCommonNesting(); }
 		}
 
+
 		public MdBlock(string markdown)
 		{
 			if (markdown != null)

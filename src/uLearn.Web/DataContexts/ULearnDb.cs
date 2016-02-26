@@ -8,7 +8,7 @@ namespace uLearn.Web.DataContexts
 	public class ULearnDb : IdentityDbContext<ApplicationUser>
 	{
 		public ULearnDb()
-			: base("DefaultConnection")
+			: base("DefaultConnection", throwIfV1Schema: false)
 		{
 			Database.SetInitializer(new MigrateDatabaseToLatestVersion<ULearnDb, Configuration>());
 

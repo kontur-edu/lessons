@@ -14,7 +14,7 @@ namespace RunCsJob
 	{
 		private readonly RunnerSubmition _submission;
 
-		private const int TimeLimitInSeconds = 5;
+		private const int TimeLimitInSeconds = 10;
 		private static readonly TimeSpan TimeLimit = TimeSpan.FromSeconds(TimeLimitInSeconds);
 		private static readonly TimeSpan IdleTimeLimit = TimeSpan.FromSeconds(2*TimeLimitInSeconds);
 

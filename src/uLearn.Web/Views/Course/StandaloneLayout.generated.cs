@@ -88,7 +88,9 @@ WebViewPage.WriteTo(@__razor_helper_writer, SlideHtml.Slide(new BlockRenderConte
 								: b is AbstractQuestionBlock 
 									? new QuizBlockData(new QuizModel() {AnswersToQuizes = slide.Blocks.OfType<AbstractQuestionBlock>().ToDictionary(x => x.Id, x => new List<string>())}, i, QuizState.Total) 
 									: (dynamic)null
-							).ToArray()
+							).ToArray(),
+							false,
+							true
 						)
 					));
 

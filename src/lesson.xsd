@@ -4,7 +4,7 @@
 	xmlns:x="http://www.w3.org/2001/XMLSchema-instance"
 	elementFormDefault="qualified"
 	targetNamespace="https://ulearn.azurewebsites.net/lesson">
-	
+
 	<xs:element name="Lesson" type="Lesson">
 		<xs:unique name="UniqueBlockId">
 			<xs:selector xpath="*" />
@@ -20,12 +20,12 @@
 			<xs:group ref="blocks" maxOccurs="unbounded" />
 		</xs:sequence>
 	</xs:complexType>
-	
+
 	<xs:group name="blocks">
 		<xs:choice>
 			<xs:element name="gallery-images" type="GalleryImages" />
 			<xs:element name="tex" type="Tex" />
-			<xs:element name="md" type="notEmptyString" />
+			<xs:element name="md" type="MdBlock" />
 			<xs:element name="code" type="Code" />
 			<xs:element name="youtube" type="notEmptyString" />
 			<xs:element name="include-code" type="IncludeCodeBlock" />
@@ -59,12 +59,22 @@
 			<xs:extension base="notEmptyString">
 				<xs:attribute name="lang-id" type="notEmptyString" use="required" />
 				<xs:attribute name="lang-ver" type="notEmptyString" use="optional" />
+				<xs:attribute name="hide" type="xs:boolean"/>
 			</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
 
 	<xs:complexType name="Include">
 		<xs:attribute name="file" type="notEmptyString" use="optional" />
+		<xs:attribute name="hide" type="xs:boolean"/>
+	</xs:complexType>
+
+	<xs:complexType name="MdBlock">
+		<xs:simpleContent>
+			<xs:extension base="notEmptyString">
+				<xs:attribute name="hide" type="xs:boolean"/>
+			</xs:extension>
+		</xs:simpleContent>
 	</xs:complexType>
 
 	<xs:complexType name="IncludeCodeBlock">
@@ -80,8 +90,8 @@
 	<xs:complexType name="IncludeCode">
 		<xs:complexContent>
 			<xs:extension base="Include">
-			<xs:attribute name="lang-id" type="notEmptyString" use="optional" />
-			<xs:attribute name="lang-ver" type="notEmptyString" use="optional" />
+				<xs:attribute name="lang-id" type="notEmptyString" use="optional" />
+				<xs:attribute name="lang-ver" type="notEmptyString" use="optional" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -111,5 +121,5 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
+
 </xs:schema>

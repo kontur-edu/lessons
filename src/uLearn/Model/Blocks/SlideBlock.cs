@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Xml.Serialization;
 using uLearn.Model.Edx.EdxComponents;
 
 namespace uLearn.Model.Blocks
 {
 	public abstract class SlideBlock
 	{
+		[XmlAttribute("hide")]
+		public bool Hide { get; set; }
+
 		public virtual void Validate()
 		{
 		}

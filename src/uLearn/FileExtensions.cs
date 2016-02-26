@@ -44,5 +44,12 @@ namespace uLearn
 			using(var stream = file.OpenRead())
 				return (T) serializer.Deserialize(stream);
 		}
+
+		public static T DeserializeXml<T>(this string content)
+		{
+			var serializer = new XmlSerializer(typeof(T));
+			using (var stream = new StringReader(content))
+				return (T)serializer.Deserialize(stream);
+		}
 	}
 }

@@ -181,3 +181,4 @@ FakesAssemblies/
 /src/courses/Linq/Generated
 *.received.txt
 private.settings
+/src/.vs/config

@@ -1,5 +1,4 @@
 ﻿@using uLearn
-@using uLearn.Model.Blocks
 @using uLearn.Quizes
 @using uLearn.Web.Views.Course
 @model CoursePageModel
@@ -7,7 +6,6 @@
 @{
 	ViewBag.Title = Model.CourseTitle;
 	ViewBag.Slide = Model.Slide;
-	var blocks = Model.Slide.Blocks.Where(b => !(b is ExerciseBlock)).ToList();
 }
 
 @Html.Action("TableOfContents", "SlideNavigation", new { courseId = Model.CourseId, slideIndex = Model.Slide.Index })
@@ -21,7 +19,7 @@
 				{
 					@Html.Action("Quiz", "Quiz", new
 					{
-						slide = Model.Slide as QuizSlide,
+						slide = (QuizSlide)Model.Slide,
 						courseId = Model.CourseId,
 						userId = Model.UserId,
 						isGuest = Model.IsGuest
@@ -29,12 +27,9 @@
 				}
 				else
 				{
-					@Html.DisplayFor(m => blocks)
+					@SlideHtml.Blocks(Model.BlockRenderContext)
 				}
-				@if (Model.Slide is ExerciseSlide)
-				{
-					@SlideHtml.Block(((ExerciseSlide)Model.Slide).Exercise, Model.BlockRenderContext)
-				}
+
 				@if (!Model.IsGuest)
 				{
 					@Html.Partial("_AskBar")

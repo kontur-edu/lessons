@@ -15,11 +15,32 @@
 			@context.Slide.Title
 			<span class="score">@Score(currentScore, context.Slide.MaxScore)</span>
 		</h1>
-		@foreach (var block in context.Slide.Blocks)
-		{
-			@Block((dynamic)block, context)
-		}
+		@Blocks(context)
 	</div>
+}
+
+@helper Blocks(BlockRenderContext context)
+{
+	foreach (var blockRange in context.Slide.GetBlocksRangesWithSameVisibility())
+	{
+		if (!blockRange[0].Hide)
+		{
+			foreach (var block in blockRange)
+			{
+				@Block((dynamic)block, context)
+			}
+		}
+		else if (context.RevealHidden)
+		{
+			<div class='revealed' data-toggle="tooltip" data-placement="left" title="Этот блок студенты не видят">
+				<h4>Инструктору</h4>
+				@foreach (var block in blockRange)
+				{
+					@Block((dynamic)block, context)
+				}
+			</div>
+		}
+	}
 }
 
 @helper Block(AbstractQuestionBlock block, BlockRenderContext context)
@@ -39,7 +60,7 @@
 	}
 	<h4><i class="@mark" style="@style"></i> @block.QuestionIndex. @block.Text.RenderTex()</h4>
 	@QuizBlock((dynamic)block, context)
-	<hr class="quiz-block-delimiter"/>
+	<hr class="quiz-block-delimiter" />
 }
 
 
@@ -87,7 +108,7 @@
 			@foreach (var imageUrl in block.ImageUrls)
 			{
 				<li>
-					<img src="@string.Format("{0}/{1}", context.BaseUrl, imageUrl)" alt="@imageUrl"/>
+					<img src="@string.Format("{0}/{1}", context.BaseUrl, imageUrl)" alt="@imageUrl" />
 				</li>
 			}
 		</ul>
@@ -130,8 +151,8 @@
 			{
 				var e = ((ExerciseSlide)context.Slide).Exercise.HintsMd;
 				<button id="GetHintButton" type="button" class="btn btn-default hints-btn"
-				        data-course-id="@context.Course.Id" data-slide-index="@context.Slide.Index" data-hints-count="@e.Count"
-				        data-url="@data.GetHintUrl">
+						data-course-id="@context.Course.Id" data-slide-index="@context.Slide.Index" data-hints-count="@e.Count"
+						data-url="@data.GetHintUrl">
 					Get hint
 				</button>
 				if (!data.IsLti)

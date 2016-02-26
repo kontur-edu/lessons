@@ -160,7 +160,7 @@
     <PostBuildEvent>REM copy this post build step to new course
 del "$(OutDir)$(ProjectName).zip"
 "$(SolutionDir)..\tools\7z\7za.exe" a -mcu "$(OutDir)$(ProjectName).zip" "$(ProjectDir)Slides\*"
-copy "$(OutDir)$(ProjectName).zip" $(SolutionDir)uLearn.Web\Courses.Staging\</PostBuildEvent>
+copy "$(OutDir)$(ProjectName).zip" "$(SolutionDir)uLearn.Web\Courses.Staging\"</PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

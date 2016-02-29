@@ -129,13 +129,13 @@ namespace uLearn.Web.Controllers
 		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> ApproveComment(int commentId)
+		public async Task<ActionResult> ApproveComment(int commentId, bool isApproved=true)
 		{
 			var comment = commentsRepo.GetCommentById(commentId);
 			if (!User.HasAccessFor(comment.CourseId, CourseRole.Instructor))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
-			await commentsRepo.ApproveComment(commentId);
+			await commentsRepo.ApproveComment(commentId, isApproved);
 			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 

@@ -160,9 +160,9 @@ namespace uLearn.Web.DataContexts
 		    await ModifyComment(commentId, c => c.Text = newText);
 	    }
 
-	    public async Task ApproveComment(int commentId)
+	    public async Task ApproveComment(int commentId, bool isApproved)
 	    {
-		    await ModifyComment(commentId, c => c.IsApproved = true);
+		    await ModifyComment(commentId, c => c.IsApproved = isApproved);
 	    }
 
 	    public async Task RemoveComment(int commentId)

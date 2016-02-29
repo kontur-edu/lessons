@@ -92,21 +92,30 @@
 		var url = $self.data('url');
 		var token = $self.find('input[name="__RequestVerificationToken"]').val();
 		var $comment = $self.closest('.comment');
+		var isApproved = ! $comment.is('.not-approved');
 		var $label = $comment.find('.comment__not-approved');
-		
+
 		$.ajax({
 			type: 'post',
 			url: url,
-			data: { __RequestVerificationToken: token }
+			data: {
+				__RequestVerificationToken: token,
+				isApproved: ! isApproved,
+			}
 		}).success(function () {
-			//$self.hide();
-			$comment.removeClass('not-approved');
-			$label.removeClass('label-default')
-				.addClass('label-success')
-				.text('опубликовано');
-			setTimeout(function() {
-				$label.fadeOut(300);
-			}, 1000);
+			$comment.toggleClass('not-approved', isApproved);
+			/*
+			if (isApproved) {
+				$comment.removeClass('not-approved');
+			} else {
+				$comment.removeClass('not-approved');
+				$label.removeClass('label-default')
+					.addClass('label-success')
+					.text('опубликовано');
+				setTimeout(function() {
+					$label.fadeOut(300);
+				}, 1000);
+			}*/
 		});
 	};
 
@@ -190,6 +199,7 @@
 	$('.comments').on('click', '.reply-form .reply-form__send-button', sendComment);
 	$('.comments').on('click', '.comment .comment__inline-reply', createReplyForm);
 	$('.comments').on('click', '.comment .comment__not-approved.label-switcher', approveComment);
+	$('.comments').on('click', '.comment .comment__hide-link', approveComment);
 	$('.comments').on('click', '.comment .comment__remove-link', removeComment);
 	$('.comments').on('click', '.comment .comment__pinned.label-switcher', pinOrUnpinComment);
 	$('.comments').on('click', '.comment .comment__correct-answer.label-switcher', markCommentAsCorrect);

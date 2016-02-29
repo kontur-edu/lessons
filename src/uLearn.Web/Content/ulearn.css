@@ -475,6 +475,10 @@ li.li-success {
     display: inline-block;
 }
 
+.comments .comment .comment__header .comment__not-approved {
+	display: inline;
+}
+
 .comments .comment .label {
 	font-size: 7pt;
 	vertical-align: middle;
@@ -577,11 +581,12 @@ li.li-success {
     padding-top: 15px;
 }
 
-.comments .comment.is-pinned .comment__footer .comment__pin-link {
-	display: none;
-}
-
-.comments .comment:not(.is-pinned) .comment__footer .comment__unpin-link {
+.comments .comment.is-pinned .comment__footer .comment__pin-link,
+.comments .comment:not(.is-pinned) .comment__footer .comment__unpin-link,
+.comments .comment.not-approved .comment__footer .comment__hide-link,
+.comments .comment.not-approved .comment__header .comment__pinned,
+.comments .comment.not-approved .comment__header .comment__correct-answer,
+.comments .comment:not(.not-approved) .comment__header .comment__not-approved {
 	display: none;
 }
 
@@ -625,8 +630,17 @@ li.li-success {
 	color: inherit;	
 }
 
+.comments .comment .comment__footer .comment__hide-link a {
+	color: #bbb;
+}
+
 .comments .comment .comment__header *:hover > .hide-on-parent-hover,
 .comments .comment .comment__footer *:hover > .hide-on-parent-hover {
+	display: none;
+}
+
+.comments .comment .comment__header *:not(:hover) > .show-on-parent-hover,
+.comments .comment .comment__footer *:not(:hover) > .show-on-parent-hover {
 	display: none;
 }
 

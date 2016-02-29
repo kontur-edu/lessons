@@ -41,12 +41,20 @@
 						@Model.Comment.Author.FirstName @Model.Comment.Author.LastName
 					}
 				</div>
-				@if (!Model.Comment.IsApproved)
+				@if (Model.CanModerateComment || !Model.Comment.IsApproved)
 				{
 					<div class="comment__not-approved @(Model.CanModerateComment ? "label-switcher" : "") label label-as-badge label-default"
-						 data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
-						не опубликовано
-						@Html.AntiForgeryToken()
+					     data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
+						@if (Model.CanModerateComment)
+						{
+							<span class="hide-on-parent-hover">не опубликовано</span>
+							<span class="show-on-parent-hover">опубликовать <span class="glyphicon glyphicon-ok"></span></span>
+							@Html.AntiForgeryToken()
+						}
+						else
+						{
+							<text>не опубликовано</text>	
+						}
 					</div>
 				}
 
@@ -115,10 +123,10 @@
 						<a href="">ответить</a>
 					</div>
 				}
-				@if (Model.CanModerateComment && !Model.Comment.IsApproved)
+				@if (Model.CanModerateComment)
 				{
-					<div class="comment__approve-link show-on-comment-hover" data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
-						<a href="">опубликовать</a>
+					<div class="comment__hide-link show-on-comment-hover" data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
+						<a href="">скрыть</a>
 						@Html.AntiForgeryToken()
 					</div>
 				}

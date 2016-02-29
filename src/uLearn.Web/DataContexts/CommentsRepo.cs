@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Principal;
 using System.Threading.Tasks;
-using ApprovalTests.Reporters;
 using Microsoft.AspNet.Identity;
 using uLearn.Web.Models;
 
@@ -176,14 +175,9 @@ namespace uLearn.Web.DataContexts
 			return await ModifyComment(commentId, c => c.IsDeleted = false);
 		}
 
-	    public async Task PinComment(int commentId)
+	    public async Task PinComment(int commentId, bool isPinned)
 	    {
-		    await ModifyComment(commentId, c => c.IsPinnedToTop = true);
-		}
-
-		public async Task UnpinComment(int commentId)
-		{
-			await ModifyComment(commentId, c => c.IsPinnedToTop = false);
+		    await ModifyComment(commentId, c => c.IsPinnedToTop = isPinned);
 		}
 
 	    public async Task MarkCommentAsCorrectAnswer(int commentId, bool isCorrect=true)

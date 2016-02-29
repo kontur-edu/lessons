@@ -1,44 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace uLearn.Web
+﻿namespace uLearn.Web
 {
 	public static class PluralizeExtensions
 	{
-		public static string PluralizeInRussian(this int number, RussianPluralizationContext context, bool smallNumbersAreWords=true, bool hideNumberOne=true)
+		public static string PluralizeInRussian(this int number, RussianPluralizationOptions options)
 		{
-			if (smallNumbersAreWords)
+			if (options.smallNumbersAreWords)
 			{
-				// TODO: feminine
 				switch (number)
 				{
 					case 1:
-						return string.Format("{0}{1}", hideNumberOne ? "" : "один ", context.One);
+						var one = options.Gender == Gender.Male ? "один" : "одна";
+						return string.Format("{0}{1}", options.hideNumberOne ? "" : one + " ", options.One);
 					case 2:
-						return string.Format("два {0}", context.Two);
+						var two = options.Gender == Gender.Male ? "два" : "две";
+						return string.Format("{0} {1}", two, options.Two);
 					case 3:
-						return string.Format("три {0}", context.Two);
+						return string.Format("три {0}", options.Two);
 				}
 			}
 			var lastDigit = number % 10;
-			var word = context.Five;
+			var word = options.Five;
 			if (number % 100 < 10 || number % 100 > 20)
 			{
 				if (lastDigit == 1)
-					word = context.One;
+					word = options.One;
 				if (lastDigit >= 2 && lastDigit <= 4)
-					word = context.Two;
+					word = options.Two;
 			}
 			return string.Format("{0} {1}", number, word);
 		}
 	}
 
-	public class RussianPluralizationContext
+	public class RussianPluralizationOptions
 	{
 		public string One;
 		public string Two;
 		public string Five;
+
+		public Gender Gender = Gender.Male;
+
+		public bool smallNumbersAreWords = true;
+		public bool hideNumberOne = true;
+	}
+
+	public enum Gender
+	{
+		Male,
+		Female
 	}
 }

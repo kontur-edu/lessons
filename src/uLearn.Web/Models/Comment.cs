@@ -22,11 +22,13 @@ namespace uLearn.Web.Models
 
 		[Required]
 		[StringLength(64)]
+		[Index("IDX_Comment_ByAuthorAndPublishTime", 1)]
 		public string AuthorId { get; set; }
 
 		public virtual ApplicationUser Author { get; set; }
 
 		[Required]
+		[Index("IDX_Comment_ByAuthorAndPublishTime", 2)]
 		public DateTime PublishTime { get; set; }
 
 		[Required]

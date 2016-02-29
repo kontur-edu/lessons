@@ -9,12 +9,12 @@ namespace uLearn.Web
 
 		public static string ToPrettyString(this DateTime dateTime)
 		{
-			return string.Format("{0} в {1}", dateTime.ToLongDateString(), dateTime.ToShortTimeString());
+			return string.Format("{0} в {1} (UTC)", dateTime.ToLongDateString(), dateTime.ToShortTimeString());
 		}
 
-		public static string ToDatePrettyString(this DateTime dateTime, bool withoutYearIfItsCurrent = false)
+		public static string ToDatePrettyString(this DateTime dateTime, bool withoutYearIfItsCurrent=false)
 		{
-			if (DateTime.Now.Year == dateTime.Year)
+			if (DateTime.Now.Year == dateTime.Year && withoutYearIfItsCurrent)
 				return dateTime.ToString("dd MMMM");
 			return dateTime.ToLongDateString();
 		}
@@ -23,7 +23,7 @@ namespace uLearn.Web
 		{
 			var diff = DateTime.Now.Subtract(from);
 			if (diff.TotalDays > 10)
-				return from.ToDatePrettyString();
+				return from.ToDatePrettyString(true);
 			return diff.ToPrettyString();
 		}
 
@@ -42,19 +42,19 @@ namespace uLearn.Web
 				if (secondsAgo < secondsInHour)
 				{
 					var minutesAgo = secondsAgo / 60;
-					return string.Format("{0} назад", minutesAgo.PluralizeInRussian(new RussianPluralizationContext {One = "минута", Two = "минуты", Five = "минут"}));
+					return string.Format("{0} назад", minutesAgo.PluralizeInRussian(new RussianPluralizationOptions {One = "минуту", Two = "минуты", Five = "минут", Gender = Gender.Female}));
 				}
 				if (secondsAgo < secondsInDay)
 				{
 					var hoursAgo = secondsAgo / secondsInHour;
-					return string.Format("{0} назад", hoursAgo.PluralizeInRussian(new RussianPluralizationContext {One = "час", Two = "часа", Five = "часов"}));
+					return string.Format("{0} назад", hoursAgo.PluralizeInRussian(new RussianPluralizationOptions {One = "час", Two = "часа", Five = "часов"}));
 				}
 			}
 
 			if (daysAgo == 1)
 				return "вчера";
 
-			return string.Format("{0} назад", daysAgo.PluralizeInRussian(new RussianPluralizationContext { One = "день", Two = "дня", Five = "дней" }));
+			return string.Format("{0} назад", daysAgo.PluralizeInRussian(new RussianPluralizationOptions { One = "день", Two = "дня", Five = "дней" }));
 		}
 	}
 }

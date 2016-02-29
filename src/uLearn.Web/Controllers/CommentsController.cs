@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -7,7 +6,6 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using uLearn.Web.DataContexts;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
@@ -17,7 +15,6 @@ namespace uLearn.Web.Controllers
 	public class CommentsController : Controller
 	{
 		private readonly CommentsRepo commentsRepo = new CommentsRepo();
-		private readonly UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ULearnDb()));
 
 		public ActionResult SlideComments(string courseId, string slideId)
 		{
@@ -38,11 +35,9 @@ namespace uLearn.Web.Controllers
 			var commentsLikesCounts = commentsRepo.GetCommentsLikesCounts(comments);
 			var commentsLikedByUser = commentsRepo.GetSlideCommentsLikedByUser(courseId, slideId, User.Identity.GetUserId()).ToImmutableHashSet();
 
-			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
 			var isInstructor = User.HasAccessFor(courseId, CourseRole.Instructor);
-
-			var isAuthorizedAndCanComment = User.Identity.IsAuthenticated && (commentsPolicy.IsCommentsEnabled || isInstructor);
-			var canReply = User.Identity.IsAuthenticated && commentsPolicy.IsCommentsEnabled && (! commentsPolicy.OnlyInstructorsCanReply || isInstructor);
+			var isAuthorizedAndCanComment = CanAddComment(User, courseId, false);
+			var canReply = CanAddComment(User, courseId, true);
 			var canModerateComments = User.Identity.IsAuthenticated && isInstructor;
 			var canSeeNotApprovedComments = User.Identity.IsAuthenticated && isInstructor;
 
@@ -64,8 +59,11 @@ namespace uLearn.Web.Controllers
 
 		private bool CanAddComment(IPrincipal user, string courseId, bool isReply)
 		{
+			if (!User.Identity.IsAuthenticated)
+				return false;
+
 			var commentPolicy = commentsRepo.GetCommentsPolicy(courseId);
-			var isInstructor = User.HasAccessFor(courseId, CourseRole.Instructor);
+			var isInstructor = user.HasAccessFor(courseId, CourseRole.Instructor);
 
 			if (!isInstructor && !commentPolicy.IsCommentsEnabled)
 				return false;
@@ -144,33 +142,20 @@ namespace uLearn.Web.Controllers
 		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> PinComment(int commentId)
+		public async Task<ActionResult> PinComment(int commentId, bool isPinned)
 		{
 			var comment = commentsRepo.GetCommentById(commentId);
 			if (!User.HasAccessFor(comment.CourseId, CourseRole.Instructor))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-
-			await commentsRepo.PinComment(commentId);
+			
+			await commentsRepo.PinComment(commentId, isPinned);
 			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 
-		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> UnpinComment(int commentId)
+		private bool CanRemoveAndRestoreComment(IPrincipal user, Comment comment)
 		{
-			var comment = commentsRepo.GetCommentById(commentId);
-			if (!User.HasAccessFor(comment.CourseId, CourseRole.Instructor))
-				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-
-			await commentsRepo.UnpinComment(commentId);
-			return new HttpStatusCodeResult(HttpStatusCode.OK);
-		}
-
-		private bool CanRemoveAndRestoreComment(IPrincipal User, Comment comment)
-		{
-			return User.HasAccessFor(comment.CourseId, CourseRole.Instructor) ||
-					User.Identity.GetUserId() == comment.AuthorId;
+			return user.HasAccessFor(comment.CourseId, CourseRole.Instructor) ||
+					user.Identity.GetUserId() == comment.AuthorId;
 		}
 		
 		[HttpPost]

@@ -44,3 +44,13 @@ input[type="checkbox"].input-validation-error {
 .label-as-badge {
     border-radius: 1em;
 }
+
+.label-as-badge.label-primary {
+	border-color: #428bca;
+}
+.label-as-badge.label-success {
+	border-color: #5cb85c;
+}
+.label-as-badge.label-default {
+	border-color: #999999;
+}

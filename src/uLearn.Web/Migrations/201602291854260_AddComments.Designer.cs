@@ -7,13 +7,13 @@ namespace uLearn.Web.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class AddComments42 : IMigrationMetadata
+    public sealed partial class AddComments : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddComments42));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddComments));
         
         string IMigrationMetadata.Id
         {
-            get { return "201602190847123_AddComments42"; }
+            get { return "201602291854260_AddComments"; }
         }
         
         string IMigrationMetadata.Source

@@ -137,7 +137,7 @@
 				@if (Model.CanModerateComment)
 				{
 					<div class="comment__hide-link show-on-comment-hover" data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
-						<a href="">скрыть</a>
+						<a href="">скрыть<span class="glyphicon glyphicon-eye-close"></span></a>
 						@Html.AntiForgeryToken()
 					</div>
 				}

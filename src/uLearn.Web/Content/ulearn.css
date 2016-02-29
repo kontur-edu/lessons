@@ -526,7 +526,7 @@ li.li-success {
 }
 
 .comments .comment .comment__footer > :not(:first-child) {
-	padding-left: 7px;
+	padding-left: 10px;
 }
 
 .comments .comment .comment__publish-time {

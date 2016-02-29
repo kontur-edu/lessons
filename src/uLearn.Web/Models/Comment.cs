@@ -31,7 +31,7 @@ namespace uLearn.Web.Models
 		[Index("IDX_Comment_ByAuthorAndPublishTime", 2)]
 		public DateTime PublishTime { get; set; }
 
-		[Required]
+		[Required(AllowEmptyStrings=false)]
 		public string Text { get; set; }
 
 		[Required]

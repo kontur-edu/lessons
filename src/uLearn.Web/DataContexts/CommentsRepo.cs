@@ -150,9 +150,9 @@ namespace uLearn.Web.DataContexts
 	    public async Task<Comment> ModifyComment(int commentId, Action<Comment> modifyAction)
 	    {
 			var comment = db.Comments.Find(commentId);
-		    modifyAction(comment);
+			modifyAction(comment);
 			await db.SaveChangesAsync();
-		    return comment;
+			return comment;
 	    }
 
 	    public async Task EditCommentText(int commentId, string newText)
@@ -165,7 +165,7 @@ namespace uLearn.Web.DataContexts
 		    await ModifyComment(commentId, c => c.IsApproved = isApproved);
 	    }
 
-	    public async Task RemoveComment(int commentId)
+	    public async Task DeleteComment(int commentId)
 	    {
 			await ModifyComment(commentId, c => c.IsDeleted = true);
 	    }

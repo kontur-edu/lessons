@@ -1,15 +1,39 @@
 (function ($) {
-	var scrollTo = function ($element, topPadding, duration) {
+	var scrollTo = function($element, topPadding, duration) {
 		topPadding = topPadding || 100;
 		duration = duration || 500;
 
 		var newScrollTop = $element.offset().top - topPadding;
 		if (Math.abs($('body').scrollTop() - newScrollTop) < 300)
-			return false;
+			return;
 
 		$('html, body').animate({
 			scrollTop: newScrollTop
 		}, duration);
+	}
+
+	String.prototype.br2nl = function() {
+		return this.replace(/<br\s*\/?>/gi, "\n");
+	}
+
+	String.prototype.nl2br = function () {
+		return this.replace(/\n/g, "<br>");
+	}
+
+	String.prototype.encodeMultiLineText = function() {
+		return $.encodeHtmlEntities(this).nl2br();
+	}
+
+	String.prototype.decodeMultiLineText = function() {
+		return $.decodeHtmlEntities(this.br2nl());
+	}
+
+	jQuery.encodeHtmlEntities = function(text) {
+		return $('<span>').text(text).html();
+	}
+
+	jQuery.decodeHtmlEntities = function (html) {
+		return $('<span>').html(html).text();
 	}
 
 	var likeComment = function () {
@@ -50,7 +74,7 @@
 
 	var disableButtonForEmptyComment = function() {
 		var $button = $(this).next();
-		$button.attr('disabled', $(this).val() === '');
+		$button.attr('disabled', $(this).val().trim() === '');
 	}
 
 	var sendComment = function (e) {
@@ -93,7 +117,6 @@
 		var token = $self.find('input[name="__RequestVerificationToken"]').val();
 		var $comment = $self.closest('.comment');
 		var isApproved = ! $comment.is('.not-approved');
-		var $label = $comment.find('.comment__not-approved');
 
 		$.ajax({
 			type: 'post',
@@ -104,22 +127,10 @@
 			}
 		}).success(function () {
 			$comment.toggleClass('not-approved', isApproved);
-			/*
-			if (isApproved) {
-				$comment.removeClass('not-approved');
-			} else {
-				$comment.removeClass('not-approved');
-				$label.removeClass('label-default')
-					.addClass('label-success')
-					.text('опубликовано');
-				setTimeout(function() {
-					$label.fadeOut(300);
-				}, 1000);
-			}*/
 		});
 	};
 
-	var removeComment = function (e) {
+	var deleteComment = function (e) {
 		e.preventDefault();
 
 		var $self = $(this);
@@ -192,15 +203,61 @@
 		});
 	};
 
+	var editComment = function(e) {
+		e.preventDefault();
+		var $self = $(this);
+		var url = $self.data('url');
+		var token = $self.find('input[name="__RequestVerificationToken"]').val();
+		var $comment = $self.closest('.comment');
+		var $commentText = $comment.find('.comment__text');
+		var $commentFooter = $comment.find('.comment__footer');
+		var $editTextarea = $('<textarea class="comment__new-text" name="commentText"></textarea>').val($commentText.html().decodeMultiLineText());
+		var $saveButton = $('<button class="btn btn-primary">Сохранить</button>');
+		var $cancelButton = $('<button class="btn btn-link">Отмена</button>');
+
+		$commentText.hide();
+		$commentFooter.hide();
+
+		$commentText.after($editTextarea);
+		$editTextarea.after($saveButton);
+		$saveButton.after($cancelButton);
+
+		$saveButton.click(function () {
+			var newText = $editTextarea.val();
+			$.ajax({
+				type: 'post',
+				url: url,
+				data: {
+					__RequestVerificationToken: token,
+					newText: newText,
+				}
+			}).success(function () {
+				$commentText.html(newText.encodeMultiLineText());
+
+				$cancelButton.click();
+			});
+		});
+
+		$cancelButton.click(function() {
+			$commentText.show();
+			$commentFooter.show();
+
+			$editTextarea.remove();
+			$saveButton.remove();
+			$cancelButton.remove();
+		});
+	}
+
 	$('.comments').on('click', '.reply-form input[name=commentText]', expandReplyForm);
 	$('.comments').on('click', '.comment .comment__likes-count', likeComment);
-	$('.comments').on('keyup', '.reply-form textarea[name=commentText]', disableButtonForEmptyComment);
+	$('.comments').on('keyup', 'textarea[name=commentText]', disableButtonForEmptyComment);
 	$('.comments').on('blur', '.reply-form.is-reply textarea[name=commentText]', collapseReplyForm);
 	$('.comments').on('click', '.reply-form .reply-form__send-button', sendComment);
 	$('.comments').on('click', '.comment .comment__inline-reply', createReplyForm);
 	$('.comments').on('click', '.comment .comment__not-approved.label-switcher', approveComment);
 	$('.comments').on('click', '.comment .comment__hide-link', approveComment);
-	$('.comments').on('click', '.comment .comment__remove-link', removeComment);
+	$('.comments').on('click', '.comment .comment__edit-link', editComment);
+	$('.comments').on('click', '.comment .comment__delete-link', deleteComment);
 	$('.comments').on('click', '.comment .comment__pinned.label-switcher', pinOrUnpinComment);
 	$('.comments').on('click', '.comment .comment__correct-answer.label-switcher', markCommentAsCorrect);
 })(jQuery);

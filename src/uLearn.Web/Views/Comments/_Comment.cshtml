@@ -38,7 +38,8 @@
 					}
 					else
 					{
-						@Model.Comment.Author.FirstName @Model.Comment.Author.LastName
+						@Model.Comment.Author.FirstName
+						@Model.Comment.Author.LastName
 					}
 				</div>
 				@if (Model.CanModerateComment || !Model.Comment.IsApproved)
@@ -53,7 +54,7 @@
 						}
 						else
 						{
-							<text>не опубликовано</text>	
+							<text>не опубликовано</text>
 						}
 					</div>
 				}
@@ -64,7 +65,7 @@
 					{
 						<div class="comment__pinned @(Model.CanModerateComment ? "label-switcher" : "") label label-as-badge label-success show-on-comment-hover"
 						     data-url="@Url.Action("PinComment", new { commentId = Model.Comment.Id })">
-							
+
 							@if (Model.CanModerateComment)
 							{
 								<span class="hide-on-parent-hover show__if_pinned">закреплено</span>
@@ -96,9 +97,9 @@
 					}
 				}
 			</div>
-			<div class="comment__text">
-				@Html.Raw(Html.EncodeMultiLineText(Model.Comment.Text))
-			</div>
+
+			<div class="comment__text">@Html.Raw(Html.EncodeMultiLineText(Model.Comment.Text))</div>
+
 			<div class="comment__footer">
 				@{
 					var likesCount = Model.LikesCount;
@@ -123,6 +124,16 @@
 						<a href="">ответить</a>
 					</div>
 				}
+
+				@if (Model.CanEditAndDeleteComment)
+				{
+					<div class="comment__edit-link show-on-comment-hover"
+						 data-url="@Url.Action("EditCommentText", new { commentId = Model.Comment.Id })">
+						<a href="">редактировать<span class="glyphicon glyphicon-pencil"></span></a>
+						@Html.AntiForgeryToken()
+					</div>
+				}
+
 				@if (Model.CanModerateComment)
 				{
 					<div class="comment__hide-link show-on-comment-hover" data-url="@Url.Action("ApproveComment", new { commentId = Model.Comment.Id })">
@@ -131,10 +142,10 @@
 					</div>
 				}
 				
-				@if (Model.CanDeleteComment)
+				@if (Model.CanEditAndDeleteComment)
 				{
-					<div class="comment__remove-link show-on-comment-hover"
-						 data-url="@Url.Action("RemoveComment", new { commentId = Model.Comment.Id })"
+					<div class="comment__delete-link show-on-comment-hover"
+						 data-url="@Url.Action("DeleteComment", new { commentId = Model.Comment.Id })"
 						 data-restore-url="@Url.Action("RestoreComment", new { commentId = Model.Comment.Id })">
 						<a href="" title="удалить комментарий">удалить<span class="glyphicon glyphicon-remove"></span></a>
 						@Html.AntiForgeryToken()

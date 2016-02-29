@@ -470,6 +470,11 @@ li.li-success {
 	margin-left: 3px;
 }
 
+.comments .comment .comment__footer .glyphicon {
+	position: relative;
+	top: 1px;
+}
+
 .comments .comment .comment__header > div,
 .comments .comment .comment__footer > div {
     display: inline-block;
@@ -495,7 +500,7 @@ li.li-success {
 	border-style: solid;
 }
 
-.comments .comment .comment__remove-link * {
+.comments .comment .comment__delete-link * {
 	color: #933;
 }
 
@@ -521,7 +526,7 @@ li.li-success {
 }
 
 .comments .comment .comment__footer > :not(:first-child) {
-	padding-left: 5px;
+	padding-left: 7px;
 }
 
 .comments .comment .comment__publish-time {
@@ -579,6 +584,15 @@ li.li-success {
 .comments .comment:not(.is-reply):not(:nth-child(2)) {
     border-top: 1px solid rgba(200, 200, 200, 0.5);
     padding-top: 15px;
+}
+
+.comments .comment .comment__new-text {
+    display: block;
+    width: 100%;
+    max-width: none;
+    padding-top: 1px;
+    padding-left: 6px;
+    margin: 5px 0;
 }
 
 .comments .comment.is-pinned .comment__footer .comment__pin-link,

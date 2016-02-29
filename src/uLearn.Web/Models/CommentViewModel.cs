@@ -11,6 +11,6 @@ namespace uLearn.Web.Models
 		public bool CanReply;
 		public bool CanModerateComment;
 		public bool IsCommentVisibleForUser;
-		public bool CanDeleteComment;
+		public bool CanEditAndDeleteComment;
 	}
 }

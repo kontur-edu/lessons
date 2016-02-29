@@ -97,23 +97,10 @@ namespace uLearn.Web.Controllers
 				IsLikedByUser = false,
 				Replies = new List<CommentViewModel>(),
 				IsCommentVisibleForUser = true,
-				CanDeleteComment = true,
+				CanEditAndDeleteComment = true,
 				CanModerateComment = User.HasAccessFor(courseId, CourseRole.Instructor),
 				CanReply = canReply,
 			});
-		}
-
-		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> EditCommentText(int commentId, string newText)
-		{
-			var comment = commentsRepo.GetCommentById(commentId);
-			if (!User.HasAccessFor(comment.CourseId, CourseRole.Instructor))
-				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
-
-			await commentsRepo.EditCommentText(commentId, newText);
-			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 
 		[ULearnAuthorize]
@@ -152,7 +139,7 @@ namespace uLearn.Web.Controllers
 			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 
-		private bool CanRemoveAndRestoreComment(IPrincipal user, Comment comment)
+		private bool CanEditAndDeleteComment(IPrincipal user, Comment comment)
 		{
 			return user.HasAccessFor(comment.CourseId, CourseRole.Instructor) ||
 					user.Identity.GetUserId() == comment.AuthorId;
@@ -160,13 +147,13 @@ namespace uLearn.Web.Controllers
 		
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> RemoveComment(int commentId)
+		public async Task<ActionResult> DeleteComment(int commentId)
 		{
 			var comment = commentsRepo.GetCommentById(commentId);
-			if (! CanRemoveAndRestoreComment(User, comment))
+			if (! CanEditAndDeleteComment(User, comment))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
-			await commentsRepo.RemoveComment(commentId);
+			await commentsRepo.DeleteComment(commentId);
 			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 		
@@ -175,10 +162,23 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> RestoreComment(int commentId)
 		{
 			var comment = commentsRepo.GetCommentById(commentId);
-			if (!CanRemoveAndRestoreComment(User, comment))
+			if (!CanEditAndDeleteComment(User, comment))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
 			await commentsRepo.RestoreComment(commentId);
+			return new HttpStatusCodeResult(HttpStatusCode.OK);
+		}
+
+		[ValidateInput(false)]
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> EditCommentText(int commentId, string newText)
+		{
+			var comment = commentsRepo.GetCommentById(commentId);
+			if (!CanEditAndDeleteComment(User, comment))
+				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+
+			await commentsRepo.EditCommentText(commentId, newText);
 			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 
@@ -187,7 +187,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> MarkAsCorrectAnswer(int commentId, bool isCorrect=true)
 		{
 			var comment = commentsRepo.GetCommentById(commentId);
-			if (!CanRemoveAndRestoreComment(User, comment))
+			if (!CanEditAndDeleteComment(User, comment))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
 			await commentsRepo.MarkCommentAsCorrectAnswer(commentId, isCorrect);

@@ -21,7 +21,7 @@
 			CanReply = Model.CanReply,
 			CanModerateComment = Model.CanModerateComments,
 			IsCommentVisibleForUser = comment.IsApproved || Model.CanSeeNotApprovedComments || isAuthor,
-			CanDeleteComment = Model.CanModerateComments || isAuthor,
+			CanEditAndDeleteComment = Model.CanModerateComments || isAuthor,
 		};
 	}
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Web.Mvc;
 
 namespace uLearn.Web
@@ -10,7 +9,7 @@ namespace uLearn.Web
 		{
 			if (string.IsNullOrEmpty(text))
 				return string.Empty;
-			return Regex.Replace(helper.Encode(text), Environment.NewLine, "<br />");
+			return Regex.Replace(helper.Encode(text), "\n", "<br />").Replace("\r", "");
 		}
 	}
 }

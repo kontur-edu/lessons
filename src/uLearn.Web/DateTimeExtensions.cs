@@ -9,7 +9,8 @@ namespace uLearn.Web
 
 		public static string ToPrettyString(this DateTime dateTime)
 		{
-			return string.Format("{0} в {1} (UTC)", dateTime.ToLongDateString(), dateTime.ToShortTimeString());
+			var utcTime = dateTime.ToUniversalTime();
+			return string.Format("{0} в {1} (UTC)", utcTime.ToLongDateString(), utcTime.ToShortTimeString());
 		}
 
 		public static string ToDatePrettyString(this DateTime dateTime, bool withoutYearIfItsCurrent=false)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -6,6 +7,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using uLearn.Web.DataContexts;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
@@ -15,6 +17,7 @@ namespace uLearn.Web.Controllers
 	public class CommentsController : Controller
 	{
 		private readonly CommentsRepo commentsRepo = new CommentsRepo();
+		private readonly UserManager<ApplicationUser> userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ULearnDb()));
 
 		public ActionResult SlideComments(string courseId, string slideId)
 		{
@@ -36,8 +39,8 @@ namespace uLearn.Web.Controllers
 			var commentsLikedByUser = commentsRepo.GetSlideCommentsLikedByUser(courseId, slideId, User.Identity.GetUserId()).ToImmutableHashSet();
 
 			var isInstructor = User.HasAccessFor(courseId, CourseRole.Instructor);
-			var isAuthorizedAndCanComment = CanAddComment(User, courseId, false);
-			var canReply = CanAddComment(User, courseId, true);
+			var isAuthorizedAndCanComment = CanAddCommentHere(User, courseId, false);
+			var canReply = CanAddCommentHere(User, courseId, true);
 			var canModerateComments = User.Identity.IsAuthenticated && isInstructor;
 			var canSeeNotApprovedComments = User.Identity.IsAuthenticated && isInstructor;
 
@@ -53,11 +56,12 @@ namespace uLearn.Web.Controllers
 				CommentsByParent = commentsByParent,
 				CommentsLikesCounts = commentsLikesCounts,
 				CommentsLikedByUser = commentsLikedByUser,
+				CurrentUser = User.Identity.IsAuthenticated ? userManager.FindById(User.Identity.GetUserId()) : null,
 			};
 			return PartialView(model);
 		}
 
-		private bool CanAddComment(IPrincipal user, string courseId, bool isReply)
+		private bool CanAddCommentHere(IPrincipal user, string courseId, bool isReply)
 		{
 			if (!User.Identity.IsAuthenticated)
 				return false;
@@ -207,5 +211,6 @@ namespace uLearn.Web.Controllers
 		public Dictionary<int, List<Comment>> CommentsByParent { get; set; }
 		public Dictionary<int, int> CommentsLikesCounts { get; set; }
 		public ImmutableHashSet<int> CommentsLikedByUser { get; set; }
+		public ApplicationUser CurrentUser { get; set; }
 	}
 }

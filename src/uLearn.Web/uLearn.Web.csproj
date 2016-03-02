@@ -291,6 +291,10 @@
     <Compile Include="Migrations\201602291854260_AddComments.Designer.cs">
       <DependentUpon>201602291854260_AddComments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602291950318_AddUserAvatars.cs" />
+    <Compile Include="Migrations\201602291950318_AddUserAvatars.Designer.cs">
+      <DependentUpon>201602291950318_AddUserAvatars.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\CommentLike.cs" />
     <Compile Include="Models\CommentPolicy.cs" />
@@ -673,6 +677,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602291854260_AddComments.resx">
       <DependentUpon>201602291854260_AddComments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602291950318_AddUserAvatars.resx">
+      <DependentUpon>201602291950318_AddUserAvatars.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -1253,6 +1260,7 @@
     <Content Include="Views\Unit\Diagnostics.cshtml" />
     <Content Include="Views\Comments\SlideComments.cshtml" />
     <Content Include="Views\Comments\_Comment.cshtml" />
+    <Content Include="App_Code\UserAvatar.cshtml" />
     <None Include="Views\Unit\Comments.cshtml" />
   </ItemGroup>
   <ItemGroup>

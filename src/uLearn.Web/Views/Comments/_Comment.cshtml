@@ -10,7 +10,7 @@
 			@Html.Hidden("slideId", comment.SlideId)
 			@Html.Hidden("parentCommentId", comment.Id)
 			<div class="pull-left">
-				<img src="//placehold.it/24x24" />
+				@UserAvatar.SmallAvatar(Model.CurrentUser)
 			</div>
 			<div class="media-body">
 				@Html.TextBox("commentText", "", new { placeholder = "Ответить.." })
@@ -27,20 +27,12 @@
 		 @(Model.Comment.IsCorrectAnswer ? "is-correct-answer" : "")
 		 media">
 		<a class="pull-left" href="#">
-			<img class="comment__author-avatar media-object" src="//placehold.it/54x54" alt="">
+			@UserAvatar.Avatar(Model.Comment.Author, "comment__author-avatar media-object")
 		</a>
 		<div class="media-body">
 			<div class="comment__header media-heading">
 				<div class="comment__author-name">
-					@if (Model.Comment.Author.FirstName + Model.Comment.Author.LastName == "")
-					{
-						<text>Пользователь</text>
-					}
-					else
-					{
-						@Model.Comment.Author.FirstName
-						@Model.Comment.Author.LastName
-					}
+					@Model.Comment.Author.VisibleName
 				</div>
 				@if (Model.CanModerateComment || !Model.Comment.IsApproved)
 				{

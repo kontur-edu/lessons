@@ -75,7 +75,7 @@ namespace uLearn.Web.Microsoft.Owin.Security.VK
 
 				string graphApiEndpoint = "https://api.vk.com/method/users.get" +
 				                          "?user_id=" + userId +
-				                          "&fields=" +
+				                          "&fields=photo_100" +
 				                          "&name_case=Nom" +
 				                          "&access_token=" + Uri.EscapeDataString(accessToken);
 

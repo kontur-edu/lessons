@@ -6,7 +6,7 @@ namespace uLearn.Web.Models
 	public class ExternalLoginConfirmationViewModel
 	{
 		[Required(ErrorMessage = "{0} — это обязательное поле")]
-		[Display(Name = "Имя (логин)")]
+		[Display(Name = "Логин")]
 		public string UserName { get; set; }
 	}
 
@@ -32,7 +32,7 @@ namespace uLearn.Web.Models
 	public class LoginViewModel
 	{
 		[Required(ErrorMessage = "{0} — это обязательное поле")]
-		[Display(Name = "Имя (логин)")]
+		[Display(Name = "Логин")]
 		public string UserName { get; set; }
 
 		[Required(ErrorMessage = "{0} — это обязательное поле")]
@@ -47,7 +47,7 @@ namespace uLearn.Web.Models
 	public class RegisterViewModel
 	{
 		[Required(ErrorMessage = "{0} — это обязательное поле")]
-		[Display(Name = "Имя (логин)")]
+		[Display(Name = "Логин")]
 		public string UserName { get; set; }
 
 		[Required(ErrorMessage = "{0} — это обязательное поле")]
@@ -76,7 +76,7 @@ namespace uLearn.Web.Models
 		public bool HasPassword { get; set; }
 
 		[Required(ErrorMessage = "{0} — это обязательное поле")]
-		[Display(Name = "Имя (логин)")]
+		[Display(Name = "Логин")]
 		public string Name { get; set; }
 
 		[Display(Name = "Учебная группа")]
@@ -116,7 +116,7 @@ namespace uLearn.Web.Models
 		[Display(Name = "Фамилия")]
 		public string LastName { get; set; }
 
-		[Display(Name = "Группа и ВУЗ")]
+		[Display(Name = "Группа и вуз")]
 		public string GroupName { get; set; }
 
 		[Display(Name = "Email")]

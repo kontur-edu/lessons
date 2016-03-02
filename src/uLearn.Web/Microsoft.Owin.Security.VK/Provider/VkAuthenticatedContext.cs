@@ -20,6 +20,8 @@ namespace uLearn.Web.Microsoft.Owin.Security.VK.Provider
             {
                 UserName = TryGetValue(user, "screen_name");
             }
+
+            AvatarUrl = TryGetValue(user, "photo_100");
         }
 
         public JObject User { get; private set; }
@@ -27,6 +29,8 @@ namespace uLearn.Web.Microsoft.Owin.Security.VK.Provider
 
         public string Id { get; private set; }
         public string UserName { get; private set; }
+
+        public string AvatarUrl { get; private set; }
 
         public ClaimsIdentity Identity { get; set; }
         public AuthenticationProperties Properties { get; set; }

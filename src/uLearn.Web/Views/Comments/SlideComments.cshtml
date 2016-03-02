@@ -22,6 +22,7 @@
 			CanModerateComment = Model.CanModerateComments,
 			IsCommentVisibleForUser = comment.IsApproved || Model.CanSeeNotApprovedComments || isAuthor,
 			CanEditAndDeleteComment = Model.CanModerateComments || isAuthor,
+			CurrentUser = Model.CurrentUser,
 		};
 	}
 }
@@ -35,7 +36,7 @@
 			@Html.Hidden("courseId", Model.CourseId)
 			@Html.Hidden("slideId", Model.SlideId)
 			<div class="pull-left">
-				<img src="//placehold.it/24x24" />
+				@UserAvatar.SmallAvatar(Model.CurrentUser)
 			</div>
 			<div class="media-body">
 				@Html.TextArea("commentText", "", new { placeholder = "Комментировать.." })
@@ -60,13 +61,13 @@
 		}
 		else if (!User.Identity.IsAuthenticated)
 		{
-			<div class="">
+			<div class="comments_policy__message">
 				Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account")
 			</div>
 		}
 		else
 		{
-			<div class="">
+			<div class="comments_policy__message">
 				Только преподаватели могут оставлять комментарии
 			</div>
 		}
@@ -74,7 +75,7 @@
 }
 else
 {
-	<div class="">
+	<div class="comments_policy__message">
 		Комментарии отключены
 	</div>
 }

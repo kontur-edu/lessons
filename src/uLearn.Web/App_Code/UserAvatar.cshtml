@@ -1,0 +1,24 @@
+﻿@using uLearn.Web.Models
+
+@helper GetAvatarPlaceholderColor(ApplicationUser user)
+{
+	var hue = user.Id.GetHashCode() % 1000;
+	<text>hsl(@hue, 64%, 75%)</text>
+}
+
+@helper Avatar(ApplicationUser user, string classes="")
+{
+	if (user.HasAvatar)
+	{
+		<img class="user__avatar @classes" src="@user.AvatarUrl" alt="@HttpUtility.HtmlAttributeEncode(user.VisibleName)">
+	}
+	else
+	{
+		<div class="user__avatar user__avatar__placeholder @classes" style="background-color: @GetAvatarPlaceholderColor(user)">@user.VisibleName[0]</div>
+	}
+}
+
+@helper SmallAvatar(ApplicationUser user, string classes="")
+{
+	@Avatar(user, "small " + classes);
+}

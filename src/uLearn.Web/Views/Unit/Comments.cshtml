@@ -1,4 +1,4 @@
-﻿@model uLearn.Web.Controllers.CommentsViewModel
+﻿@model uLearn.Web.Controllers.AdminCommentsViewModel
 
 @{
 	ViewBag.Title = "Admin Comments";
@@ -49,4 +49,13 @@
 			<button class="btn btn-success" type="submit">Сохранить</button>
 		</div>
 	}
+
+	<h4>Последние комментарии</h4>
+
+	<div class="comments comments__feed">
+		@foreach (var comment in Model.Comments)
+		{
+			@Html.Partial("~/Views/Comments/_Comment.cshtml", comment)
+		}
+	</div>
 </div>

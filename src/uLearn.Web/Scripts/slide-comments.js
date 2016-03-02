@@ -11,7 +11,7 @@
 			scrollTop: newScrollTop
 		}, duration);
 	}
-
+	
 	String.prototype.br2nl = function() {
 		return this.replace(/<br\s*\/?>/gi, "\n");
 	}
@@ -256,6 +256,17 @@
 		});
 	}
 
+	var scrollToCommentFromHash = function() {
+		var hash = window.location.hash;
+		var match;
+		if ((match = /^#comment-(\d+)$/.exec(hash)) !== null)
+			scrollTo($('.comment[data-comment-id=' + match[1] + ']')
+				.animate({ backgroundColor: '#fdd' })
+				.delay(500)
+				.animate({ backgroundColor: 'initial' })
+				);
+	};
+
 	$('.comments').on('click', '.reply-form input[name=commentText]', expandReplyForm);
 	$('.comments').on('click', '.comment .comment__likes-count', likeComment);
 	$('.comments').on('keyup', 'textarea[name=commentText]', disableButtonForEmptyComment);
@@ -268,4 +279,6 @@
 	$('.comments').on('click', '.comment .comment__delete-link', deleteComment);
 	$('.comments').on('click', '.comment .comment__pinned.label-switcher', pinOrUnpinComment);
 	$('.comments').on('click', '.comment .comment__correct-answer.label-switcher', markCommentAsCorrect);
+
+	scrollToCommentFromHash();
 })(jQuery);

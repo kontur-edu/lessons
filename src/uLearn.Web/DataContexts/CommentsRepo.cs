@@ -121,6 +121,11 @@ namespace uLearn.Web.DataContexts
 			return db.CommentLikes.Where(x => x.UserId == userId && x.Comment.SlideId == slideId).Select(x => x.CommentId);
 		}
 
+		public IEnumerable<int> GetCourseCommentsLikedByUser(string courseId, string userId)
+		{
+			return db.CommentLikes.Where(x => x.UserId == userId && x.Comment.CourseId == courseId).Select(x => x.CommentId);
+		}
+
 		public CommentsPolicy GetCommentsPolicy(string courseId)
 		{
 			var policy = db.CommentsPolicies.FirstOrDefault(x => x.CourseId == courseId);

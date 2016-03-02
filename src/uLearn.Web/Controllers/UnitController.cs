@@ -166,19 +166,33 @@ namespace uLearn.Web.Controllers
 		public ActionResult Comments(string courseId)
 		{
 			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
-			var comments = commentsRepo.GetCourseComments(courseId);
-			return View(new CommentsViewModel
+			
+			var comments = commentsRepo.GetCourseComments(courseId).OrderByDescending(x => x.PublishTime).ToList();
+			var commentsLikes = commentsRepo.GetCommentsLikesCounts(comments);
+			var commentsLikedByUser = commentsRepo.GetCourseCommentsLikedByUser(courseId, User.Identity.GetUserId());
+
+			return View(new AdminCommentsViewModel
 			{
 				CourseId = courseId,
 				IsCommentsEnabled = commentsPolicy.IsCommentsEnabled,
 				ModerationPolicy = commentsPolicy.ModerationPolicy,
 				OnlyInstructorsCanReply = commentsPolicy.OnlyInstructorsCanReply,
+				Comments = comments.Select(c => new CommentViewModel
+				{
+					Comment = c,
+					LikesCount = commentsLikes.Get(c.Id, 0),
+					IsLikedByUser = commentsLikedByUser.Contains(c.Id),
+					Replies = new List<CommentViewModel>(),
+					CanEditAndDeleteComment = true,
+					CanModerateComment = true,
+					IsCommentVisibleForUser = true,
+				}).ToList()
 			});
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> SaveCommentsPolicy(CommentsViewModel model)
+		public async Task<ActionResult> SaveCommentsPolicy(AdminCommentsViewModel model)
 		{
 			var courseId = model.CourseId;
 			var commentsPolicy = new CommentsPolicy
@@ -300,7 +314,7 @@ namespace uLearn.Web.Controllers
 		public DateTime LastUpdate { get; set; }
 	}
 
-	public class CommentsViewModel
+	public class AdminCommentsViewModel
 	{
 		public string CourseId { get; set; }
 		public bool IsCommentsEnabled { get; set; }

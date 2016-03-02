@@ -37,6 +37,17 @@ namespace uLearn.Web.Controllers
 		}
 
 		[AllowAnonymous]
+		public async Task<ActionResult> SlideById(string courseId, string slideId)
+		{
+			var course = courseManager.GetCourse(courseId);
+			var slideIndex = course.Slides.FindIndex(x => x.Id == slideId);
+			if (slideIndex < 0)
+				return HttpNotFound();
+			ViewBag.Title = "1";
+			return await Slide(courseId, slideIndex);
+		}
+
+		[AllowAnonymous]
 		public async Task<ActionResult> Slide(string courseId, int slideIndex = -1)
 		{
 			if (string.IsNullOrWhiteSpace(courseId)) return RedirectToAction("Index", "Home");
@@ -47,7 +58,7 @@ namespace uLearn.Web.Controllers
 				await CreateCoursePageModel(courseId, slideIndex, visibleUnits);
 			if (!visibleUnits.Contains(model.Slide.Info.UnitName))
 				throw new Exception("Slide is hidden " + slideIndex);
-			return View(model);
+			return View("Slide", model);
 		}
 
 		public async Task<ActionResult> LtiSlide(string courseId, int slideIndex)

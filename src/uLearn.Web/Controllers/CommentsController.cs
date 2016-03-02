@@ -66,16 +66,28 @@ namespace uLearn.Web.Controllers
 			if (!User.Identity.IsAuthenticated)
 				return false;
 
-			var commentPolicy = commentsRepo.GetCommentsPolicy(courseId);
+			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
 			var isInstructor = user.HasAccessFor(courseId, CourseRole.Instructor);
 
-			if (!isInstructor && !commentPolicy.IsCommentsEnabled)
+			if (!isInstructor && !commentsPolicy.IsCommentsEnabled)
 				return false;
 
-			if (isReply && !isInstructor && commentPolicy.OnlyInstructorsCanReply)
+			if (isReply && !isInstructor && commentsPolicy.OnlyInstructorsCanReply)
 				return false;
 
 			return true;
+		}
+
+		private bool CanAddCommentNow(IPrincipal user, string courseId)
+		{
+			// Instructors has unlimited count of comments
+			if (user.HasAccessFor(courseId, CourseRole.Instructor))
+				return true;
+
+			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
+			return ! commentsRepo.IsUserAddedMaxCommentsInLastTime(user.Identity.GetUserId(),
+				commentsPolicy.MaxCommentsCountInLastTime,
+				commentsPolicy.LastTimeForMaxCommentsLimit);
 		}
 
 		[ULearnAuthorize]
@@ -88,11 +100,29 @@ namespace uLearn.Web.Controllers
 			if (parentCommentId != null)
 				int.TryParse(parentCommentId, out parentCommentIdInt);
 
-			if (! CanAddComment(User, courseId, parentCommentIdInt != -1))
+			if (!CanAddCommentHere(User, courseId, parentCommentIdInt != -1))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
+			if (!CanAddCommentNow(User, courseId))
+			{
+				return Json(new
+				{
+					status = "too-fast",
+					message = "Вы комментируете слишком быстро. Подождите немного..",
+				});
+			}
+
+			if (commentText.Length > CommentsPolicy.MaxCommentLength)
+			{
+				return Json(new
+				{
+					status = "too-long",
+					message = "Слишком длинный комментарий. Попробуйте сократить мысль..",
+				});
+			}
+
 			var comment = await commentsRepo.AddComment(User, courseId, slideId, parentCommentIdInt, commentText);
-			var canReply = CanAddComment(User, courseId, true);
+			var canReply = CanAddCommentHere(User, courseId, true);
 
 			return PartialView("_Comment", new CommentViewModel
 			{
@@ -104,6 +134,7 @@ namespace uLearn.Web.Controllers
 				CanEditAndDeleteComment = true,
 				CanModerateComment = User.HasAccessFor(courseId, CourseRole.Instructor),
 				CanReply = canReply,
+				CurrentUser = userManager.FindById(User.Identity.GetUserId()),
 			});
 		}
 

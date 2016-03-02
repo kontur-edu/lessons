@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace uLearn.Web.Models
 {
@@ -22,5 +24,13 @@ namespace uLearn.Web.Models
 
 		[Required]
 		public bool OnlyInstructorsCanReply { get; set; }
+
+		public const int MaxCommentLength = 10000;
+
+		[NotMapped]
+		public readonly int MaxCommentsCountInLastTime = 10;
+
+		[NotMapped]
+		public readonly TimeSpan LastTimeForMaxCommentsLimit = TimeSpan.FromMinutes(5);
 	}
 }

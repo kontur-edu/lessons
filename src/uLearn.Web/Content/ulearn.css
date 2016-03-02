@@ -575,7 +575,15 @@ li.li-success {
 .comments .reply-form .reply-form__send-button {
 	margin-left: 7px;
 	margin-top: 7px;
-	display: block;
+	display: inline-block;
+}
+
+.comments .reply-form .comment__error-message {
+	display: inline-block;
+	margin-top: 7px;
+	vertical-align: middle;
+	margin-left: 15px;
+	color: #B15252;
 }
 
 .comments .comment:not(.is-reply):not(:nth-child(2)) {

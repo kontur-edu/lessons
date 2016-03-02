@@ -88,7 +88,15 @@
 			type: 'post',
 			url: $form.attr('action'),
 			data: $form.serialize()
-		}).success(function (renderedComment) {
+		}).success(function (data) {
+			if (data.status && data.status !== 'ok') {
+				var $button = $form.find('.reply-form__send-button');
+				var $errorMessage = $('<div>').addClass('comment__error-message').text(data.message);
+				$button.after($errorMessage);
+				$errorMessage.delay(1500).fadeOut(1000);
+				return;
+			}
+			var renderedComment = data;
 			var $newComment = $(renderedComment);
 			$formWrapper.before($newComment);
 			$textarea.val('').blur();

@@ -6,7 +6,7 @@
 
 @Html.Action("ManageMenu")
 
-<div class="container">
+<div class="slide-container container">
 
 	<h3>Комментарии</h3>
 
@@ -50,9 +50,8 @@
 		</div>
 	}
 
-	<h4>Последние комментарии</h4>
-
 	<div class="comments comments__feed">
+		<h4>Последние комментарии</h4>
 		@foreach (var comment in Model.Comments)
 		{
 			@Html.Partial("~/Views/Comments/_Comment.cshtml", comment)

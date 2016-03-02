@@ -165,11 +165,13 @@ namespace uLearn.Web.Controllers
 		
 		public ActionResult Comments(string courseId)
 		{
+			var course = courseManager.GetCourse(courseId);
 			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
 			
 			var comments = commentsRepo.GetCourseComments(courseId).OrderByDescending(x => x.PublishTime).ToList();
 			var commentsLikes = commentsRepo.GetCommentsLikesCounts(comments);
 			var commentsLikedByUser = commentsRepo.GetCourseCommentsLikedByUser(courseId, User.Identity.GetUserId());
+			var commentsById = comments.ToDictionary(x => x.Id);
 
 			return View(new AdminCommentsViewModel
 			{
@@ -186,6 +188,9 @@ namespace uLearn.Web.Controllers
 					CanEditAndDeleteComment = true,
 					CanModerateComment = true,
 					IsCommentVisibleForUser = true,
+					ShowContextInformation = true,
+					ContextSlideTitle = course.GetSlideById(c.SlideId).Title,
+					ContextParentComment = c.IsTopLevel() ? null : commentsById[c.ParentCommentId].Text,
 				}).ToList()
 			});
 		}

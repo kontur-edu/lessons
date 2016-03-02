@@ -155,7 +155,7 @@
 	}
 	/* ReSharper restore Html.CssClassElementsNotFound */
 .side-bar {
-	width: 350px;
+	max-width: 350px;
 	margin: 0;
 	padding-top: 20px;
 	max-height: none !important;

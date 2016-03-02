@@ -26,7 +26,8 @@
 		 @(Model.Comment.IsPinnedToTop ? "is-pinned" : "")
 		 @(Model.Comment.IsCorrectAnswer ? "is-correct-answer" : "")
 		 media"
-		 data-comment-id="@Model.Comment.Id">
+	     data-comment-id="@Model.Comment.Id">
+		
 		<a class="pull-left" href="#">
 			@UserAvatar.Avatar(Model.Comment.Author, "comment__author-avatar media-object")
 		</a>
@@ -34,7 +35,27 @@
 			<div class="comment__header media-heading">
 				<div class="comment__author-name">
 					@Model.Comment.Author.VisibleName
-				</div>
+				</div><!--
+				-->@if (Model.ShowContextInformation)
+				{<div>,
+						<a href="@Url.Action("SlideById", "Course", new
+						         {
+							         courseId = Model.Comment.CourseId,
+							         slideId = Model.Comment.SlideId,
+						         })">«@Model.ContextSlideTitle»</a>
+					</div><!--
+					-->if (! string.IsNullOrEmpty(Model.ContextParentComment))
+					{<div>
+						, в ответ на <a href="@Url.Action("SlideById", "Course", new
+												{
+													courseId = Model.Comment.CourseId,
+													slideId = Model.Comment.SlideId,
+												})#comment-@Model.Comment.ParentCommentId"
+						                title="@Html.AttributeEncode(Model.ContextParentComment.TruncateWithEllipsis(200))"
+										>«@(Model.ContextParentComment.TruncateWithEllipsis(40))»</a>
+					 </div>	 
+					}
+				}
 				@if (Model.CanModerateComment || !Model.Comment.IsApproved)
 				{
 					<div class="comment__not-approved @(Model.CanModerateComment ? "label-switcher" : "") label label-as-badge label-default"

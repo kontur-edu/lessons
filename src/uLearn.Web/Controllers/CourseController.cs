@@ -40,10 +40,9 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> SlideById(string courseId, string slideId)
 		{
 			var course = courseManager.GetCourse(courseId);
-			var slideIndex = course.Slides.FindIndex(x => x.Id == slideId);
+			var slideIndex = course.GetSlideIndexById(slideId);
 			if (slideIndex < 0)
 				return HttpNotFound();
-			ViewBag.Title = "1";
 			return await Slide(courseId, slideIndex);
 		}
 

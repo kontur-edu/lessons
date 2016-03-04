@@ -1,5 +1,5 @@
 (function ($) {
-	var scrollTo = function($element, topPadding, duration) {
+	var scrollTo = function ($element, topPadding, duration) {
 		topPadding = topPadding || 100;
 		duration = duration || 500;
 
@@ -98,8 +98,18 @@
 			}
 			var renderedComment = data;
 			var $newComment = $(renderedComment);
+
+			// Don't collapse reply form fully, write another reply right in it
+			if ($formWrapper.hasClass('collapse'))
+				$formWrapper.removeClass('collapse');
+			// If it's first reply, remove 'answer' link from top-level comment
+			if ($formWrapper.prev().is('.comment'))
+				$formWrapper.prev().find('.comment__inline-reply').hide();
+
+			// Insert new comment before reply form
 			$formWrapper.before($newComment);
-			$textarea.val('').blur();
+			// and remove comment's text from textarea, collapse it
+			$textarea.val('').trigger('blur');
 		});
 	}
 
@@ -161,7 +171,7 @@
 					url: restoreUrl,
 					data: { __RequestVerificationToken: token }
 				}).success(function() {
-					$commentReplacement.hide();
+					$commentReplacement.remove();
 					$comment.show();
 				});
 			});
@@ -267,6 +277,23 @@
 				);
 	};
 
+	var autoEnlargeTextarea = function () {
+		var $this = $(this);
+		// Save current height as min height in first time
+		if (!$this.data('min-height'))
+			$this.data('min-height', parseInt($this.css('height')));
+		// By default, max textarea's height is 400px, after it will be scrollable
+		var maxHeight = $this.data('max-height') ? $this.data('max-height') : 400;
+
+		var $clone = $this.clone().css('visibility', 'hidden');
+		$('body').append($clone);
+		$clone.css('height', 'auto');
+		var newHeight = Math.max($clone[0].scrollHeight + 5, $this.data('min-height'));
+		$clone.remove();
+		newHeight = Math.min(newHeight, maxHeight);
+		$this.css('height', newHeight + 'px');
+	}
+
 	$('.comments').on('click', '.reply-form input[name=commentText]', expandReplyForm);
 	$('.comments').on('click', '.comment .comment__likes-count', likeComment);
 	$('.comments').on('keyup', 'textarea[name=commentText]', disableButtonForEmptyComment);
@@ -279,6 +306,9 @@
 	$('.comments').on('click', '.comment .comment__delete-link', deleteComment);
 	$('.comments').on('click', '.comment .comment__pinned.label-switcher', pinOrUnpinComment);
 	$('.comments').on('click', '.comment .comment__correct-answer.label-switcher', markCommentAsCorrect);
+	$('.comments').on('input', '.reply-form textarea[name=commentText]', autoEnlargeTextarea);
 
-	scrollToCommentFromHash();
+	$(document).ready(function() {
+		scrollToCommentFromHash();
+	});
 })(jQuery);

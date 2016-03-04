@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
@@ -108,7 +110,8 @@ namespace uLearn.Web.Controllers
 				{
 					return View("ExternalLoginFailure");
 				}
-				var user = new ApplicationUser { UserName = model.UserName };
+				var userAvatarUrl = info.ExternalIdentity.Claims.FirstOrDefault(x => x.Type == "AvatarUrl")?.Value;
+				var user = new ApplicationUser { UserName = model.UserName, AvatarUrl = userAvatarUrl};
 				var result = await userManager.CreateAsync(user);
 				if (result.Succeeded)
 				{

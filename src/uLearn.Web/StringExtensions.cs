@@ -17,5 +17,21 @@ namespace uLearn.Web
 
 			return s;
 		}
+
+		public static int IndexOfFirstLetter(this string s)
+		{
+			for (var i = 0; i < s.Length; i++)
+				if (char.IsLetter(s[i]))
+					return i;
+			return -1;
+		}
+
+		public static char FindFirstLetter(this string s, char ifNotFound)
+		{
+			var index = s.IndexOfFirstLetter();
+			if (index == -1)
+				return ifNotFound;
+			return s[index];
+		}
 	}
 }

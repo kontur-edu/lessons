@@ -100,6 +100,10 @@ namespace uLearn.Web.Microsoft.Owin.Security.VK
 					context.Identity.AddClaim(new Claim(ClaimsIdentity.DefaultNameClaimType, context.UserName, XmlSchemaString,
 						Options.AuthenticationType));
 				}
+				if (!string.IsNullOrEmpty(context.AvatarUrl))
+				{
+					context.Identity.AddClaim(new Claim("AvatarUrl", context.AvatarUrl));
+				}
 				context.Properties = properties;
 
 				await Options.Provider.Authenticated(context);

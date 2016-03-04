@@ -59,10 +59,10 @@
 		{
 			@TopLevelReplyForm()
 		}
-		else if (!User.Identity.IsAuthenticated)
+		else if (Model.CommentsPolicy.IsCommentsEnabled)
 		{
 			<div class="comments_policy__message">
-				Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account")
+				Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new {})
 			</div>
 		}
 		else
@@ -75,7 +75,16 @@
 }
 else
 {
-	<div class="comments_policy__message">
-		Комментарии отключены
-	</div>
+	if (Model.CommentsPolicy.IsCommentsEnabled)
+	{
+		<div class="comments_policy__message">
+			Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new {})
+		</div>
+	}
+	else
+	{
+		<div class="comments_policy__message">
+			Комментарии отключены
+		</div>
+	}
 }

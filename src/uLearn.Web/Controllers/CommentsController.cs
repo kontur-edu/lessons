@@ -22,6 +22,7 @@ namespace uLearn.Web.Controllers
 		public ActionResult SlideComments(string courseId, string slideId)
 		{
 			var comments = commentsRepo.GetSlideComments(courseId, slideId).ToList();
+			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
 
 			var commentsByParent = comments.GroupBy(x => x.ParentCommentId)
 				.ToDictionary(x => x.Key, x => x.OrderBy(c => c.PublishTime).ToList());
@@ -43,7 +44,7 @@ namespace uLearn.Web.Controllers
 			var canReply = CanAddCommentHere(User, courseId, true);
 			var canModerateComments = User.Identity.IsAuthenticated && isInstructor;
 			var canSeeNotApprovedComments = User.Identity.IsAuthenticated && isInstructor;
-
+			
 			var model = new SlideCommentsModel
 			{
 				CourseId = courseId,
@@ -57,6 +58,7 @@ namespace uLearn.Web.Controllers
 				CommentsLikesCounts = commentsLikesCounts,
 				CommentsLikedByUser = commentsLikedByUser,
 				CurrentUser = User.Identity.IsAuthenticated ? userManager.FindById(User.Identity.GetUserId()) : null,
+				CommentsPolicy = commentsPolicy,
 			};
 			return PartialView(model);
 		}
@@ -243,5 +245,6 @@ namespace uLearn.Web.Controllers
 		public Dictionary<int, int> CommentsLikesCounts { get; set; }
 		public ImmutableHashSet<int> CommentsLikedByUser { get; set; }
 		public ApplicationUser CurrentUser { get; set; }
+		public CommentsPolicy CommentsPolicy { get; set; }
 	}
 }

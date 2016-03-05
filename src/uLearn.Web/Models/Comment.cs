@@ -46,7 +46,7 @@ namespace uLearn.Web.Models
 		[Required]
 		public bool IsPinnedToTop { get; set; }
 
-		/* For top-level comments ParentCommentId = -1 */
+		// For top-level comments ParentCommentId = -1 
 		[Required]
 		public int ParentCommentId { get; set; }
 

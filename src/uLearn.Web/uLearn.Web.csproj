@@ -1264,7 +1264,7 @@
     <Content Include="Views\Comments\_Comment.cshtml" />
     <Content Include="App_Code\UserAvatar.cshtml" />
     <Content Include="Views\Comments\_CommentText.cshtml" />
-    <None Include="Views\Unit\Comments.cshtml" />
+    <Content Include="Views\Unit\Comments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

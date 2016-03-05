@@ -82,7 +82,7 @@ namespace uLearn.Web.Controllers
 
 		private bool CanAddCommentNow(IPrincipal user, string courseId)
 		{
-			// Instructors has unlimited count of comments
+			// Instructors have unlimited comments
 			if (user.HasAccessFor(courseId, CourseRole.Instructor))
 				return true;
 
@@ -150,7 +150,6 @@ namespace uLearn.Web.Controllers
 			return Json(new { likesCount = res.Item1, liked = res.Item2 });
 		}
 		
-		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> ApproveComment(int commentId, bool isApproved=true)
@@ -163,7 +162,6 @@ namespace uLearn.Web.Controllers
 			return new HttpStatusCodeResult(HttpStatusCode.OK);
 		}
 
-		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> PinComment(int commentId, bool isPinned)
@@ -215,8 +213,8 @@ namespace uLearn.Web.Controllers
 			if (!CanEditAndDeleteComment(User, comment))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
-			await commentsRepo.EditCommentText(commentId, newText);
-			return new HttpStatusCodeResult(HttpStatusCode.OK);
+			var newComment = await commentsRepo.EditCommentText(commentId, newText);
+			return PartialView("_CommentText", newComment);
 		}
 
 		[HttpPost]

@@ -35,9 +35,9 @@
 			<div class="comment__header media-heading">
 				<div class="comment__author-name">
 					@Model.Comment.Author.VisibleName
-				</div><!--
-				-->@if (Model.ShowContextInformation)
-				{<div>,
+				</div>@if (Model.ShowContextInformation)
+				{
+					<div> — слайд
 						<a href="@Url.Action("SlideById", "Course", new
 						         {
 							         courseId = Model.Comment.CourseId,
@@ -112,7 +112,7 @@
 				}
 			</div>
 
-			<div class="comment__text">@Html.Raw(Html.EncodeMultiLineText(Model.Comment.Text))</div>
+			@Html.Partial("~/Views/Comments/_CommentText.cshtml", Model.Comment)
 
 			<div class="comment__footer">
 				@{

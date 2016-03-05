@@ -161,9 +161,9 @@ namespace uLearn.Web.DataContexts
 			return comment;
 		}
 
-		public async Task EditCommentText(int commentId, string newText)
+		public async Task<Comment> EditCommentText(int commentId, string newText)
 		{
-			await ModifyComment(commentId, c => c.Text = newText);
+			return await ModifyComment(commentId, c => c.Text = newText);
 		}
 
 		public async Task ApproveComment(int commentId, bool isApproved)

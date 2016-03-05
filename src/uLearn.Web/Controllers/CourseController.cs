@@ -37,13 +37,13 @@ namespace uLearn.Web.Controllers
 		}
 
 		[AllowAnonymous]
-		public async Task<ActionResult> SlideById(string courseId, string slideId)
+		public ActionResult SlideById(string courseId, string slideId)
 		{
 			var course = courseManager.GetCourse(courseId);
 			var slideIndex = course.GetSlideIndexById(slideId);
 			if (slideIndex < 0)
 				return HttpNotFound();
-			return await Slide(courseId, slideIndex);
+			return RedirectToAction("Slide", new { courseId, slideIndex });
 		}
 
 		[AllowAnonymous]

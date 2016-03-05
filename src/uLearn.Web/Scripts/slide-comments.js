@@ -237,7 +237,7 @@
 		$commentFooter.hide();
 
 		$commentText.after($editTextarea);
-		$editTextarea.after($saveButton);
+		$editTextarea.after($saveButton).trigger('input').focus();
 		$saveButton.after($cancelButton);
 
 		$saveButton.click(function () {
@@ -249,10 +249,10 @@
 					__RequestVerificationToken: token,
 					newText: newText,
 				}
-			}).success(function () {
-				$commentText.html(newText.encodeMultiLineText());
-
-				$cancelButton.click();
+			}).success(function (renderedCommentText) {
+				$commentText.replaceWith($(renderedCommentText));
+				// Remove form, restore comment view (see below)
+				$cancelButton.trigger('click');
 			});
 		});
 
@@ -286,7 +286,7 @@
 		var maxHeight = $this.data('max-height') ? $this.data('max-height') : 400;
 
 		var $clone = $this.clone().css('visibility', 'hidden');
-		$('body').append($clone);
+		$this.after($clone);
 		$clone.css('height', 'auto');
 		var newHeight = Math.max($clone[0].scrollHeight + 5, $this.data('min-height'));
 		$clone.remove();
@@ -306,7 +306,7 @@
 	$('.comments').on('click', '.comment .comment__delete-link', deleteComment);
 	$('.comments').on('click', '.comment .comment__pinned.label-switcher', pinOrUnpinComment);
 	$('.comments').on('click', '.comment .comment__correct-answer.label-switcher', markCommentAsCorrect);
-	$('.comments').on('input', '.reply-form textarea[name=commentText]', autoEnlargeTextarea);
+	$('.comments').on('input', 'textarea[name=commentText]', autoEnlargeTextarea);
 
 	$(document).ready(function() {
 		scrollToCommentFromHash();

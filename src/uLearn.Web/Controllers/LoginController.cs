@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using uLearn.Web.DataContexts;
 using uLearn.Web.FilterAttributes;
@@ -101,17 +102,16 @@ namespace uLearn.Web.Controllers
 			{
 				return RedirectToAction("Manage", "Account");
 			}
-
+			ExternalLoginInfo info = await AuthenticationManager.GetExternalLoginInfoAsync(HttpContext);
+			if (info == null)
+			{
+				return View("ExternalLoginFailure");
+			}
+			ViewBag.LoginProvider = info.Login.LoginProvider;
 			if (ModelState.IsValid)
 			{
-				// Get the information about the user from the external login provider
-				var info = await AuthenticationManager.GetExternalLoginInfoAsync(HttpContext);
-				if (info == null)
-				{
-					return View("ExternalLoginFailure");
-				}
 				var userAvatarUrl = info.ExternalIdentity.Claims.FirstOrDefault(x => x.Type == "AvatarUrl")?.Value;
-				var user = new ApplicationUser { UserName = model.UserName, AvatarUrl = userAvatarUrl};
+				var user = new ApplicationUser { UserName = model.UserName, AvatarUrl = userAvatarUrl };
 				var result = await userManager.CreateAsync(user);
 				if (result.Succeeded)
 				{

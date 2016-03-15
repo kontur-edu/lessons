@@ -505,6 +505,7 @@
     <Compile Include="Models\Visit.cs" />
     <Compile Include="Models\UserRole.cs" />
     <Compile Include="Models\WebCourseManager_should.cs" />
+    <Compile Include="UserExtentions_should.cs" />
     <Compile Include="Views\Course\AcceptedSolutionsHtml.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1267,6 +1268,7 @@
     <Content Include="Views\Shared\_UserListPartial.cshtml" />
     <Content Include="Views\Unit\Users.cshtml" />
     <Content Include="Views\Unit\Diagnostics.cshtml" />
+    <Content Include="Views\Unit\CheckSlideIds.cshtml" />
     <Content Include="Views\Comments\SlideComments.cshtml" />
     <Content Include="Views\Comments\_Comment.cshtml" />
     <Content Include="Views\Shared\UserAvatar.cshtml">

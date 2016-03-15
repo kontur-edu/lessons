@@ -157,6 +157,12 @@
     <Compile Include="Model\RegionRemover.cs" />
     <Compile Include="Model\RegionsExtractor.cs" />
     <Compile Include="RegionsParser.cs" />
+    <Compile Include="SlideIdChecking\GlobalSlideIdErrorList.cs" />
+    <Compile Include="SlideIdChecking\LocalSlideIdErrorList.cs" />
+    <Compile Include="SlideIdChecking\MinimalSlideInfo.cs" />
+    <Compile Include="SlideIdChecking\RequiredSlideInfo.cs" />
+    <Compile Include="SlideIdChecking\SlideDescription.cs" />
+    <Compile Include="SlideIdChecking\SlideIdChecker.cs" />
     <Compile Include="SlideInfo.cs" />
     <Compile Include="Md.cs" />
     <Compile Include="ResourceLoader.cs" />

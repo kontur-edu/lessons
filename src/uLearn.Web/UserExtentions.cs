@@ -38,6 +38,16 @@ namespace uLearn.Web
 			return roles.Min() <= minAccessLevel;
 		}
 
+		public static bool IsBestAccessFor(this IPrincipal principal, CourseRole role, string courseId)
+		{
+			if (principal.IsSystemAdministrator())
+				return false;
+			var bestRole = principal.GetAllRoles().FirstOrDefault(tuple => tuple.Item1 == courseId);
+			if (bestRole == null)
+				return false;
+			return role == bestRole.Item2;
+		}
+
 		private static IEnumerable<Tuple<string, CourseRole>> GetAllRoles(this IPrincipal principal)
 		{
 			var roleTuples = principal

@@ -7,10 +7,15 @@
 @Html.Action("ManageMenu")
 
 <div class="container">
-<h2>Диагностики</h2>
+	<h2>Диагностики</h2>
 	
 	<div>
 		<h3>Результат проверки орфографии:</h3>
 		<div class="load-content" data-url="@Url.Action("SpellingErrors", new { courseId = Model })"> processing... </div>
+	</div>
+	
+	<div>
+		<h3>Повторяющиеся идентификаторы слайдов:</h3>
+		<div> @Html.Action("CheckSlideIds", new { courseId = Model }) </div>
 	</div>
 </div>

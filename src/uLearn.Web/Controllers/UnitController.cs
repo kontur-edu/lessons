@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
+using uLearn.SlideIdChecking;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using uLearn.Web.DataContexts;
@@ -50,12 +50,13 @@ namespace uLearn.Web.Controllers
 			};
 			return View(model);
 		}
-		
+
 		[HttpPost]
 		public ActionResult ReloadCourse(string courseId, string returnUrl = null)
 		{
 			courseManager.ReloadCourse(courseId);
-			if (returnUrl != null) return Redirect(returnUrl);
+			if (returnUrl != null)
+				return Redirect(returnUrl);
 			return RedirectToAction("CourseList", new { courseId });
 		}
 
@@ -162,7 +163,7 @@ namespace uLearn.Web.Controllers
 				LastUpdate = lastUpdate
 			});
 		}
-		
+
 		public ActionResult Comments(string courseId)
 		{
 			var course = courseManager.GetCourse(courseId);
@@ -217,7 +218,7 @@ namespace uLearn.Web.Controllers
 				return RedirectToAction("CourseList");
 			return View(queryModel);
 		}
-		
+
 		[ChildActionOnly]
 		public ActionResult UsersPartial(UserSearchQueryModel queryModel)
 		{
@@ -269,6 +270,17 @@ namespace uLearn.Web.Controllers
 			return model;
 		}
 
+		public ActionResult CheckSlideIds(string courseId)
+		{
+			var course = courseManager.GetCourse(courseId);
+			var model = new CheckSlideIdsViewModel
+			{
+				InnerErrors = course.FindDuplicatedIds(),
+				OuterErrors = courseManager.FindGlobalDuplicatedIdsFor(courseId)
+			};
+			return PartialView(model);
+		}
+
 		public ActionResult Diagnostics(string courseId)
 		{
 			return View(model: courseId);
@@ -317,6 +329,12 @@ namespace uLearn.Web.Controllers
 		public string CourseId { get; set; }
 		public bool HasPackage { get; set; }
 		public DateTime LastUpdate { get; set; }
+	}
+
+	public class CheckSlideIdsViewModel
+	{
+		public List<LocalSlideIdErrorList> InnerErrors { get; set; }
+		public List<GlobalSlideIdErrorList> OuterErrors { get; set; }
 	}
 
 	public class AdminCommentsViewModel

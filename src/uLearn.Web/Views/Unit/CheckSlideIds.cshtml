@@ -1,0 +1,28 @@
+﻿@model uLearn.Web.Controllers.CheckSlideIdsViewModel
+
+@foreach (var error in Model.InnerErrors)
+{
+	<pre>
+Идентификатор '@error.SlideId' встречается у слайдов:
+@foreach (var title in error.SlideTitles)
+{
+	@title
+}
+</pre>
+}
+
+@foreach (var error in Model.OuterErrors)
+{
+	<pre>
+Идентификатор '@error.SlideId' встречается у слайдов:
+@foreach (var description in error.SlideDescriptions)
+{
+	<span>'@description.Title' в курсе '@description.CourseTitle' (@description.CourseId)</span>
+}
+</pre>
+}
+
+@if (!Model.InnerErrors.Any() && !Model.OuterErrors.Any())
+{
+	<p>Повторяющихся идентификаторов слайдов не найдено.</p>
+}

@@ -51,7 +51,10 @@ $runButton.click(function () {
 	var code = $(".code-exercise")[0].codeMirrorEditor.getValue();
 	if (code.length == 0)
 		code = " ";
-	$runButton.text("...running...").addClass("active");
+	$runButton
+		.text("...running...")
+		.addClass("active")
+		.prop("disabled", true);
 	$runResults.hide();
 
 		$.ajax(
@@ -65,6 +68,9 @@ $runButton.click(function () {
 			console.log(req.responseText);
 		})
 		.always(function () {
-			$runButton.text("Run").removeClass("active");
+			$runButton
+				.text("Run")
+				.removeClass("active")
+				.prop("disabled", false);
 		});
 });

@@ -8,6 +8,8 @@
 @Html.Action("ManageMenu")
 
 <div class="container">
+	<h2>Управление доступом</h2>
+
 	<p><a class="label label-warning" href="@Url.Action("Users", new { Model.CourseId, courseRole = CourseRole.CourseAdmin })">@CourseRole.CourseAdmin</a> может видеть служебную информацию и управлять ролями других пользователей.</p>
 	<p><a class="label label-info" href="@Url.Action("Users", new { Model.CourseId, courseRole = CourseRole.Instructor })">@CourseRole.Instructor</a> может видеть статистику по успеваемости на разных слайдах, задачах, тестах. Читать заданные вопросы.</p>
 	<p><a class="label label-success" href="@Url.Action("Users", new { Model.CourseId, courseRole = CourseRole.Tester })">@CourseRole.Tester</a> может видеть ещё не опубликованные для всех материалы.</p>

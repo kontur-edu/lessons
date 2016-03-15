@@ -275,13 +275,30 @@
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="codemirror\CsCompleterGenerator.cs" />
+    <Compile Include="ControllerExtensions.cs" />
     <Compile Include="Controllers\AuthenticationManager.cs" />
+    <Compile Include="Controllers\CommentsController.cs" />
     <Compile Include="Controllers\ControllerUtils.cs" />
+    <Compile Include="DataContexts\CommentsRepo.cs" />
     <Compile Include="DataContexts\UsersRepo.cs" />
+    <Compile Include="DateTimeExtensions.cs" />
+    <Compile Include="HtmlExtensions.cs" />
     <Compile Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.cs" />
     <Compile Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.Designer.cs">
       <DependentUpon>201602090753330_UpgradeToAspNetEFIdentity2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201602291854260_AddComments.cs" />
+    <Compile Include="Migrations\201602291854260_AddComments.Designer.cs">
+      <DependentUpon>201602291854260_AddComments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201602291950318_AddUserAvatars.cs" />
+    <Compile Include="Migrations\201602291950318_AddUserAvatars.Designer.cs">
+      <DependentUpon>201602291950318_AddUserAvatars.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Comment.cs" />
+    <Compile Include="Models\CommentLike.cs" />
+    <Compile Include="Models\CommentPolicy.cs" />
+    <Compile Include="Models\CommentViewModel.cs" />
     <Compile Include="Models\UserSearchQueryModel.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\QuestionsController.cs" />
@@ -308,6 +325,8 @@
       <DependentUpon>201512240735282_CustomRoleSystem.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\UserModel.cs" />
+    <Compile Include="PluralizeExtensions.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="UserExtentions.cs" />
     <Compile Include="LTI\LtiAuthenticationExtensions.cs" />
     <Compile Include="LTI\LtiUtils.cs" />
@@ -507,6 +526,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>SwitchablePanel.cshtml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Shared\UserAvatar.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UserAvatar.cshtml</DependentUpon>
+    </Compile>
     <Compile Include="Views\SlideNavigation\TableOfContents.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -657,6 +681,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201602090753330_UpgradeToAspNetEFIdentity2.resx">
       <DependentUpon>201602090753330_UpgradeToAspNetEFIdentity2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602291854260_AddComments.resx">
+      <DependentUpon>201602291854260_AddComments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201602291950318_AddUserAvatars.resx">
+      <DependentUpon>201602291950318_AddUserAvatars.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -1005,9 +1035,11 @@
     <Content Include="Properties\webjobs-list.json" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\buttons.js" />
+    <Content Include="Scripts\jquery.color-2.1.0.min.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\notify-custom.min.js" />
+    <Content Include="Scripts\slide-comments.js" />
     <Content Include="Scripts\slide-diff.js" />
     <Content Include="Scripts\slide-guest.js" />
     <Content Include="Scripts\slide-localvisits.js" />
@@ -1163,7 +1195,6 @@
     <Content Include="Views\Course\Slide.cshtml" />
     <Content Include="Views\SlideNavigation\PrevNextButtons.cshtml" />
     <Content Include="Views\Course\AcceptedSolutions.cshtml" />
-    <Content Include="Views\Course\_AskBar.cshtml" />
     <Content Include="Views\Analytics\TotalStatistics.cshtml" />
     <Content Include="Views\Course\_RatesBar.cshtml" />
     <Content Include="Views\Analytics\UsersStatistics.cshtml" />
@@ -1238,6 +1269,14 @@
     <Content Include="Views\Unit\Users.cshtml" />
     <Content Include="Views\Unit\Diagnostics.cshtml" />
     <Content Include="Views\Unit\CheckSlideIds.cshtml" />
+    <Content Include="Views\Comments\SlideComments.cshtml" />
+    <Content Include="Views\Comments\_Comment.cshtml" />
+    <Content Include="Views\Shared\UserAvatar.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>UserAvatar.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Comments\_CommentText.cshtml" />
+    <Content Include="Views\Unit\Comments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

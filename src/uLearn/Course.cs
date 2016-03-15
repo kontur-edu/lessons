@@ -38,6 +38,11 @@ namespace uLearn
 			return index >= 0 && index < Slides.Length ? Slides[index] : null;
 		}
 
+		public int GetSlideIndexById(string slideId)
+		{
+			return Slides.FindIndex(x => x.Id == slideId);
+		}
+
 		public IEnumerable<string> GetUnits()
 		{
 			return Slides.Select(s => s.Info.UnitName).Distinct();

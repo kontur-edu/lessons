@@ -163,7 +163,7 @@
 	}
 /* ReSharper restore Html.CssClassElementsNotFound */
 .side-bar {
-	width: 350px;
+	max-width: 350px;
 	margin: 0;
 	padding-top: 20px;
 	max-height: none !important;
@@ -446,4 +446,277 @@ li.li-info {
 
 li.li-success {
 	background: #dbf0db;
+}
+
+/* Comments */
+.comments .comment {
+	margin-top: 15px;
+}
+
+.comments:not(.comments__feed) .comment.is-reply,
+.comments:not(.comments__feed) .reply-form.is-reply {
+	margin-left: 68px;
+}
+
+.comments .comment .comment__author-avatar {
+	margin-right: 2px;
+}
+
+.comments .comment .comment__header {
+	margin: 0;
+}
+
+.comments .comment .comment__header,
+.comments .comment .comment__footer {
+	font-size: 9pt;
+}
+
+.comments .comment .comment__header .glyphicon,
+.comments .comment .comment__footer .glyphicon:not(.glyphicon-heart){
+	font-size: 80%;
+	margin-left: 3px;
+}
+
+.comments .comment .comment__footer .glyphicon {
+	position: relative;
+	top: 1px;
+}
+
+.comments .comment .comment__header > div,
+.comments .comment .comment__footer > div {
+	display: inline-block;
+}
+
+.comments .comment .comment__header .comment__not-approved {
+	display: inline;
+}
+
+.comments .comment .label {
+	font-size: 7pt;
+	vertical-align: middle;
+	margin-left: 5px;
+}
+
+.comments .comment .label * {
+	color: white;
+}
+
+.comments .comment .label-as-badge {
+	padding: 1px 4px 2px;
+	border-width: 1px;
+	border-style: solid;
+}
+
+.comments .comment .comment__delete-link * {
+	color: #933;
+}
+
+.comments .comment .comment__header .show-on-comment-hover,
+.comments .comment .comment__footer .show-on-comment-hover,
+.comments .comment .comment__header .show-on-comment-hover__if-not-pinned,
+.comments .comment .comment__footer .show-on-comment-hover__if-not-pinned {
+	display: none;
+}
+
+.comments .comment:hover .comment__header .show-on-comment-hover,
+.comments .comment:hover .comment__footer .show-on-comment-hover,
+.comments .comment:not(.is-pinned):hover .comment__header .show-on-comment-hover__if-not-pinned,
+.comments .comment:not(.is-pinned):hover .comment__footer .show-on-comment-hover__if-not-pinned {
+	display: initial;
+}
+
+
+.comments .comment .comment__author-name {
+	font-size: 10pt;
+	font-weight: bold;
+	color: #060;
+}
+
+.comments .comment .comment__footer > :not(:first-child) {
+	padding-left: 10px;
+}
+
+.comments .comment .comment__publish-time,
+.comments .comment .comment__publish-time a {
+	color: #bbb;
+}
+
+.comments .comment .comment__likes-count {
+	cursor: pointer;
+}
+
+.comments .comment .comment__likes-count:hover {
+	color: #900;
+}
+
+.comments .comment .comment__likes-count .glyphicon {
+	color: #888;
+	font-size: 10pt;
+}
+
+.comments .comment .comment__likes-count.is-liked .glyphicon {
+	color: #c00;
+}
+
+.comments .comment .comment__likes-count:not(.is-liked):hover .glyphicon {
+	color: #700;
+}
+
+.comments .reply-form [name=commentText] {
+	height: 24px;
+	margin-left: 7px;
+	padding: 1px 5px;
+	outline: none;
+	max-width: none;
+	width: 100%;
+}
+
+.comments .reply-form textarea[name=commentText] {
+	height: 60px;
+	padding-left: 6px;
+	padding-top: 1px;
+}
+
+.comments .reply-form .media-body {
+	padding-right: 7px;
+}
+
+.comments .reply-form .reply-form__send-button {
+	margin-left: 7px;
+	margin-top: 7px;
+	display: inline-block;
+}
+
+.comments .reply-form .comment__error-message {
+	display: inline-block;
+	margin-top: 7px;
+	vertical-align: middle;
+	margin-left: 15px;
+	color: #B15252;
+}
+
+.comments .comment:not(.is-reply):not(:nth-child(2)),
+.comments.comments__feed .comment:not(:nth-child(2)) {
+	border-top: 1px solid rgba(200, 200, 200, 0.5);
+	padding-top: 15px;
+}
+
+.comments .comment .comment__new-text {
+	display: block;
+	width: 100%;
+	max-width: none;
+	padding-top: 1px;
+	padding-left: 6px;
+	margin: 5px 0;
+}
+
+.comments .comment.is-pinned .comment__footer .comment__pin-link,
+.comments .comment:not(.is-pinned) .comment__footer .comment__unpin-link,
+.comments .comment.not-approved .comment__footer .comment__hide-link,
+.comments .comment.not-approved .comment__header .comment__pinned,
+.comments .comment.not-approved .comment__header .comment__correct-answer,
+.comments .comment:not(.not-approved) .comment__header .comment__not-approved {
+	display: none;
+}
+
+.comments .comment .comment__header .comment__correct-answer
+.comments .comment.not-approved .comment__footer .comment__pin-link {
+	display: none;
+}
+
+.comments .comment.is-pinned .comment__header .comment__pinned,
+.comments .comment.is-correct-answer .comment__header .comment__correct-answer {
+	display: initial;
+}
+
+.label-switcher {
+	cursor: pointer;
+}
+
+
+.comments .comment:not(.is-correct-answer) .label-switcher.comment__correct-answer {
+	border: 1px solid #428bca;
+	border: 1px solid rgba(66, 139, 202, 0.52);
+	color: #428bca;
+	color: rgba(66, 139, 202, 0.58);
+	background-color: white;
+}
+
+.comments .comment:not(.is-correct-answer) .label-switcher.comment__correct-answer .glyphicon-remove {
+	display: none;
+}
+
+
+.comments .comment:not(.is-pinned) .label-switcher.comment__pinned {
+	border: 1px solid #5cb85c;
+	border: 1px solid rgba(92,184,92,0.58);
+	color: #5cb85c;
+	color: rgba(92,184,92,0.58);
+	background-color: white;
+}
+
+.comments .comment:not(.is-pinned) .label-switcher.comment__pinned * {
+	color: inherit;	
+}
+
+.comments .comment .comment__footer .comment__hide-link a {
+	color: #bbb;
+}
+
+.comments .comment .comment__header *:hover > .hide-on-parent-hover,
+.comments .comment .comment__footer *:hover > .hide-on-parent-hover {
+	display: none;
+}
+
+.comments .comment .comment__header *:not(:hover) > .show-on-parent-hover,
+.comments .comment .comment__footer *:not(:hover) > .show-on-parent-hover {
+	display: none;
+}
+
+.comments .comment .comment__header .show-on-parent-hover__if-pinned,
+.comments .comment .comment__footer .show-on-parent-hover__if-pinned {
+	display: none;
+}
+
+.comments .comment.is-pinned .comment__header *:hover > .show-on-parent-hover__if-pinned ,
+.comments .comment.is-pinned .comment__footer *:hover > .show-on-parent-hover__if-pinned {
+	display: initial;
+}
+
+.comments .comment:not(.is-pinned) .comment__header .show__if_pinned {
+	display: none;
+}
+
+
+.comments_policy__message {
+	margin-top: 15px;
+	background-color: rgba(255, 0, 0, 0.13);
+	padding: 7px 12px;
+	border-radius: 5px;
+	color: #500F0F;
+}
+
+/* User avatars */
+.user__avatar {
+	width: 54px;
+	height: 54px;
+	display: inline-block;
+	border-radius: 4px;
+}
+
+.user__avatar.small {
+	width: 24px;
+	height: 24px;
+}
+
+.user__avatar.user__avatar__placeholder {
+	color: white;
+	font-size: 25pt;
+	text-align: center;
+	padding-top: 5px;
+}
+
+.user__avatar.user__avatar__placeholder.small {
+	font-size: 12pt;
+	padding-top: 2px;
 }

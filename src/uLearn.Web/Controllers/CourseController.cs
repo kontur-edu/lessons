@@ -24,6 +24,7 @@ namespace uLearn.Web.Controllers
 		private readonly UnitsRepo unitsRepo = new UnitsRepo();
 		private readonly VisitsRepo visitsRepo = new VisitsRepo(); 
 		private readonly LtiRequestsRepo ltiRequestsRepo = new LtiRequestsRepo();
+		private readonly CommentsRepo commentsRepo = new CommentsRepo();
 
 		public CourseController()
 			: this(WebCourseManager.Instance)
@@ -33,6 +34,16 @@ namespace uLearn.Web.Controllers
 		public CourseController(CourseManager courseManager)
 		{
 			this.courseManager = courseManager;
+		}
+
+		[AllowAnonymous]
+		public ActionResult SlideById(string courseId, string slideId)
+		{
+			var course = courseManager.GetCourse(courseId);
+			var slideIndex = course.GetSlideIndexById(slideId);
+			if (slideIndex < 0)
+				return HttpNotFound();
+			return RedirectToAction("Slide", new { courseId, slideIndex });
 		}
 
 		[AllowAnonymous]
@@ -46,7 +57,7 @@ namespace uLearn.Web.Controllers
 				await CreateCoursePageModel(courseId, slideIndex, visibleUnits);
 			if (!visibleUnits.Contains(model.Slide.Info.UnitName))
 				throw new Exception("Slide is hidden " + slideIndex);
-			return View(model);
+			return View("Slide", model);
 		}
 
 		public async Task<ActionResult> LtiSlide(string courseId, int slideIndex)
@@ -192,7 +203,7 @@ namespace uLearn.Web.Controllers
 				Rate = GetRate(course.Id, slideId),
 				Score = score,
 				BlockRenderContext = CreateRenderContext(course, slide, userId, visiter),
-				IsGuest = false
+				IsGuest = false,
 			};
 			return model;
 		}
@@ -346,7 +357,7 @@ namespace uLearn.Web.Controllers
 			await db.SaveChangesAsync();
 			return RedirectToAction("Slide", new { courseId, slideIndex = slide.Index });
 		}
-
+		
 		private static void RemoveFrom<T>(DbSet<T> dbSet, string slideId, string userId) where T : class, ISlideAction
 		{
 			dbSet.RemoveRange(dbSet.Where(s => s.UserId == userId && s.SlideId == slideId));

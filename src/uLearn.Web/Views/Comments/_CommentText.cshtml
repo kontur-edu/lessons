@@ -1,0 +1,7 @@
+﻿@model Comment
+	
+@{
+	var htmlCommentText = Html.EncodeMultiLineText(Model.Text);
+	htmlCommentText = Html.HighlightLinks(htmlCommentText);
+}
+<div class="comment__text">@Html.Raw(htmlCommentText)</div>

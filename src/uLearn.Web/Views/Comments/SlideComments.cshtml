@@ -1,0 +1,91 @@
+﻿@using System.Web.Mvc.Html
+@using Microsoft.AspNet.Identity
+@using uLearn
+@using uLearn.Web.Controllers
+@using uLearn.Web.Views.Shared
+
+@model SlideCommentsModel
+
+@functions
+{
+
+	private CommentViewModel BuildCommentViewModel(Comment comment)
+	{
+		var replies = Model.CommentsByParent.Get(comment.Id, new List<Comment>()).OrderByDescending(x => x.IsApproved).ThenBy(x => x.PublishTime);
+		var isAuthor = comment.AuthorId == User.Identity.GetUserId();
+		return new CommentViewModel
+		{
+			Comment = comment,
+			LikesCount = Model.CommentsLikesCounts.Get(comment.Id, 0),
+			IsLikedByUser = Model.CommentsLikedByUser.Contains(comment.Id),
+			Replies = replies.Select(BuildCommentViewModel),
+			CanReply = Model.CanReply,
+			CanModerateComment = Model.CanModerateComments,
+			IsCommentVisibleForUser = comment.IsApproved || Model.CanSeeNotApprovedComments || isAuthor,
+			CanEditAndDeleteComment = Model.CanModerateComments || isAuthor,
+			CurrentUser = Model.CurrentUser,
+		};
+	}
+}
+
+@helper TopLevelReplyForm()
+{
+	<div class="reply-form media">
+		@using (Html.BeginForm("AddComment", "Comments", FormMethod.Post))
+		{
+			@Html.AntiForgeryToken()
+			@Html.Hidden("courseId", Model.CourseId)
+			@Html.Hidden("slideId", Model.SlideId)
+			<div class="pull-left">
+				@UserAvatar.SmallAvatar(Model.CurrentUser)
+			</div>
+			<div class="media-body">
+				@Html.TextArea("commentText", "", new { placeholder = "Комментировать.." })
+				<button class="reply-form__send-button btn btn-primary" disabled="disabled">Отправить</button>
+			</div>
+		}
+	</div>
+}
+
+@if (Model.TopLevelComments.Any() || Model.IsAuthorizedAndCanComment)
+{
+	<div class="comments">
+		<h3>Комментарии</h3>
+		@foreach (var topLevelComment in @Model.TopLevelComments)
+		{
+			@Html.Partial("_Comment", BuildCommentViewModel(topLevelComment))
+		}
+
+		@if (Model.IsAuthorizedAndCanComment)
+		{
+			@TopLevelReplyForm()
+		}
+		else if (Model.CommentsPolicy.IsCommentsEnabled)
+		{
+			<div class="comments_policy__message">
+				Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new {})
+			</div>
+		}
+		else
+		{
+			<div class="comments_policy__message">
+				Только преподаватели могут оставлять комментарии
+			</div>
+		}
+	</div>
+}
+else
+{
+	if (Model.CommentsPolicy.IsCommentsEnabled)
+	{
+		<div class="comments_policy__message">
+			Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new {})
+		</div>
+	}
+	else
+	{
+		<div class="comments_policy__message">
+			Комментарии отключены
+		</div>
+	}
+}

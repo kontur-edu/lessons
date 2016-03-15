@@ -1,0 +1,32 @@
+﻿@* Generator: MvcHelper GeneratePrettyNames: true DisableLinePragmas: true *@
+@using uLearn.Web
+@* ReSharper disable once RedundantUsingDirective *@
+@using uLearn.Web.Models
+
+@helper GetAvatarPlaceholderColor(ApplicationUser user)
+{
+	var hue = Math.Abs(user.Id.GetHashCode()) % 360;
+	<text>hsl(@hue, 64%, 75%)</text>
+}
+
+@helper GetAvatarPlaceholderLetter(ApplicationUser user)
+{
+	<text>@char.ToUpper(user.VisibleName.FindFirstLetter('O'))</text>
+}
+
+@helper Avatar(ApplicationUser user, string classes="")
+{
+	if (user.HasAvatar)
+	{
+		<img class="user__avatar @classes" src="@user.AvatarUrl" alt="@HttpUtility.HtmlAttributeEncode(user.VisibleName)" />
+	}
+	else
+	{
+		<div class="user__avatar user__avatar__placeholder @classes" style="background-color: @GetAvatarPlaceholderColor(user)">@GetAvatarPlaceholderLetter(user)</div>
+	}
+}
+
+@helper SmallAvatar(ApplicationUser user, string classes="")
+{
+	@Avatar(user, "small " + classes);
+}

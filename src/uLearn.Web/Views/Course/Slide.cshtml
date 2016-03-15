@@ -30,10 +30,6 @@
 					@SlideHtml.Blocks(Model.BlockRenderContext)
 				}
 
-				@if (!Model.IsGuest)
-				{
-					@Html.Partial("_AskBar")
-				}
 			</div>
 			@if (User.HasAccessFor(Model.CourseId, CourseRole.Tester))
 			{
@@ -53,6 +49,8 @@
 				@Html.Partial("_LoginForContinue")
 			}
 			@Html.Action("PrevNextButtons", "SlideNavigation", new { courseId = Model.CourseId, slideIndex = Model.Slide.Index, onSolutionsSlide = false })
+
+			@Html.Action("SlideComments", "Comments", new { courseId = Model.CourseId, slideId=  Model.Slide.Id})
 		</div>
 	</div>
 </div>
@@ -86,6 +84,9 @@
 		</script>
 		<script> refreshPreviousDraft('@(data.LatestAcceptedSolution != null)', '@e.Id') </script>
 	}
+
+
+	<script src="~/Scripts/jquery.color-2.1.0.min.js"></script>
 }
 
 @helper GetScore(Tuple<int, int> score)

@@ -21,6 +21,7 @@ namespace uLearn.Web.Controllers
 		private readonly CourseManager courseManager;
 		private readonly ULearnDb db;
 		private readonly UsersRepo usersRepo;
+		private readonly CommentsRepo commentsRepo;
 		private readonly UserManager<ApplicationUser> userManager;
 
 		public UnitController()
@@ -28,6 +29,7 @@ namespace uLearn.Web.Controllers
 			db = new ULearnDb();
 			courseManager = WebCourseManager.Instance;
 			usersRepo = new UsersRepo(db);
+			commentsRepo = new CommentsRepo(db);
 			userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(new ULearnDb()));
 		}
 
@@ -162,6 +164,54 @@ namespace uLearn.Web.Controllers
 			});
 		}
 
+		public ActionResult Comments(string courseId)
+		{
+			var course = courseManager.GetCourse(courseId);
+			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
+			
+			var comments = commentsRepo.GetCourseComments(courseId).OrderByDescending(x => x.PublishTime).ToList();
+			var commentsLikes = commentsRepo.GetCommentsLikesCounts(comments);
+			var commentsLikedByUser = commentsRepo.GetCourseCommentsLikedByUser(courseId, User.Identity.GetUserId());
+			var commentsById = comments.ToDictionary(x => x.Id);
+
+			return View(new AdminCommentsViewModel
+			{
+				CourseId = courseId,
+				IsCommentsEnabled = commentsPolicy.IsCommentsEnabled,
+				ModerationPolicy = commentsPolicy.ModerationPolicy,
+				OnlyInstructorsCanReply = commentsPolicy.OnlyInstructorsCanReply,
+				Comments = comments.Select(c => new CommentViewModel
+				{
+					Comment = c,
+					LikesCount = commentsLikes.Get(c.Id, 0),
+					IsLikedByUser = commentsLikedByUser.Contains(c.Id),
+					Replies = new List<CommentViewModel>(),
+					CanEditAndDeleteComment = true,
+					CanModerateComment = true,
+					IsCommentVisibleForUser = true,
+					ShowContextInformation = true,
+					ContextSlideTitle = course.GetSlideById(c.SlideId).Title,
+					ContextParentComment = c.IsTopLevel() ? null : commentsById[c.ParentCommentId].Text,
+				}).ToList()
+			});
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<ActionResult> SaveCommentsPolicy(AdminCommentsViewModel model)
+		{
+			var courseId = model.CourseId;
+			var commentsPolicy = new CommentsPolicy
+			{
+				CourseId = courseId,
+				IsCommentsEnabled = model.IsCommentsEnabled,
+				ModerationPolicy = model.ModerationPolicy,
+				OnlyInstructorsCanReply = model.OnlyInstructorsCanReply
+			};
+			await commentsRepo.SaveCommentsPolicy(commentsPolicy);
+			return RedirectToAction("Comments", new { courseId });
+		}
+
 		public ActionResult Users(UserSearchQueryModel queryModel)
 		{
 			if (string.IsNullOrEmpty(queryModel.CourseId))
@@ -285,5 +335,14 @@ namespace uLearn.Web.Controllers
 	{
 		public List<LocalSlideIdErrorList> InnerErrors { get; set; }
 		public List<GlobalSlideIdErrorList> OuterErrors { get; set; }
+	}
+
+	public class AdminCommentsViewModel
+	{
+		public string CourseId { get; set; }
+		public bool IsCommentsEnabled { get; set; }
+		public CommentModerationPolicy ModerationPolicy { get; set; }
+		public bool OnlyInstructorsCanReply { get; set; }
+		public List<CommentViewModel> Comments { get; set; }
 	}
 }

@@ -1,24 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-16"?>
 <Quiz xmlns:x="http://www.w3.org/2001/XMLSchema-instance" id="Id" maxDropCount="0" xmlns="https://ulearn.azurewebsites.net/quiz">
   <title>Title</title>
-  <p>This is quiz!</p>
-  <isTrue id="1" answer="false">
+  <p hide="false">This is quiz!</p>
+  <isTrue hide="false" id="1" answer="false">
     <text>Это утверждение ложно</text>
   </isTrue>
-  <choice multiple="false" shuffle="false">
+  <choice hide="false" multiple="false" shuffle="false">
     <text>What is the 
 best color?</text>
     <item id="1" isCorrect="true">black</item>
     <item id="2" isCorrect="false">green</item>
     <item id="3" isCorrect="false">red</item>
   </choice>
-  <choice multiple="true" shuffle="false">
+  <choice hide="false" multiple="true" shuffle="false">
     <text>What does the fox say?</text>
     <item isCorrect="true">Apapapapa</item>
     <item isCorrect="true">Ding ding ding</item>
     <item isCorrect="false">Mew</item>
   </choice>
-  <fillIn>
+  <fillIn hide="false">
     <text>What does the fox say?</text>
     <sample>Apapap</sample>
     <regex ignoreCase="false">([Dd]ing )+</regex>

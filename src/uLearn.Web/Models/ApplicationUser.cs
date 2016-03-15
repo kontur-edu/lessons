@@ -14,5 +14,23 @@ namespace uLearn.Web.Models
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public DateTime? LastEdit { get; set; }
+
+		// AvatarUrl is empty if user has no avatar
+		public string AvatarUrl { get; set; }
+
+		public bool HasAvatar
+		{
+			get { return ! string.IsNullOrEmpty(AvatarUrl); }
+		}
+
+		public string VisibleName
+		{
+			get
+			{
+				if (FirstName + LastName == "")
+					return "Пользователь";
+				return FirstName + " " + LastName;
+			}
+		}
 	}
 }

@@ -7,7 +7,8 @@ namespace test
 		private static void Main()
 		{
 			var a = 1;
-			Console.WriteLine($"Hello world!{a}");
+			var b = (1, 2);
+			Console.WriteLine($"Hello world!{a}{b}");
 		}
 	}
 }

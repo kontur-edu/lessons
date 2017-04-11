@@ -23,16 +23,29 @@ namespace RunCsJob
 	}
 	public static class MsBuildRunner
 	{
+		private const string ValueTupleLibName = "System.ValueTuple";
+
 		public static MSbuildResult BuildProject(MsBuildSettings settings, string projectFileName, DirectoryInfo dir)
 		{
 			var result = new MSbuildResult();
 			var path = Path.Combine(dir.FullName, projectFileName);
 			var project = new Project(path, null, null, new ProjectCollection());
 			project.SetProperty("CscToolPath", settings.CompilerDirectory.FullName);
+
+			var references = project.AllEvaluatedItems.Where(i => i.ItemType == "Reference");
+			if (references.All(r => r.EvaluatedInclude != ValueTupleLibName))
+			{
+				project.AddItem(
+					"Reference", ValueTupleLibName,
+					new[] { new KeyValuePair<string, string>("HintPath", typeof(ValueTuple).Assembly.Location) });
+				project.ReevaluateIfNecessary();
+			}
+
 			var includes = new HashSet<string>(
 				project.AllEvaluatedItems
 				.Where(i => i.ItemType == "None" || i.ItemType == "Content")
 				.Select(i => Path.GetFileName(i.EvaluatedInclude.ToLowerInvariant())));
+
 			foreach (var dll in settings.WellKnownLibsDirectory.GetFiles("*.dll"))
 				if (!includes.Contains(dll.Name.ToLowerInvariant()))
 					project.AddItem("None", dll.FullName);

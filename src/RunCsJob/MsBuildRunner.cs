@@ -33,7 +33,7 @@ namespace RunCsJob
 			project.SetProperty("CscToolPath", settings.CompilerDirectory.FullName);
 
 			var references = project.AllEvaluatedItems.Where(i => i.ItemType == "Reference");
-			if (references.All(r => r.EvaluatedInclude.StartsWith(ValueTupleLibName, StringComparison.OrdinalIgnoreCase)))
+			if (references.All(r => IsLibrary(r.EvaluatedInclude, ValueTupleLibName)))
 			{
 				project.AddItem("Reference", ValueTupleLibName);
 				project.ReevaluateIfNecessary();
@@ -63,6 +63,12 @@ namespace RunCsJob
 		}
 
 		private static readonly object buildLock = new object();
+
+		private static bool IsLibrary(string include, string libraryName)
+		{
+			return include.Equals(libraryName, StringComparison.OrdinalIgnoreCase) ||
+				include.StartsWith($"{libraryName},", StringComparison.OrdinalIgnoreCase);
+		}
 
 		private static bool SyncBuild(Project project, ILogger logger)
 		{

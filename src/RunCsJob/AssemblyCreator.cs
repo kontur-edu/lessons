@@ -58,7 +58,7 @@ namespace RunCsJob
 					MetadataReference.CreateFromFile(typeof(Uri).Assembly.Location), // System
 					MetadataReference.CreateFromFile(typeof(Enumerable).Assembly.Location), // System.Core
 					MetadataReference.CreateFromFile(typeof(Point).Assembly.Location), // System.Drawing,
-					MetadataReference.CreateFromFile(typeof(ValueTuple<>).Assembly.Location), // System.ValueTuple
+					MetadataReference.CreateFromFile(typeof(ValueTuple).Assembly.Location), // System.ValueTuple
 					MetadataReference.CreateFromFile(SystemRuntimeDllPath), // System.Runtime (defines ValueType type),
 				}, new CSharpCompilationOptions(OutputKind.ConsoleApplication));
 			

@@ -35,9 +35,7 @@ namespace RunCsJob
 			var references = project.AllEvaluatedItems.Where(i => i.ItemType == "Reference");
 			if (references.All(r => !string.Equals(r.EvaluatedInclude, ValueTupleLibName, StringComparison.OrdinalIgnoreCase)))
 			{
-				project.AddItem(
-					"Reference", ValueTupleLibName,
-					new[] { new KeyValuePair<string, string>("HintPath", typeof(ValueTuple).Assembly.Location) });
+				project.AddItem("Reference", ValueTupleLibName);
 				project.ReevaluateIfNecessary();
 			}
 

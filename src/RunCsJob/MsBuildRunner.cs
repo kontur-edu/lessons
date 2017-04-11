@@ -33,7 +33,7 @@ namespace RunCsJob
 			project.SetProperty("CscToolPath", settings.CompilerDirectory.FullName);
 
 			var references = project.AllEvaluatedItems.Where(i => i.ItemType == "Reference");
-			if (references.All(r => IsLibrary(r.EvaluatedInclude, ValueTupleLibName)))
+			if (!references.Any(r => IsLibrary(r.EvaluatedInclude, ValueTupleLibName)))
 			{
 				project.AddItem("Reference", ValueTupleLibName);
 				project.ReevaluateIfNecessary();

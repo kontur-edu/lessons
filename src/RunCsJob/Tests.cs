@@ -12,13 +12,26 @@ namespace RunCsJob
 	internal static class RunCscTests
 	{
 		private const int outputLimit = 10 * 1024 * 1024;
+		private static readonly string compilationDirectory = Path.Combine(TestContext.CurrentContext.TestDirectory, "testCompilations");
 
 		[SetUp]
 		public static void SetUp()
 		{
-			Directory.SetCurrentDirectory(TestContext.CurrentContext.TestDirectory);
+			Directory.CreateDirectory(compilationDirectory);
+			Directory.SetCurrentDirectory(compilationDirectory);
 		}
 
+		[TearDown]
+		public static void TearDown()
+		{
+			try
+			{
+				Directory.Delete(compilationDirectory, true);
+			}
+			catch
+			{
+			}
+		}
 
 		[TestCase(@"namespace Test { public class Program { static public void Main() { return ; } } }",
 			"", "", "",
@@ -80,6 +93,12 @@ namespace RunCsJob
 		[TestCase(@"class A { static void Main(string[] args) {var s = $""2+2={2+2}"";} }",
 			"", "", "",
 			TestName = "String interpolation")]
+		[TestCase(@"class A { static void Method(out int x){x = 1;} static void Main() {Method(out var x);} }",
+			"", "", "",
+			TestName = "Inline out var")]
+		[TestCase(@"class A { static void Main() {var valueTuple = (1, 2); (int x, int y) = valueTuple;} }",
+			"", "", "",
+			TestName = "ValueTuple")]
 		[TestCase(@"class A { static void Main() {System.Console.Write($""InsideSandbox: {System.Environment.GetEnvironmentVariable(""InsideSandbox"")}"");} }",
 			"", "InsideSandbox: true", "",
 			TestName = "InsideSandbox Env var")]

@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <CscToolPath>C:\work\edu\uLearn\src\RunCsJob\bin\Debug\Microsoft.Net.Compilers.1.3.2</CscToolPath>
+    <CscToolPath>F:\uLearn\src\RunCsJob\bin\Debug\Microsoft.Net.Compilers.2.0.1</CscToolPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -52,7 +52,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="C:\work\edu\uLearn\src\RunCsJob\bin\Debug\WellKnownLibs\nunit.framework.dll" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

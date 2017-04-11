@@ -10,7 +10,7 @@ namespace RunCsJob
 {
 	public class MsBuildSettings
 	{
-		private const string CompilersFolderName = "Microsoft.Net.Compilers.1.3.2";
+		private const string CompilersFolderName = "Microsoft.Net.Compilers.2.0.1";
 		private const string WellKnownLibsFolderName = "WellKnownLibs";
 		public MsBuildSettings()
 		{
@@ -23,16 +23,27 @@ namespace RunCsJob
 	}
 	public static class MsBuildRunner
 	{
+		private const string ValueTupleLibName = "System.ValueTuple";
+
 		public static MSbuildResult BuildProject(MsBuildSettings settings, string projectFileName, DirectoryInfo dir)
 		{
 			var result = new MSbuildResult();
 			var path = Path.Combine(dir.FullName, projectFileName);
 			var project = new Project(path, null, null, new ProjectCollection());
 			project.SetProperty("CscToolPath", settings.CompilerDirectory.FullName);
+
+			var references = project.AllEvaluatedItems.Where(i => i.ItemType == "Reference");
+			if (!references.Any(r => IsLibrary(r.EvaluatedInclude, ValueTupleLibName)))
+			{
+				project.AddItem("Reference", ValueTupleLibName);
+				project.ReevaluateIfNecessary();
+			}
+
 			var includes = new HashSet<string>(
 				project.AllEvaluatedItems
 				.Where(i => i.ItemType == "None" || i.ItemType == "Content")
 				.Select(i => Path.GetFileName(i.EvaluatedInclude.ToLowerInvariant())));
+
 			foreach (var dll in settings.WellKnownLibsDirectory.GetFiles("*.dll"))
 				if (!includes.Contains(dll.Name.ToLowerInvariant()))
 					project.AddItem("None", dll.FullName);
@@ -52,6 +63,12 @@ namespace RunCsJob
 		}
 
 		private static readonly object buildLock = new object();
+
+		private static bool IsLibrary(string include, string libraryName)
+		{
+			return include.Equals(libraryName, StringComparison.OrdinalIgnoreCase) ||
+				include.StartsWith($"{libraryName},", StringComparison.OrdinalIgnoreCase);
+		}
 
 		private static bool SyncBuild(Project project, ILogger logger)
 		{

@@ -168,10 +168,27 @@ namespace RunCsJob
 				SafeRemoveFile(res.PathToAssembly);
 				return result;
 			}
+
+			var valueTupleDllPath = Path.Combine(submissionCompilationDirectory, "System.ValueTuple.dll");
+			SafeCopyFileIfNotExists(typeof(ValueTuple).Assembly.Location, valueTupleDllPath);
 			RunSandboxer($"\"{Path.GetFullPath(res.PathToAssembly)}\" {submission.Id}");
 
 			SafeRemoveFile(res.PathToAssembly);
+			SafeRemoveFile(valueTupleDllPath);
+
 			return result;
+		}
+
+		private static void SafeCopyFileIfNotExists(string sourceFilePath, string destFilePath)
+		{
+			try
+			{
+				if(!File.Exists(destFilePath))
+					File.Copy(sourceFilePath, destFilePath);
+			}
+			catch
+			{
+			}
 		}
 
 		private static void SafeRemoveDirectory(string path)

@@ -24,6 +24,7 @@ namespace RunCsJob
 	public static class MsBuildRunner
 	{
 		private const string ValueTupleLibName = "System.ValueTuple";
+		private const string SystemRuntimeLibName = "System.Runtime";
 
 		public static MSbuildResult BuildProject(MsBuildSettings settings, string projectFileName, DirectoryInfo dir)
 		{
@@ -32,12 +33,13 @@ namespace RunCsJob
 			var project = new Project(path, null, null, new ProjectCollection());
 			project.SetProperty("CscToolPath", settings.CompilerDirectory.FullName);
 
-			var references = project.AllEvaluatedItems.Where(i => i.ItemType == "Reference");
-			if (!references.Any(r => IsLibrary(r.EvaluatedInclude, ValueTupleLibName)))
-			{
-				project.AddItem("Reference", ValueTupleLibName);
-				project.ReevaluateIfNecessary();
-			}
+			if (!project.HasReference(ValueTupleLibName))
+				project.AddReference(ValueTupleLibName, typeof(ValueTuple).Assembly.Location);
+
+			if (!project.HasReference(SystemRuntimeLibName))
+				project.AddReference(SystemRuntimeLibName);
+
+			project.ReevaluateIfNecessary();
 
 			var includes = new HashSet<string>(
 				project.AllEvaluatedItems
@@ -47,6 +49,7 @@ namespace RunCsJob
 			foreach (var dll in settings.WellKnownLibsDirectory.GetFiles("*.dll"))
 				if (!includes.Contains(dll.Name.ToLowerInvariant()))
 					project.AddItem("None", dll.FullName);
+
 			project.Save();
 			using (var stringWriter = new StringWriter())
 			{
@@ -63,13 +66,7 @@ namespace RunCsJob
 		}
 
 		private static readonly object buildLock = new object();
-
-		private static bool IsLibrary(string include, string libraryName)
-		{
-			return include.Equals(libraryName, StringComparison.OrdinalIgnoreCase) ||
-				include.StartsWith($"{libraryName},", StringComparison.OrdinalIgnoreCase);
-		}
-
+		
 		private static bool SyncBuild(Project project, ILogger logger)
 		{
 			lock (buildLock)

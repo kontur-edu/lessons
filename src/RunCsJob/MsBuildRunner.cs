@@ -12,12 +12,15 @@ namespace RunCsJob
 	{
 		private const string CompilersFolderName = "Microsoft.Net.Compilers.2.0.1";
 		private const string WellKnownLibsFolderName = "WellKnownLibs";
+
 		public MsBuildSettings()
 		{
-			var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-			CompilerDirectory = new DirectoryInfo(Path.Combine(baseDirectory, CompilersFolderName));
-			WellKnownLibsDirectory = new DirectoryInfo(Path.Combine(baseDirectory, WellKnownLibsFolderName));
+			BaseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+			CompilerDirectory = new DirectoryInfo(Path.Combine(BaseDirectory, CompilersFolderName));
+			WellKnownLibsDirectory = new DirectoryInfo(Path.Combine(BaseDirectory, WellKnownLibsFolderName));
 		}
+
+		public readonly string BaseDirectory;
 		public DirectoryInfo CompilerDirectory;
 		public DirectoryInfo WellKnownLibsDirectory;
 	}
@@ -28,6 +31,7 @@ namespace RunCsJob
 
 		public static MSbuildResult BuildProject(MsBuildSettings settings, string projectFileName, DirectoryInfo dir)
 		{
+			
 			var result = new MSbuildResult();
 			var path = Path.Combine(dir.FullName, projectFileName);
 			var project = new Project(path, null, null, new ProjectCollection());
@@ -37,7 +41,7 @@ namespace RunCsJob
 				project.AddReference(ValueTupleLibName, typeof(ValueTuple).Assembly.Location);
 
 			if (!project.HasReference(SystemRuntimeLibName))
-				project.AddReference(SystemRuntimeLibName);
+				project.AddReference(SystemRuntimeLibName, Path.Combine(settings.BaseDirectory, $"{SystemRuntimeLibName}.dll"));
 
 			project.ReevaluateIfNecessary();
 

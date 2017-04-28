@@ -360,8 +360,14 @@
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="codemirror\CsCompleterGenerator.cs" />
+    <Compile Include="Controllers\BaseExerciseController.cs" />
     <Compile Include="Controllers\CertificatesController.cs" />
+    <Compile Include="Controllers\GraderController.cs" />
+    <Compile Include="Controllers\JsonDataContractController.cs" />
+    <Compile Include="Controllers\JsonDataContractHelpers.cs" />
+    <Compile Include="DataContexts\GradersRepo.cs" />
     <Compile Include="Helpers\ExcelWorksheetBuilder.cs" />
+    <Compile Include="Helpers\StringUtils.cs" />
     <Compile Include="Migrations\201702210620147_AddIsManualCheckingEnabledForOldSolutions.cs" />
     <Compile Include="Migrations\201702210620147_AddIsManualCheckingEnabledForOldSolutions.Designer.cs">
       <DependentUpon>201702210620147_AddIsManualCheckingEnabledForOldSolutions.cs</DependentUpon>
@@ -370,6 +376,13 @@
     <Compile Include="Migrations\201704061850482_AddHiddenFromTopComments.Designer.cs">
       <DependentUpon>201704061850482_AddHiddenFromTopComments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201704070801464_AddGraderClients.cs" />
+    <Compile Include="Migrations\201704070801464_AddGraderClients.Designer.cs">
+      <DependentUpon>201704070801464_AddGraderClients.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CourseStatisticsJsonModel.cs" />
+    <Compile Include="Models\ExerciseSolutionByGrader.cs" />
+    <Compile Include="Models\GraderClient.cs" />
     <Compile Include="Models\GroupsFilterViewModel.cs" />
     <Compile Include="Telegram\ErrorsBot.cs" />
     <Compile Include="Telegram\TelegramBot.cs" />
@@ -982,6 +995,9 @@
     <EmbeddedResource Include="Migrations\201704061850482_AddHiddenFromTopComments.resx">
       <DependentUpon>201704061850482_AddHiddenFromTopComments.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201704070801464_AddGraderClients.resx">
+      <DependentUpon>201704070801464_AddGraderClients.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="codemirror\addon\comment\comment.js" />
@@ -1359,6 +1375,7 @@
     <Content Include="Scripts\course-statistics.js" />
     <Content Include="Scripts\diagnostics.js" />
     <Content Include="Scripts\forms.replace-action.js" />
+    <Content Include="Scripts\grader.js" />
     <Content Include="Scripts\groups-editor.js" />
     <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.color-2.1.0.min.js" />
@@ -1636,6 +1653,8 @@
     <Content Include="Views\Shared\_GroupsFilter.cshtml" />
     <Content Include="Views\Exercise\_TopUserReviewComments.cshtml" />
     <Content Include="Views\Exercise\_SlideCodeReviewComments.cshtml" />
+    <Content Include="Views\Grader\Clients.cshtml" />
+    <Content Include="Views\Grader\Submissions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -38,8 +38,11 @@ namespace uLearn.Web.DataContexts
 			courseManager = WebCourseManager.Instance;
 		}
 
-		/* TODO(andgein): Remove isRightAnswer? */
-		public async Task<UserExerciseSubmission> AddUserExerciseSubmission(string courseId, Guid slideId, string code, bool isRightAnswer, string compilationError, string output, string userId, string executionServiceName, string displayName)
+		public async Task<UserExerciseSubmission> AddUserExerciseSubmission(
+			string courseId, Guid slideId,
+			string code, string compilationError, string output,
+			string userId, string executionServiceName, string displayName,
+			AutomaticExerciseCheckingStatus status = AutomaticExerciseCheckingStatus.Waiting)
 		{
 			if (string.IsNullOrWhiteSpace(code))
 				code = "// no code";
@@ -59,8 +62,8 @@ namespace uLearn.Web.DataContexts
 				OutputHash = outputHash,
 				ExecutionServiceName = executionServiceName,
 				DisplayName = displayName,
-				Status = AutomaticExerciseCheckingStatus.Waiting,
-				IsRightAnswer = isRightAnswer,
+				Status = status,
+				IsRightAnswer = false,
 			};
 
 			db.AutomaticExerciseCheckings.Add(automaticChecking);
@@ -76,7 +79,7 @@ namespace uLearn.Web.DataContexts
 				CodeHash = code.Split('\n').Select(x => x.Trim()).Aggregate("", (x, y) => x + y).GetHashCode(),
 				Likes = new List<Like>(),
 				AutomaticChecking = automaticChecking,
-				AutomaticCheckingIsRightAnswer = isRightAnswer,
+				AutomaticCheckingIsRightAnswer = false,
 			};
 			
 			db.UserExerciseSubmissions.Add(submission);
@@ -250,7 +253,7 @@ namespace uLearn.Web.DataContexts
 				.Take(max);
 		}
 
-		public UserExerciseSubmission FindSubmission(int id)
+		public UserExerciseSubmission FindNoTrackingSubmission(int id)
 		{
 			var submission = db.UserExerciseSubmissions.AsNoTracking().SingleOrDefault(x => x.Id == id);
 			if (submission == null)
@@ -415,36 +418,36 @@ namespace uLearn.Web.DataContexts
 			return newChecking;
 		}
 
-		public async Task<UserExerciseSubmission> RunUserSolution(
-			string courseId, Guid slideId, string userId, string code,
-			string compilationError, string output, bool isRightAnswer,
-			string executionServiceName, string displayName, TimeSpan timeout)
+		public async Task RunSubmission(UserExerciseSubmission submission, TimeSpan timeout, bool waitUntilChecked)
 		{
-			var submission = await AddUserExerciseSubmission(
-				courseId, slideId,
-				code, isRightAnswer, compilationError, output,
-				userId, executionServiceName, displayName);
-			
 			log.Info($"Запускаю проверку решения. ID посылки: {submission.Id}");
 			unhandledSubmissions.TryAdd(submission.Id, DateTime.Now);
+
+			if (!waitUntilChecked)
+			{
+				log.Info($"Не буду ожидать результатов проверки посылки {submission.Id}");
+				return;
+			}
 
 			var sw = Stopwatch.StartNew();
 			while (sw.Elapsed < timeout)
 			{
 				await WaitUntilSubmissionHandled(TimeSpan.FromSeconds(5), submission.Id);
-				var updatedSubmission = FindSubmission(submission.Id);
+				var updatedSubmission = FindNoTrackingSubmission(submission.Id);
 				if (updatedSubmission == null)
 					break;
 
 				if (updatedSubmission.AutomaticChecking.Status == AutomaticExerciseCheckingStatus.Done)
 				{
 					log.Info($"Посылка {submission.Id} проверена. Результат: {updatedSubmission.AutomaticChecking.GetVerdict()}");
-					return updatedSubmission;
+					return;
 				}
 			}
+
+			/* If something is wrong */
 			DateTime value;
 			unhandledSubmissions.TryRemove(submission.Id, out value);
-			return null;
+			throw new SubmissionCheckingTimeout();
 		}
 		
 		public Dictionary<int, string> GetSolutionsForSubmissions(IEnumerable<int> submissionsIds)
@@ -503,5 +506,9 @@ namespace uLearn.Web.DataContexts
 					dictionary.TryRemove(key, out value);
 			}
 		}
+	}
+
+	public class SubmissionCheckingTimeout : Exception
+	{
 	}
 }

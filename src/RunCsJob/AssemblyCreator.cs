@@ -15,32 +15,6 @@ namespace RunCsJob
 {
 	public static class AssemblyCreator
 	{
-		private static readonly string AssemblyDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-		private static readonly string SystemRuntimeDllPath = Path.Combine(AssemblyDirectory, "System.Runtime.dll");
-
-		private static readonly string[] UsesAssemblies =
-		{
-			"System.dll",
-			"System.Core.dll",
-			"System.Drawing.dll",
-			"mscorlib.dll"
-		};
-
-		public static CompilerResults CreateAssembly(FileRunnerSubmission submission)
-		{
-			var provider = new CSharpCodeProvider(new Dictionary<string, string> { { "CompilerVersion", "v4.0" } });
-			var compilerParameters = new CompilerParameters(UsesAssemblies)
-			{
-				GenerateExecutable = true,
-				IncludeDebugInformation = true,
-				WarningLevel = 4,
-			};
-
-			var assembly = provider.CompileAssemblyFromSource(compilerParameters, submission.Code);
-
-			return assembly;
-		}
-
 		public static IEnumerable<int> x = Enumerable.Range(1, 1);
 
 		public static CompileResult CreateAssemblyWithRoslyn(FileRunnerSubmission submission, string workingDirectory)

@@ -23,6 +23,7 @@ namespace uLearn.Web.DataContexts
 			/* See https://weblogs.asp.net/dixin/entityframework.functions
 			 * for detailed description about working with stored functions and procedures */
 			modelBuilder.AddFunctions<UsersRepo>();
+			modelBuilder.AddFunctions<GradersRepo>();
 
 			modelBuilder.Entity<CommentLike>()
 				.HasRequired(x => x.Comment)
@@ -52,6 +53,8 @@ namespace uLearn.Web.DataContexts
 
 			CancelCascaseDeleting<AdditionalScore, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
 			CancelCascaseDeleting<AdditionalScore, ApplicationUser, string>(modelBuilder, c => c.Instructor, c => c.InstructorId);
+
+			CancelCascaseDeleting<GraderClient, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
 		}
 
 		private static void CancelCascaseDeleting<T1, T2, T3>(DbModelBuilder modelBuilder, Expression<Func<T1, T2>> oneWay, Expression<Func<T1, T3>> secondWay)
@@ -100,5 +103,8 @@ namespace uLearn.Web.DataContexts
 
 		public DbSet<AdditionalScore> AdditionalScores { get; set; }
 		public DbSet<EnabledAdditionalScoringGroup> EnabledAdditionalScoringGroups { get; set; }
+
+		public DbSet<GraderClient> GraderClients { get; set; }
+		public DbSet<ExerciseSolutionByGrader> ExerciseSolutionsByGrader { get; set; }
 	}
 }

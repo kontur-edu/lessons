@@ -67,7 +67,8 @@ namespace uLearn.Web
 					"~/Scripts/course-statistics.js",
 					"~/Scripts/ulearn-updates-invitation.js",
 					"~/Scripts/diagnostics.js",
-					"~/Scripts/forms.replace-action.js"
+					"~/Scripts/forms.replace-action.js",
+					"~/Scripts/grader.js"
 				);
 		}
 

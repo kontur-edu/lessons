@@ -36,19 +36,23 @@ namespace uLearn.Web.Controllers
 		{
 			var code = Request.InputStream.GetString();
 
-			var submission = await solutionsRepo.RunUserSolution(
-				"web", Guid.Empty, User.Identity.GetUserId(),
-				code, null, null, false, "null",
-				User.Identity.Name + ": CsSandbox Web Executor", timeout
-				);
-
-			if (submission == null)
+			var submission = await solutionsRepo.AddUserExerciseSubmission("web", Guid.Empty, code, null, null, User.Identity.GetUserId(), "null", User.Identity.Name + ": CsSandbox Web Executor");
+			try
+			{
+				await solutionsRepo.RunSubmission(submission, timeout, waitUntilChecked: true);
+			}
+			catch (SubmissionCheckingTimeout)
+			{
 				return Json(new RunSolutionResult
 				{
 					ErrorMessage = "Что-то пошло не так :(",
 					IsCompileError = true,
 				});
+			}
 
+			/* Update the submission */
+			submission = solutionsRepo.FindNoTrackingSubmission(submission.Id);
+			
 			var automaticChecking = submission.AutomaticChecking;
 
 			return Json(new RunSolutionResult
@@ -64,7 +68,7 @@ namespace uLearn.Web.Controllers
 
 		public ActionResult GetDetails(int id)
 		{
-			var submission = solutionsRepo.FindSubmission(id);
+			var submission = solutionsRepo.FindNoTrackingSubmission(id);
 
 			if (submission == null)
 				return HttpNotFound();

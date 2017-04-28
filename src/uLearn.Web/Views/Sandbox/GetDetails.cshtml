@@ -1,34 +1,28 @@
-﻿@model UserExerciseSubmission
+﻿@using uLearn.Web.Extensions
+@model UserExerciseSubmission
 @{
 	Layout = null;
 	var texts = new[]
 	{
 		new {text = Model.SolutionCode.Text, type = "code", name = "Код"},
 		new {text = Model.AutomaticChecking.CompilationError.Text, type = "compilationInfo", name = "Сообщения компилятора"},
-		new {text = "", type = "input", name = "Ввод"},
 		new {text = Model.AutomaticChecking.Output.Text, type = "output", name = "Вывод"},
 	}
 	.Where(arg => !string.IsNullOrWhiteSpace(arg.text));
 }
 
-<h4>
-	ID: @Html.Encode(Model.Id)
-</h4>
-<h4>
-	Время отправки: @Html.Encode(Model.Timestamp.ToString("dd-MM-yy HH:mm:ss"))
-</h4>
-<h4>
-	Статус: @Html.Encode(Model.AutomaticChecking.Status.ToString())
-</h4>
-<h4>
-	Вердикт: @Html.Encode(Model.AutomaticChecking.GetVerdict())
-</h4>
+<div style="margin-bottom: 20px">
+	Id: @Html.Encode(Model.Id) <br/>
+	Время отправки: @Model.Timestamp.ToPrettyString() <br />
+	Статус: @Model.AutomaticChecking.Status.ToString() <br />
+	Результат: <b>@Model.AutomaticChecking.GetVerdict()</b>
+</div>
 
 @foreach (var text in texts)
 {
 	<div class="panel panel-default">
 		<div class="panel-heading" role="tab">
-			<h4 class="panel-title" data-toggle="collapse" data-target="#@text.type">
+			<h4 class="panel-title cursor-pointer" data-toggle="collapse" data-target="#@text.type">
 				@text.name
 			</h4>
 		</div>

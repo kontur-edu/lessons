@@ -8,17 +8,22 @@
 		.ThenByDescending(g => g.Max(r => r.ExerciseChecking.Timestamp));
 }
 
-<h3><a class="internal-page-link cursor-pointer" data-target="#slide__code-review__comments" data-toggle="collapse">Комментарии в&nbsp;код-ревью</a></h3>
+@if (reviews.Any())
+{
+	<h3>
+		<a class="internal-page-link cursor-pointer" data-target="#slide__code-review__comments" data-toggle="collapse">Комментарии в&nbsp;код-ревью</a>
+	</h3>
 
-<div class="slide__code-review__comments collapse" id="slide__code-review__comments">
-	@foreach (var group in reviews)
-	{
-		var review = group.Key;
-		<div>
-			<span class="commented-code">@review</span>
-			@group.Count().PluralizeInRussian(new RussianPluralizationOptions { One = "раз", Two = "раза", Five = "раз", Gender = Gender.Male, hideNumberOne = false, smallNumbersAreWords = true }),
-			@string.Join(", ", group.DistinctBy(r => r.AuthorId).Select(r => r.Author.VisibleName))
+	<div class="slide__code-review__comments collapse" id="slide__code-review__comments">
+		@foreach (var group in reviews)
+		{
+			var review = group.Key;
+			<div>
+				<span class="commented-code">@review</span>
+				@group.Count().PluralizeInRussian(new RussianPluralizationOptions { One = "раз", Two = "раза", Five = "раз", Gender = Gender.Male, hideNumberOne = false, smallNumbersAreWords = true }),
+				@string.Join(", ", group.DistinctBy(r => r.AuthorId).Select(r => r.Author.VisibleName))
 
-		</div>
-	}
-</div>
+			</div>
+		}
+	</div>
+}

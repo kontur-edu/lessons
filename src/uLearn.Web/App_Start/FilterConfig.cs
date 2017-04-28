@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
@@ -23,7 +24,12 @@ namespace uLearn.Web
 		{
 			if (!(filterContext.Exception is HttpAntiForgeryException))
 				return;
-			filterContext.Result = new RedirectResult("/");
+
+			if (filterContext.RequestContext.HttpContext.Request.IsAjaxRequest())
+				filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+			else
+				filterContext.Result = new RedirectResult("/");
+
 			filterContext.ExceptionHandled = true;
 		}
 	}

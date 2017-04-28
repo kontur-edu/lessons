@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Web;
 using System.Web.Http;
 using System.Web.Mvc;
@@ -21,7 +22,7 @@ using uLearn.Web.Models;
 namespace uLearn.Web.Controllers
 {
 	[ULearnAuthorize(MinAccessLevel = CourseRole.Student)]
-	public class AnalyticsController : Controller
+	public class AnalyticsController : JsonDataContractController
 	{
 		private readonly ULearnDb db = new ULearnDb();
 		private readonly CourseManager courseManager;
@@ -180,9 +181,31 @@ namespace uLearn.Web.Controllers
 			}
 			return true;
 		}
-		
+
 		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
-		public ActionResult ExportCourseStatistics(CourseStatisticsParams param)
+		public ActionResult ExportCourseStatisticsAsJson(CourseStatisticsParams param)
+		{
+			var model = GetCourseStatisticsModel(param, 3000);
+
+			var filename = model.Course.Id + ".json";
+			Response.AddHeader("Content-Disposition", "attachment;filename=" + filename);
+
+			return Json(new CourseStatisticsModel(model), JsonRequestBehavior.AllowGet);
+		}
+
+		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
+		public ActionResult ExportCourseStatisticsAsXml(CourseStatisticsParams param)
+		{
+			var model = GetCourseStatisticsModel(param, 3000);
+
+			var filename = model.Course.Id + ".xml";
+			Response.AddHeader("Content-Disposition", "attachment;filename=" + filename);
+
+			return Content(new CourseStatisticsModel(model).XmlSerialize(), "text/xml");
+		}
+
+		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
+		public ActionResult ExportCourseStatisticsAsXlsx(CourseStatisticsParams param)
 		{
 			var model = GetCourseStatisticsModel(param, 3000);
 
@@ -686,7 +709,7 @@ namespace uLearn.Web.Controllers
 			return View(model);
 		}
 	}
-	
+
 	public class StatisticsParams
 	{
 		public string CourseId { get; set; }

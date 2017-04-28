@@ -94,6 +94,9 @@ p {
 .min-width-200 { width: 200px; min-width: 200px; }
 .min-width-300 { width: 300px; min-width: 300px; }
 .min-width-400 { width: 400px; min-width: 400px; }
+.max-width-200 { width: 200px; max-width: 200px; }
+.max-width-300 { width: 300px; max-width: 300px; }
+.max-width-400 { width: 400px; max-width: 400px; }
 
 .clipboard-link {
 	cursor: pointer;
@@ -1972,3 +1975,17 @@ h1 .copy-group-link {
 	background-color: white;
 }
 /* End of course statistics*/
+
+/* Grader */
+.grader-submissions__table {
+	margin-top: 20px;
+}
+
+.grader-submissions__table .show-on-row-hover {
+	display: none;
+}
+
+.grader-submissions__table tr:hover .show-on-row-hover {
+	display: inline-block;
+}
+/* End of grader */

@@ -53,13 +53,22 @@ namespace uLearn.Web.Controllers
 					NeedRun = true
 				};
 			}
-			var exerciseSlide = (ExerciseSlide)courseManager
-				.GetCourse(submission.CourseId)
-				.GetSlideById(submission.SlideId);
+			var exerciseSlide = courseManager.FindCourse(submission.CourseId)?.FindSlideById(submission.SlideId) as ExerciseSlide;
+			if (exerciseSlide == null)
+				return new FileRunnerSubmission
+				{
+					Id = submission.Id.ToString(),
+					Code = "// no slide anymore",
+					Input = "",
+					NeedRun = true
+				};
+
 			courseManager.WaitWhileCourseIsLocked(submission.CourseId);
+
 			return exerciseSlide.Exercise.CreateSubmition(
 				submission.Id.ToString(),
-				submission.SolutionCode.Text);
+				submission.SolutionCode.Text
+			);
 		}
 
 		[HttpPost]

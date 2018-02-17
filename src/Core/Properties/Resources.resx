@@ -125,7 +125,7 @@
     <value>..\SpellChecking\customPrefixes.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="englishVerbs" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\CSharp\VerbInMethodNameValidation\english verbs.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\CSharp\Validators\VerbInMethodNameValidation\english verbs.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="ru_RU_aff" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\SpellChecking\ru_RU.aff;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

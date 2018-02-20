@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -9,17 +8,23 @@ namespace uLearn.CSharp.Validators
     {
         protected override IEnumerable<string> ReportAllErrors(SyntaxTree userSolution, SemanticModel semanticModel)
         {
-            return InspectAll<VariableDeclarationSyntax>(userSolution, semanticModel, InspectMethodsNames);
+            return InspectAll<VariableDeclarationSyntax>(userSolution, semanticModel, Inspect);
         }
 
-        private IEnumerable<string> InspectMethodsNames(VariableDeclarationSyntax variableDeclarationSyntax, SemanticModel semanticModel)
+        private IEnumerable<string> Inspect(VariableDeclarationSyntax variableDeclarationSyntax, SemanticModel semanticModel)
         {
             if (variableDeclarationSyntax.Type.IsVar)
                 yield break;
 
             foreach (var variable in variableDeclarationSyntax.Variables)
             {
-                if (variable.Initializer != null)
+                if (variable.Initializer == null)
+                    yield break;
+
+                var initializerTypeInfo = semanticModel.GetTypeInfo(variable.Initializer.Value);
+                var variableTypeInfo = semanticModel.GetTypeInfo(variableDeclarationSyntax.Type);
+
+                if (Equals(initializerTypeInfo.Type, variableTypeInfo.Type))
                     yield return Report(variable, "Испульзуй var при явной инициализации переменой");
             }
         }

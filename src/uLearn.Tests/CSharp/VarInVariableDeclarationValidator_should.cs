@@ -15,10 +15,11 @@ namespace uLearn.CSharp
             validator = new VarInVariableDeclarationValidator();
         }
 
-        
-        [TestCase(@"class A {void SomeMethod(){ int a = 0;}}")]
-        [TestCase(@"class A {void SomeMethod(){ for (int i=0; i<10; ++i){}}}")]
+
+        [TestCase("class A {void SomeMethod(){ string a = \"some string\";}}")]
+        [TestCase("class A {void SomeMethod(){ bool a = true;}}")]
         [TestCase(@"class A {void SomeMethod(){ for (var i=0; i<10; ++i){for (int j=0; j<10; ++j){}}}}")]
+        [TestCase(@"class A {void SomeMethod(){ List<string> c = new List<string>();}}")]
         public void Warn_declaration_with_type(string code)
         {
             var errors = validator.FindError(code);
@@ -28,8 +29,11 @@ namespace uLearn.CSharp
 
 
         [TestCase(@"class A {void SomeMethod(){ int b;}}")]
+        [TestCase(@"class A {void SomeMethod(){ double b = 0;}}")]
+        [TestCase(@"class A {void SomeMethod(){ int? i = 1; bool? flag = true;}}")]
         [TestCase(@"class A {void SomeMethod(){ var c = 0;}}")]
-        [TestCase(@"class A {void SomeMethod(){ for (var i=0; i<10; ++i){}}}")]
+        [TestCase(@"class A {void SomeMethod(){ Exception a = new ArgumentNullException();}}")]
+        [TestCase(@"class A {void SomeMethod(){ IList<string> c = new List<string>();}}")]
         public void ignore_correct_declaration(string code)
         {
             validator.FindError(code).Should().BeNullOrEmpty();

@@ -13,7 +13,7 @@ namespace uLearn.CSharp.Validators
 
         private IEnumerable<string> Inspect(VariableDeclarationSyntax variableDeclarationSyntax, SemanticModel semanticModel)
         {
-            if (variableDeclarationSyntax.Type.IsVar)
+            if (variableDeclarationSyntax.Type.IsVar || variableDeclarationSyntax.Parent is FieldDeclarationSyntax)
                 yield break;
 
             foreach (var variable in variableDeclarationSyntax.Variables)
@@ -25,7 +25,7 @@ namespace uLearn.CSharp.Validators
                 var variableTypeInfo = semanticModel.GetTypeInfo(variableDeclarationSyntax.Type);
 
                 if (Equals(initializerTypeInfo.Type, variableTypeInfo.Type))
-                    yield return Report(variable, "Испульзуй var при явной инициализации переменой");
+                    yield return Report(variable, "Испульзуй var при инициализации локальной переменной");
             }
         }
     }

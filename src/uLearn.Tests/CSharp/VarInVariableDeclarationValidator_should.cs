@@ -29,6 +29,7 @@ namespace uLearn.CSharp
 
 
         [TestCase(@"class A {void SomeMethod(){ int b;}}")]
+        [TestCase(@"class A {public int Value = 1;}")]
         [TestCase(@"class A {void SomeMethod(){ double b = 0;}}")]
         [TestCase(@"class A {void SomeMethod(){ int? i = 1; bool? flag = true;}}")]
         [TestCase(@"class A {void SomeMethod(){ var c = 0;}}")]

@@ -25,7 +25,7 @@ namespace uLearn.CSharp.Validators
                 var variableTypeInfo = semanticModel.GetTypeInfo(variableDeclarationSyntax.Type);
 
                 if (Equals(initializerTypeInfo.Type, variableTypeInfo.Type))
-                    yield return Report(variable, "Испульзуй var при инициализации локальной переменной");
+                    yield return Report(variable, "Используй var при инициализации локальной переменной");
             }
         }
     }

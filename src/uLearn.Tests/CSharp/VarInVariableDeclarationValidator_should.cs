@@ -35,6 +35,9 @@ namespace uLearn.CSharp
         [TestCase(@"class A {void SomeMethod(){ var c = 0;}}")]
         [TestCase(@"class A {void SomeMethod(){ Exception a = new ArgumentNullException();}}")]
         [TestCase(@"class A {void SomeMethod(){ IList<string> c = new List<string>();}}")]
+        [TestCase("class A {" +
+                  "void SomeMethod(){string a = GetString();}" +
+                  "private string GetString(){return \"abc\";}}")]
         public void ignore_correct_declaration(string code)
         {
             validator.FindError(code).Should().BeNullOrEmpty();

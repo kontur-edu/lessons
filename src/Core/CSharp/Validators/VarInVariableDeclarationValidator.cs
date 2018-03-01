@@ -21,6 +21,10 @@ namespace uLearn.CSharp.Validators
                 if (variable.Initializer == null)
                     yield break;
 
+                var value = variable.Initializer.Value;
+                if (!(value is LiteralExpressionSyntax) && !(value is ObjectCreationExpressionSyntax))
+                    continue;
+
                 var initializerTypeInfo = semanticModel.GetTypeInfo(variable.Initializer.Value);
                 var variableTypeInfo = semanticModel.GetTypeInfo(variableDeclarationSyntax.Type);
 

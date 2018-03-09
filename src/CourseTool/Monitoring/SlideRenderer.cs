@@ -81,7 +81,8 @@ namespace uLearn.CourseTool.Monitoring
 			var similarSlide = unit.Slides.First();
 			var slide = new Slide(
 				new[] { new MdBlock(note.Markdown) },
-				new SlideInfo(unit, similarSlide.Info.SlideFile, -1), "Заметки преподавателю", Guid.NewGuid()
+				new SlideInfo(unit, similarSlide.Info.SlideFile, -1), "Заметки преподавателю", Guid.NewGuid(),
+				meta: null
 			);
 			var page = StandaloneLayout.Page(course, slide, CreateToc(slide), GetCssFiles(), GetJsFiles());
 

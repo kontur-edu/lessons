@@ -26,8 +26,15 @@ namespace uLearn.Model.Blocks
 		[XmlElement("max-score")]
 		public int MaxScore { get; set; }
 
-		[XmlElement("inital-code")]
+		[XmlElement("initial-code")]
 		public string ExerciseInitialCode { get; set; }
+
+		[XmlElement("inital-code")]
+		public string LegacyExerciseInitialCode
+		{
+			get => ExerciseInitialCode;
+			set => ExerciseInitialCode = value;
+		}
 
 		[XmlElement("hint")]
 		public List<string> Hints { get; set; }

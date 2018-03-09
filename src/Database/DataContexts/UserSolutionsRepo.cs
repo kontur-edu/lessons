@@ -293,6 +293,7 @@ namespace Database.DataContexts
 
 		public async Task<List<UserExerciseSubmission>> GetUnhandledSubmissions(int count)
 		{
+			log.Info("getUnhandledSubmissions(): lock semaphore");
 			var semaphoreLocked = await getSubmissionsSemaphore.WaitAsync(TimeSpan.FromSeconds(2));
 			if (!semaphoreLocked)
 			{
@@ -311,6 +312,7 @@ namespace Database.DataContexts
 			}
 			finally
 			{
+				log.Info("getUnhandledSubmissions(): release semaphore");
 				getSubmissionsSemaphore.Release();
 			}
 		}

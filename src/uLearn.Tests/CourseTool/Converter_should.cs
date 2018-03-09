@@ -15,8 +15,8 @@ namespace uLearn.CourseTool
 	{
 		private Course course;
 		private static readonly Unit unit = new Unit(UnitSettings.CreateByTitle("u1", CourseSettings.DefaultSettings), new DirectoryInfo("u1"));
-		private readonly Slide aTextSlide = new Slide(new[] { new MdBlock("hello"), }, new SlideInfo(unit, new FileInfo("file"), 0), "title", Guid.NewGuid());
-		private readonly Slide exerciseSlide = new Slide(new ExerciseBlock[] { new ProjectExerciseBlock(), new SingleFileExerciseBlock() }, new SlideInfo(unit, new FileInfo("file"), 0), "title", slideIdFromCourse);
+		private readonly Slide aTextSlide = new Slide(new[] { new MdBlock("hello"), }, new SlideInfo(unit, new FileInfo("file"), 0), "title", Guid.NewGuid(), null);
+		private readonly Slide exerciseSlide = new Slide(new ExerciseBlock[] { new ProjectExerciseBlock(), new SingleFileExerciseBlock() }, new SlideInfo(unit, new FileInfo("file"), 0), "title", slideIdFromCourse, null);
 		private const string youtubeIdFromCourse = "GZS36w_fxdg";
 		private static readonly Guid slideIdFromCourse = Guid.Parse("108C89D9-36F0-45E3-BBEE-B93AC971063F");
 		private CourseManager courseManager;

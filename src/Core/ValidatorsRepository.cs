@@ -1,6 +1,7 @@
 using System.Linq;
 using uLearn.CSharp;
-using uLearn.CSharp.VerbInMethodNameValidation;
+using uLearn.CSharp.Validators;
+using uLearn.CSharp.Validators.VerbInMethodNameValidation;
 using uLearn.Model.Blocks;
 
 namespace uLearn

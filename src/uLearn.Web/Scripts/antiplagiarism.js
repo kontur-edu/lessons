@@ -1,3 +1,27 @@
+function fetchAntiPlagiarismStatus($plagiarismStatus) {
+    $plagiarismStatus.removeClass('found-level0 found-level1 found-level2');
+    
+    let url = $plagiarismStatus.data('antiplagiarismUrl');
+    $.getJSON(url, function (data) {
+        $plagiarismStatus.addClass('found-level' + data.suspicion_level);
+        let message = '';
+        switch (data.suspicion_level)
+        {
+            case 0: message = 'похожих решений не найдено'; break;
+            case 1:
+            case 2:
+                let singleNumberMessage = 'найдено похожее решение у {count} другого студента. {link}';
+                let pluralNumberMessage = 'найдены похожие решения у {count} других студентов. {link}';
+                message = data.suspicious_authors_count === 1 ? singleNumberMessage : pluralNumberMessage;
+                break;
+        }
+        message = message.replace('{count}', data.suspicious_authors_count);
+        message = message.replace('{link}', '<a href="' + $plagiarismStatus.data('antiplagiarismDetailsUrl') + '" target="_blank">Посмотреть</a>');
+        
+        $plagiarismStatus.html('Проверка на списывание: ' + message);
+    });
+}
+
 $(document).ready(function () {
     $('.antiplagiarism__data').each(function () {
         let $self = $(this);
@@ -52,8 +76,10 @@ $(document).ready(function () {
             for (let tokenIndex = firstTokenIndex; tokenIndex <= lastTokenIndex; tokenIndex++)
                 highlightedTokes.push(tokenIndex);
         });
-        highlightedTokes.sort();
-
+        highlightedTokes.sort(function (a, b) {
+            return a - b;
+        });
+        
         let textMarkerOptions = {
             className: 'antiplagiarism__not-analyzed',
             title: 'Эта часть кода не анализируется на списывание',
@@ -63,7 +89,7 @@ $(document).ready(function () {
         for (let idx = 0; idx < highlightedTokes.length; idx++) {
             if (idx === 0 || highlightedTokes[idx - 1] < highlightedTokes[idx] - 1) {
                 let currentHighlightFinish = tokens[highlightedTokes[idx]].start_position;
-                if (currentHighlightStart !== currentHighlightFinish) {
+                if (currentHighlightStart !== currentHighlightFinish) {  
                     document.markText(
                         document.posFromIndex(currentHighlightStart),
                         document.posFromIndex(currentHighlightFinish),
@@ -92,7 +118,7 @@ $(document).ready(function () {
                  tokenIndex++) {
                 let oldValue = tokensPlagiarismTypes[tokenIndex];
                 let newValue = snippetType;
-                if (oldValue === undefined || (newValue = 'tokensKindsAndValues'))
+                if (oldValue === undefined || (newValue === 'tokensKindsAndValues'))
                     tokensPlagiarismTypes[tokenIndex] = newValue;
                 
                 if (tokenIndex > maxTokenIndex)
@@ -134,30 +160,17 @@ $(document).ready(function () {
 
         hightlightCurrentTokensSequence();        
     }
-
+      
     /* Fetching antiplagiarism status */
     $('.antiplagiarism-status').each(function () {
-        let $self = $(this);
-        let url = $self.data('antiplagiarismUrl');
-        $.getJSON(url, function (data) {
-            $self.addClass('found-level' + data.suspicion_level);
-            let message = '';
-            switch (data.suspicion_level)
-            {
-                case 0: message = 'похожих решений не найдено'; break;
-                case 1: message = 'найдено {count} похожих решений других студентов. {link}'; break;
-                case 2: message = 'найдено {count} похожих решений других студентов. {link}'; break;
-            }
-            message = message.replace('{count}', data.suspicious_submissions_count);
-            message = message.replace('{link}', '<a href="' + $self.data('antiplagiarismDetailsUrl') + '" target="_blank">Посмотреть</a>');
-            $self.html('Проверка на списывание: ' + message);
-        });
+        fetchAntiPlagiarismStatus($(this));
     });
     
     /* Changing submission on panel */
     $('.antiplagiarism__submissions-panel [name="submissionId"]').change(function () {
         let $self = $(this);
-        let $form = $self.closest('form');
+        $('.antiplagiarism').hide();
+        let $form = $self.closest('form');        
         $form.submit();
     });
 });

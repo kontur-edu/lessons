@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Database;
 using Database.DataContexts;
 using Database.Models;
 using log4net;
 using Metrics;
+using uLearn.CSharp;
 using uLearn.Telegram;
 using uLearn.Web.Models;
 using Ulearn.Common.Extensions;
@@ -26,6 +29,7 @@ namespace uLearn.Web.Controllers
 		protected readonly GroupsRepo groupsRepo;
 		protected readonly VisitsRepo visitsRepo;
 		protected readonly NotificationsRepo notificationsRepo;
+		protected readonly UsersRepo usersRepo;
 
 		private static readonly TimeSpan executionTimeout = TimeSpan.FromSeconds(45);
 
@@ -45,6 +49,7 @@ namespace uLearn.Web.Controllers
 			groupsRepo = new GroupsRepo(db, courseManager);
 			visitsRepo = new VisitsRepo(db);
 			notificationsRepo = new NotificationsRepo(db);
+			usersRepo = new UsersRepo(db);
 		}
 
 		private string GenerateSubmissionName(Slide exerciseSlide, string userName)
@@ -64,21 +69,21 @@ namespace uLearn.Web.Controllers
 
 			var course = courseManager.GetCourse(courseId);
 			var exerciseBlock = exerciseSlide.Exercise;
-			var builtSolution = exerciseBlock.BuildSolution(userCode);
+			var buildResult = exerciseBlock.BuildSolution(userCode);
 
-			if (builtSolution.HasErrors)
+			if (buildResult.HasErrors)
 				metricSender.SendCount($"exercise.{exerciseMetricId}.CompilationError");
-			if (builtSolution.HasStyleIssues)
+			if (buildResult.HasStyleErrors)
 				metricSender.SendCount($"exercise.{exerciseMetricId}.StyleViolation");
 
 			if (!saveSubmissionOnCompileErrors)
 			{
-				if (builtSolution.HasErrors)
-					return new RunSolutionResult { IsCompileError = true, ErrorMessage = builtSolution.ErrorMessage, ExecutionServiceName = "uLearn" };
+				if (buildResult.HasErrors)
+					return new RunSolutionResult { IsCompileError = true, ErrorMessage = buildResult.ErrorMessage, ExecutionServiceName = "uLearn" };
 			}
 
-			var compilationErrorMessage = builtSolution.HasErrors ? builtSolution.ErrorMessage : null;
-			var dontRunSubmission = builtSolution.HasErrors;
+			var compilationErrorMessage = buildResult.HasErrors ? buildResult.ErrorMessage : null;
+			var dontRunSubmission = buildResult.HasErrors;
 			var submission = await userSolutionsRepo.AddUserExerciseSubmission(
 				courseId, exerciseSlide.Id,
 				userCode, compilationErrorMessage, null,
@@ -86,8 +91,8 @@ namespace uLearn.Web.Controllers
 				dontRunSubmission ? AutomaticExerciseCheckingStatus.Done : AutomaticExerciseCheckingStatus.Waiting
 			);
 
-			if (builtSolution.HasErrors)
-				return new RunSolutionResult { IsCompileError = true, ErrorMessage = builtSolution.ErrorMessage, SubmissionId = submission.Id, ExecutionServiceName = "uLearn" };
+			if (buildResult.HasErrors)
+				return new RunSolutionResult { IsCompileError = true, ErrorMessage = buildResult.ErrorMessage, SubmissionId = submission.Id, ExecutionServiceName = "uLearn" };
 
 			try
 			{
@@ -134,6 +139,8 @@ namespace uLearn.Web.Controllers
 			var verdictForMetric = automaticChecking.GetVerdict().Replace(" ", "");
 			metricSender.SendCount($"exercise.{exerciseMetricId}.{verdictForMetric}");
 
+			await CreateStyleErrorsReviewsForSubmission(submission, buildResult.StyleErrors);
+
 			var result = new RunSolutionResult
 			{
 				IsCompileError = automaticChecking.IsCompilationError,
@@ -145,12 +152,27 @@ namespace uLearn.Web.Controllers
 				SentToReview = sendToReview,
 				SubmissionId = submission.Id,
 			};
-			if (builtSolution.HasStyleIssues)
+			if (buildResult.HasStyleErrors)
 			{
 				result.IsStyleViolation = true;
-				result.StyleMessage = builtSolution.StyleMessage;
+				result.StyleMessage = string.Join("\n", buildResult.StyleErrors.Select(e => e.GetMessageWithPositions()));
 			}
 			return result;
+		}
+
+		private async Task CreateStyleErrorsReviewsForSubmission(UserExerciseSubmission submission, IEnumerable<SolutionStyleError> styleErrors)
+		{
+			var ulearnBotUserId = usersRepo.GetUlearnBotUserId();
+			foreach (var error in styleErrors)
+				await slideCheckingsRepo.AddExerciseCodeReview(
+					submission,
+					ulearnBotUserId,
+					error.Span.StartLinePosition.Line,
+					error.Span.StartLinePosition.Character,
+					error.Span.EndLinePosition.Line,
+					error.Span.EndLinePosition.Character,
+					error.Message
+				);
 		}
 	}
 }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
+using uLearn.CSharp.Validators;
 using Ulearn.Common.Extensions;
 
 namespace uLearn.CSharp.ExponentiationValidation
@@ -11,47 +12,47 @@ namespace uLearn.CSharp.ExponentiationValidation
 	[TestFixture]
 	public class ExponentiationValidator_should
 	{
-		private static readonly DirectoryInfo testDataDir = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..",
+		private static DirectoryInfo TestDataDir => new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..",
 			"..", "CSharp", "ExponentiationValidation", "TestData"));
-		private static readonly DirectoryInfo incorrectTestDataDir = testDataDir.GetDirectories("Incorrect").Single();
-		private static readonly DirectoryInfo correctTestDataDir = testDataDir.GetDirectories("Correct").Single();
+		private static DirectoryInfo IncorrectTestDataDir => TestDataDir.GetDirectories("Incorrect").Single();
+		private static DirectoryInfo CorrectTestDataDir => TestDataDir.GetDirectories("Correct").Single();
 
-		private static IEnumerable<FileInfo> correctFiles = correctTestDataDir.EnumerateFiles();
-		private static IEnumerable<FileInfo> incorrectFiles = incorrectTestDataDir.EnumerateFiles();	
-		private static DirectoryInfo basicProgrammingDirectory =>
-			new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..",
-			"..", "CSharp", "ExampleFiles", "BasicProgramming-master"));
-		private static IEnumerable<FileInfo> basicProgrammingFiles => 
-			basicProgrammingDirectory
+		private static IEnumerable<FileInfo> CorrectFiles => CorrectTestDataDir.EnumerateFiles();
+		private static IEnumerable<FileInfo> IncorrectFiles => IncorrectTestDataDir.EnumerateFiles();
+
+		private static DirectoryInfo BasicProgrammingDirectory =>
+			new DirectoryInfo(TestPaths.BasicProgrammingDirectoryPath);
+
+		private static IEnumerable<FileInfo> BasicProgrammingFiles =>
+			BasicProgrammingDirectory
+				.EnumerateFiles("*.cs", SearchOption.AllDirectories)
+				.Where(f => !f.Name.Equals("Settings.Designer.cs") &&
+							!f.Name.Equals("Resources.Designer.cs") &&
+							!f.Name.Equals("AssemblyInfo.cs"));
+
+		private static DirectoryInfo ULearnSubmissionsDirectory =>
+			new DirectoryInfo(TestPaths.ULearnSubmissionsDirectoryPath);
+
+		private static IEnumerable<FileInfo> SubmissionsFiles =>ULearnSubmissionsDirectory
 			.EnumerateFiles("*.cs", SearchOption.AllDirectories)
-			.Where(f => !f.Name.Equals("Settings.Designer.cs") &&
-						!f.Name.Equals("Resources.Designer.cs") &&
-						!f.Name.Equals("AssemblyInfo.cs"));
-
-		private static DirectoryInfo uLearnSubmissionsDirectory => 
-			new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..",
-			"..", "CSharp", "ExampleFiles", "submissions"));
-		private static IEnumerable<FileInfo> submissionsFiles => 
-			uLearnSubmissionsDirectory
-			.GetFiles("*.cs", SearchOption.AllDirectories)
 			.Where(f => f.Name.Contains("Accepted"));
+		
+		private readonly ExponentiationValidator validator = new ExponentiationValidator();
 
-		private static readonly ExponentiationValidator validator = new ExponentiationValidator();
-
-		[TestCaseSource(nameof(incorrectFiles))]
+		[TestCaseSource(nameof(IncorrectFiles))]
 		public void FindErrors(FileInfo file)
 		{
 			var code = file.ContentAsUtf8();
-			var errors = validator.FindError(code);
+			var errors = validator.FindErrors(code);
 			
 			errors.Should().NotBeNullOrEmpty();
 		}
 
-		[TestCaseSource(nameof(correctFiles))]
+		[TestCaseSource(nameof(CorrectFiles))]
 		public void NotFindErrors(FileInfo file)
 		{
 			var code = file.ContentAsUtf8();
-			var errors = validator.FindError(code);
+			var errors = validator.FindErrors(code);
 			if (errors != null)
 			{
 				Console.WriteLine(errors);
@@ -60,18 +61,18 @@ namespace uLearn.CSharp.ExponentiationValidation
 			errors.Should().BeNullOrEmpty();
 		}
 
+		[TestCaseSource(nameof(BasicProgrammingFiles))]
 		[Explicit]
-		[TestCaseSource(nameof(basicProgrammingFiles))]
 		public void NotFindErrors_InBasicProgramming(FileInfo file)
 		{
 			var fileContent = file.ContentAsUtf8();
 
-			var errors = validator.FindError(fileContent);
+			var errors = validator.FindErrors(fileContent);
 
 			if (errors != null)
 			{
 				File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..",
-					"..", "CSharp", "ExampleFiles", "errors", $"{file.Name}_errors.txt"),
+						"..", "CSharp", "ExampleFiles", "errors", $"{file.Name}_errors.txt"),
 					$@"{fileContent}
 
 {errors}");
@@ -80,14 +81,14 @@ namespace uLearn.CSharp.ExponentiationValidation
 			}
 		}
 
+		[TestCaseSource(nameof(SubmissionsFiles))]
 		[Explicit]
-		[TestCaseSource(nameof(submissionsFiles))]
 		public void NotFindErrors_InCheckAcceptedFiles(FileInfo file)
 		{
 			Console.WriteLine(file.FullName);
 			var fileContent = file.ContentAsUtf8();
 
-			var errors = validator.FindError(fileContent);
+			var errors = validator.FindErrors(fileContent);
 			if (errors != null)
 			{
 				File.WriteAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..",

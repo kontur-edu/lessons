@@ -2,10 +2,11 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using uLearn.CSharp;
 using uLearn.Model.Blocks;
 using Ulearn.Common.Extensions;
 
-namespace uLearn.CSharp
+namespace uLearn
 {
 	[TestFixture]
 	public class SlideParser_should
@@ -128,7 +129,7 @@ namespace uLearn.CSharp
 		public void remove_Excluded_members_from_solution()
 		{
 			var slide = (ExerciseSlide)GenerateSlide("NestedClass.cs");
-			var solution = slide.Exercise.BuildSolution("").ToString();
+			var solution = slide.Exercise.BuildSolution("Console.WriteLine(\"Hello world\")").ToString();
 			Assert.That(solution, Does.Not.Contain("["));
 			Assert.That(solution, Does.Not.Contain("]"));
 			Assert.That(solution, Does.Not.Contain("public int X, Y"));

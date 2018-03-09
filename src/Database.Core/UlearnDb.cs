@@ -257,6 +257,9 @@ namespace Database
 
 			AddIndex<AutomaticExerciseChecking>(modelBuilder, c => c.IsRightAnswer);
 
+			AddIndex<ExerciseCodeReviewComment>(modelBuilder, c => new { c.ReviewId, c.IsDeleted });
+			AddIndex<ExerciseCodeReviewComment>(modelBuilder, c => c.AddingTime);
+
 			AddIndex<SlideHint>(modelBuilder, c => new { c.SlideId, c.HintId, c.UserId, c.IsHintHelped });
 
 			AddIndex<SlideRate>(modelBuilder, c => new { c.SlideId, c.UserId });
@@ -349,6 +352,7 @@ namespace Database
 		public DbSet<AutomaticQuizChecking> AutomaticQuizCheckings { get; set; }
 		public DbSet<UserExerciseSubmission> UserExerciseSubmissions { get; set; }
 		public DbSet<ExerciseCodeReview> ExerciseCodeReviews { get; set; }
+		public DbSet<ExerciseCodeReviewComment> ExerciseCodeReviewComments { get; set; }
 
 		public DbSet<Group> Groups { get; set; }
 		public DbSet<GroupMember> GroupMembers { get; set; }

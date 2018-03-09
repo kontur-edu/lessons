@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
+using uLearn.CSharp.Validators;
 
 namespace uLearn.CSharp
 {
@@ -97,17 +100,17 @@ namespace uLearn.CSharp
 
 		private void CheckCorrect(string correctCode)
 		{
-			Assert.That(FindErrors(correctCode), Is.Null, correctCode);
+			Assert.That(FindErrors(correctCode), Is.Empty, correctCode);
 		}
 
 		private void CheckIncorrect(string incorrectCode)
 		{
-			Assert.That(FindErrors(incorrectCode), Does.Contain("Строка 1"), incorrectCode);
+			Assert.That(FindErrors(incorrectCode).Select(e => e.Span.StartLinePosition.Line), Does.Contain(0), incorrectCode);
 		}
 
-		private static string FindErrors(string code)
+		private static List<SolutionStyleError> FindErrors(string code)
 		{
-			return new NamingCaseStyleValidator().FindError(code);
+			return new NamingCaseStyleValidator().FindErrors(code);
 		}
 	}
 }

@@ -215,7 +215,7 @@
     <Compile Include="DataContexts\XQueueRepo.cs" />
     <Compile Include="Extensions\EfDbExtensions.cs" />
     <Compile Include="Extensions\IQueryableExtensions.cs" />
-    <Compile Include="Extensions\UserExtentions.cs" />
+    <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="FilterOptions.cs" />
     <Compile Include="Migrations\201407111234255_InitialCreate.cs" />
     <Compile Include="Migrations\201407111234255_InitialCreate.Designer.cs">
@@ -597,6 +597,14 @@
     <Compile Include="Migrations\201802121225237_AddAntiPlagiarismSubmissionId.Designer.cs">
       <DependentUpon>201802121225237_AddAntiPlagiarismSubmissionId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802261841382_AddExerciseCodeReviewComments.cs" />
+    <Compile Include="Migrations\201802261841382_AddExerciseCodeReviewComments.Designer.cs">
+      <DependentUpon>201802261841382_AddExerciseCodeReviewComments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803051837207_AddSubmissionReferenceToExerciseCodeReview.cs" />
+    <Compile Include="Migrations\201803051837207_AddSubmissionReferenceToExerciseCodeReview.Designer.cs">
+      <DependentUpon>201803051837207_AddSubmissionReferenceToExerciseCodeReview.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AdditionalScore.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -609,6 +617,7 @@
     <Compile Include="Models\CourseVersion.cs" />
     <Compile Include="Models\EnabledAdditionalScoringGroup.cs" />
     <Compile Include="Models\ExerciseCodeReview.cs" />
+    <Compile Include="Models\ExerciseCodeReviewComment.cs" />
     <Compile Include="Models\ExerciseSolutionByGrader.cs" />
     <Compile Include="Models\FeedUpdateTimestamp.cs" />
     <Compile Include="Models\GraderClient.cs" />
@@ -930,6 +939,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802121225237_AddAntiPlagiarismSubmissionId.resx">
       <DependentUpon>201802121225237_AddAntiPlagiarismSubmissionId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802261841382_AddExerciseCodeReviewComments.resx">
+      <DependentUpon>201802261841382_AddExerciseCodeReviewComments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803051837207_AddSubmissionReferenceToExerciseCodeReview.resx">
+      <DependentUpon>201803051837207_AddSubmissionReferenceToExerciseCodeReview.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

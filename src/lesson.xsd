@@ -116,7 +116,7 @@
 					<xs:element name="max-score" type="xs:integer" minOccurs="1" maxOccurs="1" />
 					<xs:element name="correctness-score" type="xs:integer" minOccurs="1" maxOccurs="1" />
 					<xs:element name="max-review-attempts" type="xs:integer" minOccurs="1" maxOccurs="1" />
-					<xs:element name="inital-code" type="xs:string" minOccurs="1" maxOccurs="1" />
+					<xs:element name="initial-code" type="xs:string" minOccurs="1" maxOccurs="1" />
 					<xs:element name="hint" type="notEmptyString" minOccurs="1" maxOccurs="1" />
 					<xs:element name="comment" type="notEmptyString" minOccurs="1" maxOccurs="1" />
 					<xs:element name="expected" type="xs:string" minOccurs="1" maxOccurs="1" />

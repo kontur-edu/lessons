@@ -1,4 +1,5 @@
-﻿@using Database
+﻿@using System.Web.UI.WebControls
+@using Database
 @using Database.Extensions
 @using Database.Models
 @using uLearn
@@ -7,18 +8,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>@ViewBag.Title &bull; ulearn</title>
-	<meta name="title" content="@ViewBag.Title на ulearn.me"/>
-	<meta name="og:title" content="@ViewBag.Title на ulearn.me"/>
-	<meta name="og:image" content="~/Content/logo.png"/>
-	<meta name="description" content="Интерактивные учебные онлайн-курсы по программированию"/>
-	<link rel="image_src" href="~/Content/logo.png">
-	<link rel="shortcut icon" href="~/favicon.ico?v=4"/>
-	@Styles.Render("~/ulearn.bundle.css")
-	@Styles.Render("~/katex/katex.min.css")
-	@Scripts.Render("~/modernizr.bundle.js")
+    @{
+	    var metaImageUrl = "~/Content/logo.png";
+	    var metaTitle = ViewBag.Title + " на ulearn.me";
+	    var metaDescription = "Интерактивные учебные онлайн-курсы по программированию";
+	    var metaKeywords = "";
+
+	    if (ViewBag.Meta != null)
+	    {
+		    if (!string.IsNullOrEmpty(ViewBag.Meta.Image)) { metaImageUrl = ViewBag.Meta.Image; }
+		    if (!string.IsNullOrEmpty(ViewBag.Meta.Description)) { metaDescription = ViewBag.Meta.Description; }
+		    if (!string.IsNullOrEmpty(ViewBag.Meta.Keywords)) { metaKeywords = ViewBag.Meta.Keywords; }
+	    }
+    }
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title &bull; ulearn</title>
+    <meta name="title" content="@metaTitle"/>
+    <meta property="og:title" content="@metaTitle"/>
+    <meta property="og:image" content="@metaImageUrl"/>
+    <meta property="og:image:alt" content="@metaDescription"/>
+    <meta property="og:description" content="@metaDescription"/>
+    <meta property="og:locale" content="ru_RU"/>
+    <meta property="og:site_name" content="Ulearn"/>
+    <meta name="description" content="@metaDescription"/>
+    <meta name="keywords" content="@metaKeywords"/>
+    <link rel="image_src" href="@metaImageUrl">
+    <link rel="shortcut icon" href="~/favicon.ico?v=4"/>
+    @Styles.Render("~/ulearn.bundle.css")
+    @Styles.Render("~/katex/katex.min.css")
+    @Scripts.Render("~/modernizr.bundle.js")
     @Html.Partial("_Retargeting")
 </head>
 <body>
@@ -90,7 +109,7 @@
 					{
 						/* RouteData has no attribute 'courseId' */
 						var controller = Html.ViewContext.RouteData.Values["controller"].ToString();
-						if ((controller == "Admin" || controller == "Analytics" || controller == "Grader" || controller == "Notifications" || controller == "Stepik") &&
+						if ((controller == "Admin" || controller == "Analytics" || controller == "Grader" || controller == "Notifications" || controller == "Stepik" || controller == "AntiPlagiarism") &&
 							Request.Params["courseId"] != null)
 						{
 							courseId = Request.Params["courseId"];

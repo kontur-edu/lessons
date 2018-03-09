@@ -25,6 +25,8 @@
 
 @helper Blocks(BlockRenderContext context, HtmlHelper Html)
 {
+	var countHiddenBlocks = context.Slide.GetBlocksRangesWithSameVisibility().Count(b => b[0].Hide);
+	var firstHiddenBlock = true;
 	foreach (var blockRange in context.Slide.GetBlocksRangesWithSameVisibility())
 	{
 		if (!blockRange[0].Hide)
@@ -36,12 +38,17 @@
 		}
 		else if (context.RevealHidden)
 		{
-			<div class="revealed" data-toggle="tooltip" data-placement="left" title="Этот блок студенты не видят">
-				@foreach (var block in blockRange)
-				{
-					@Block((dynamic)block, context, Html)
-				}
-			</div>
+			<div class="revealed">
+                @if (firstHiddenBlock)
+                {
+	                firstHiddenBlock = false;
+	                <div class="revealed__description">Студенты не&nbsp;видят @(countHiddenBlocks > 1 ? "чёрные блоки" : "этот блок")</div>
+                }
+                @foreach (var block in blockRange)
+                {
+	                @Block((dynamic)block, context, Html)
+                }
+            </div>
 		}
 	}
 }

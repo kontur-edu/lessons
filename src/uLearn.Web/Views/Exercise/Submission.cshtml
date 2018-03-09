@@ -91,35 +91,59 @@
 				status = "Результат проверки: " + Model.SubmissionSelectedByUser.AutomaticChecking.GetVerdict();
 				statusClass = "wrong";
 			}
-			if (!string.IsNullOrEmpty(status) && (Model.ManualChecking == null || Model.ManualChecking.SubmissionId != Model.SubmissionSelectedByUser.Id))
+			if (!string.IsNullOrEmpty(status) && Model.ManualChecking == null)
 			{
-				<p class="exercise-status @statusClass">@Html.Raw(status)</p>
+				<p class="exercise-block-status @statusClass">@Html.Raw(status)</p>
 			}
+			
 		}
 
-		if (Model.InstructorView)
+		var showAntiplagiarismStatus = Model.InstructorView && (User.HasCourseAccess(Model.CourseId, CourseAccessType.FeatureUseAntiPlagiarism) || User.IsSystemAdministrator());
+		
+		if (showAntiplagiarismStatus)
 		{
-			if (User.HasCourseAccess(Model.CourseId, CourseAccessType.FeatureUseAntiPlagiarism) || User.IsSystemAdministrator())
-			{
-				<p class="antiplagiarism-status"
-                   data-antiplagiarism-url="@Url.Action("Info", "AntiPlagiarism", new { courseId = Model.CourseId, submissionId = currentSubmissionId })"
-                   data-antiplagiarism-details-url="@Url.Action("Details", "AntiPlagiarism", new { courseId = Model.CourseId, submissionId = currentSubmissionId })">
-                    Проверка на&nbsp;списывание: ищу похожие решения у&nbsp;других студентов...
-                </p>
-			}
+			<p class="antiplagiarism-status"
+               data-antiplagiarism-url="@Url.Action("Info", "AntiPlagiarism", new { courseId = Model.CourseId, submissionId = currentSubmissionId })"
+               data-antiplagiarism-details-url="@Url.Action("Details", "AntiPlagiarism", new { courseId = Model.CourseId, submissionId = currentSubmissionId })">
+                Проверка на&nbsp;списывание: ищу похожие решения у&nbsp;других студентов...
+            </p>
 		}
 
-		if (Model.ReviewState == ExerciseReviewState.Reviewed || Model.InstructorView)
+		if (Model.ReviewState == ExerciseReviewState.Reviewed || Model.InstructorView || Model.Reviews.Any())
 		{
-			/* For reviewed submission without reviews don't show reviews panel at all*/
+			var showOnlyAutomaticalReviews = Model.ReviewState != ExerciseReviewState.Reviewed && !Model.InstructorView;
+			/* For reviewed submission without reviews don't show reviews panel at all */
 			var isEmpty = Model.Reviews.Count == 0 && !canAddReviews ? "empty" : "";
 			<div class="exercise__reviews @isEmpty">
 				@foreach (var review in Model.Reviews.OrderBy(r => r.StartLine).ThenBy(r => r.StartPosition))
 				{
+					/* Instructors can reply always. Students can reply only if exists a human (not ulearn bot) replied before and if checking is already checked */
+					var canReply = false;
+					if (Model.InstructorView)
+					{
+						canReply = true;
+					}
+					else
+					{
+						var existHumanReply = !review.Author.IsUlearnBot() || review.NotDeletedComments.Any(c => !c.Author.IsUlearnBot());
+						if ((! review.ExerciseCheckingId.HasValue || review.ExerciseChecking.IsChecked) && existHumanReply)
+						{
+							canReply = true;
+						}
+					}
+
+					if (showOnlyAutomaticalReviews && !review.Author.IsUlearnBot())
+					{
+						continue;
+					}
+
 					@Html.Partial("_ExerciseReview", new ExerciseCodeReviewModel
 					{
 						Review = review,
 						ManualChecking = Model.ManualChecking,
+						CurrentUser = Model.CurrentUser,
+						CanReply = canReply,
+						ShowOnlyAutomaticalReviews = showOnlyAutomaticalReviews,
 					})
 				}
 			</div>

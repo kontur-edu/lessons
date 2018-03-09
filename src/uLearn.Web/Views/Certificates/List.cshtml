@@ -51,16 +51,15 @@
 	@{ var certificateIndex = 1; }
 	@foreach (var certificate in Model.Certificates)
 	{
-		<h3>
+		<h4>
 			@certificateIndex. @Html.RouteLink(
-				                   "Сертификат за курс «" + Model.CoursesTitles.GetOrDefault(certificate.Template.CourseId, "") + "»",
+				                   "Сертификат за курс «" + Model.CoursesTitles.GetOrDefault(certificate.Template.CourseId.ToLower(), "") + "»",
 				                   "Certificate",
 				                   new { certificateId = certificate.Id }
 				                   )
-        </h3>
+        </h4>
 		<div>
-            @certificate.Instructor.VisibleName
-            выдал@(certificate.Instructor.Gender.ChooseEnding()) сертификат
+            Сертификат выдан
             <span class="text-muted" title="@certificate.Timestamp.ToPrettyString()">@certificate.Timestamp.ToLongDateString()</span>
 		</div>
 		certificateIndex++;

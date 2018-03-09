@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
@@ -17,6 +18,7 @@ namespace Database.Repos
 	public class NotificationsRepo
 	{
 		private const int maxNotificationsSendingFails = 15;
+		public static TimeSpan sendNotificationsDelayAfterCreating = TimeSpan.FromMinutes(1);
 
 		private readonly ILog log = LogManager.GetLogger(typeof(NotificationsRepo));
 
@@ -225,7 +227,7 @@ namespace Database.Repos
 
 		public async Task CreateDeliveries()
 		{
-			var minuteAgo = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
+			var minuteAgo = DateTime.Now.Subtract(sendNotificationsDelayAfterCreating);
 			var notifications = db.Notifications.Where(
 				n => !n.AreDeliveriesCreated && n.CreateTime < minuteAgo
 			).OrderBy(n => n.Id).ToList();
@@ -305,7 +307,7 @@ namespace Database.Repos
 			else if (notification.IsNotificationForEveryone)
 			{
 				/* Add notification to all common transports */
-				/* It's used i.e. for new-commen- notification which should be sent to everyone in the course */
+				/* It's used i.e. for new-comment notification which should be sent to everyone in the course */
 				log.Info($"Notification #{notification.Id}. This notification type is sent to everyone, so add it to all common transports ({commonTransports.Count} transport(s)):");
 				foreach (var commonTransport in commonTransports)
 				{
@@ -424,9 +426,12 @@ namespace Database.Repos
 			return $"{secret}transport={transportId}&timestamp={timestamp}{secret}".CalculateMd5();
 		}
 
-		public List<T> FindNotifications<T>(Func<T, bool> func) where T : Notification
+		public List<T> FindNotifications<T>(Expression<Func<T, bool>> func, Expression<Func<T, object>> includePath=null) where T : Notification
 		{
-			return db.Notifications.OfType<T>().Where(func).ToList();
+			var query = db.Notifications.OfType<T>();
+			if (includePath != null)
+				query = query.Include(includePath);
+			return query.Where(func).ToList();
 		}
 
 		public IQueryable<NotificationDelivery> GetTransportDeliveries(NotificationTransport notificationTransport, DateTime from)

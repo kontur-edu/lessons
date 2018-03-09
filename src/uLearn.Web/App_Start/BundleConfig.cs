@@ -112,6 +112,7 @@ namespace uLearn.Web
 				"~/Content/jquery.datetimepicker.min.css",
 				"~/codemirror/lib/codemirror.css",
 				"~/codemirror/theme/cobalt.css",
+				"~/codemirror/theme/pastel-on-dark.css",
 				"~/codemirror/addon/hint/show-hint.css",
 				"~/Content/tablesorter.css",
 				"~/tablesorter-master/css/widget.grouping.css",

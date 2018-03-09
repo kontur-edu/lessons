@@ -13,6 +13,7 @@ namespace uLearn.Quizes
 		public Slide Load(FileInfo file, Unit unit, int slideIndex, string courseId, CourseSettings settings)
 		{
 			var quiz = file.DeserializeXml<Quiz>();
+			quiz.Meta?.FixPaths(file);
 
 			var scoringGroupsIds = settings.Scoring.Groups.Keys;
 			if (!string.IsNullOrEmpty(quiz.ScoringGroup) && !scoringGroupsIds.Contains(quiz.ScoringGroup))

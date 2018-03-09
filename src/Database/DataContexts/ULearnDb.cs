@@ -57,6 +57,9 @@ namespace Database.DataContexts
 			CancelCascaseDeleting<UserExerciseSubmission, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
 			CancelCascaseDeleting<ManualExerciseChecking, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
 
+			CancelCascaseDeleting<ExerciseCodeReviewComment, ApplicationUser, string>(modelBuilder, c => c.Author, c => c.AuthorId);
+			//CancelCascaseDeleting<ExerciseCodeReviewComment, ExerciseCodeReview, int>(modelBuilder, c => c.Review, c => c.ReviewId);
+
 			CancelCascaseDeleting<Certificate, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
 			CancelCascaseDeleting<Certificate, ApplicationUser, string>(modelBuilder, c => c.Instructor, c => c.InstructorId);
 
@@ -175,6 +178,7 @@ namespace Database.DataContexts
 		public DbSet<AutomaticQuizChecking> AutomaticQuizCheckings { get; set; }
 		public DbSet<UserExerciseSubmission> UserExerciseSubmissions { get; set; }
 		public DbSet<ExerciseCodeReview> ExerciseCodeReviews { get; set; }
+		public DbSet<ExerciseCodeReviewComment> ExerciseCodeReviewComments { get; set; }
 
 		public DbSet<Group> Groups { get; set; }
 		public DbSet<GroupMember> GroupMembers { get; set; }

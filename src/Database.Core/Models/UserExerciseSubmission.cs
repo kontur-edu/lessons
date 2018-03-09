@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace Database.Models
 {
@@ -49,7 +50,18 @@ namespace Database.Models
 		public virtual IList<ManualExerciseChecking> ManualCheckings { get; set; }
 		
 		public int? AntiPlagiarismSubmissionId { get; set; }
+		
+		public virtual IList<ExerciseCodeReview> Reviews { get; set; }
+
+		[NotMapped]
+		public List<ExerciseCodeReview> NotDeletedReviews => Reviews.Where(r => !r.IsDeleted).ToList();
 
 		public bool IsWebSubmission => string.Equals(CourseId, "web", StringComparison.OrdinalIgnoreCase) && SlideId == Guid.Empty;
+		
+		public List<ExerciseCodeReview> GetOwnAndLastManualCheckingReviews()
+		{
+			var manualCheckingReviews = ManualCheckings.LastOrDefault()?.NotDeletedReviews ?? new List<ExerciseCodeReview>();
+			return manualCheckingReviews.Concat(NotDeletedReviews).ToList();
+		}
 	}
 }

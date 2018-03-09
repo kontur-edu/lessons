@@ -43,7 +43,7 @@ function setResults(ans) {
 	else if (ans.IsRightAnswer) {
 		slideNavigation.makeShowSolutionsNext();
 		if (ans.SubmissionId > 0)
-			setExerciseVersion(ans.SubmissionId, true, ans.StyleMessage);
+			setExerciseVersion(ans.SubmissionId, true);
 		else /* for course monitor tool */
 		{
 			if (ans.IsStyleViolation)

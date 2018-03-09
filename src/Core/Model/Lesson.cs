@@ -54,6 +54,9 @@ namespace uLearn.Model
 		[XmlElement("id")]
 		public Guid Id;
 
+		[XmlElement("meta")]
+		public SlideMetaDescription Meta { get; set; }
+
 		[XmlElement("default-include-file")]
 		public string DefaultInclideFile;
 

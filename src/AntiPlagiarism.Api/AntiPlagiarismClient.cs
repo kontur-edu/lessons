@@ -12,7 +12,7 @@ namespace AntiPlagiarism.Api
 {
 	public class AntiPlagiarismClient : IAntiPlagiarismClient
 	{
-		private static readonly TimeSpan defaultTimeout = TimeSpan.FromSeconds(10);
+		private static readonly TimeSpan defaultTimeout = TimeSpan.FromMinutes(10);
 
 		private readonly Logger logger;
 		private readonly string token;

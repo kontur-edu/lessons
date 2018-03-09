@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Core.Objects;
+using System.Data.Odbc;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Database.DataContexts;
 using uLearn;
 using Ulearn.Common;
@@ -184,6 +186,10 @@ namespace Database.Models
 		[Display(Name = @"Преподаватель выставил дополнительные баллы", GroupName = @"Дополнительные баллы, выставленные преподавателем")]
 		[IsEnabledByDefault(true)]
 		ReceivedAdditionalScore = 9,
+		
+		[Display(Name = @"Ответ на комментарий в код-ревью", GroupName = "Ответы на комментарии в код-ревью")]
+		[IsEnabledByDefault(true)]
+		ReceivedCommentToCodeReview = 10,
 
 		// Instructors
 		[Display(Name = @"Кто-то присоединился к вашей группе", GroupName = @"Кто-то присоединился к вашей группе")]
@@ -577,44 +583,80 @@ namespace Database.Models
 		}
 	}
 
-	[NotificationType(NotificationType.PassedManualExerciseChecking)]
-	public class PassedManualExerciseCheckingNotification : Notification
+	public abstract class AbstractCodeReviewNotification : Notification
 	{
-		[Required]
-		public int CheckingId { get; set; }
+		protected string GetReviewText(ExerciseCodeReview review, string[] solutionCodeLines, bool html, bool withAuthorsNames)
+		{
+			var reviewText = "";
 
-		public virtual ManualExerciseChecking Checking { get; set; }
+			var reviewPosition = review.StartLine == review.FinishLine
+				? $"Строка {review.StartLine + 1}"
+				: $"Строки {review.StartLine + 1}–{review.FinishLine + 1}";
 
-		private string GetReviewsText(bool html)
+			if (html)
+			{
+				reviewText += $"<b>{reviewPosition}</b>";
+				
+				var codeFragment = GetSolutionCodeFragments(solutionCodeLines, review).EscapeHtml().LineEndingsToBrTags();
+				var reviewCommentHtml = review.Comment.EscapeHtml().RenderSimpleMarkdown(isHtml: false, telegramMode: true).LineEndingsToBrTags();
+				reviewText += $"<br/><pre>{codeFragment}</pre>";
+
+				var comments = review.NotDeletedComments;
+				if (comments.Any())
+				{
+					if (withAuthorsNames)
+						reviewText += $"<i>{review.Author.VisibleName.EscapeHtml()}:</i><br/>";
+					reviewText += reviewCommentHtml;
+					
+					foreach (var comment in comments)
+					{
+						reviewText += "<br/><br/>";
+						var commentHtml = comment.Text.EscapeHtml().RenderSimpleMarkdown(isHtml: false, telegramMode: true).LineEndingsToBrTags();
+						if (withAuthorsNames)
+							reviewText += $"<i>{comment.Author.VisibleName.EscapeHtml()}:</i><br/>";
+						reviewText += commentHtml;
+					}
+
+					reviewText += "<br/><br/>";
+				}
+				else
+				{
+					reviewText += $"Комментарий: {reviewCommentHtml}<br/><br/>";	
+				}
+			}
+			else
+			{
+				reviewText += reviewPosition;
+				reviewText += review.Comment + "\n\n";
+				var comments = review.NotDeletedComments;
+				foreach (var comment in comments)
+				{
+					if (withAuthorsNames)
+						reviewText += comment.Author.VisibleName + ":\n";
+					reviewText += comment.Text + "\n\n";
+				}
+			}
+
+			return reviewText;
+		}
+		
+		protected string GetReviewsText(ManualExerciseChecking checking, bool html)
 		{
 			var commentsText = "";
-			if (Checking.NotDeletedReviews.Count > 0)
+			if (checking.NotDeletedReviews.Count > 0)
 			{
-				var solutionCodeLines = Checking.Submission.SolutionCode.Text.SplitToLines();
+				var solutionCodeLines = checking.Submission.SolutionCode.Text.SplitToLines();
 				commentsText = "";
 				var reviewIndex = 0;
-				foreach (var review in Checking.NotDeletedReviews)
+				foreach (var review in checking.NotDeletedReviews)
 				{
-					commentsText += $"{++reviewIndex}. ";
-					if (review.StartLine == review.FinishLine)
-						commentsText += $"Строка {review.StartLine + 1}: ";
-					else
-						commentsText += $"Строки {review.StartLine + 1}—{review.FinishLine + 1}: ";
-
-					if (html)
-					{
-						var codeFragment = GetSolutionCodeFragments(solutionCodeLines, review).EscapeHtml().LineEndingsToBrTags();
-						var reviewCommentHtml = review.Comment.EscapeHtml().RenderSimpleMarkdown(isHtml: false, telegramMode: true).LineEndingsToBrTags();
-						commentsText += $"<br/><pre>{codeFragment}</pre><br/><b>Комментарий:</b> {reviewCommentHtml}<br/><br/>";
-					}
-					else
-						commentsText += review.Comment + "\n";
+					commentsText += $"{++reviewIndex}. {GetReviewText(review, solutionCodeLines, html, withAuthorsNames: false)}";
 				}
 			}
 			return commentsText;
 		}
 
-		private string GetSolutionCodeFragments(IReadOnlyList<string> solutionCodeLines, ExerciseCodeReview review)
+		protected string GetSolutionCodeFragments(IReadOnlyList<string> solutionCodeLines, ExerciseCodeReview review)
 		{
 			if (review.StartLine == review.FinishLine)
 				return solutionCodeLines[review.StartLine].Substring(review.StartPosition, review.FinishPosition - review.StartPosition);
@@ -625,6 +667,15 @@ namespace Database.Models
 			var finishLineBeginning = solutionCodeLines[review.FinishLine].Substring(0, review.FinishPosition);
 			return startLineStub + startLineEnding + "\n" + mediumLines + "\n" + finishLineBeginning;
 		}
+	}
+
+	[NotificationType(NotificationType.PassedManualExerciseChecking)]
+	public class PassedManualExerciseCheckingNotification : AbstractCodeReviewNotification
+	{
+		[Required]
+		public int CheckingId { get; set; }
+
+		public virtual ManualExerciseChecking Checking { get; set; }
 
 		public override string GetHtmlMessageForDelivery(NotificationTransport transport, NotificationDelivery delivery, Course course, string baseUrl)
 		{
@@ -632,7 +683,7 @@ namespace Database.Models
 			if (slide == null)
 				return null;
 
-			var commentsText = GetReviewsText(html: true);
+			var commentsText = GetReviewsText(Checking, html: true);
 
 			return $"{InitiatedBy.VisibleName.EscapeHtml()} проверил{InitiatedBy.Gender.ChooseEnding()} ваше решение в «{GetSlideTitle(course, slide).EscapeHtml()}»<br/><br/>" +
 					$"<b>Вы получили {Checking.Score.PluralizeInRussian(RussianPluralizationOptions.Score)}</b><br/><br/>" +
@@ -645,7 +696,7 @@ namespace Database.Models
 			if (slide == null)
 				return null;
 
-			var commentsText = GetReviewsText(html: false);
+			var commentsText = GetReviewsText(Checking, html: false);
 
 			return $"{InitiatedBy.VisibleName} проверил{InitiatedBy.Gender.ChooseEnding()} ваше решение в «{GetSlideTitle(course, slide)}»\n" +
 					$"Вы получили {Checking.Score.PluralizeInRussian(RussianPluralizationOptions.Score)}\n\n" +
@@ -813,6 +864,124 @@ namespace Database.Models
 		public override bool IsActual()
 		{
 			return ScoreId != null && Score != null;
+		}
+	}
+
+	[NotificationType(NotificationType.ReceivedCommentToCodeReview)]
+	public class ReceivedCommentToCodeReviewNotification : AbstractCodeReviewNotification
+	{
+		public int? CommentId { get; set; }
+		
+		public virtual ExerciseCodeReviewComment Comment { get; set; }
+		
+		public override string GetHtmlMessageForDelivery(NotificationTransport transport, NotificationDelivery delivery, Course course, string baseUrl)
+		{
+			var checking = Comment?.Review?.ExerciseChecking;
+			if (checking == null)
+				return null;
+			
+			var slide = course.FindSlideById(checking.SlideId);
+			if (slide == null)
+				return null;
+
+			var messagePrefix = $"{InitiatedBy.VisibleName.EscapeHtml()} оставил{InitiatedBy.Gender.ChooseEnding()} комментарий в код-ревью задания «{GetSlideTitle(course, slide).EscapeHtml()}»<br/><br/>";
+			if (transport is MailNotificationTransport)
+			{
+				var solutionCodeLines = checking.Submission.SolutionCode.Text.SplitToLines();
+				var commentsText = GetReviewText(Comment.Review, solutionCodeLines, html: true, withAuthorsNames: true);
+
+				return messagePrefix + commentsText;
+			}
+
+			if (transport is TelegramNotificationTransport)
+			{
+				var commentText = Comment.Text.EscapeHtml().RenderSimpleMarkdown(isHtml: false, telegramMode: true).LineEndingsToBrTags();
+				return messagePrefix + commentText;
+			}
+
+			throw new Exception($"Unknown transport type: {transport.GetType()}");
+		}
+
+		public override string GetTextMessageForDelivery(NotificationTransport transport, NotificationDelivery notificationDelivery, Course course, string baseUrl)
+		{
+			var checking = Comment?.Review?.ExerciseChecking;
+			if (checking == null)
+				return null;
+			
+			var slide = course.FindSlideById(checking.SlideId);
+			if (slide == null)
+				return null;
+
+			var messagePrefix = $"{InitiatedBy.VisibleName} оставил{InitiatedBy.Gender.ChooseEnding()} комментарий в код-ревью задания «{GetSlideTitle(course, slide)}»<br/><br/>";
+			if (transport is MailNotificationTransport)
+			{
+				var solutionCodeLines = checking.Submission.SolutionCode.Text.SplitToLines();
+				var commentsText = GetReviewText(Comment.Review, solutionCodeLines, html: false, withAuthorsNames: true);
+
+				return messagePrefix + commentsText;
+			}
+			
+			if (transport is TelegramNotificationTransport)
+			{
+				return messagePrefix + Comment.Text;
+			}
+
+			throw new Exception($"Unknown transport type: {transport.GetType()}");
+		}
+
+		public override NotificationButton GetNotificationButton(NotificationTransport transport, NotificationDelivery delivery, Course course, string baseUrl)
+		{
+			var slide = course.FindSlideById(Comment?.Review?.ExerciseChecking?.SlideId ?? Guid.Empty);
+			if (slide == null)
+				return null;
+
+			var currentUserId = transport.UserId;
+			var isStudent = currentUserId == Comment.Review.ExerciseChecking.UserId;
+			var url = GetUrl(course, baseUrl, currentUserId);
+
+			var title = isStudent ? "Перейти к странице с заданием" : "Перейти к код-ревью";
+			return new NotificationButton(title, url);
+		}
+
+		public override List<string> GetRecipientsIds(ULearnDb db)
+		{
+			var review = Comment.Review;
+			if (review == null)
+				return new List<string>();
+
+			var authorsIds = new HashSet<string>(review.Comments.Select(c => c.AuthorId));
+			authorsIds.Add(review.AuthorId);
+			authorsIds.Add(review.ExerciseChecking.UserId);
+
+			return authorsIds.ToList();
+		}
+
+		public override bool IsActual()
+		{
+			return CommentId != null && Comment != null;
+		}
+		
+		public override List<Notification> GetBlockerNotifications(ULearnDb db)
+		{
+			var reviewId = Comment.ReviewId;
+			return new NotificationsRepo(db)
+				.FindNotifications<ReceivedCommentToCodeReviewNotification>(n => n.Comment.ReviewId == reviewId, n => n.Comment)
+				.Cast<Notification>()
+				.Where(n => n.CreateTime < CreateTime && n.CreateTime >= CreateTime - NotificationsRepo.sendNotificationsDelayAfterCreating)
+				.ToList();
+		}
+
+		public string GetUrl(Course course, string baseUrl, string currentUserId)
+		{
+			var slide = course.FindSlideById(Comment?.Review?.ExerciseChecking?.SlideId ?? Guid.Empty);
+			if (slide == null)
+				return null;
+			
+			var isStudent = currentUserId == Comment.Review.ExerciseChecking.UserId;
+			var url = GetSlideUrl(course, slide, baseUrl);
+			if (!isStudent)
+				url += $"?CheckQueueItemId={Comment.Review.ExerciseCheckingId}";
+			return url;
 		}
 	}
 

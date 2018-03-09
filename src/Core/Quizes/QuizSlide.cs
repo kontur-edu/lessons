@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
+using uLearn.Model;
 
 namespace uLearn.Quizes
 {
 	public class QuizSlide : Slide
 	{
 		public QuizSlide(SlideInfo slideInfo, Quiz quiz)
-			: base(quiz.Blocks, slideInfo, quiz.Title, Guid.Parse(quiz.Id))
+			: base(quiz.Blocks, slideInfo, quiz.Title, Guid.Parse(quiz.Id), quiz.Meta)
 		{
 			MaxDropCount = quiz.MaxDropCount;
 			MaxScore = quiz.MaxScore;

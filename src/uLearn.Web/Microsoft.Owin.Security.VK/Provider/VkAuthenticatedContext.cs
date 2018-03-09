@@ -18,7 +18,7 @@ namespace uLearn.Web.Microsoft.Owin.Security.VK.Provider
 			User = user;
 			AccessToken = accessToken;
 
-			Id = TryGetValue(user, "uid");
+			Id = TryGetValue(user, "id");
 			FirstName = TryGetValue(user, "first_name");
 			LastName = TryGetValue(user, "last_name");
 

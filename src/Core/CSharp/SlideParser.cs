@@ -24,11 +24,11 @@ namespace uLearn.CSharp
 			var blocksBuilder = new SlideBuilder(getInclude);
 			blocksBuilder.Visit(tree.GetRoot());
 			if (!ExerciseBuilder.IsExercise(tree))
-				return new Slide(blocksBuilder.Blocks, slideInfo, blocksBuilder.Title, blocksBuilder.Id);
+				return new Slide(blocksBuilder.Blocks, slideInfo, blocksBuilder.Title, blocksBuilder.Id, meta: null);
 			var exerciseBlock = new ExerciseBuilder(SlideBuilder.LangId, prelude).BuildBlockFrom(tree, slideInfo.SlideFile);
 			exerciseBlock.CheckScoringGroup(slideInfo.SlideFile.FullName, settings.Scoring);
 			blocksBuilder.Blocks.Add(exerciseBlock);
-			return new ExerciseSlide(blocksBuilder.Blocks, slideInfo, blocksBuilder.Title, blocksBuilder.Id);
+			return new ExerciseSlide(blocksBuilder.Blocks, slideInfo, blocksBuilder.Title, blocksBuilder.Id, meta: null);
 		}
 	}
 }

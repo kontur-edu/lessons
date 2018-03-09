@@ -1,5 +1,6 @@
 ﻿@using Database.Extensions
 @using Database.Models
+@using uLearn.Extensions
 @using uLearn.Web.Extensions
 @using uLearn.Web.Views.Shared
 @using Ulearn.Common.Extensions
@@ -24,10 +25,12 @@
                 </h3>
 
                 @{
-	                var submissionWeights = Model.AntiPlagiarismResult.ResearchedSubmissions.ToDictionary(
-		                s => submissionsByAntiPlagiarismIds[s.SubmissionInfo.Id].Id,
-		                s => s.Plagiarisms.Max(p => p.Weight)
-		                );
+	                var submissionWeights = Model.AntiPlagiarismResult.ResearchedSubmissions
+		                .Where(s => submissionsByAntiPlagiarismIds.ContainsKey(s.SubmissionInfo.Id))
+		                .ToDictionary(
+                            s => submissionsByAntiPlagiarismIds[s.SubmissionInfo.Id].Id,
+                            s => s.Plagiarisms.Select(p => p.Weight).DefaultIfEmpty(0).Max()
+                        );
                 }
                 <div class="antiplagiarism__submissions-panel">
                     <div class="antiplagiarism__slide-title">
@@ -47,7 +50,11 @@
 	    var researchedSubmission = Model.AntiPlagiarismResult.ResearchedSubmissions.FirstOrDefault(s => s.SubmissionInfo.Id == submission.AntiPlagiarismSubmissionId);
 	    if (researchedSubmission != null && researchedSubmission.Plagiarisms.Count > 0)
 	    {
-		    foreach (var plagiarism in researchedSubmission.Plagiarisms.OrderByDescending(p => p.Weight))
+		    var plagiarisms = researchedSubmission.Plagiarisms.AsEnumerable();
+		    /* For each author select only one plagiarism, with maximal weight */
+		    plagiarisms = plagiarisms.GroupBy(p => p.SubmissionInfo.AuthorId).ToDictionary(g => g.Key, g => g.MaxBy(p => p.Weight)).Select(kvp => kvp.Value);
+		    plagiarisms = plagiarisms.OrderByDescending(p => p.Weight);
+		    foreach (var plagiarism in plagiarisms)
 		    {
 			    if (!submissionsByAntiPlagiarismIds.ContainsKey(plagiarism.SubmissionInfo.Id))
 			    {
@@ -67,6 +74,9 @@
 	                            <span title="@submission.User.UserName">@submission.User.VisibleName</span><text>,</text>
                             }
                             <span title="@submission.Timestamp.ToPrettyString()">@submission.Timestamp.ToAgoPrettyString()</span>
+                            <span class="antiplagiarism__user-groups">
+                                @Model.UsersGroups[submission.UserId]
+                            </span>
                         </div>
                         <textarea class="code code-antiplagiarism" data-lang="cs" data-submission-id="@submission.Id-@plagiarismSubmission.Id">@submission.SolutionCode.Text</textarea>
                     </div>
@@ -82,6 +92,9 @@
 	                            <span title="@plagiarismSubmission.User.UserName">@plagiarismSubmission.User.VisibleName</span><text>,</text>
                             }
                             <span title="@plagiarismSubmission.Timestamp.ToPrettyString()">@plagiarismSubmission.Timestamp.ToAgoPrettyString()</span>
+                            <span class="antiplagiarism__user-groups">
+                                @Model.UsersGroups[plagiarismSubmission.UserId]
+                            </span>
                             <div class="pull-right" title="Процент похожести. Чем больше, тем более подозрительна эта пара">
                                 @((int) (plagiarism.Weight * 100))%
                             </div>

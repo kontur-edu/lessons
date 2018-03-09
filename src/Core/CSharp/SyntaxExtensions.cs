@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using uLearn.CSharp.Validators.IndentsValidation;
 using Ulearn.Common.Extensions;
 
 namespace uLearn.CSharp
@@ -147,6 +148,25 @@ namespace uLearn.CSharp
 			return method
 				.WithoutAttributes()
 				.WithBody(method.Body.WithStatements(new SyntaxList<StatementSyntax>()));
+		}
+
+		public static int GetLine(this SyntaxToken token)
+		{
+			return token.GetLocation().GetLineSpan().StartLinePosition.Line;
+		}
+
+		public static IEnumerable<BracesPair> BuildBracesPairs(this SyntaxTree tree)
+		{
+			var braces = tree.GetRoot().DescendantTokens()
+				.Where(t => t.IsKind(SyntaxKind.OpenBraceToken) || t.IsKind(SyntaxKind.CloseBraceToken));
+			var openbracesStack = new Stack<SyntaxToken>();
+			foreach (var brace in braces)
+			{
+				if (brace.IsKind(SyntaxKind.OpenBraceToken))
+					openbracesStack.Push(brace);
+				else
+					yield return new BracesPair(openbracesStack.Pop(), brace);
+			}
 		}
 	}
 }

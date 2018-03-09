@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using uLearn.Model;
 using uLearn.Model.Blocks;
 using uLearn.Model.Edx;
 using uLearn.Model.Edx.EdxComponents;
@@ -20,6 +21,7 @@ namespace uLearn
 		public string NormalizedGuid => Id.GetNormalizedGuid();
 		public virtual bool ShouldBeSolved => false;
 		public int MaxScore { get; protected set; }
+		public SlideMetaDescription Meta { get; protected set; }
 
 		[NotNull]
 		public string ScoringGroup { get; protected set; }
@@ -41,7 +43,7 @@ namespace uLearn
 			yield return range.ToArray();
 		}
 
-		public Slide(IEnumerable<SlideBlock> blocks, SlideInfo info, string title, Guid id)
+		public Slide(IEnumerable<SlideBlock> blocks, SlideInfo info, string title, Guid id, SlideMetaDescription meta)
 		{
 			try
 			{
@@ -51,6 +53,7 @@ namespace uLearn
 				MaxScore = 0;
 				Blocks = blocks.ToArray();
 				ScoringGroup = "";
+				Meta = meta;
 				foreach (var block in Blocks)
 					block.Validate();
 			}

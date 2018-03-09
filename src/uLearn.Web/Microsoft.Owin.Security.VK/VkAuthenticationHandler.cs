@@ -16,6 +16,7 @@ namespace uLearn.Web.Microsoft.Owin.Security.VK
 {
 	internal class VkAuthenticationHandler : AuthenticationHandler<VkAuthenticationOptions>
 	{
+		private const string vkApiVersion = "5.73";
 		private const string XmlSchemaString = "http://www.w3.org/2001/XMLSchema#string";
 		private readonly ILogger _logger;
 		private readonly HttpClient _httpClient;
@@ -64,7 +65,8 @@ namespace uLearn.Web.Microsoft.Owin.Security.VK
 					"?client_id=" + Uri.EscapeDataString(Options.AppId) +
 					"&client_secret=" + Uri.EscapeDataString(Options.AppSecret) +
 					"&code=" + Uri.EscapeDataString(code) +
-					"&redirect_uri=" + Uri.EscapeDataString(redirectUri);
+					"&redirect_uri=" + Uri.EscapeDataString(redirectUri) +
+					"&v=" + vkApiVersion;
 
 				HttpResponseMessage tokenResponse = await _httpClient.GetAsync(tokenEndpoint + tokenRequest, Request.CallCancelled);
 				tokenResponse.EnsureSuccessStatusCode();
@@ -78,7 +80,8 @@ namespace uLearn.Web.Microsoft.Owin.Security.VK
 										"?user_id=" + userId +
 										"&fields=sex,photo_100,screen_name" +
 										"&name_case=Nom" +
-										"&access_token=" + Uri.EscapeDataString(accessToken);
+										"&access_token=" + Uri.EscapeDataString(accessToken) +
+										"&v=" + vkApiVersion;
 
 				HttpResponseMessage graphResponse = await _httpClient.GetAsync(graphApiEndpoint, Request.CallCancelled);
 				graphResponse.EnsureSuccessStatusCode();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using uLearn.Model;
 using uLearn.Model.Blocks;
 
 namespace uLearn
@@ -14,8 +15,10 @@ namespace uLearn
 		public ExerciseSlide(
 			List<SlideBlock> blocks,
 			SlideInfo slideInfo,
-			string title, Guid id)
-			: base(blocks, slideInfo, title, id)
+			string title,
+			Guid id,
+			SlideMetaDescription meta)
+			: base(blocks, slideInfo, title, id, meta)
 		{
 			Exercise = blocks.OfType<ExerciseBlock>().Single();
 			MaxScore = Exercise.MaxScore;

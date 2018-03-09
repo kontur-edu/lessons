@@ -2,44 +2,112 @@
 @using Database.Extensions
 @using Microsoft.AspNet.Identity
 @using uLearn.Web.Extensions
+@using uLearn.Web.Views.Shared
 @using Ulearn.Common.Extensions
 @model ExerciseCodeReviewModel
 
 <div class="exercise__review"
-	data-id="@Model.Review.Id"
-	data-start-line="@Model.Review.StartLine"
-	data-start-position="@Model.Review.StartPosition"
-	data-finish-line="@Model.Review.FinishLine"
-	data-finish-position="@Model.Review.FinishPosition">
-	<div class="exercise__review__header">
-		<span class="author">@Model.Review.Author.VisibleName</span>,
-		@if (Model.Review.StartLine != Model.Review.FinishLine)
-		{
-			<span>
-				строки @(Model.Review.StartLine + 1)&ndash;@(Model.Review.FinishLine + 1)
-			</span>
-		}
-		else
-		{
-			<span>
-				строка @(Model.Review.StartLine + 1)
-			</span>
-		}
-		@if (Model.ManualChecking != null)
-		{
-			var canDelete = Model.Review.AuthorId == User.Identity.GetUserId() || User.HasAccessFor(Model.ManualChecking.CourseId, CourseRole.CourseAdmin);
-			if (canDelete)
-			{
-				<span class="close exercise__delete-review"
-					title="Удалить комментарий"
-					data-id="@Model.Review.Id"
-					data-url="@Url.Action("DeleteExerciseCodeReview", "Exercise", new { Model.ManualChecking.CourseId, reviewId = Model.Review.Id })">
-					&times;
-				</span>
-			}
-		}
-	</div>
-	<div class="exercise__review__comment">
-		@Html.Raw(Html.EncodeMultiLineText(Model.Review.Comment, keepFirstSpaces: true).RenderSimpleMarkdown())
-	</div>
+     data-id="@Model.Review.Id"
+     data-start-line="@Model.Review.StartLine"
+     data-start-position="@Model.Review.StartPosition"
+     data-finish-line="@Model.Review.FinishLine"
+     data-finish-position="@Model.Review.FinishPosition">
+    @{
+	    var hasTimestamp = Model.Review.HasAddingTime;
+    }
+    <div class="exercise__review__header @(hasTimestamp ? "with-timestamp" : "without-timestamp")">
+        <div class="media">
+            <div class="media-left">
+                @UserAvatar.SmallAvatar(Model.Review.Author)
+            </div>
+            <div class="media-body">
+                @if (Model.ManualChecking != null)
+                {
+	                var canDelete = Model.Review.AuthorId == User.Identity.GetUserId() || User.HasAccessFor(Model.ManualChecking.CourseId, CourseRole.CourseAdmin);
+	                if (canDelete)
+	                {
+		                <span class="pull-right exercise__delete-review"
+                              title="Удалить ветку комментариев"
+                              data-id="@Model.Review.Id"
+                              data-url="@Url.Action("DeleteExerciseCodeReview", "Exercise", new { Model.ManualChecking.CourseId, reviewId = Model.Review.Id })">
+                            &times;
+                        </span>
+	                }
+                }
+
+                <div>
+                    <span class="author">@Model.Review.Author.VisibleName</span>,
+                    @if (Model.Review.StartLine != Model.Review.FinishLine)
+                    {
+	                    <span>
+                            строки @(Model.Review.StartLine + 1)&ndash;@(Model.Review.FinishLine + 1)
+                        </span>
+                    }
+                    else
+                    {
+	                    <span>
+                            строка @(Model.Review.StartLine + 1)
+                        </span>
+                    }
+                </div>
+                <div class="timestamp" title="@(hasTimestamp ? Model.Review.AddingTime.ToPrettyString() : "")">
+                    @(hasTimestamp ? Model.Review.AddingTime.ToAgoPrettyString() : "")
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="exercise__review__comment">
+        @Html.Raw(Html.HighlightLinks(Html.EncodeMultiLineText(Model.Review.Comment, keepFirstSpaces: true).RenderSimpleMarkdown()))
+        
+        @if (Model.Review.Author.IsUlearnBot())
+        {
+            <span class="with-long-tooltip cursor-pointer" data-toggle="tooltip" data-placement="top" title="Код со стилевыми ошибками трудно или неприятно читать другим программистам, поэтому он может не пройти код-ревью">
+                <span class="fa fa-question-circle"></span>
+            </span>
+        }
+    </div>
+
+    @foreach (var comment in Model.Review.NotDeletedComments)
+    {
+	    if (Model.ShowOnlyAutomaticalReviews && !comment.Author.IsUlearnBot())
+	    {
+		    continue;
+	    }
+	    
+	    @Html.Partial("_ExerciseReviewComment", comment)
+    }
+    
+    @if (Model.CanReply)
+    {
+	    var isThreadWithoutReplies = !Model.Review.NotDeletedComments.Any();
+	    var submission = Model.Review.ExerciseCheckingId.HasValue ? Model.Review.ExerciseChecking.Submission : Model.Review.Submission;
+	    var placeholder = "Ответить...";
+	    if (Model.Review.Author.IsUlearnBot() && isThreadWithoutReplies)
+	    {
+		    placeholder = "Прокомментировать...";
+	    }
+	    if (submission.UserId == Model.CurrentUser.Id && isThreadWithoutReplies)
+	    {
+		    placeholder = "Уточнить у преподавателя...";
+	    }
+	    
+	    <div class="exercise__review__new-comment-place"></div>
+	    
+	    <div class="exercise__review__reply-form">
+            <div>
+                <input type="text" placeholder="@placeholder"/>
+                <textarea name="text"></textarea>
+            </div>
+            <div class="exercise__review__reply-footer">
+                <div class="exercise__review__reply-button ib">
+                    <button class="btn btn-primary btn-sm" data-url="@Url.Action("AddExerciseCodeReviewComment")" data-id="@Model.Review.Id" title="Работает Ctrl+Enter">Ответить</button>
+                </div>
+                <div class="pull-right">
+                    <span class="markdown-formatting-helper with-long-tooltip cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="**жирный текст**, __курсивный текст__, `код`, ```многострочный код```">
+                        <span class="fa fa-question-circle"></span> Форматирование
+                    </span>
+                </div>
+            </div>
+        </div>
+    }
 </div>

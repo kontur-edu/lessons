@@ -72,7 +72,7 @@ namespace uLearn.CSharp
 		{
 			var unit = new Unit(new UnitSettings { Title = "UnitTitle" }, null);
 			var slideInfo = new SlideInfo(unit, null, 0);
-			return new ExerciseSlide(new List<SlideBlock> { ex }, slideInfo, "SlideTitle", Guid.Empty);
+			return new ExerciseSlide(new List<SlideBlock> { ex }, slideInfo, "SlideTitle", Guid.Empty, meta: null);
 		}
 
 		public static string ValidateBlock(ProjectExerciseBlock exBlock)

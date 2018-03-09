@@ -1,6 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
-using uLearn.CSharp.VerbInMethodNameValidation;
+using uLearn.CSharp.Validators.VerbInMethodNameValidation;
 
 namespace uLearn.CSharp
 {
@@ -54,7 +55,6 @@ namespace uLearn.CSharp
 			FindErrors(code).Should().BeNullOrEmpty();
 		}
 
-		private string FindErrors(string code) =>
-			validator.FindError(code);
+		private List<SolutionStyleError> FindErrors(string code) => validator.FindErrors(code);
 	}
 }

@@ -1167,6 +1167,7 @@
     <Content Include="tablesorter-master\tablesorter.jquery.json" />
     <Content Include="tablesorter-master\test.html" />
     <Content Include="Views\AntiPlagiarism\Details.cshtml" />
+    <Content Include="Views\Exercise\_ExerciseReviewComment.cshtml" />
     <Content Include="Views\Shared\_Retargeting.cshtml" />
     <Content Include="Views\Shared\_ReturnHijack.cshtml" />
     <Content Include="Web.config" />

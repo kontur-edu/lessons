@@ -480,8 +480,8 @@ namespace Database.DataContexts
 
 			var userGroupsIds = db.GroupMembers
 				.Where(m => m.Group.CourseId == course.Id && m.UserId == userId && !m.Group.IsDeleted)
-				.DistinctBy(m => m.GroupId)
 				.Select(m => m.GroupId)
+				.Distinct()
 				.ToList();
 			var userGroups = db.Groups.Where(g => userGroupsIds.Contains(g.Id)).ToList();
 			return userGroups.Any(g => g.IsManualCheckingEnabled);

@@ -5,7 +5,7 @@
 		window.history.pushState({ path: newurl }, '', newurl);
 }
 
-function setExerciseVersion(versionId, showOutput, styleMessage) {
+function setExerciseVersion(versionId, showOutput,) {
 	showOutput = showOutput || false;
 	var url = $('.exercise__submission').data('version-update-url');
 	url = url.replace('VERSION_ID', versionId);
@@ -28,12 +28,6 @@ function setExerciseVersion(versionId, showOutput, styleMessage) {
 		$loadingPanel.hide();
 		$submission.html($(data).html());
 
-		if (styleMessage) {
-			var $styleErrorBlock = $('.run-style-error');
-			setSimpleResult($styleErrorBlock, styleMessage);
-			$styleErrorBlock.show();
-		}
-
 		initCodeEditor($submission);
 		$submission.find('.select-auto-width').each(function() {
 			selectSetAutoWidth($(this));
@@ -51,7 +45,15 @@ function setExerciseVersion(versionId, showOutput, styleMessage) {
 			var submissionId = parseInt($scoreForm.data('submissionId'));
 			$scoreForm.toggle(submissionId === versionId);
 		}
-	});
+
+        /* placeCodeReviews is available on slide-editor.js */
+		placeCodeReviews();
+
+        /* Fetching antiplagiarism status (fetchAntiPlagiarismStatus() is available on antiplagiarism.js) */
+        $('.antiplagiarism-status').each(function () {
+            fetchAntiPlagiarismStatus($(this));
+        });
+    });
 }
 
 function setSimpleResult($block, details) {

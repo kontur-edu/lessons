@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using uLearn.CSharp.Validators;
 using Ulearn.Common.Extensions;
 
 namespace uLearn.CSharp.BoolCompareValidation
@@ -35,9 +36,9 @@ namespace uLearn.CSharp.BoolCompareValidation
 		{
 			var code = IncorrectTestDataDir.GetFiles(filename).Single().ContentAsUtf8();
 			var binaryExpressionSyntaxsCount = CSharpSyntaxTree.ParseText(code).GetRoot().DescendantNodes().OfType<BinaryExpressionSyntax>().Count();
-			var errors = validator.FindError(code);
+			var errors = validator.FindErrors(code);
 			errors.Should().NotBeNullOrEmpty();
-			errors.Split('\n').Length.Should().Be(binaryExpressionSyntaxsCount, errors);
+			errors.Count.Should().Be(binaryExpressionSyntaxsCount);
 		}
 
 		[Test]
@@ -45,7 +46,7 @@ namespace uLearn.CSharp.BoolCompareValidation
 		public void NotFindErrors(string filename)
 		{
 			var code = CorrectTestDataDir.GetFiles(filename).Single().ContentAsUtf8();
-			var errors = validator.FindError(code);
+			var errors = validator.FindErrors(code);
 			if (errors != null)
 			{
 				Console.WriteLine(errors);

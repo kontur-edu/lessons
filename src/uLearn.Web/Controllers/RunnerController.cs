@@ -269,7 +269,7 @@ namespace uLearn.Web.Controllers
 				AuthorId = Guid.Parse(submission.UserId),
 				AdditionalInfo = new AntiPlagiarismAdditionalInfo { SubmissionId = submission.Id }.ToJsonString(),
 			};
-			var antiPlagiasismResult = await FuncUtils.TrySeveralTimesAsync(() => antiPlagiarismClient.AddSubmissionAsync(parameters), 3);
+			var antiPlagiasismResult = await antiPlagiarismClient.AddSubmissionAsync(parameters);
 			
 			log.Info($"Получил ответ от сервиса антиплагиата: {antiPlagiasismResult}");
 			

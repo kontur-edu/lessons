@@ -80,9 +80,9 @@ namespace uLearn
 				FailOnError(slide, solution, ethalon);
 				return;
 			}
-			if (solution.HasStyleIssues)
+			if (solution.HasStyleErrors)
 			{
-				ReportSlideWarning(slide, "Style issue: " + solution.StyleMessage);
+				ReportSlideWarning(slide, "Style issue: " + solution.StyleErrors);
 			}
 
 			var result = SandboxRunner.Run(exercise.CreateSubmission(

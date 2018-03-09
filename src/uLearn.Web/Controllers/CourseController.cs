@@ -62,8 +62,7 @@ namespace uLearn.Web.Controllers
 
 			var groupsIds = Request.GetMultipleValues("group");
 
-			Guid slideGuid;
-			if (!Guid.TryParse(slideId, out slideGuid))
+			if (!Guid.TryParse(slideId, out var slideGuid))
 				return HttpNotFound();
 
 			if (string.IsNullOrWhiteSpace(courseId))
@@ -96,7 +95,15 @@ namespace uLearn.Web.Controllers
 					queueItem = slideCheckingsRepo.FindManualCheckingById<ManualExerciseChecking>(checkQueueItemId.Value);
 
 				if (queueItem == null)
-					return HttpNotFound();
+				{
+					/* It's possible when checking has not been fully checked, lock has been released, but after it user re-send him solution and old waiting checking has been removed */
+					var fakeQueueItem = slide is QuizSlide ? (AbstractManualSlideChecking) new ManualQuizChecking() : new ManualExerciseChecking();
+					return RedirectToAction(GetAdminQueueActionName(fakeQueueItem), "Admin", new
+					{
+						courseId = courseId,
+						message = "checking_removed"
+					});
+				}
 			}
 
 			var model = isGuest ?

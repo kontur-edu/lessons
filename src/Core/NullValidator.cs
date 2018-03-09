@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using uLearn.CSharp;
+
 namespace uLearn
 {
 	public class NullValidator : ISolutionValidator
@@ -12,7 +15,7 @@ namespace uLearn
 			return null;
 		}
 
-		public string FindValidatorErrors(string userCode, string solution)
+		public List<SolutionStyleError> FindValidatorErrors(string userCode, string solution)
 		{
 			return null;
 		}

@@ -502,6 +502,8 @@ namespace uLearn
 
 				foreach (var exerciseBlock in slide.Blocks.OfType<ProjectExerciseBlock>())
 					exerciseBlock.SlideFolderPath = (DirectoryInfo)GetNewPathForFileAfterMoving(exerciseBlock.SlideFolderPath, sourceDirectory, destinationDirectory);
+				
+				slide.Meta?.FixPaths(slide.Info.SlideFile);
 			}
 		}
 

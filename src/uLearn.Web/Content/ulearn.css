@@ -129,10 +129,32 @@ p {
 }
 
 .revealed {
-	background-color: #FDD;
-	padding: 10px;
-	-ms-border-radius: 5px;
-	border-radius: 5px;
+	background-color: #313131;
+	padding: 20px;
+	color: white !important;
+}
+
+.revealed .cm-s-pastel-on-dark.CodeMirror {
+	background-color: #313131;
+}
+
+.revealed__description {
+	font-style: italic;	
+	margin-bottom: 15px;
+}
+
+.revealed code {
+	color: white;
+	background-color: #39562d;
+}
+
+.revealed h2 {
+	margin-bottom: 20px;
+}
+
+.revealed h3 {
+	margin-bottom: 20px;
+	line-height: 20px;
 }
 
 .revealed p:last-child {
@@ -158,6 +180,16 @@ p {
 .selectpicker.form-control[multiple="true"] option {
 	margin-top: 5px;
 	margin-bottom: 5px;
+}
+
+.markdown-formatting-helper {
+	font-size: 12px;
+	color: #555;
+	vertical-align: top;
+}
+
+.markdown-formatting-helper .fa {
+	vertical-align: text-top;
 }
 
 /* ReSharper restore Html.CssClassElementsNotFound */
@@ -463,25 +495,30 @@ p {
 
 .quiz-status,
 .exercise-status,
-.exercise-loading {
+.exercise-loading,
+.exercise-block-status {
 	background-color: #d9edf7;
 	padding: 11px 18px;
 	color: #333;
 	font-size: 13pt;
-	margin-bottom: 30px;
+	margin-bottom: 30px;	
 }
 
-.exercise-status,
+.exercise-block-status,
 .exercise-loading {
 	margin-bottom: 0;
 	margin-top: 10px;
 }
 
-.exercise-status.wrong {
+.exercise-block-status {
+	box-shadow: inset 0 -10px 10px -10px #9cbdce;
+}
+
+.exercise-block-status.wrong {
 	background-color: #fd989c;
 }
 
-.exercise-status.waiting {
+.exercise-block-status.waiting {
 	background-color: #fdfa98;
 }
 
@@ -820,6 +857,7 @@ li.li-success {
 	outline: none;
 	max-width: none;
 	width: 100%;
+	resize: none;
 }
 
 .comments .reply-form textarea[name=commentText] {
@@ -1840,6 +1878,17 @@ h1 .copy-group-link {
 	width: 250px;
 	margin-left: 10px;
 	margin-bottom: 25px;
+	
+	background-color: #f7f7f7;
+	padding-left: 10px;
+	padding-right: 10px;
+	box-shadow: inset 7px -5px 4px -4px #ccc;
+}
+
+@media (max-width: 720px) {
+	.exercise__reviews {
+		width: 150px;
+	}
 }
 
 .exercise__reviews.empty {
@@ -1847,36 +1896,73 @@ h1 .copy-group-link {
 }
 
 .exercise__review {
-	border-left: 3px solid #fdd;
 	margin: 10px 0;
-	padding: 2px 5px;
 	cursor: pointer;
+
+	background-color: white;
+	padding: 10px 5px;
+	box-shadow: 0 2px 4px 1px #ccc;
 }
 
 .exercise__review.selected {
-	border-left-color: #d66;
-	margin-left: -10px;
-	margin-right: 10px;
+	margin-left: -15px;
+	margin-right: 15px;
+	transition: margin-left 0.3s linear, margin-right 0.3s linear;
 }
 
-.exercise__review .exercise__review__header {
-	background-color: #fdf5f5;
+.exercise__review .exercise__review__header,
+.exercise__review .exercise__review__comment__header {	
 	margin: -2px -5px;
-	padding: 2px 5px;
+	padding: 0 5px;
 	color: #aaa;
 	font-size: 9pt;
 }
 
-.exercise__review .exercise__review__header .author {
-	color: #b99;
+.exercise__review .exercise__review__comment__header {
+	margin-top: 5px;
 }
 
-.exercise__review .exercise__review__header .close {
-	font-size: 13pt;
+.exercise__review .exercise__review__header .media-left,
+.exercise__review .exercise__review__comment__header .media-left {
+	padding-right: 7px;
+}
+
+.exercise__review .exercise__review__header.with-timestamp .media,
+.exercise__review .exercise__review__comment__header.with-timestamp .media {
+	margin-bottom: -7px;
+}
+
+.exercise__review .exercise__review__header .media-body,
+.exercise__review .exercise__review__comment__header .media-body {
+	line-height: 14px;
+	position: relative;
+	top: -2px;
+}
+
+.exercise__review .exercise__review__header.without-timestamp .media-body,
+.exercise__review .exercise__review__comment__header.without-timestamp .media-body {
+	padding-top: 7px;
+}
+
+.exercise__review .exercise__review__comment__header .timestamp {
+	font-size: 8pt;
+}
+
+.exercise__review .exercise__review__header .author,
+.exercise__review .exercise__review__comment__header .author {
+	color: #666;
+}
+
+.exercise__review .exercise__delete-review:hover,
+.exercise__review .exercise__delete-review-comment:hover {
+	color: black;
 }
 
 .exercise__review .exercise__review__comment {
-	padding: 4px 0;
+	padding: 6px 0 4px;
+	line-height: 17px;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .exercise__review .exercise__review__comment pre {
@@ -1904,6 +1990,28 @@ h1 .copy-group-link {
 	border-radius: 5px;
 	background: #f6dddd;
 	-webkit-box-shadow: inset 0 0 6px rgba(100,0,0,0.5);
+}
+
+.exercise__review__reply-form {
+	margin-top: 3px;
+}
+
+.exercise__review__reply-form input[type="text"] {
+	width: 100%;
+	height: 25px;
+	padding: 0 4px; 
+}
+
+.exercise__review__reply-form textarea {
+	resize: none;
+	width: 100%;
+	padding: 0 4px;
+	display: none;
+	min-height: 48px;
+}
+
+.exercise__review__reply-footer {
+	display: none;
 }
 
 .exercise__code__reviewed-fragment {

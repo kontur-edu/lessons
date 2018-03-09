@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using log4net;
 using Microsoft.Build.Evaluation;
 using RunCsJob.Api;
+using uLearn.Extensions;
 using uLearn.Helpers;
 using uLearn.NUnitTestRunning;
 using uLearn.Properties;

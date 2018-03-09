@@ -13,14 +13,15 @@ namespace uLearn.Model
 		public Slide Load(FileInfo file, Unit unit, int slideIndex, string courseId, CourseSettings settings)
 		{
 			var lesson = file.DeserializeXml<Lesson>();
+			lesson.Meta?.FixPaths(file);
 
 			var context = new BuildUpContext(unit, settings, lesson, courseId, lesson.Title);
 			var blocks = lesson.Blocks.SelectMany(b => b.BuildUp(context, ImmutableHashSet<string>.Empty)).ToList();
 			var slideInfo = new SlideInfo(unit, file, slideIndex);
 
 			if (blocks.OfType<ExerciseBlock>().Any())
-				return new ExerciseSlide(blocks, slideInfo, lesson.Title, lesson.Id);
-			return new Slide(blocks, slideInfo, lesson.Title, lesson.Id);
+				return new ExerciseSlide(blocks, slideInfo, lesson.Title, lesson.Id, lesson.Meta);
+			return new Slide(blocks, slideInfo, lesson.Title, lesson.Id, lesson.Meta);
 		}
 	}
 }

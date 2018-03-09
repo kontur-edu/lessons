@@ -13,15 +13,17 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
+using uLearn.CSharp.Validators.IndentsValidation;
 using Ulearn.Common.Extensions;
 
+// ReSharper disable InconsistentNaming
 
 namespace uLearn.CSharp.IndentsValidation
 {
 	[TestFixture]
 	public class IndentsValidator_Should
 	{
-		private static DirectoryInfo TestDataDir = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..",
+		private static readonly DirectoryInfo TestDataDir = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..",
 			"..", "CSharp", "IndentsValidation", "TestData"));
 
 		private static DirectoryInfo IncorrectTestDataDir => TestDataDir.GetDirectories("Incorrect").Single();
@@ -36,10 +38,11 @@ namespace uLearn.CSharp.IndentsValidation
 		public void FindErrors(string filename)
 		{
 			var code = IncorrectTestDataDir.GetFiles(filename).Single().ContentAsUtf8();
-			var errors = new IndentsValidator().FindError(code);
+			var errors = new IndentsValidator().FindErrors(code);
+			var errorMessages = errors.Select(e => e.GetMessageWithPositions());
 			using (ApprovalResults.ForScenario(filename))
 			{
-				Approvals.Verify(errors);
+				Approvals.Verify(string.Join("\n", errorMessages));
 			}
 		}
 
@@ -47,7 +50,7 @@ namespace uLearn.CSharp.IndentsValidation
 		public void NotFindErrors(string filename)
 		{
 			var code = CorrectTestDataDir.GetFiles(filename).Single().ContentAsUtf8();
-			var errors = new IndentsValidator().FindError(code);
+			var errors = new IndentsValidator().FindErrors(code);
 			if (errors != null)
 			{
 				Console.WriteLine(errors);
@@ -66,7 +69,7 @@ namespace uLearn.CSharp.IndentsValidation
 			var failed = false;
 			foreach (var tuple in filesCode)
 			{
-				var errors = new IndentsValidator().FindError(tuple.Item2);
+				var errors = new IndentsValidator().FindErrors(tuple.Item2);
 
 				if (errors != null)
 				{
@@ -111,7 +114,7 @@ namespace uLearn.CSharp.IndentsValidation
 			const string spanEnd = "</span>";
 			foreach (var code in filesCode)
 			{
-				var errors = new IndentsValidator().FindError(code);
+				var errors = new IndentsValidator().FindErrors(code);
 				if (errors == null)
 					continue;
 				var errorsLines = GroupBadLinesByErrors(errors);
@@ -149,21 +152,19 @@ namespace uLearn.CSharp.IndentsValidation
 					Encoding.UTF8);
 			}
 
-			Dictionary<string, HashSet<int>> GroupBadLinesByErrors(string errors)
+			Dictionary<string, HashSet<int>> GroupBadLinesByErrors(List<SolutionStyleError> errors)
 			{
 				return errors
-					.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries)
-					.Skip(1)
 					.GroupBy(
-						error => Regex.Replace(error, "\\d+", string.Empty),
+						error => error.Message,
 						error =>
 						{
-							var result = new List<int> { int.Parse(Regex.Match(error, "\\d+").Value) - 1 };
-							if (error.Contains("Парные фигурные скобки"))
+							var result = new List<int> { error.Span.StartLinePosition.Line }; 
+							if (error.Message.Contains("Парные фигурные скобки"))
 								result.AddRange(new[]
 								{
-									int.Parse(Regex.Match(error, "строки \\d+").Value.Substring(7)) - 1,
-									int.Parse(Regex.Match(error, ", \\d+").Value.Substring(2)) - 1
+									error.Span.StartLinePosition.Line,
+									error.Span.EndLinePosition.Line
 								});
 							return result;
 						},

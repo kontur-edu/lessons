@@ -194,5 +194,10 @@ namespace Ulearn.Common.Extensions
 				return "";
 			return char.ToLowerInvariant(text[0]) + text.Substring(1);
 		}
+
+		public static bool EqualsIgnoreCase(this string first, string second)
+		{
+			return string.Equals(first, second, StringComparison.InvariantCultureIgnoreCase);
+		}
 	}
 }

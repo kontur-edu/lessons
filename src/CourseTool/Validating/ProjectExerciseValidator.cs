@@ -87,8 +87,8 @@ namespace uLearn
 				ReportSlideError(slide, $"Correct solution file {ex.CorrectSolutionFileName} is not solution. RunResult = {result}");
 			var buildResult = ex.BuildSolution(solutionCode);
 
-			if (buildResult.HasStyleIssues)
-				ReportSlideWarning(slide, $"Correct solution file {ex.CorrectSolutionFileName} has style issues. {buildResult.StyleMessage}");
+			if (buildResult.HasStyleErrors)
+				ReportSlideWarning(slide, $"Correct solution file {ex.CorrectSolutionFileName} has style issues. {buildResult.StyleErrors}");
 		}
 
 		private void ReportWarningIfWrongAnswersAreSolutionsOrNotOk()

@@ -262,10 +262,10 @@ namespace uLearn.CourseTool.Monitoring
 				ExpectedOutput = exercise.ExpectedOutput.NormalizeEoln(),
 				SubmissionId = 0,
 			};
-			if (buildResult.HasStyleIssues)
+			if (buildResult.HasStyleErrors)
 			{
 				runSolutionResult.IsStyleViolation = true;
-				runSolutionResult.StyleMessage = buildResult.StyleMessage;
+				runSolutionResult.StyleMessage = string.Join("\n", buildResult.StyleErrors.Select(e => e.GetMessageWithPositions()));
 			}
 			return runSolutionResult;
 		}

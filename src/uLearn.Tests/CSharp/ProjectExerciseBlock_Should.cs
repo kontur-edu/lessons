@@ -63,7 +63,7 @@ namespace uLearn.CSharp
 			exBlocks = ex.BuildUp(ctx, ImmutableHashSet<string>.Empty).ToList();
 			
 			var builder = new ExerciseStudentZipBuilder();
-			builder.BuildStudentZip(new ExerciseSlide(exBlocks, new SlideInfo(unit, null, 1), "", Guid.NewGuid()), studentExerciseZipFilePath);
+			builder.BuildStudentZip(new ExerciseSlide(exBlocks, new SlideInfo(unit, null, 1), "", Guid.NewGuid(), meta: null), studentExerciseZipFilePath);
 			
 			Utils.UnpackZip(studentExerciseZipFilePath.Content(), studentExerciseFolderPath);
 

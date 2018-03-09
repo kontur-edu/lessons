@@ -40,7 +40,7 @@ namespace uLearn.Web.Controllers
 				return HttpNotFound();
 
 			var certificates = certificatesRepo.GetUserCertificates(userId);
-			var coursesTitles = courseManager.GetCourses().ToDictionary(c => c.Id, c => c.Title);
+			var coursesTitles = courseManager.GetCourses().ToDictionary(c => c.Id.ToLower(), c => c.Title);
 
 			return View("List", new UserCertificatesViewModel
 			{

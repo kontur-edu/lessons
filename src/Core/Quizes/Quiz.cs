@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
+using uLearn.Model;
 using uLearn.Model.Blocks;
 using uLearn.Model.Edx.EdxComponents;
 using Ulearn.Common.Extensions;
@@ -24,7 +25,7 @@ namespace uLearn.Quizes
 
 		[XmlAttribute("id")]
 		public string Id;
-
+		
 		[XmlAttribute("maxDropCount")]
 		public int MaxDropCount;
 
@@ -34,6 +35,9 @@ namespace uLearn.Quizes
 		[XmlAttribute("scoringGroup")]
 		public string ScoringGroup;
 
+		[XmlElement("meta")]
+		public SlideMetaDescription Meta { get; set; }
+		
 		[XmlElement("title")]
 		public string Title;
 

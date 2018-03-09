@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Serilog;
 using uLearn.Web.FilterAttributes;
+using Ulearn.Common;
 using Ulearn.Common.Extensions;
 
 namespace uLearn.Web.Controllers
@@ -24,6 +25,7 @@ namespace uLearn.Web.Controllers
 	{
 		private readonly ULearnDb db;
 		private readonly UserSolutionsRepo userSolutionsRepo;
+		private readonly GroupsRepo groupsRepo;
 		private readonly CourseManager courseManager;		
 		private static readonly IAntiPlagiarismClient antiPlagiarismClient;
 
@@ -35,14 +37,15 @@ namespace uLearn.Web.Controllers
 			antiPlagiarismClient = new AntiPlagiarismClient(antiPlagiarismEndpointUrl, antiPlagiarismToken, serilogLogger);
 		}
 
-		public AntiPlagiarismController(ULearnDb db, UserSolutionsRepo userSolutionsRepo)
+		public AntiPlagiarismController(ULearnDb db, UserSolutionsRepo userSolutionsRepo, GroupsRepo groupsRepo)
 		{
 			this.db = db;
 			this.userSolutionsRepo = userSolutionsRepo;
+			this.groupsRepo = groupsRepo;
 		}
 
 		public AntiPlagiarismController(ULearnDb db, CourseManager courseManager)
-			:this(db, new UserSolutionsRepo(db, courseManager))
+			:this(db, new UserSolutionsRepo(db, courseManager), new GroupsRepo(db, courseManager))
 		{
 			this.courseManager = courseManager;
 		}
@@ -67,8 +70,9 @@ namespace uLearn.Web.Controllers
 			var model = new AntiPlagiarismInfoModel
 			{
 				SuspicionLevel = SuspicionLevel.None,
-				SuspiciousSubmissionsCount = 0,
+				SuspiciousAuthorsCount = 0,
 			};
+			var suspicionAuthorsIds = new HashSet<Guid>();
 			foreach (var researchedSubmission in antiPlagiarismsResult.ResearchedSubmissions)
 			{
 				foreach (var plagiarism in researchedSubmission.Plagiarisms)
@@ -78,9 +82,11 @@ namespace uLearn.Web.Controllers
 					else if (plagiarism.Weight >= antiPlagiarismsResult.SuspicionLevels.FaintSuspicion && model.SuspicionLevel == SuspicionLevel.None)
 						model.SuspicionLevel = SuspicionLevel.Faint;
 
-					model.SuspiciousSubmissionsCount++;
+					suspicionAuthorsIds.Add(plagiarism.SubmissionInfo.AuthorId);
 				}
 			}
+
+			model.SuspiciousAuthorsCount = suspicionAuthorsIds.Count;
 
 			return Json(model, JsonRequestBehavior.AllowGet);
 		}
@@ -88,7 +94,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> Details(string courseId, int submissionId)
 		{
 			var submission = userSolutionsRepo.FindSubmissionById(submissionId);
-			if (!string.Equals(submission.CourseId, courseId, StringComparison.InvariantCultureIgnoreCase))
+			if (! submission.CourseId.EqualsIgnoreCase(courseId))
 				return HttpNotFound(); 
 					
 			var antiPlagiarismsResult = await antiPlagiarismClient.GetAuthorPlagiarismsAsync(new GetAuthorPlagiarismsParameters
@@ -104,9 +110,13 @@ namespace uLearn.Web.Controllers
 
 			var submissions = userSolutionsRepo.GetSubmissionsByAntiPlagiarismSubmissionsIds(
 					antiPlagiarismSubmissionsIds.Concat(plagiarismsSubmissionsIds)
-					)
+				)
 				.ToDictionary(s => s.Id);
 			submissions[submissionId] = submission;
+
+			var userIds = new HashSet<string>(antiPlagiarismsResult.ResearchedSubmissions.SelectMany(s => s.Plagiarisms).Select(s => s.SubmissionInfo.AuthorId.ToString()));
+			userIds.Add(submission.UserId);
+			var usersGroups = groupsRepo.GetUsersGroupsNamesAsStrings(courseId, userIds, User).ToDefaultDictionary();
 
 			var course = courseManager.FindCourse(courseId);
 			var slide = course?.FindSlideById(submission.SlideId);
@@ -116,6 +126,7 @@ namespace uLearn.Web.Controllers
 				Slide = slide,
 				SubmissionId = submissionId,
 				Submissions = submissions,
+				UsersGroups = usersGroups,
 				AntiPlagiarismResult = antiPlagiarismsResult,
 			});
 		}
@@ -169,8 +180,8 @@ namespace uLearn.Web.Controllers
 		[DataMember(Name = "suspicion_level")]
 		public SuspicionLevel SuspicionLevel { get; set; }
 		
-		[DataMember(Name = "suspicious_submissions_count")]
-		public int SuspiciousSubmissionsCount { get; set; }
+		[DataMember(Name = "suspicious_authors_count")]
+		public int SuspiciousAuthorsCount { get; set; }
 	}
 
 	public class AntiPlagiarismDetailsModel
@@ -181,8 +192,11 @@ namespace uLearn.Web.Controllers
 		
 		public Slide Slide { get; set; }
 		
+		public DefaultDictionary<string, string> UsersGroups { get; set; }
+		
 		public GetAuthorPlagiarismsResult AntiPlagiarismResult { get; set; }
 		
 		public Dictionary<int, UserExerciseSubmission> Submissions { get; set; }
+		
 	}
 }

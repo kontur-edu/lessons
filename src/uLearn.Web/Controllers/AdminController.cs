@@ -307,9 +307,10 @@ namespace uLearn.Web.Controllers
 			filterOptions.OnlyChecked = null;
 			var allCheckingsSlidesIds = slideCheckingsRepo.GetManualCheckingQueue<T>(filterOptions).Select(c => c.SlideId).Distinct();
 
-			var emptySlideMock = new Slide(Enumerable.Empty<SlideBlock>(), new SlideInfo(null, null, -1), "", Guid.Empty);
+			var emptySlideMock = new Slide(Enumerable.Empty<SlideBlock>(), new SlideInfo(null, null, -1), "", Guid.Empty, meta: null);
 			var allCheckingsSlidesTitles = allCheckingsSlidesIds
-				.Select(s => new KeyValuePair<Guid, Slide>(s, course.GetSlideById(s)))
+				.Select(s => new KeyValuePair<Guid, Slide>(s, course.FindSlideById(s)))
+				.Where(kvp => kvp.Value != null)
 				.Union(new List<KeyValuePair<Guid, Slide>>
 				{
 					/* Divider between used slides and another ones */
@@ -367,7 +368,7 @@ namespace uLearn.Web.Controllers
 		private async Task<ActionResult> InternalManualCheck<T>(string courseId, string actionName, int queueItemId, bool ignoreLock = false, List<string> groupsIds = null, bool recheck = false) where T : AbstractManualSlideChecking
 		{
 			T checking;
-			var joinedGroupsIds = string.Join(",", groupsIds);
+			var joinedGroupsIds = string.Join(",", groupsIds ?? new List<string>());
 			using (var transaction = db.Database.BeginTransaction())
 			{
 				checking = slideCheckingsRepo.FindManualCheckingById<T>(queueItemId);
@@ -852,7 +853,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> UpdateGroupApi(string courseId, int groupId, bool manualChecking, bool manualCheckingForOldSolutions, bool defaultProhibitFutherReview, string name=null)
 		{
 			var group = groupsRepo.FindGroupById(groupId);
-			if (!CanModifyGroup(group) || group.CourseId != courseId)
+			if (!CanModifyGroup(group) || ! group.CourseId.EqualsIgnoreCase(courseId))
 				return Json(new { status = "error", message = "Вы не можете редактировать эту группу" });
 
 			if (name == "")
@@ -874,7 +875,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> ChangeGroupOwnerApi(string courseId, int groupId, string newOwnerId)
 		{
 			var group = groupsRepo.FindGroupById(groupId);
-			if (group.CourseId != courseId || ! CanChangeGroupOwner(group))
+			if (! group.CourseId.EqualsIgnoreCase(courseId) || ! CanChangeGroupOwner(group))
 				return Json(new { status = "error", message = "Вы не можете сменить владельца у этой группы" });
 
 			var newOwner = usersRepo.FindUserById(newOwnerId);
@@ -902,7 +903,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> ArchiveGroupApi(string courseId, int groupId, bool isArchived)
 		{
 			var group = groupsRepo.FindGroupById(groupId);
-			if (!CanModifyGroup(group) || group.CourseId != courseId)
+			if (!CanModifyGroup(group) || ! group.CourseId.EqualsIgnoreCase(courseId))
 				return Json(new { status = "error", message = "Вы не можете редактировать эту группу" });
 
 			log.Info($"Обновляю архивность группы «{group.Name}». Была ли архивна: {group.IsArchived}. Архивна теперь: {isArchived}");
@@ -1155,7 +1156,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> EditCertificateTemplate(string courseId, Guid templateId, string name, HttpPostedFileBase archive)
 		{
 			var template = certificatesRepo.FindTemplateById(templateId);
-			if (template == null || template.CourseId != courseId)
+			if (template == null || ! template.CourseId.EqualsIgnoreCase(courseId))
 				return HttpNotFound();
 
 			log.Info($"Обновляю шаблон сертификата «{template.Name}» (Id = {template.Id}) для курса {courseId}");
@@ -1177,7 +1178,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> RemoveCertificateTemplate(string courseId, Guid templateId)
 		{
 			var template = certificatesRepo.FindTemplateById(templateId);
-			if (template == null || template.CourseId != courseId)
+			if (template == null || ! template.CourseId.EqualsIgnoreCase(courseId))
 				return HttpNotFound();
 
 			log.Info($"Удаляю шаблон сертификата «{template.Name}» (Id = {template.Id}) для курса {courseId}");
@@ -1192,7 +1193,8 @@ namespace uLearn.Web.Controllers
 			{
 				Certificate = certificate,
 			};
-			await notificationsRepo.AddNotification(certificate.Template.CourseId, notification, certificate.InstructorId);
+			var ulearnBotUserId = usersRepo.GetUlearnBotUserId();
+			await notificationsRepo.AddNotification(certificate.Template.CourseId, notification, ulearnBotUserId);
 		}
 
 		[HttpPost]
@@ -1200,7 +1202,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> AddCertificate(string courseId, Guid templateId, string userId, bool isPreview = false)
 		{
 			var template = certificatesRepo.FindTemplateById(templateId);
-			if (template == null || template.CourseId != courseId)
+			if (template == null || ! template.CourseId.EqualsIgnoreCase(courseId))
 				return HttpNotFound();
 
 			var certificateParameters = GetCertificateParametersFromRequest(template);
@@ -1248,7 +1250,7 @@ namespace uLearn.Web.Controllers
 		public ActionResult DownloadCertificateTemplate(string courseId, Guid templateId)
 		{
 			var template = certificatesRepo.FindTemplateById(templateId);
-			if (template == null || template.CourseId != courseId)
+			if (template == null || ! template.CourseId.EqualsIgnoreCase(courseId))
 				return HttpNotFound();
 
 			return RedirectPermanent($"/Certificates/{template.ArchiveName}.zip");
@@ -1259,7 +1261,7 @@ namespace uLearn.Web.Controllers
 			const string namesColumnName = "Фамилия Имя";
 
 			var template = certificatesRepo.FindTemplateById(templateId);
-			if (template == null || template.CourseId != courseId)
+			if (template == null || ! template.CourseId.EqualsIgnoreCase(courseId))
 				return HttpNotFound();
 
 			var notBuiltinTemplateParameters = certificatesRepo.GetTemplateParametersWithoutBuiltins(template).ToList();
@@ -1351,7 +1353,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> GenerateCertificates(string courseId, Guid templateId, int maxCertificateId)
 		{
 			var template = certificatesRepo.FindTemplateById(templateId);
-			if (template == null || template.CourseId != courseId)
+			if (template == null || ! template.CourseId.EqualsIgnoreCase(courseId))
 				return HttpNotFound();
 
 			var templateParameters = certificatesRepo.GetTemplateParametersWithoutBuiltins(template).ToList();
@@ -1393,7 +1395,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> GetBuiltinCertificateParametersForUser(string courseId, Guid templateId, string userId)
 		{
 			var template = certificatesRepo.FindTemplateById(templateId);
-			if (template == null || template.CourseId != courseId)
+			if (template == null || ! template.CourseId.EqualsIgnoreCase(courseId))
 				return HttpNotFound();
 
 			var user = await userManager.FindByIdAsync(userId);

@@ -35,6 +35,8 @@ namespace uLearn.Configuration
 	{
 		public TelegramConfiguration Telegram { get; set; }
 		
+		public string BaseUrl { get; set; }
+		
 		public string CoursesDirectory { get; set; }
 		
 		public bool BuildExerciseStudentZips { get; set; }

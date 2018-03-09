@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Principal;
 using Database.Models;
-using Ulearn.Common.Extensions;
+using Database.Repos;
 
 namespace Database.Extensions
 {
@@ -103,5 +103,10 @@ namespace Database.Extensions
 			return systemAccessesRepo.HasSystemAccess(User.GetUserId(), accessType);
 		}
 		*/
+		
+		public static bool IsUlearnBot(this ApplicationUser user)
+		{
+			return user.UserName == UsersRepo.UlearnBotUsername;
+		}
 	}
 }

@@ -4,16 +4,16 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace uLearn.CSharp
+namespace uLearn.CSharp.Validators
 {
     public class BracketValidator : BaseStyleValidator
     {
-        protected override IEnumerable<string> ReportAllErrors(SyntaxTree userSolution, SemanticModel semanticModel)
+        public override List<SolutionStyleError> FindErrors(SyntaxTree userSolution, SemanticModel semanticModel)
         {
-            return InspectAll<ReturnStatementSyntax>(userSolution, InspectReturnStatement);
+            return InspectAll<ReturnStatementSyntax>(userSolution, InspectReturnStatement).ToList();
         }
 
-        private IEnumerable<string> InspectReturnStatement(ReturnStatementSyntax returnStatementSyntax)
+        private IEnumerable<SolutionStyleError> InspectReturnStatement(ReturnStatementSyntax returnStatementSyntax)
         {
             var expression = returnStatementSyntax.Expression;
             if (expression == null)
@@ -24,7 +24,7 @@ namespace uLearn.CSharp
                 yield break;
 
             if (ContainsRedundantBrackets(syntaxKinds))
-                yield return Report(returnStatementSyntax, "Не следует выделять возвращаемое выражение скобками");
+                yield return new SolutionStyleError(returnStatementSyntax, "Не следует выделять возвращаемое выражение скобками");
         }
 
         private bool NeedToCheckExpression(SyntaxKind[] syntaxKinds) =>

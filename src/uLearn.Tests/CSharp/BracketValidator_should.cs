@@ -1,5 +1,8 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
+using uLearn.CSharp.Validators;
 
 namespace uLearn.CSharp
 {
@@ -19,7 +22,9 @@ namespace uLearn.CSharp
         [TestCase(@"bool SomeMethod(bool a, bool b){return ((a) && (b));}")]
         public void warn_return_statment_with_extra_brackets(string code)
         {
-            FindErrors(code).Should().NotBeNullOrEmpty();
+            var errors = FindErrors(code);
+
+            errors.Select(e => e.Span.StartLinePosition.Line).Should().Contain(0);
         }
 
         [TestCase(@"bool SetX(int x){ return true; }")]
@@ -33,7 +38,7 @@ namespace uLearn.CSharp
             FindErrors(code).Should().BeNullOrEmpty();
         }
 
-        private string FindErrors(string code) =>
-            validator.FindError(code);
+        private List<SolutionStyleError> FindErrors(string code) =>
+            validator.FindErrors(code);
     }
 }

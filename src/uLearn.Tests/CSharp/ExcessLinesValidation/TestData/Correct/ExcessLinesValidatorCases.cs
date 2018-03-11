@@ -15,6 +15,19 @@ namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 	{
 		public void SomeMethod() { }
 
+		public void SomeMethod1(int arg1,
+								int arg2,
+								int arg3)
+		{
+		}
+
+		public void SomeMethod1<TData>(int arg1,
+									   int arg2,
+									   TData arg3)
+			where TData : class
+		{
+		}
+
 		public void SomeMethod2()
 		{
 		}

@@ -145,7 +145,7 @@ namespace uLearn.CSharp.Validators
 				case MethodDeclarationSyntax methodDeclarationSyntax:
 					var constraintClauseSyntaxs = methodDeclarationSyntax.ConstraintClauses;
 					if (!constraintClauseSyntaxs.Any())
-						return GetStartLine(syntaxNode);
+						return GetEndArgumentsLine(methodDeclarationSyntax);
 					return GetEndLine(constraintClauseSyntaxs.Last());
 				default:
 					return GetStartLine(syntaxNode);
@@ -165,6 +165,12 @@ namespace uLearn.CSharp.Validators
 		private static int GetEndLine(SyntaxNode syntaxNode)
 		{
 			return syntaxNode.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
+		}
+
+		private static int GetEndArgumentsLine(MethodDeclarationSyntax declarationSyntax)
+		{
+			var parametersCloseToken = declarationSyntax.ParameterList.CloseParenToken;
+			return parametersCloseToken.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
 		}
 	}
 }

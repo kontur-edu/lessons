@@ -20,7 +20,7 @@ namespace uLearn.CSharp
         [TestCase(@"bool SomeMethod(){return (true);}")]
         [TestCase(@"int SomeMethod(){return (-1);}")]
         [TestCase(@"bool SomeMethod(bool a, bool b){return ((a) && (b));}")]
-        public void warn_return_statment_with_extra_brackets(string code)
+        public void warn_return_statement_with_extra_brackets(string code)
         {
             var errors = FindErrors(code);
 
@@ -33,7 +33,7 @@ namespace uLearn.CSharp
         [TestCase(@"int SetX(int x, int y){ return 2*(x+y); }")]
         [TestCase(@"int SetX(int x){ return 1; }")]
         [TestCase(@"void SetX(int x){ return; }")]
-        public void ignore_correct_return_statment(string code)
+        public void ignore_correct_return_statement(string code)
         {
             FindErrors(code).Should().BeNullOrEmpty();
         }

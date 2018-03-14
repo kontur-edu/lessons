@@ -11,7 +11,7 @@ using uLearn.Model.Blocks;
 using Ulearn.Common.Extensions;
 using SearchOption = Microsoft.VisualBasic.FileIO.SearchOption;
 
-namespace uLearn
+namespace uLearn.CourseTool.Validating
 {
 	public class ProjectExerciseValidator : BaseValidator
 	{
@@ -88,7 +88,10 @@ namespace uLearn
 			var buildResult = ex.BuildSolution(solutionCode);
 
 			if (buildResult.HasStyleErrors)
-				ReportSlideWarning(slide, $"Correct solution file {ex.CorrectSolutionFileName} has style issues. {buildResult.StyleErrors}");
+			{
+				var errorMessage = string.Join("\n", buildResult.StyleErrors.Select(e => e.GetMessageWithPositions()));
+				ReportSlideWarning(slide, $"Correct solution file {ex.CorrectSolutionFileName} has style issues. {errorMessage}");
+			}
 		}
 
 		private void ReportWarningIfWrongAnswersAreSolutionsOrNotOk()

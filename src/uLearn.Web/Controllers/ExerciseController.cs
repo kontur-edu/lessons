@@ -127,7 +127,8 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> DeleteExerciseCodeReview(string courseId, int reviewId)
 		{
 			var review = slideCheckingsRepo.FindExerciseCodeReviewById(reviewId);
-			if (!string.Equals(review.ExerciseChecking.CourseId, courseId, StringComparison.OrdinalIgnoreCase))
+			var reviewCourseId = review.ExerciseCheckingId.HasValue ? review.ExerciseChecking.CourseId : review.Submission.CourseId;
+			if (! reviewCourseId.EqualsIgnoreCase(courseId))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 			if (review.AuthorId != User.Identity.GetUserId() && !User.HasAccessFor(courseId, CourseRole.CourseAdmin))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
@@ -367,7 +368,7 @@ namespace uLearn.Web.Controllers
 				solution = lastSubmission?.SolutionCode.Text;
 			}
 
-			var submissionReviews = submission?.GetOwnAndLastManualCheckingReviews();
+			var submissionReviews = submission?.GetAllReviews();
 
 			var hasUncheckedReview = submission?.ManualCheckings.Any(c => !c.IsChecked) ?? false;
 			var hasCheckedReview = submission?.ManualCheckings.Any(c => c.IsChecked) ?? false;
@@ -451,7 +452,7 @@ namespace uLearn.Web.Controllers
 				if (manualChecking.CourseId.EqualsIgnoreCase(courseId))
 				{
 					model.ManualChecking = manualChecking;
-					model.Reviews = submission?.GetOwnAndLastManualCheckingReviews() ?? new List<ExerciseCodeReview>();
+					model.Reviews = submission?.GetAllReviews() ?? new List<ExerciseCodeReview>();
 				}
 			}
 

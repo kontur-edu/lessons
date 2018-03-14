@@ -7,6 +7,7 @@ using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using RunCsJob;
 using test;
+using uLearn.CourseTool.Validating;
 using uLearn.Model.Blocks;
 
 namespace uLearn.CSharp

@@ -8,7 +8,7 @@ using uLearn.Extensions;
 using uLearn.Model.Blocks;
 using Ulearn.Common.Extensions;
 
-namespace uLearn
+namespace uLearn.CourseTool.Validating
 {
 	public class CourseValidator : BaseValidator
 	{
@@ -82,12 +82,11 @@ namespace uLearn
 			}
 			if (solution.HasStyleErrors)
 			{
-				ReportSlideWarning(slide, "Style issue: " + solution.StyleErrors);
+				var errorMessages = string.Join("\n", solution.StyleErrors.Select(e => e.GetMessageWithPositions()));
+				ReportSlideWarning(slide, "Style issue(s): " + errorMessages);
 			}
 
-			var result = SandboxRunner.Run(exercise.CreateSubmission(
-				slide.Id.ToString(),
-				ethalon), settings);
+			var result = SandboxRunner.Run(exercise.CreateSubmission(slide.Id.ToString(), ethalon), settings);
 
 			var output = result.GetOutput().NormalizeEoln();
 

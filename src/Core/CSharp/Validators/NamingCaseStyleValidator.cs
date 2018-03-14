@@ -37,16 +37,27 @@ namespace uLearn.CSharp.Validators
 		private bool MustStartWithUpper(VariableDeclaratorSyntax variableDeclarator)
 		{
 			var field = AsField(variableDeclarator);
+			if (field == null) return false;
 			// Публичные поля и константы → с большой
-			return field != null && field.Modifiers.Any(m => m.Kind() == SyntaxKind.PublicKeyword || m.Kind() == SyntaxKind.ConstKeyword);
+			bool isStatic = field.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
+			bool isReadonly = field.Modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword));
+			bool isConstant = field.Modifiers.Any(m => m.IsKind(SyntaxKind.ConstKeyword));
+			bool isPublic = field.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword));
+			// статические ридонли могут быть какие угодно.
+			return (isPublic || isConstant) && !(isStatic && isReadonly);
 		}
 
 		private bool MustStartWithLower(VariableDeclaratorSyntax variableDeclarator)
 		{
 			var field = AsField(variableDeclarator);
-			return field == null
-					|| field.Modifiers.Any(m => m.Kind() == SyntaxKind.PrivateKeyword)
-					&& field.Modifiers.All(m => m.Kind() != SyntaxKind.ConstKeyword);
+			if (field == null) return true;
+			bool isStatic = field.Modifiers.Any(m => m.IsKind(SyntaxKind.StaticKeyword));
+			bool isReadonly = field.Modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword));
+			bool isConstant = field.Modifiers.Any(m => m.IsKind(SyntaxKind.ConstKeyword));
+			bool isPrivate = field.Modifiers.Any(m => m.IsKind(SyntaxKind.PrivateKeyword)) || 
+							!field.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword) || m.IsKind(SyntaxKind.InternalKeyword) || m.IsKind(SyntaxKind.ProtectedKeyword));
+			// статические ридонли могут быть какие угодно.
+			return isPrivate && !isConstant && !(isStatic && isReadonly);
 		}
 
 		private static BaseFieldDeclarationSyntax AsField(VariableDeclaratorSyntax variableDeclarator)

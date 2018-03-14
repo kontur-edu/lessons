@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using CommandLine;
 using RunCsJob;
+using uLearn.CourseTool.Validating;
 
 namespace uLearn.CourseTool.CmdLineOptions
 {
@@ -69,7 +70,7 @@ namespace uLearn.CourseTool.CmdLineOptions
 			html.AppendLine("<html>");
 			html.AppendLine("	<head>");
 			html.AppendLine("		<meta charset='utf-8'>");
-			html.AppendLine($"		<title>Валидация курса {course.Id}</title>");
+			html.AppendLine($"		<title>Р’Р°Р»РёРґР°С†РёСЏ РєСѓСЂСЃР° {course.Id}</title>");
 			html.AppendLine("	</head>");
 			html.AppendLine("	<body>");
 			html.AppendLine($"		<h1>{course.Id}</h1>");

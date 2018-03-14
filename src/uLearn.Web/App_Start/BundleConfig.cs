@@ -36,7 +36,7 @@ namespace uLearn.Web
 				"~/Scripts/jquery.query-object.js",
 				"~/Scripts/jquery.color-2.1.0.min.js",
 				"~/Scripts/jquery.validate.js",
-				"~/Scripts/jquery.validate-vsdoc.js",
+//				"~/Scripts/jquery.validate-vsdoc.js",
 				"~/Scripts/jquery.validate.unobtrusive.js",
 				"~/Scripts/jquery.validate.date.js",
 				"~/Scripts/jquery.datetimepicker.full.min.js",

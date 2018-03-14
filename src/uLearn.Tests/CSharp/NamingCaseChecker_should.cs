@@ -70,14 +70,29 @@ namespace uLearn.CSharp
 		}
 
 		[Test]
+		public void inspect_staticFieldName()
+		{
+			CheckCorrect("class A{ static int a; }");
+			CheckCorrect("class A{ private static int abc; }");
+			CheckCorrect("class A{ private static readonly int Abc; }");
+			CheckCorrect("class A{ private static readonly int abc; }");
+			CheckCorrect("class A{ public static readonly int AbcDef; }");
+			CheckCorrect("class A{ public static readonly int abcDef; }");
+			CheckCorrect("class A{ public static int AbcDef; }");
+			CheckIncorrect("class A{ private static int Abc; }");
+			CheckIncorrect("class A{ public static int abcDef; }");
+			CheckIncorrect("class A{ static int A; }");
+		}
+
+		[Test]
 		public void inspect_fieldName()
 		{
-			CheckCorrect("class A{ int A; }");
-			CheckCorrect("class A{ int a; }");
 			CheckCorrect("class A{ public int A; }");
 			CheckIncorrect("class A{ public int a; }");
 			CheckCorrect("class A{ private int a; }");
 			CheckIncorrect("class A{ private int A; }");
+			CheckCorrect("class A{ int a; }");
+			CheckIncorrect("class A{ int A; }");
 			CheckCorrect("class A{ internal int a; }");
 			CheckCorrect("class A{ internal int A; }");
 			CheckCorrect("class A{ public int A, B, C; }");

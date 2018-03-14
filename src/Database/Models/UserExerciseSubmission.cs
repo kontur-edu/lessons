@@ -73,9 +73,9 @@ namespace Database.Models
 		
 		public bool IsWebSubmission => string.Equals(CourseId, "web", StringComparison.OrdinalIgnoreCase) && SlideId == Guid.Empty;
 
-		public List<ExerciseCodeReview> GetOwnAndLastManualCheckingReviews()
+		public List<ExerciseCodeReview> GetAllReviews()
 		{
-			var manualCheckingReviews = ManualCheckings.LastOrDefault()?.NotDeletedReviews ?? new List<ExerciseCodeReview>();
+			var manualCheckingReviews = ManualCheckings.SelectMany(c => c.NotDeletedReviews);
 			return manualCheckingReviews.Concat(NotDeletedReviews).ToList();
 		}
 	}

@@ -2,7 +2,7 @@
 using RunCsJob.Api;
 using Ulearn.Common.Extensions;
 
-namespace uLearn
+namespace uLearn.CourseTool.Validating
 {
 	public abstract class BaseValidator
 	{

@@ -154,7 +154,8 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 					|| syntaxKind == SyntaxKind.WhileStatement
 					|| syntaxKind == SyntaxKind.ForStatement
 					|| syntaxKind == SyntaxKind.ForEachStatement
-					|| syntaxKind == SyntaxKind.DoStatement;
+					|| syntaxKind == SyntaxKind.DoStatement
+					|| syntaxKind == SyntaxKind.UsingStatement;
 		}
 
 		private static string GetNodePosition(SyntaxNodeOrToken nodeOrToken)

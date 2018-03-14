@@ -272,6 +272,7 @@
     <Compile Include="CSharp\IndentsValidation\TestData\Correct\BracesMightNotBeAlignedIfOpenBraceDoesntHaveLeadingTrivia.cs" />
     <Content Include="CSharp\IndentsValidation\TestData\Correct\TopLevelNodesCanBeIndented.cs" />
     <Content Include="CSharp\IndentsValidation\TestData\Correct\IfOpenBraceGrandparentIsMultilineThenContentIndentedFromGrandparent.cs" />
+    <Compile Include="CSharp\IndentsValidation\TestData\DisposableMock.cs" />
     <Compile Include="CSharp\IndentsValidation\TestData\Correct\IfBracesNotOnSameLineBracesIndented.cs" />
     <Compile Include="CSharp\IndentsValidation\TestData\Correct\IfBracesNotOnSameLineFirstLevelTokensInsideBracesIndented.cs" />
     <Compile Include="CSharp\IndentsValidation\TestData\Correct\NonBracesSyntaxStatementsWithoutIndentsErrorsShouldNotHaveValidationReports.cs" />

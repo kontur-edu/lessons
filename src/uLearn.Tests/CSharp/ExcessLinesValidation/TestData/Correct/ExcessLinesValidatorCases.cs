@@ -1,9 +1,17 @@
+using System;
+
 namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 {
 	public class BaseClass { }
 
 	public class SomeClass
 		: BaseClass
+	{
+	}
+
+	public class SomeClass2<T>
+		: BaseClass
+		where T : IComparable<T>
 	{
 	}
 
@@ -78,6 +86,13 @@ namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 			SomeMethod7();
 			/*comment
 			comment*/
+		}
+
+		public void SomeMethod10_2()
+		{
+			#region MyRegion
+			SomeMethod7();
+			#endregion
 		}
 
 		public void SomeMethod11()

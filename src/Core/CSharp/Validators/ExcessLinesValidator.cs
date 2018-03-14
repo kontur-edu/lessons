@@ -104,7 +104,9 @@ namespace uLearn.CSharp.Validators
 		{
 			return syntaxNode.DescendantTrivia()
 				.Where(x => x.Kind() == SyntaxKind.MultiLineCommentTrivia
-							|| x.Kind() == SyntaxKind.SingleLineCommentTrivia)
+							|| x.Kind() == SyntaxKind.SingleLineCommentTrivia
+							|| x.Kind() == SyntaxKind.RegionDirectiveTrivia
+							|| x.Kind() == SyntaxKind.EndRegionDirectiveTrivia)
 				.Any(x =>
 				{
 					var startLine = x.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
@@ -135,6 +137,9 @@ namespace uLearn.CSharp.Validators
 			{
 				case ClassDeclarationSyntax classDeclarationSyntax:
 					var baseListSyntax = classDeclarationSyntax.BaseList;
+					var classConstraints = classDeclarationSyntax.ConstraintClauses;
+					if (classConstraints.Any())
+						return GetEndLine(classConstraints.Last());
 					if (baseListSyntax == null)
 						return GetStartLine(syntaxNode);
 					return GetEndLine(baseListSyntax);

@@ -105,6 +105,8 @@ namespace uLearn.CSharp.Validators
 			return syntaxNode.DescendantTrivia()
 				.Where(x => x.Kind() == SyntaxKind.MultiLineCommentTrivia
 							|| x.Kind() == SyntaxKind.SingleLineCommentTrivia
+							|| x.Kind() == SyntaxKind.MultiLineDocumentationCommentTrivia
+							|| x.Kind() == SyntaxKind.SingleLineDocumentationCommentTrivia
 							|| x.Kind() == SyntaxKind.RegionDirectiveTrivia
 							|| x.Kind() == SyntaxKind.EndRegionDirectiveTrivia)
 				.Any(x =>

@@ -261,6 +261,7 @@
     <Compile Include="CSharp\BoolCompareValidation\TestData\Incorrect\TernaryOperatorWithBool.cs" />
     <Compile Include="CSharp\CourseValidator_ReportError_should.cs" />
     <Compile Include="CSharp\CourseValidator_ReportWarning_should.cs" />
+    <Compile Include="CSharp\ExcessLinesValidation\TestData\MockAttribute.cs" />
     <Compile Include="CSharp\ExponentiationValidation\ExponentiationValidator_should.cs" />
     <Compile Include="CSharp\ExponentiationValidation\TestData\Correct\DegreeIsWrappedByVariable.cs" />
     <Compile Include="CSharp\ExponentiationValidation\TestData\Correct\DegreeNotEqualsToTwoOrThree.cs" />

@@ -52,7 +52,7 @@ namespace uLearn.CSharp.Validators
 			var declarationLine = GetEndDeclaraionLine(bracesPair.Open.Parent);
 			if (openBraceLine == declarationLine || declarationLine == -1)
 				return null;
-
+			var isComment = IsComment(bracesPair.Open.Parent, declarationLine-1);
 			if (declarationLine + 1 != openBraceLine)
 				return new SolutionStyleError(bracesPair.Open, "Между объявлением и открывающей скобкой не должно быть лишнего переноса строки.");
 
@@ -143,7 +143,7 @@ namespace uLearn.CSharp.Validators
 					if (classConstraints.Any())
 						return GetEndLine(classConstraints.Last());
 					if (baseListSyntax == null)
-						return GetStartLine(syntaxNode);
+						return GetStartLine(classDeclarationSyntax.Identifier);
 					return GetEndLine(baseListSyntax);
 				case BlockSyntax blockSyntax:
 					if (blockSyntax.Parent.Kind() == SyntaxKind.Block)

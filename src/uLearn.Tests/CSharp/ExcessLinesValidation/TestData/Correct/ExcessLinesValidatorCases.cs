@@ -1,4 +1,7 @@
 using System;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
+using uLearn.CSharp.ExcessLinesValidation.TestData;
 
 namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 {
@@ -166,4 +169,12 @@ namespace MyNamespace1
 
 namespace MyNamespace1
 {
+	[Mock]
+	class Class1
+	{
+		[Mock]
+		void Method()
+		{
+		}
+	}
 }

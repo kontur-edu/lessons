@@ -131,4 +131,11 @@ namespace MyNamespace1
 }
 namespace MyNamespace1
 {
+	public class Foo
+	{
+		public Foo()
+		{
+		}
+		private int Pr { get; set; } = 0;
+	}
 }

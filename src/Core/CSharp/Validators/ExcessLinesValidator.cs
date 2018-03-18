@@ -52,7 +52,7 @@ namespace uLearn.CSharp.Validators
 			var declarationLine = GetEndDeclaraionLine(bracesPair.Open.Parent);
 			if (openBraceLine == declarationLine || declarationLine == -1)
 				return null;
-			var isComment = IsComment(bracesPair.Open.Parent, declarationLine-1);
+
 			if (declarationLine + 1 != openBraceLine)
 				return new SolutionStyleError(bracesPair.Open, "Между объявлением и открывающей скобкой не должно быть лишнего переноса строки.");
 
@@ -77,7 +77,9 @@ namespace uLearn.CSharp.Validators
 		{
 			SyntaxNode[] statements;
 			SyntaxNode target;
-			if (syntaxNode.Parent is MethodDeclarationSyntax || syntaxNode.Parent is StatementSyntax)
+			if (syntaxNode.Parent is MethodDeclarationSyntax 
+				|| syntaxNode.Parent is StatementSyntax
+				|| syntaxNode.Parent is ConstructorDeclarationSyntax)
 			{
 				statements = GetStatements(syntaxNode.Parent.Parent);
 				target = syntaxNode.Parent;
@@ -137,6 +139,11 @@ namespace uLearn.CSharp.Validators
 		{
 			switch (syntaxNode)
 			{
+				case ConstructorDeclarationSyntax constructorDeclarationSyntax:
+					var initializer = constructorDeclarationSyntax.Initializer;
+					if (initializer != null)
+						return GetEndLine(initializer);
+					return GetEndArgumentsLine(constructorDeclarationSyntax);
 				case ClassDeclarationSyntax classDeclarationSyntax:
 					var baseListSyntax = classDeclarationSyntax.BaseList;
 					var classConstraints = classDeclarationSyntax.ConstraintClauses;
@@ -154,6 +161,14 @@ namespace uLearn.CSharp.Validators
 					if (!constraintClauseSyntaxs.Any())
 						return GetEndArgumentsLine(methodDeclarationSyntax);
 					return GetEndLine(constraintClauseSyntaxs.Last());
+				case IfStatementSyntax ifStatementSyntax:
+					return GetEndLine(ifStatementSyntax.CloseParenToken);
+				case WhileStatementSyntax whileStatementSyntax:
+					return GetEndLine(whileStatementSyntax.CloseParenToken);
+				case ForEachStatementSyntax forEachStatementSyntax:
+					return GetEndLine(forEachStatementSyntax.CloseParenToken);
+				case ForStatementSyntax forStatementSyntax:
+					return GetEndLine(forStatementSyntax.CloseParenToken);
 				default:
 					return GetStartLine(syntaxNode);
 			}
@@ -169,12 +184,23 @@ namespace uLearn.CSharp.Validators
 			return syntaxNode.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
 		}
 
+		private static int GetEndLine(SyntaxToken syntaxToken)
+		{
+			return syntaxToken.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
+		}
+
 		private static int GetEndLine(SyntaxNode syntaxNode)
 		{
 			return syntaxNode.GetLocation().GetLineSpan().EndLinePosition.Line + 1;
 		}
 
 		private static int GetEndArgumentsLine(MethodDeclarationSyntax declarationSyntax)
+		{
+			var parametersCloseToken = declarationSyntax.ParameterList.CloseParenToken;
+			return parametersCloseToken.GetLocation().GetLineSpan().StartLinePosition.Line + 1;
+		}
+
+		private static int GetEndArgumentsLine(ConstructorDeclarationSyntax declarationSyntax)
 		{
 			var parametersCloseToken = declarationSyntax.ParameterList.CloseParenToken;
 			return parametersCloseToken.GetLocation().GetLineSpan().StartLinePosition.Line + 1;

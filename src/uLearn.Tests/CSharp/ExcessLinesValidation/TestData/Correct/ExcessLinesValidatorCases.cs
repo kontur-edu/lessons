@@ -1,14 +1,9 @@
 using System;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Diagnostics;
 using uLearn.CSharp.ExcessLinesValidation.TestData;
 
 namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 {
 	#region MyRegion
-	/// <summary>
-	/// blah blah class
-	/// </summary>
 	public class BaseClass { }
 
 	public class SomeClass
@@ -29,9 +24,27 @@ namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 
 	public class SomeClass3
 	{
-		/// <summary>
-		/// blah blah method
-		/// </summary>
+		private int field;
+
+		public SomeClass3(int x)
+		{
+			
+		}
+		
+		public SomeClass3()
+			: this(0)
+		{
+			
+		}
+
+		private int Property => 0;
+
+		public int this[int index]
+		{
+			get => 0;
+			set => field = value;
+		}
+
 		public void SomeMethod() { }
 
 		public void SomeMethod1(int arg1,
@@ -55,7 +68,6 @@ namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 			where TData : class
 		{
 		}
-
 
 		public int SomeMethod5()
 		{
@@ -81,22 +93,6 @@ namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 
 		public void SomeMethod8() {
 			SomeMethod7();
-		}
-
-		public void SomeMethod9()
-		{
-			//comment
-			SomeMethod7();
-			//comment
-		}
-
-		public void SomeMethod10()
-		{
-			/*comment
-			comment*/
-			SomeMethod7();
-			/*comment
-			comment*/
 		}
 
 		public void SomeMethod10_2()
@@ -133,6 +129,35 @@ namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 			{
 			}
 		}
+
+		public void SomeMethod13()
+		{
+			if (true
+				|| false
+				)
+			{
+				SomeMethod12();
+			}
+
+			while (true
+				|| false
+				)
+			{
+				SomeMethod12();
+			}
+
+			foreach (var b in new bool[0])
+			{
+				SomeMethod12();
+			}
+
+			foreach (var b in
+				new bool[0]
+				)
+			{
+				SomeMethod12();
+			}
+		}
 	}
 
 	public class SomeClass6
@@ -165,6 +190,116 @@ namespace uLearn.CSharp.ExcessLinesValidation.TestData.Correct
 
 namespace MyNamespace1
 {
+	/// <summary>
+	/// blah blah class
+	/// </summary>
+	public class CommentsClass
+	{
+		public void SomeMethod()
+		{
+		}
+
+		public void SomeMethod1()
+		{
+			//comment
+			SomeMethod();
+			//comment
+		}
+
+		public void SomeMethod2()
+		{
+			/*comment
+			comment*/
+			SomeMethod();
+			/*comment
+			comment*/
+		}
+
+		/*comment
+		comment*/
+		public void SomeMethod3()
+		{
+		}
+
+		/*comment
+		comment*/
+
+		public void SomeMethod4()
+		{
+		}
+
+		//comment
+		//comment
+
+		public void SomeMethod5()
+		{
+		}
+
+		//comment
+		//comment
+		public void SomeMethod6()
+		{
+		}
+	}
+
+	public class CommentsClass2
+	{
+		/*comment
+		comment*/
+		public void SomeMethod()
+		{
+		}
+	}
+
+	public class CommentsClass3
+	{
+		/*comment
+		comment*/
+
+		public void SomeMethod()
+		{
+		}
+	}
+
+	public class CommentsClass4
+	{
+		//comment
+		//comment
+
+		public void SomeMethod()
+		{
+		}
+	}
+
+	public class CommentsClass5
+	{
+		//comment
+		//comment
+		public void SomeMethod()
+		{
+		}
+	}
+
+	public class CommentsClass6
+	{
+		/// <summary>
+		/// blah blah method
+		/// </summary>
+
+		public void SomeMethod()
+		{
+		}
+	}
+
+	public class CommentsClass7
+	{
+		/// <summary>
+		/// blah blah method
+		/// </summary>
+		public void SomeMethod()
+		{
+		}
+	}
 }
 
 namespace MyNamespace1

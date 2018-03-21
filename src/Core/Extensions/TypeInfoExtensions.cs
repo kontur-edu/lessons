@@ -2,7 +2,7 @@
 
 namespace uLearn.Extensions
 {
-    public static class TypeInfoExtenxions
+    public static class TypeInfoExtensions
     {
         public static bool IsPrimitive(this TypeInfo typeInfo)
         {

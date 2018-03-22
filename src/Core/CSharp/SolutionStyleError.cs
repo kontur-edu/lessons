@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-
 using SyntaxNodeOrToken = uLearn.CSharp.Validators.IndentsValidation.SyntaxNodeOrToken;
 
 namespace uLearn.CSharp
@@ -48,12 +47,37 @@ namespace uLearn.CSharp
 
 		public string GetMessageWithPositions()
 		{
-			var positionInfo = "";
+			string positionInfo;
 			if (Span.StartLinePosition.Line == Span.EndLinePosition.Line)
 				positionInfo = $"Строка {Span.StartLinePosition.Line + 1}, позиция {Span.StartLinePosition.Character}";
 			else
 				positionInfo = $"Строки {Span.StartLinePosition.Line + 1}—{Span.EndLinePosition.Line + 1}";
 			return $"{positionInfo}: {Message}";
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (ReferenceEquals(null, obj))
+				return false;
+			if (ReferenceEquals(this, obj))
+				return true;
+			if (obj.GetType() != GetType())
+				return false;
+			return Equals((SolutionStyleError)obj);
+		}
+
+		public override int GetHashCode()
+		{
+			unchecked
+			{
+				// ReSharper disable once ImpureMethodCallOnReadonlyValueField
+				return (Span.GetHashCode() * 397) ^ (Message != null ? Message.GetHashCode() : 0);
+			}
+		}
+
+		private bool Equals(SolutionStyleError other)
+		{
+			return Equals(Span, other.Span) && string.Equals(Message, other.Message);
 		}
 	}
 }

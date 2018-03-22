@@ -59,26 +59,26 @@ namespace uLearn.CSharp.IndentsValidation.TestData.Correct
             for (;;)
                 SomeMethod();
 
-			using (new DisposableMock())
-			using (new DisposableMock())
-			using (new DisposableMock())
-			using (new DisposableMock())
-			{
-			}
+            using (new DisposableMock())
+            using (new DisposableMock())
+            using (new DisposableMock())
+            using (new DisposableMock())
+            {
+            }
 
-			using (new DisposableMock())
-				using (new DisposableMock())
-					using (new DisposableMock())
-						using (new DisposableMock())
-						{
-						}
+            using (new DisposableMock())
+                using (new DisposableMock())
+                    using (new DisposableMock())
+                        using (new DisposableMock())
+                        {
+                        }
 
-			using (new DisposableMock())
-				using (new DisposableMock())
-				using (new DisposableMock())
-					using (new DisposableMock())
-					{
-					}
+            using (new DisposableMock())
+                using (new DisposableMock())
+                using (new DisposableMock())
+                    using (new DisposableMock())
+                    {
+                    }
 		}
 
         public static void SomeMethod()

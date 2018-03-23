@@ -69,7 +69,9 @@ function initCodeEditor($parent) {
 		$exerciseCodeBlock = $('.code-reviewed')[0];
 
 	CodeMirror.commands.autocomplete = function (cm) {
-		cm.showHint({ hint: CodeMirror.hint.csharp });
+		var hint = cm.options.langInfo.hint;
+		if (hint)
+			cm.showHint({ hint: hint });
 	}
 
 	codeMirrorClass($parent.find('.code-exercise'), true, false, false);
@@ -84,16 +86,32 @@ function initCodeEditor($parent) {
 		exerciseCodeDoc = exerciseCodeEditor.getDoc();
 	}
 
-	function getMode(lang) {
+	function getLangInfo(langId) {
 		// see http://codemirror.net/mode/
 
-		var langIds = {
-			"cs": "x-csharp",
-			"py": "x-python"
-		};
+		if (!langId)
+			return { mode: "text/plain", hint: null };
 
-		lang = lang || "cs";
-		return "text/" + langIds[lang];
+		switch (langId) {
+		case "cs":
+		case "сsharp":
+			return { mode: "text/x-csharp", hint: CodeMirror.hint.csharp };
+		case "py":
+		case "python":
+			return { mode: "text/x-python", hint: CodeMirror.hint.python };
+		case "js":
+		case "javascript":
+			return { mode: "text/javascript", hint: CodeMirror.hint.javascript };
+		case "ts":
+		case "typescript":
+			return { mode: "text/typescript", hint: CodeMirror.hint.javascript };
+		case "css":
+			return { mode: "text/css", hint: CodeMirror.hint.css };
+		case "html":
+			return { mode: "text/html", hint: CodeMirror.hint.html };
+		default:
+			return { mode: "text/" + langId, hint: null };
+		}
 	}
 
 	function unselectAllReviews() {
@@ -123,10 +141,12 @@ function initCodeEditor($parent) {
 			var element = this;
 			var $el = $(element);
 			var langId = $el.data("lang");
+			var langInfo = getLangInfo(langId);
 			$el.parent().find('.loading-spinner').hide();
 			var editor = CodeMirror.fromTextArea(element,
 			{
-				mode: getMode(langId),
+				mode: langInfo.mode,
+				langInfo: langInfo,
 				lineNumbers: true,
 				theme: (editable || guest) ? "cobalt" : "default",
 				indentWithTabs: true,

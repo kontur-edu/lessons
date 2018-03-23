@@ -127,9 +127,17 @@ namespace uLearn.CourseTool.Monitoring
 			yield return "scripts/codemirror.js";
 			yield return "scripts/clike.js";
 			yield return "scripts/python.js";
+			yield return "scripts/htmlmixed.js";
+			yield return "scripts/xml.js";
+			yield return "scripts/css.js";
+			yield return "scripts/javascript.js";
 			yield return "scripts/show-hint.js";
 			yield return "scripts/cscompleter.js";
 			yield return "scripts/csharp-hint.js";
+			yield return "scripts/html-hint.js";
+			yield return "scripts/css-hint.js";
+			yield return "scripts/javascript-hint.js";
+			yield return "scripts/python-hint.js";
 			yield return "scripts/closebrackets.js";
 			yield return "scripts/matchbrackets.js";
 			yield return "scripts/active-line.js";

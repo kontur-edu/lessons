@@ -80,7 +80,7 @@ namespace uLearn
 			if (string.IsNullOrEmpty(language))
 				return $"<pre><code>{code}</code></pre>\n";
 			else
-				return $"<textarea class=\"code code-sample data-lang='{language.ToLowerInvariant()}' \">{code}</textarea>\n";
+				return $"<textarea class=\"code code-sample\" data-lang=\"{language.ToLowerInvariant()}\">{code}</textarea>\n";
 		}
 
 		public static Tuple<string, List<string>> GetHtmlWithUrls(this string md, string baseUrl = null)

@@ -60,6 +60,10 @@ namespace uLearn.CSharp.ExcessLinesValidation.TestData.Incorrect
 			}
 
 		}
+		
+		public void SomeMethod12() { SomeMethod11(); }
+		public void SomeMethod13() { SomeMethod11(); }
+		
 	}
 
 	public class SomeClass4

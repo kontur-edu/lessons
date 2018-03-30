@@ -6,6 +6,7 @@
 *.user
 *.sln.docstates
 /src/.vs
+/src/cookie_protection_keys/
 
 # Build results
 [Dd]ebug/

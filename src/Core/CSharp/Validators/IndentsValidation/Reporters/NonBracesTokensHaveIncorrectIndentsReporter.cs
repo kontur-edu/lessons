@@ -61,10 +61,12 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 
 				if (statementClause.HasExcessNewLines())
 				{
-					yield return new SolutionStyleError(statementClause,
-						$"Выражение не должно иметь лишние переносы строк после родителя ({GetNodePosition(rootStatementSyntax)}).");
+					yield return new SolutionStyleError(
+						statementClause,
+						"Не рекомендуется оставлять лишние пустые строки. Пожалуйста, уберите их");
 					continue;
 				}
+
 				if (!statementClause.OnSameIndentWithParent.HasValue)
 				{
 					if (statementStart != rootStart)
@@ -83,8 +85,9 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 					{
 						if (statementStart != rootStart)
 						{
-							yield return new SolutionStyleError(statementClause,
-								$"Выражение должно иметь такой же отступ, как у родителя ({GetNodePosition(rootStatementSyntax)}).");
+							yield return new SolutionStyleError(
+								statementClause,
+								"Рекомендуется выровнять таким же отступом, как и родительский блок");
 							continue;
 						}
 					}
@@ -100,6 +103,7 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 						}
 					}
 				}
+
 				foreach (var nestedError in CheckNonBracesStatements(statementClause))
 					yield return nestedError;
 			}
@@ -130,20 +134,20 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 		{
 			if (statementLine == rootLine)
 			{
-				return "Выражение должно иметь дополнительный перенос строки " +
-						$"после родителя ({GetNodePosition(root)}).";
+				return "Добавьте, пожалуйста, дополнительный перенос строки";
 			}
+
 			if (statementStart <= rootStart)
 			{
-				return "Выражение должно иметь отступ больше, " +
-						$"чем у родителя ({GetNodePosition(root)}).";
+				return "Выражение имеет слишком маленький отступ по сравнению с родительским блоком";
 			}
+
 			var delta = statementStart - rootStart;
 			if (delta < 4)
 			{
-				return "Выражение должно иметь отступ не меньше 4 пробелов " +
-						$"относительно родителя ({GetNodePosition(root)}).";
+				return "Выражение имеет слишком маленький отступ по сравнению с родительским блоком. Рекомендуется ставить 4 пробела";
 			}
+
 			return null;
 		}
 
@@ -154,13 +158,8 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 					|| syntaxKind == SyntaxKind.WhileStatement
 					|| syntaxKind == SyntaxKind.ForStatement
 					|| syntaxKind == SyntaxKind.ForEachStatement
-					|| syntaxKind == SyntaxKind.DoStatement;
-		}
-
-		private static string GetNodePosition(SyntaxNodeOrToken nodeOrToken)
-		{
-			var linePosition = nodeOrToken.GetFileLinePositionSpan().StartLinePosition;
-			return $"cтрока {linePosition.Line + 1}, позиция {linePosition.Character}";
+					|| syntaxKind == SyntaxKind.DoStatement
+					|| syntaxKind == SyntaxKind.UsingStatement;
 		}
 	}
 }

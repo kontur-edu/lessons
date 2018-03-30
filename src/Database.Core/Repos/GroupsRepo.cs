@@ -27,12 +27,12 @@ namespace Database.Repos
 		private readonly VisitsRepo visitsRepo;
 		private readonly UserRolesRepo userRolesRepo;
 
-		private readonly CourseManager courseManager;
+		private readonly WebCourseManager courseManager;
 
 		public GroupsRepo(
 			UlearnDb db,
 			SlideCheckingsRepo slideCheckingsRepo, UserSolutionsRepo userSolutionsRepo, UserQuizzesRepo userQuizzesRepo, VisitsRepo visitsRepo, UserRolesRepo userRolesRepo,
-			CourseManager courseManager)
+			WebCourseManager courseManager)
 		{
 			this.db = db;
 			this.slideCheckingsRepo = slideCheckingsRepo;
@@ -43,7 +43,7 @@ namespace Database.Repos
 			this.courseManager = courseManager;
 		}
 
-		public bool CanUserSeeAllCourseGroups(IPrincipal user, string courseId)
+		public bool CanUserSeeAllCourseGroups(ClaimsPrincipal user, string courseId)
 		{
 			return user.HasAccessFor(courseId, CourseRole.CourseAdmin);
 		}
@@ -183,8 +183,11 @@ namespace Database.Repos
 		public async Task RemoveGroup(int groupId)
 		{
 			var group = db.Groups.Find(groupId);
-			group.IsDeleted = true;
-			await db.SaveChangesAsync();
+			if (group != null)
+			{
+				group.IsDeleted = true;
+				await db.SaveChangesAsync();
+			}
 		}
 
 		public async Task<GroupMember> AddUserToGroup(int groupId, string userId)
@@ -215,6 +218,11 @@ namespace Database.Repos
 			return groupMember;
 		}
 
+		public async Task<GroupMember> AddUserToGroup(int groupId, ApplicationUser user)
+		{
+			return await AddUserToGroup(groupId, user.Id);
+		}
+
 		private async Task AddManualCheckingsForOldSolutions(string courseId, IEnumerable<string> usersIds)
 		{
 			foreach (var userId in usersIds)
@@ -232,7 +240,7 @@ namespace Database.Repos
 				.GroupBy(s => s.SlideId)
 				.ToDictionary(g => g.Key, g => g.ToList());
 			foreach (var acceptedSubmissionsForSlide in acceptedSubmissionsBySlide.Values)
-				/* If exists at least one manual checking for at least one submissions on slide, than ignore this slide */
+				/* If exists at least one manual checking for at least one submissions on slide, then ignore this slide */
 				if (!acceptedSubmissionsForSlide.Any(s => s.ManualCheckings.Any()))
 				{
 					/* Otherwise found the latest accepted submission */
@@ -264,11 +272,6 @@ namespace Database.Repos
 			}
 		}
 
-		public async Task<GroupMember> AddUserToGroup(int groupId, ApplicationUser user)
-		{
-			return await AddUserToGroup(groupId, user.Id);
-		}
-
 		public async Task<GroupMember> RemoveUserFromGroup(int groupId, string userId)
 		{
 			var member = db.GroupMembers.FirstOrDefault(m => m.GroupId == groupId && m.UserId == userId);
@@ -277,6 +280,25 @@ namespace Database.Repos
 
 			await db.SaveChangesAsync();
 			return member;
+		}
+		
+		public async Task<List<GroupMember>> RemoveUsersFromGroup(int groupId, List<string> userIds)
+		{
+			var members = db.GroupMembers.Where(m => m.GroupId == groupId && userIds.Contains(m.UserId)).ToList();
+			db.GroupMembers.RemoveRange(members);
+
+			await db.SaveChangesAsync();
+			return members;
+		}
+		
+		public async Task<List<GroupMember>> CopyUsersFromOneGroupToAnother(int fromGroupId, int toGroupId, List<string> userIds)
+		{
+			var membersUserIds = db.GroupMembers.Where(m => m.GroupId == fromGroupId && userIds.Contains(m.UserId)).Select(m => m.UserId).ToList();
+			var newMembers = new List<GroupMember>();
+			foreach (var memberUserId in membersUserIds)
+				newMembers.Add(await AddUserToGroup(toGroupId, memberUserId));
+			
+			return newMembers;
 		}
 
 		public Group FindGroupById(int groupId)
@@ -343,16 +365,19 @@ namespace Database.Repos
 				.ToList();
 		}
 
-		public List<Group> GetMyGroupsFilterAccessibleToUser(string courseId, ClaimsPrincipal user, bool includeArchived = false)
+		public Task<List<Group>> GetMyGroupsFilterAccessibleToUserAsync(string courseId, ClaimsPrincipal user, bool includeArchived = false)
 		{
-			var userId = user.GetUserId();
+			return GetMyGroupsFilterAccessibleToUserAsync(courseId, user.GetUserId(), includeArchived);
+		}
 
+		public Task<List<Group>> GetMyGroupsFilterAccessibleToUserAsync(string courseId, string userId, bool includeArchived = false)
+		{
 			var accessableGroupsIds = db.GroupAccesses.Where(a => a.Group.CourseId == courseId && a.UserId == userId && a.IsEnabled).Select(a => a.GroupId);
 
 			var groups = db.Groups.Where(g => g.CourseId == courseId && !g.IsDeleted && (g.OwnerId == userId || accessableGroupsIds.Contains(g.Id)));
 			if (!includeArchived)
 				groups = groups.Where(g => !g.IsArchived);
-			return groups.ToList();
+			return groups.ToListAsync();
 		}
 
 		public List<ApplicationUser> GetGroupMembersAsUsers(int groupId)
@@ -365,20 +390,20 @@ namespace Database.Repos
 			return db.GroupMembers.Include(m => m.User).Where(m => m.GroupId == groupId).ToList();
 		}
 		
-		public List<GroupMember> GetGroupsMembers(List<int> groupsIds)
+		public Task<List<GroupMember>> GetGroupsMembersAsync(IEnumerable<int> groupsIds)
 		{
-			return db.GroupMembers.Include(m => m.User).Where(m => groupsIds.Contains(m.GroupId)).ToList();
+			return db.GroupMembers.Include(m => m.User).Where(m => groupsIds.Contains(m.GroupId)).ToListAsync();
 		}
 
 		/* Instructor can view student if he is course admin or if student is member of one of accessable for instructor group */
-		public bool CanInstructorViewStudent(ClaimsPrincipal instructor, string studentId)
+		public async Task<bool> CanInstructorViewStudentAsync(ClaimsPrincipal instructor, string studentId)
 		{
 			if (instructor.HasAccess(CourseRole.CourseAdmin))
 				return true;
 
 			var coursesIds = courseManager.GetCourses().Select(c => c.Id).ToList();
 			var groups = GetAvailableForUserGroups(coursesIds, instructor);
-			var members = GetGroupsMembers(groups.Select(g => g.Id).ToList());
+			var members = await GetGroupsMembersAsync(groups.Select(g => g.Id).ToList());
 			return members.Select(m => m.UserId).Contains(studentId);
 		}
 
@@ -446,8 +471,11 @@ namespace Database.Repos
 		public async Task EnableInviteLink(int groupId, bool isEnabled)
 		{
 			var group = db.Groups.Find(groupId);
-			group.IsInviteLinkEnabled = isEnabled;
-			await db.SaveChangesAsync();
+			if (group != null)
+			{
+				group.IsInviteLinkEnabled = isEnabled;
+				await db.SaveChangesAsync();
+			}
 		}
 
 		public IEnumerable<string> GetUsersIdsForAllGroups(string courseId)
@@ -490,17 +518,18 @@ namespace Database.Repos
 			return userGroups.Any(g => g.IsManualCheckingEnabled);
 		}
 
-		public bool GetDefaultProhibitFutherReviewForUser(string courseId, string userId, ClaimsPrincipal instructor)
+		public async Task<bool> GetDefaultProhibitFutherReviewForUserAsync(string courseId, string userId, ClaimsPrincipal instructor)
 		{
-			var accessibleGroupsIds = new HashSet<int>(GetMyGroupsFilterAccessibleToUser(courseId, instructor).Select(g => g.Id));
-			var userGroupsIds = db.GroupMembers
+			var accessibleGroups = await GetMyGroupsFilterAccessibleToUserAsync(courseId, instructor);
+			var userGroupsIds = await db.GroupMembers
 				.Where(m => m.Group.CourseId == courseId && m.UserId == userId && !m.Group.IsDeleted)
 				.Select(m => m.GroupId)
 				.Distinct()
-				.ToList();
-			
+				.ToListAsync();
+
+			var accessibleGroupsIds = accessibleGroups.Select(g => g.Id);			
 			/* Return true if exists at least one group with enabled DefaultProhibitFutherReview */
-			return db.Groups.Any(
+			return await db.Groups.AnyAsync(
 				g => accessibleGroupsIds.Contains(g.Id) &&
 					userGroupsIds.Contains(g.Id) &&
 					g.DefaultProhibitFutherReview

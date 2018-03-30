@@ -234,7 +234,7 @@ namespace uLearn.Web.Controllers
 			var course = courseManager.GetCourse(courseId);
 			var commentsPolicy = commentsRepo.GetCommentsPolicy(courseId);
 
-			var comments = commentsRepo.GetCourseComments(courseId).OrderByDescending(x => x.PublishTime).ToList();
+			var comments = commentsRepo.GetCourseComments(courseId).Where(c => ! c.IsForInstructorsOnly).OrderByDescending(x => x.PublishTime).ToList();
 			var commentsLikes = commentsRepo.GetCommentsLikesCounts(comments);
 			var commentsLikedByUser = commentsRepo.GetCourseCommentsLikedByUser(courseId, userId);
 			var commentsById = comments.ToDictionary(x => x.Id);
@@ -355,13 +355,13 @@ namespace uLearn.Web.Controllers
 
 		public ActionResult ManualQuizCheckingQueue(string courseId, bool done = false, string userId = "", Guid? slideId = null, string message = "")
 		{
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 			return ManualCheckingQueue<ManualQuizChecking>("ManualQuizCheckingQueue", "ManualQuizCheckingQueue", courseId, done, groupsIds, userId, slideId, message);
 		}
 
 		public ActionResult ManualExerciseCheckingQueue(string courseId, bool done = false, string userId = "", Guid? slideId = null, string message = "")
 		{
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 			return ManualCheckingQueue<ManualExerciseChecking>("ManualExerciseCheckingQueue", "ManualExerciseCheckingQueue", courseId, done, groupsIds, userId, slideId, message);
 		}
 
@@ -433,25 +433,25 @@ namespace uLearn.Web.Controllers
 
 		public async Task<ActionResult> CheckQuiz(string courseId, int id, bool recheck = false)
 		{
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 			return await InternalManualCheck<ManualQuizChecking>(courseId, "ManualQuizCheckingQueue", id, false, groupsIds, recheck);
 		}
 
 		public async Task<ActionResult> CheckExercise(string courseId, int id, bool recheck = false)
 		{
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 			return await InternalManualCheck<ManualExerciseChecking>(courseId, "ManualExerciseCheckingQueue", id, false, groupsIds, recheck);
 		}
 
 		public async Task<ActionResult> CheckNextQuizForSlide(string courseId, Guid slideId)
 		{
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 			return await CheckNextManualCheckingForSlide<ManualQuizChecking>("ManualQuizCheckingQueue", courseId, slideId, groupsIds);
 		}
 
 		public async Task<ActionResult> CheckNextExerciseForSlide(string courseId, Guid slideId)
 		{
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 			return await CheckNextManualCheckingForSlide<ManualExerciseChecking>("ManualExerciseCheckingQueue", courseId, slideId, groupsIds);
 		}
 
@@ -837,16 +837,56 @@ namespace uLearn.Web.Controllers
 
 			var user = usersRepo.FindUserById(userId);
 			if (user == null)
-				return Json(new { status = "error", message = $"Не могу найти опвател {userId}" });
+				return Json(new { status = "error", message = $"Не могу найти пользователя {userId}" });
 
 			log.Info($"Удаляю пользователя {user.VisibleName} (Id = {userId}) из группы «{group.Name}» (Id = {group.Id})");
 
-			var currentUserId = User.Identity.GetUserId();
 			var member = await groupsRepo.RemoveUserFromGroup(groupId, userId);
+			
+			var currentUserId = User.Identity.GetUserId();
 			if (member != null)
-				await notificationsRepo.AddNotification(group.CourseId, new GroupMemberHasBeenRemovedNotification { UserId = userId, GroupId = groupId }, currentUserId);
+				await notificationsRepo.AddNotification(group.CourseId, new GroupMembersHaveBeenRemovedNotification(groupId, new List<string> { userId }, usersRepo), currentUserId);
 
 			return Json(new { status = "ok", removed = member != null ? "true" : "false" });
+		}
+
+		[HttpPost]
+		public async Task<ActionResult> RemoveUsersFromGroup(int groupId)
+		{
+			var group = groupsRepo.FindGroupById(groupId);
+			if (!CanModifyGroup(group))
+				return Json(new { status = "error", message = "Вы не можете удалять пользователей из этой группы" });
+
+			var userIds = Request.Form.GetMultipleValues("userId");
+			log.Info($"Удаляю пользователей {string.Join(", ", userIds)} из группы «{group.Name}» (Id = {group.Id})");
+
+			var members = await groupsRepo.RemoveUsersFromGroup(groupId, userIds);
+			
+			var currentUserId = User.Identity.GetUserId();
+			await notificationsRepo.AddNotification(group.CourseId, new GroupMembersHaveBeenRemovedNotification(group.Id, userIds, usersRepo), currentUserId);
+			
+			return Json(new { status = "ok", removed_count = members.Count });
+		}
+
+		[HttpPost]
+		public async Task<ActionResult> CopyUsersFromOneGroupToAnother(int fromGroupId, int toGroupId)
+		{
+			var fromGroup = groupsRepo.FindGroupById(fromGroupId);
+			if (!CanModifyGroup(fromGroup))
+				return Json(new { status = "error", message = "Вы не можете копировать пользователей из этой группы" });
+			var toGroup = groupsRepo.FindGroupById(toGroupId);
+			if (!CanModifyGroup(toGroup))
+				return Json(new { status = "error", message = "Вы не можете копировать пользователей в эту группу" });
+
+			var userIds = Request.Form.GetMultipleValues("userId");
+			log.Info($"Копирую пользователей {string.Join(", ", userIds)} из группы «{fromGroup.Name}» (Id = {fromGroup.Id}) в группу «{toGroup.Name}» (Id = {toGroup.Id})");
+
+			var members = await groupsRepo.CopyUsersFromOneGroupToAnother(fromGroupId, toGroupId, userIds);	
+			
+			var currentUserId = User.Identity.GetUserId();
+			await notificationsRepo.AddNotification(toGroup.CourseId, new GroupMembersHaveBeenAddedNotification(toGroup.Id, userIds, usersRepo), currentUserId);
+			
+			return Json(new { status = "ok", copied_count = members.Count });
 		}
 
 		[HttpPost]
@@ -1035,7 +1075,7 @@ namespace uLearn.Web.Controllers
 				CanBeRevoked = false,
 			});
 
-			var members = groupsRepo.GetGroupMembers(groupId);
+			var members = groupsRepo.GetGroupMembers(groupId).OrderBy(m => m.User.VisibleNameWithLastNameFirst);
 
 			var enabledScoringGroups = groupsRepo.GetEnabledAdditionalScoringGroupsForGroup(groupId);
 

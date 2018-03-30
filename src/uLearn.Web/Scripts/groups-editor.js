@@ -18,14 +18,14 @@
 	};
 
 	$('.add-user-to-group__input').each(function() {
-		var $self = $(this);
-		var $error = $('.add-user-to-group__error');
-		$self.autocomplete({
+        let $self = $(this);
+        let $error = $('.add-user-to-group__error');
+        $self.autocomplete({
 			source: $self.data('url'),
 			select: function (event, ui) {
-				var item = ui.item;
-				var groupId = $self.data('groupId');
-				$error.text('');
+                let item = ui.item;
+                let groupId = $self.data('groupId');
+                $error.text('');
 				$.ajax({
 					type: 'post',
 					url: addUserToGroupUrl,
@@ -38,8 +38,9 @@
 						$error.text(data.message);
 						return;
 					}
-					var $members = $('.modal__edit-group__members');
-					$members.append(data.html);
+                    let $members = $('#modal__edit-group .modal__edit-group__members');
+					$members.find('.modal__edit-group__no-members').remove();
+                    $members.append(data.html);
 				});
 
 				$self.val('');
@@ -92,33 +93,33 @@
 		});
 	});
 
-	var openModalCreateGroupStep3 = function (groupId) {
-		var $modal = $('#modal__create-group__step3');
-		var groupInfoUrl = $modal.data('groupInfoUrl').replace('GROUP_ID', groupId);
+    let openModalCreateGroupStep3 = function (groupId) {
+        let $modal = $('#modal__create-group__step3');
+        let groupInfoUrl = $modal.data('groupInfoUrl').replace('GROUP_ID', groupId);
 
-		$modal.find('input[type="text"]').val();
-		$modal.find('input[type="checkbox"]').prop('checked', true);
-		$modal.find('input[name="groupId"]').val(groupId);
-		$modal.find('.add-user-to-group__input').data('groupId', groupId);
-		$modal.find('.add-user-to-group__error').text('');
-		$modal.modal();
+        $modal.find('input[type="text"]').val();
+        $modal.find('input[type="checkbox"]').prop('checked', true);
+        $modal.find('input[name="groupId"]').val(groupId);
+        $modal.find('.add-user-to-group__input').data('groupId', groupId);
+        $modal.find('.add-user-to-group__error').text('');
+        $modal.modal();
 
-		$.getJSON(groupInfoUrl, function(data) {
-			if (data.status === 'error') {
-				$modal.find('.modal__create-group__step3__error').text(data.message);
-				return;
-			}
-			$modal.find('.modal__create-group__step3__invite-link').text(data.inviteLink).attr('href', data.inviteLink);
-			
+        $.getJSON(groupInfoUrl, function (data) {
+            if (data.status === 'error') {
+                $modal.find('.modal__create-group__step3__error').text(data.message);
+                return;
+            }
+            $modal.find('.modal__create-group__step3__invite-link').text(data.inviteLink).attr('href', data.inviteLink);
+
             $modal.find('.modal__create_group__step3__invite-link-block').hide();
             $modal.find('.modal__create_group__step3__invite-link-block').filter('[data-enabled="' + data.group.isInviteLinkEnabled + '"]').show();
             $modal.find('.modal__create-group__step3__enable-invite_link').data('groupId', groupId);
-            
-			$modal.find('.group__accesses').html(data.accesses.join(''));
-		});
-	}
 
-	$('.modal__create-group__step2__button').click(function(e) {
+            $modal.find('.group__accesses').html(data.accesses.join(''));
+        });
+    };
+
+    $('.modal__create-group__step2__button').click(function(e) {
 		e.preventDefault();
 
 		var $modal = $('#modal__create-group__step2');
@@ -214,47 +215,56 @@
 		window.location.reload();
 	});
 
-	var openModelForEditingGroup = function(groupId) {
-		var $modal = $('#modal__edit-group');
-		$modal.find('input[name="groupId"]').val(groupId);
-		$modal.find('.group__accesses').html('');
-		$modal.find('.modal__edit-group__members').html('');
-		$modal.find('.modal-header__tabs a').first().click();
-		if (! $modal.is(':visible'))
-			$modal.modal();
+    let openModalForEditingGroup = function (groupId) {
+        let $modal = $('#modal__edit-group');
+        $modal.find('input[name="groupId"]').val(groupId);
+        $modal.find('.group__accesses').html('');
+        $modal.find('.modal__edit-group__members').html('');
+        $modal.find('.modal-header__tabs a').first().click();
+        $modal.find('.modal__edit-group__mass-operations').show();
+        updateMassOperationsControlsState();
+        if (!$modal.is(':visible'))
+            $modal.modal();
 
-		var url = $modal.data('groupInfoUrl').replace('GROUP_ID', groupId);
-		$.getJSON(url, function (data) {
-			if (data.status === 'error') {
-				alert(data.message + ". Пожалуйста, обновите страницу");
-				return;
-			}
+        let url = $modal.data('groupInfoUrl').replace('GROUP_ID', groupId);
+        $.getJSON(url, function (data) {
+            if (data.status === 'error') {
+                alert(data.message + ". Пожалуйста, обновите страницу");
+                return;
+            }
 
-			$modal.find('.modal__create-group__step3__invite-link').text(data.inviteLink).attr('href', data.inviteLink);
-			$modal.find('.modal__edit-group__group-name').text(data.group.name);
-			$modal.find('.group__accesses').html(data.accesses.join(''));
-			$modal.find('.modal__edit-group__members').html(data.members.join(''));
-			
-			$modal.find('.modal__create_group__step3__invite-link-block').hide();
-			$modal.find('.modal__create_group__step3__invite-link-block').filter('[data-enabled="' + data.group.isInviteLinkEnabled + '"]').show();
-			$modal.find('.modal__create-group__step3__enable-invite_link').data('groupId', groupId);
+            $modal.find('.modal__create-group__step3__invite-link').text(data.inviteLink).attr('href', data.inviteLink);
+            $modal.find('.modal__edit-group__group-name').text(data.group.name);
+            $modal.find('.group__accesses').html(data.accesses.join(''));
 
-			$modal.find('input[name="name"]').val(data.group.name);
-			$modal.find('[name="manualChecking"]').prop('checked', data.group.isManualCheckingEnabled);
-			$modal.find('[name="manualCheckingForOldSolutions"]').prop('checked', data.group.isManualCheckingEnabledForOldSolutions).closest('.checkbox').toggle(data.group.isManualCheckingEnabled);
-			$modal.find('[name="defaultProhibitFutherReview"]').prop('checked', data.group.defaultProhibitFutherReview);
+            let $members = $modal.find('.modal__edit-group__members');
+            if (data.members.length > 0)
+                $members.html(data.members.join(''));
+            else {
+                $('.modal__edit-group__mass-operations').hide();
+                $members.html('<p class="modal__edit-group__no-members">В&nbsp;группе пока нет студентов</p>');
+            }
 
-			$modal.find('.scoring-group-checkbox input').prop('checked', false);
-			data.enabledScoringGroups.forEach(function (scoringGroupId) {
-				$modal.find('.scoring-group-checkbox [name="scoring-group__' + scoringGroupId + '"]').prop('checked', true);
-			});
+            $modal.find('.modal__create_group__step3__invite-link-block').hide();
+            $modal.find('.modal__create_group__step3__invite-link-block').filter('[data-enabled="' + data.group.isInviteLinkEnabled + '"]').show();
+            $modal.find('.modal__create-group__step3__enable-invite_link').data('groupId', groupId);
 
-			$modal.find('.add-user-to-group__input').data('groupId', groupId);
-			$modal.find('.add-user-to-group__error').text('');
-		});
-	}
+            $modal.find('input[name="name"]').val(data.group.name);
+            $modal.find('[name="manualChecking"]').prop('checked', data.group.isManualCheckingEnabled);
+            $modal.find('[name="manualCheckingForOldSolutions"]').prop('checked', data.group.isManualCheckingEnabledForOldSolutions).closest('.checkbox').toggle(data.group.isManualCheckingEnabled);
+            $modal.find('[name="defaultProhibitFutherReview"]').prop('checked', data.group.defaultProhibitFutherReview);
 
-	$('.groups .group').click(function (e) {
+            $modal.find('.scoring-group-checkbox input').prop('checked', false);
+            data.enabledScoringGroups.forEach(function (scoringGroupId) {
+                $modal.find('.scoring-group-checkbox [name="scoring-group__' + scoringGroupId + '"]').prop('checked', true);
+            });
+
+            $modal.find('.add-user-to-group__input').data('groupId', groupId);
+            $modal.find('.add-user-to-group__error').text('');
+        });
+    };
+
+    $('.groups .group').click(function (e) {
 		var $target = $(e.target);
 		if ($target.closest('a').length > 0 || $target.closest('select').length > 0 || $target.closest('button').length > 0 || $target.closest('.dropdown-backdrop').length > 0)
 			return;
@@ -264,7 +274,7 @@
 		var $self = $(this);
 		var groupId = $self.data('groupId');
 
-		openModelForEditingGroup(groupId);
+		openModalForEditingGroup(groupId);
 	});
 
 	$('.modal__edit-group__members').on('click', '.group__member__remove-link', function (e) {
@@ -287,6 +297,121 @@
 			$member.remove();
 		});
 	});
+	
+	var updateMassOperationsControlsState = function () {
+        let $countChecked = $('.modal__edit-group__members').find('.group__member.checked').length;
+        let $massOperationsPanel = $('.modal__edit-group__mass-operations');
+        let $massOperationsLabel = $massOperationsPanel.find('.group__member__remove-all-checkbox + label');
+        let $removeAllCheckbox = $massOperationsPanel.find('.group__member__remove-all-checkbox');
+        let $massOperationsInputs = $massOperationsPanel.find('button,select');
+        if ($countChecked > 0) {
+            $massOperationsInputs.show();
+            $massOperationsLabel.text('');
+
+            /* If no group selected for copying disable button anymore */
+            let copyToGroupId = $('.modal__edit-group__mass-operations select[name="copyToGroupId"]').val();
+            let $copyButton = $massOperationsInputs.filter('.modal__edit-group__mass-copy-button');
+            if (copyToGroupId === '-1')
+                $copyButton.attr('disabled', 'disabled');
+            else
+                $copyButton.removeAttr('disabled');
+        }
+        else {
+            $removeAllCheckbox.prop('checked', false);
+            $massOperationsInputs.hide();
+            $massOperationsLabel.text($massOperationsLabel.data('text'));
+        }
+    };
+	
+	$('.modal__edit-group__members').on('change', '.group__member__remove-checkbox', function (e) {
+		let $self = $(this);		
+		let $groupMember = $self.closest('.group__member');
+		$groupMember.toggleClass('checked');
+
+        updateMassOperationsControlsState();
+    });
+	
+	$('.group__member__remove-all-checkbox').change(function (e) {
+		var $self = $(this);
+		var $checkboxes = $self.closest('#modal__edit-group__members').find('.group__member__remove-checkbox');
+
+        let isChecked = $self.prop('checked');
+        $checkboxes.prop('checked', isChecked);
+        var $groupMembers = $checkboxes.closest('.group__member');
+        $groupMembers.toggleClass('checked', isChecked);
+		
+        updateMassOperationsControlsState();
+    });
+	
+	$('.modal__edit-group__mass-remove-button').click(function(e) {
+	    e.preventDefault();
+        let $self = $(this);
+
+        let url = $self.data('url');
+        let $modal = $('#modal__edit-group');
+        let groupId = $modal.find('input[name="groupId"]').val();
+        let $membersToRemove = $('.modal__edit-group__members').find('.group__member.checked');
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: {
+                'groupId': groupId,
+                'userId': $membersToRemove.map(function (_, el) { return $(el).data('userId'); }).get().join(",")
+            },
+            dataType: 'json'
+        }).done(function (data) {
+            if (data.status === 'error') {
+                alert(data.message);
+                return;
+            }
+
+            $membersToRemove.remove();
+            updateMassOperationsControlsState()
+        });
+    });
+
+    $('.modal__edit-group__mass-copy-button').click(function(e) {
+        e.preventDefault();
+        let $self = $(this);
+
+        let url = $self.data('url');
+        let $modal = $('#modal__edit-group');
+        let fromGroupId = $modal.find('input[name="groupId"]').val();
+        let toGroupId = $modal.find('.modal__edit-group__mass-operations').find('select[name="copyToGroupId"]').val();
+        let $membersToCopy = $('.modal__edit-group__members').find('.group__member.checked');
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: {
+                'fromGroupId': fromGroupId,
+                'toGroupId': toGroupId,
+                'userId': $membersToCopy.map(function (_, el) { return $(el).data('userId'); }).get().join(",")
+            },
+            dataType: 'json'
+        }).done(function (data) {
+            if (data.status === 'error') {
+                alert(data.message);
+                return;
+            }
+
+            let $status = $('.modal__edit-group__mass-copy-status');
+            $status.addClass('text-success').text('Скопировано!');
+            setTimeout(function () {
+                $status.text('').removeClass('text-success');
+            },
+            1000);
+        });
+    });
+    
+    $('.modal__edit-group__mass-operations select[name="copyToGroupId"]').change(function (e) {
+        let $self = $(this);
+        let val = $self.val();
+        let $button = $self.closest('.modal__edit-group__mass-operations').find('.modal__edit-group__mass-copy-button');
+        if (val === '-1')
+            $button.attr('disabled', 'disabled');
+        else
+            $button.removeAttr('disabled');
+    });
 	
 	$('.modal__edit-group__button').click(function (e) {
 		e.preventDefault();
@@ -355,7 +480,7 @@
 				return;
 			}
 
-			openModelForEditingGroup(data.groupId);
+			openModalForEditingGroup(data.groupId);
 		});
 	});
 	
@@ -390,7 +515,7 @@
 			$form.find('.copy-group-button').removeAttr('disabled');
 		else
 			$form.find('.copy-group-button').attr('disabled', true);
-	}
+	};
 
 	$('.copy-group-link').click(function(e) {
 		e.preventDefault();

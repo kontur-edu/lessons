@@ -66,17 +66,6 @@ namespace uLearn
 			return index >= 0 && index < Slides.Count ? Slides[index] : null;
 		}
 
-		public int GetSlideIndexById(Guid slideId)
-		{
-			return Slides.FindIndex(x => x.Id == slideId);
-		}
-
-		// TODO: Refactor
-		public IEnumerable<string> GetUnitsTitles()
-		{
-			return Units.Select(u => u.Title);
-		}
-
 		public override string ToString()
 		{
 			return $"Course(Id: {Id}, Title: {Title})";

@@ -106,5 +106,25 @@
 			hideNumberOne = false,
 			smallNumbersAreWords = false,
 		};
+
+		public static readonly RussianPluralizationOptions Students = new RussianPluralizationOptions
+		{
+			One = "студент",
+			Two = "студента",
+			Five = "студентов",
+			Gender = Gender.Male,
+			hideNumberOne = false,
+			smallNumbersAreWords = false
+		};
+		
+		public static readonly RussianPluralizationOptions StudentsDative = new RussianPluralizationOptions
+		{
+			One = "студента",
+			Two = "студентов",
+			Five = "студентов",
+			Gender = Gender.Male,
+			hideNumberOne = true,
+			smallNumbersAreWords = false
+		};
 	}
 }

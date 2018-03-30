@@ -65,7 +65,8 @@ namespace uLearn.Web.LTI
 					// Generate a username using the LisPersonEmailPrimary from the LTI request
 					OnGenerateUserName = context => SecurityHandler.OnGenerateUserName(context)
 				},
-				SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
+				//SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
+				SignInAsAuthenticationType = "Identity.Application"
 			});
 
 			return app;

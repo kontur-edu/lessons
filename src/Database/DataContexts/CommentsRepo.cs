@@ -26,7 +26,7 @@ namespace Database.DataContexts
 			this.db = db;
 		}
 
-		public async Task<Comment> AddComment(IPrincipal author, string courseId, Guid slideId, int parentCommentId, string commentText)
+		public async Task<Comment> AddComment(IPrincipal author, string courseId, Guid slideId, int parentCommentId, bool isForInstructorsOnly, string commentText)
 		{
 			var commentsPolicy = GetCommentsPolicy(courseId);
 			var isInstructor = author.HasAccessFor(courseId, CourseRole.Instructor);
@@ -34,7 +34,7 @@ namespace Database.DataContexts
 
 			/* Instructors' replies are automaticly correct */
 			var isReply = parentCommentId != -1;
-			var isCorrectAnswer = isReply && isInstructor;
+			var isCorrectAnswer = isReply && isInstructor && !isForInstructorsOnly;
 
 			var comment = db.Comments.Create();
 			comment.AuthorId = author.Identity.GetUserId();
@@ -44,6 +44,7 @@ namespace Database.DataContexts
 			comment.Text = commentText;
 			comment.IsApproved = isApproved;
 			comment.IsCorrectAnswer = isCorrectAnswer;
+			comment.IsForInstructorsOnly = isForInstructorsOnly;
 			comment.PublishTime = DateTime.Now;
 			db.Comments.Add(comment);
 			await db.SaveChangesAsync();

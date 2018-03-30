@@ -205,6 +205,12 @@ footer:hover {
     }
 }
 
+@media (min-width: 800px) {
+	.modal-dialog.medium {
+		width: 700px;
+	}
+}
+
 .glyphicon.glyphicon-sm {
 	font-size: 10px;
 }
@@ -255,3 +261,21 @@ footer:hover {
     min-width: 70px;
     font-size: 16px;
 }
+
+/* Errors */
+.error-404__image {
+	width: 100%;
+	height: auto;
+	margin-top: 40px;
+	margin-bottom: 40px;
+	max-height: 80%;
+}
+
+@media (max-width: 780px) {
+	.error-404__image {
+		margin-top: 20px;
+		margin-bottom: 0;
+	}
+}
+
+/*@media (max-height: )*/

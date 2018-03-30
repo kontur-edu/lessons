@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Repos
 {
@@ -53,7 +54,7 @@ namespace Database.Repos
 				usersQuery = usersQuery.Where(userRole => userRole.CourseId == courseId);
 			return usersQuery.Select(user => user.UserId).Distinct().ToList();
 		}
-
+		
 		public List<string> GetListOfUsersByPrivilege(bool onlyPrivileged, string courseId)
 		{
 			if (!onlyPrivileged)
@@ -63,6 +64,11 @@ namespace Database.Repos
 			if (courseId != null)
 				usersQuery = usersQuery.Where(userRole => userRole.CourseId == courseId);
 			return usersQuery.Select(userRole => userRole.UserId).Distinct().ToList();
+		}
+
+		public async Task<bool> HasUserAccessToCourseAsync(string userId, string courseId, CourseRole minCourseRole)
+		{
+			return await db.UserRoles.Where(r => r.UserId == userId && r.CourseId == courseId && r.Role <= minCourseRole).AnyAsync();
 		}
 	}
 }

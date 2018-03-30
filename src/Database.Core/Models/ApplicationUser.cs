@@ -16,7 +16,7 @@ namespace Database.Models
 			Registered = DateTime.Now;
 		}
 		
-		/* Navigation properties which has been removed from Identity 2.0.
+		/* Navigation properties which have been removed from Identity 2.0.
 		   See https://docs.microsoft.com/en-us/aspnet/core/migration/1x-to-2x/identity-2x#add-identityuser-poco-navigation-properties
 		   for details */
 		

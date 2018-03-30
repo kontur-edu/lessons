@@ -192,10 +192,23 @@ namespace Database.Models
 		[IsEnabledByDefault(true)]
 		RevokedAccessToGroup = 103,
 
+		/*
+		 * Not used more. Use GroupMembersHaveBeenRemoved instead.
 		[Display(Name = @"Преподаватель удалил студента из вашей группы", GroupName = @"Преподаватель удалил студентов из ваших групп")]
 		[MinCourseRole(CourseRole.Instructor)]
 		[IsEnabledByDefault(true)]
 		GroupMemberHasBeenRemoved = 104,
+		*/
+		
+		[Display(Name = @"Преподаватель удалил студентов из вашей группы", GroupName = @"Преподаватель удалил студентов из ваших групп")]
+		[MinCourseRole(CourseRole.Instructor)]
+		[IsEnabledByDefault(true)]
+		GroupMembersHaveBeenRemoved = 105,
+		
+		[Display(Name = @"Преподаватель добавил студентов в вашу группу", GroupName = @"Преподаватель добавил студентов в ваши группы")]
+		[MinCourseRole(CourseRole.Instructor)]
+		[IsEnabledByDefault(true)]
+		GroupMembersHaveBeenAdded = 106,
 
 		// Course admins
 		[Display(Name = @"Добавлен новый преподаватель", GroupName = @"Добавлены новые преподаватели")]
@@ -1070,7 +1083,7 @@ namespace Database.Models
 		}
 	}
 
-	[NotificationType(NotificationType.GroupMemberHasBeenRemoved)]
+	[Obsolete("Use GroupMembersHaveBeenRemovedNotification instead")]
 	public class GroupMemberHasBeenRemovedNotification : Notification
 	{
 		public string UserId { get; set; }
@@ -1084,12 +1097,12 @@ namespace Database.Models
 
 		public override string GetHtmlMessageForDelivery(NotificationTransport transport, NotificationDelivery delivery, Course course, string baseUrl)
 		{
-			return $"<b>{InitiatedBy.VisibleName.EscapeHtml()}</b> удалил{InitiatedBy.Gender.ChooseEnding()} студента <b>{User.VisibleName.EscapeHtml()}</b> из вашей группы <b>«{Group.Name.EscapeHtml()}»</b> (курс «{course.Title.EscapeHtml()}»).";
+			return $"<b>{InitiatedBy.VisibleName.EscapeHtml()}</b> удалил{InitiatedBy.Gender.ChooseEnding()} студента <b>{User.VisibleName.EscapeHtml()}</b> из группы <b>«{Group.Name.EscapeHtml()}»</b> (курс «{course.Title.EscapeHtml()}»).";
 		}
 
 		public override string GetTextMessageForDelivery(NotificationTransport transport, NotificationDelivery notificationDelivery, Course course, string baseUrl)
 		{
-			return $"{InitiatedBy.VisibleName} удалил{InitiatedBy.Gender.ChooseEnding()} студента {User.VisibleName} из вашей группы «{Group.Name}» (курс «{course.Title}»).";
+			return $"{InitiatedBy.VisibleName} удалил{InitiatedBy.Gender.ChooseEnding()} студента {User.VisibleName} из группы «{Group.Name}» (курс «{course.Title}»).";
 		}
 
 		public override NotificationButton GetNotificationButton(NotificationTransport transport, NotificationDelivery delivery, Course course, string baseUrl)
@@ -1101,13 +1114,124 @@ namespace Database.Models
 		{
 			// var groupsRepo = new GroupsRepo(db, WebCourseManager.Instance);
 			// var accesses = groupsRepo.GetGroupAccesses(GroupId);
-			// return accesses.Select(a => a.UserId).ToList();
+			// return accesses.Select(a => a.UserId).Concat(new [] { Group.OwnerId }).ToList();
 			throw new NotImplementedException();
 		}
 
 		public override bool IsActual()
 		{
 			return User != null && ! Group.IsDeleted;
+		}
+	}
+	
+	public abstract class AbstractMassGroupOperationNotification : Notification
+	{
+		protected AbstractMassGroupOperationNotification()
+		{
+		}
+		
+		protected AbstractMassGroupOperationNotification(int groupId, List<string> userIds, UsersRepo usersRepo)
+		{
+			GroupId = groupId;
+			UserIds = string.Join(",", userIds);
+			var users = usersRepo.GetUsersByIds(userIds);
+			var userNames = users.Select(u => u.VisibleName).ToList();
+			UserDescriptions = GetUserDescriptions(userNames);
+		}
+
+		private string GetUserDescriptions(List<string> userNames)
+		{
+			if (userNames.Count == 0)
+				return "";
+			if (userNames.Count == 1)
+				return userNames.First();
+			if (userNames.Count > 3)
+				return $"{userNames[0]}, {userNames[1]}, {userNames[2]} и ещё {(userNames.Count - 3).PluralizeInRussian(RussianPluralizationOptions.Students)}";
+			return string.Join(", ", userNames.Take(userNames.Count - 1)) + " и " + userNames.Last();
+		}
+
+		/* Comma-separeted */
+		public string UserIds { get; set; }
+		
+		public string UserDescriptions { get; set; }
+
+		[Required]
+		public int GroupId { get; set; }
+
+		public virtual Group Group { get; set; }
+
+		[NotMapped]
+		public int UsersCount => UserIds.Split(',').Length;
+
+		public override NotificationButton GetNotificationButton(NotificationTransport transport, NotificationDelivery delivery, Course course, string baseUrl)
+		{
+			return new NotificationButton("Перейти к группам", GetGroupsUrl(course, baseUrl));
+		}
+
+		public override List<string> GetRecipientsIds(UlearnDb db)
+		{
+//			var groupsRepo = new GroupsRepo(db, WebCourseManager.Instance);
+//			var accesses = groupsRepo.GetGroupAccesses(GroupId);
+//			return accesses.Select(a => a.UserId).Concat(new [] { Group.OwnerId }).ToList();
+			throw new NotImplementedException();
+		}
+
+		public override bool IsActual()
+		{
+			return UserIds.Length > 0;
+		}
+	}
+	
+	[NotificationType(NotificationType.GroupMembersHaveBeenRemoved)]
+	public class GroupMembersHaveBeenRemovedNotification : AbstractMassGroupOperationNotification
+	{
+		public GroupMembersHaveBeenRemovedNotification()
+			: base()
+		{
+		}
+		
+		public GroupMembersHaveBeenRemovedNotification(int groupId, List<string> userIds, UsersRepo usersRepo)
+			: base(groupId, userIds, usersRepo)
+		{
+		}
+
+		public override string GetHtmlMessageForDelivery(NotificationTransport transport, NotificationDelivery delivery, Course course, string baseUrl)
+		{
+			var usersCount = UserIds.Split(',').Length;
+			return $"<b>{InitiatedBy.VisibleName.EscapeHtml()}</b> удалил{InitiatedBy.Gender.ChooseEnding()} " +
+				   $"{usersCount.PluralizeInRussian(RussianPluralizationOptions.StudentsDative)} из группы <b>«{Group.Name.EscapeHtml()}»</b> (курс «{course.Title.EscapeHtml()}»): {UserDescriptions.EscapeHtml()}.";
+		}
+
+		public override string GetTextMessageForDelivery(NotificationTransport transport, NotificationDelivery notificationDelivery, Course course, string baseUrl)
+		{
+			var usersCount = UserIds.Split(',').Length;
+			return $"{InitiatedBy.VisibleName} удалил{InitiatedBy.Gender.ChooseEnding()} " +
+					$"{usersCount.PluralizeInRussian(RussianPluralizationOptions.StudentsDative)} из группы «{Group.Name}» (курс «{course.Title}»): {UserDescriptions}.";
+		}
+	}
+	
+	[NotificationType(NotificationType.GroupMembersHaveBeenAdded)]
+	public class GroupMembersHaveBeenAddedNotification : AbstractMassGroupOperationNotification
+	{
+		public GroupMembersHaveBeenAddedNotification()
+		{
+		}
+		
+		public GroupMembersHaveBeenAddedNotification(int groupId, List<string> userIds, UsersRepo usersRepo)
+			: base(groupId, userIds, usersRepo)
+		{
+		}
+
+		public override string GetHtmlMessageForDelivery(NotificationTransport transport, NotificationDelivery delivery, Course course, string baseUrl)
+		{
+			return $"<b>{InitiatedBy.VisibleName.EscapeHtml()}</b> добавил{InitiatedBy.Gender.ChooseEnding()} " +
+					$"{UsersCount.PluralizeInRussian(RussianPluralizationOptions.StudentsDative)} в группу <b>«{Group.Name.EscapeHtml()}»</b> (курс «{course.Title.EscapeHtml()}»): {UserDescriptions.EscapeHtml()}.";
+		}
+
+		public override string GetTextMessageForDelivery(NotificationTransport transport, NotificationDelivery notificationDelivery, Course course, string baseUrl)
+		{
+			return $"{InitiatedBy.VisibleName} добавил{InitiatedBy.Gender.ChooseEnding()} " +
+					$"{UsersCount.PluralizeInRussian(RussianPluralizationOptions.StudentsDative)} в группу «{Group.Name}» (курс «{course.Title}»): {UserDescriptions}.";
 		}
 	}
 

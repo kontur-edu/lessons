@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Database
 {
-	public class AbstractFilterOptionByCourseAndUsers
+	public abstract class AbstractFilterOptionByCourseAndUsers
 	{
 		public string CourseId { get; set; }
 
@@ -18,11 +18,17 @@ namespace Database
 		public ManualCheckingQueueFilterOptions()
 		{
 			OnlyChecked = false;
+			
+			From = DateTime.MinValue;
+			To = DateTime.MaxValue;
 		}
 
 		public IEnumerable<Guid> SlidesIds { get; set; }
 		public bool? OnlyChecked { get; set; }
 		public int Count { get; set; }
+		
+		public DateTime From { get; set; }
+		public DateTime To { get; set; }
 	}
 
 	public class VisitsFilterOptions : AbstractFilterOptionByCourseAndUsers

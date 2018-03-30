@@ -89,6 +89,40 @@
     </div>
 }
 
+@functions
+{
+
+	List<SelectListItemWithAttributes> GetCopyableCgroupsSelectListItems(string defaultText="Выберите группу")
+	{
+		var selectGroups = Model.CoursesNames.ToDictionary(kv => kv.Key.ToLower(), kv => new SelectListGroup { Name = kv.Value });
+		var instructorsUsersIds = new HashSet<string>(Model.Instructors.Select(i => i.UserId));
+		var copyableGroupsSelectListItems = Model.GroupsMayBeCopied.Select(g => new SelectListItemWithAttributes
+		{
+			Value = g.Id.ToString(),
+			Text = g.Name.TruncateWithEllipsis(30) + ": " + g.Members.Count.PluralizeInRussian(new RussianPluralizationOptions
+			{
+				One = "студент",
+				Two = "студента",
+				Five = "студентов",
+				Gender = Gender.Male,
+				hideNumberOne = false,
+				smallNumbersAreWords = false,
+			}),
+			Group = selectGroups.GetOrDefault(g.CourseId.ToLower()),
+			HtmlAttributes = new
+			{
+				data_owner = g.Owner.VisibleName,
+				data_need_to_change_owner = !instructorsUsersIds.Contains(g.OwnerId),
+				title = g.Name
+			}
+		}).ToList();
+		copyableGroupsSelectListItems.Insert(0, new SelectListItemWithAttributes { Value = "-1", Text = defaultText, });
+
+		return copyableGroupsSelectListItems;
+	}
+
+}
+
 @{
 	ViewBag.Title = "Группы";
 }
@@ -300,7 +334,7 @@
 </div>
 
 <div class="modal fade "id="modal__edit-group" data-group-info-url="@Url.Action("GroupInfo", "Admin", new { groupId = "GROUP_ID" })">
-	<div class="modal-dialog">
+	<div class="modal-dialog medium">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -336,7 +370,24 @@
 
 					<h3>Студенты</h3>
                     @GroupInviteLinkSettings()
-					<ol class="modal__edit-group__members">
+                    
+                    <div class="modal__edit-group__mass-operations">
+                        
+                        <div class="checkbox checkbox-default checkbox-xsmall">
+                            <input type="checkbox" name="group__member__remove-all" id="group__member__remove-all" class="group__member__remove-all-checkbox"/>
+                            <label class="text-muted" for="group__member__remove-all" data-text="Выбрать всех">Выбрать всех</label>
+                        </div>
+                        
+                        <button class="pull-right modal__edit-group__mass-remove-button btn btn-danger btn-xs" data-url="@Url.Action("RemoveUsersFromGroup")">Удалить из группы</button>
+                        <nobr>
+                            <div class="input-group input-group-xs">
+                                @Html.DropDownListWithItemAttributes("copyToGroupId", GetCopyableCgroupsSelectListItems("Скопировать студентов в группу"), new { @class = "form-control" })
+                            </div>
+                            <button class="modal__edit-group__mass-copy-button btn btn-primary btn-xs" data-url="@Url.Action("CopyUsersFromOneGroupToAnother")">Копировать</button>
+                            <span class="modal__edit-group__mass-copy-status"></span>
+                        </nobr>
+                    </div>
+                    <ol class="modal__edit-group__members">
 						
 					</ol>
 					
@@ -396,31 +447,7 @@
 						</p>
 					</div>
 					<div class="form-group input-group">
-						@{
-							var selectGroups = Model.CoursesNames.ToDictionary(kv => kv.Key.ToLower(), kv => new SelectListGroup { Name = kv.Value });
-							var instructorsUsersIds = new HashSet<string>(Model.Instructors.Select(i => i.UserId));
-							var copiedGroupsList = Model.GroupsMayBeCopied.Select(g => new SelectListItemWithAttributes
-							{
-								Value = g.Id.ToString(),
-								Text = g.Name + ": " + g.Members.Count.PluralizeInRussian(new RussianPluralizationOptions
-								{
-									One = "студент",
-									Two = "студента",
-									Five = "студентов",
-									Gender = Gender.Male,
-									hideNumberOne = false
-								}),
-								Group = selectGroups.GetOrDefault(g.CourseId.ToLower()),
-								HtmlAttributes = new
-								{
-									data_owner = g.Owner.VisibleName,
-									data_need_to_change_owner = !instructorsUsersIds.Contains(g.OwnerId)
-								}
-							}).ToList();
-							copiedGroupsList.Insert(0, new SelectListItemWithAttributes { Value = "-1", Text = "Выберите группу", });
-						}
-
-						@Html.DropDownListWithItemAttributes("groupId", copiedGroupsList, new { @class = "form-control" })
+						@Html.DropDownListWithItemAttributes("groupId", GetCopyableCgroupsSelectListItems(), new { @class = "form-control" })
 					</div>
 					<div class="form-group copy-group__change-owner-block">
 						<p class="help-block">

@@ -4,28 +4,34 @@
 @using uLearn.Web.Views.Shared
 @using Ulearn.Common
 
-@model Database.Models.GroupMember
+@model GroupMember
 
-<li class="group__member">
+<li class="group__member" data-user-id="@Model.UserId">
 	<div>
 		<div class="pull-right">
 			<a href="@Url.Action("RemoveUserFromGroup", "Admin", new { groupId = Model.GroupId, userId = Model.UserId })" class="group__member__remove-link" title="Удалить @(Model.User.VisibleName) из группы">&times;</a>
 		</div>
 
-		@UserAvatar.ExtraSmallAvatar(Model.User)
+        <div class="checkbox checkbox-default checkbox-xsmall">
+            <input type="checkbox" name="group__member__remove-@Model.UserId" id="group__member__remove-@Model.UserId" class="group__member__remove-checkbox"/>
+            <label for="group__member__remove-@Model.UserId">
+                @UserAvatar.ExtraSmallAvatar(Model.User)
+            </label>
+        </div>
+        
         <span title="@Model.User.UserName">
             @if (User.HasSystemAccess(SystemAccessType.ViewAllProfiles) || User.IsSystemAdministrator())
             {
-	            @Html.ActionLink(Model.User.VisibleName, "Profile", "Account", new { userId = Model.UserId }, new {})<text>,</text>
+	            @Html.ActionLink(Model.User.VisibleNameWithLastNameFirst, "Profile", "Account", new { userId = Model.UserId }, new { tabindex = "-1" })<text>,</text>
             }
             else
             {
-	            @Model.User.VisibleName
+	            @Model.User.VisibleNameWithLastNameFirst
             }
         </span>
 		@if (!string.IsNullOrEmpty(Model.User.Email))
 		{
-			<a href="mailto:@Model.User.Email">@Model.User.Email</a><text>,</text>
+			<a href="mailto:@Model.User.Email" title="@Model.User.Email" tabindex="-1">@Model.User.Email.TruncateWithEllipsis(50)</a><text>,</text>
 		}
 		@if (Model.AddingTime.HasValue)
 		{

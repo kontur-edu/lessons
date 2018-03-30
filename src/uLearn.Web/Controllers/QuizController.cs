@@ -139,7 +139,7 @@ namespace uLearn.Web.Controllers
 				IsLti = isLti,
 				ManualQuizCheckQueueItem = manualQuizCheckQueueItem,
 				CanUserFillQuiz = canUserFillQuiz,
-				GroupsIds = Request.GetMultipleValues("group"),
+				GroupsIds = Request.GetMultipleValuesFromQueryString("group"),
 			};
 
 			if (model.QuizState == QuizState.Subtotal && model.Score == quiz.MaxScore)

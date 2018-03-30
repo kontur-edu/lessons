@@ -368,3 +368,21 @@ input[type="checkbox"] .styled:checked + input[type=hidden] + label::after,
 input[type="radio"] .styled:checked + label::after {
   color: #fff;
 }
+
+/* Added by andgein */
+.checkbox.checkbox-xsmall label {
+  min-height: 18px;
+}
+
+.checkbox.checkbox-xsmall label:before {
+    width: 17px;
+    height: 17px;
+    margin-left: -18px;
+}
+
+.checkbox.checkbox-xsmall label:after {
+    width: 16px;
+    height: 16px;
+    margin-left: -19px;
+    /*padding-top: 2px;*/
+}

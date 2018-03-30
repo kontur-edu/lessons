@@ -18,7 +18,7 @@ namespace Database
 		private readonly ConcurrentDictionary<string, DateTime> courseVersionFetchTime = new ConcurrentDictionary<string, DateTime>();
 		private readonly TimeSpan fetchCourseVersionEvery = TimeSpan.FromMinutes(1);
 
-		private WebCourseManager(CoursesRepo coursesRepo)
+		public WebCourseManager(CoursesRepo coursesRepo)
 			: base(GetCoursesDirectory())
 		{
 			this.coursesRepo = coursesRepo;

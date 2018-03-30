@@ -60,7 +60,7 @@ namespace uLearn.Web.Controllers
 			if (slideId.Contains("_"))
 				slideId = slideId.Substring(slideId.LastIndexOf('_') + 1);
 
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 
 			if (!Guid.TryParse(slideId, out var slideGuid))
 				return HttpNotFound();
@@ -80,7 +80,7 @@ namespace uLearn.Web.Controllers
 			var visibleUnits = unitsRepo.GetVisibleUnits(course, User);
 			var isGuest = !User.Identity.IsAuthenticated;
 
-			var slide = slideGuid == Guid.Empty ? GetInitialSlideForStartup(courseId, course, visibleUnits) : course.FindSlideById(slideGuid);
+			var slide = slideGuid == Guid.Empty ? GetInitialSlideForStartup(courseId, visibleUnits) : course.FindSlideById(slideGuid);
 
 			if (slide == null)
 				return HttpNotFound();
@@ -152,7 +152,7 @@ namespace uLearn.Web.Controllers
 			if (course == null)
 				return HttpNotFound();
 			var visibleUnits = unitsRepo.GetVisibleUnits(course, User);
-			var slide = slideIndex == -1 ? GetInitialSlideForStartup(courseId, course, visibleUnits) : course.Slides[slideIndex];
+			var slide = slideIndex == -1 ? GetInitialSlideForStartup(courseId, visibleUnits) : course.Slides[slideIndex];
 			return RedirectToRoute("Course.SlideById", new { courseId, slideId = slide.Url });
 		}
 
@@ -229,7 +229,7 @@ namespace uLearn.Web.Controllers
 			return View();
 		}
 
-		private Slide GetInitialSlideForStartup(string courseId, Course course, List<Unit> visibleUnits)
+		private Slide GetInitialSlideForStartup(string courseId, IEnumerable<Unit> visibleUnits)
 		{
 			var userId = User.Identity.GetUserId();
 			var visitedIds = visitsRepo.GetIdOfVisitedSlides(courseId, userId);

@@ -9,6 +9,7 @@ using Database.Models;
 using JetBrains.Annotations;
 using log4net;
 using Microsoft.AspNet.Identity;
+using NUnit.Framework.Constraints;
 using uLearn;
 using uLearn.Quizes;
 using Ulearn.Common;
@@ -180,8 +181,11 @@ namespace Database.DataContexts
 		public async Task RemoveGroup(int groupId)
 		{
 			var group = db.Groups.Find(groupId);
-			group.IsDeleted = true;
-			await db.SaveChangesAsync();
+			if (group != null)
+			{
+				group.IsDeleted = true;
+				await db.SaveChangesAsync();
+			}
 		}
 
 		public async Task<GroupMember> AddUserToGroup(int groupId, string userId)
@@ -210,6 +214,11 @@ namespace Database.DataContexts
 				await AddManualCheckingsForOldSolutions(group.CourseId, userId);
 
 			return groupMember;
+		}
+
+		public async Task<GroupMember> AddUserToGroup(int groupId, ApplicationUser user)
+		{
+			return await AddUserToGroup(groupId, user.Id);
 		}
 
 		private async Task AddManualCheckingsForOldSolutions(string courseId, IEnumerable<string> usersIds)
@@ -261,11 +270,6 @@ namespace Database.DataContexts
 			}
 		}
 
-		public async Task<GroupMember> AddUserToGroup(int groupId, ApplicationUser user)
-		{
-			return await AddUserToGroup(groupId, user.Id);
-		}
-
 		public async Task<GroupMember> RemoveUserFromGroup(int groupId, string userId)
 		{
 			var member = db.GroupMembers.FirstOrDefault(m => m.GroupId == groupId && m.UserId == userId);
@@ -274,6 +278,25 @@ namespace Database.DataContexts
 
 			await db.SaveChangesAsync();
 			return member;
+		}
+		
+		public async Task<List<GroupMember>> RemoveUsersFromGroup(int groupId, List<string> userIds)
+		{
+			var members = db.GroupMembers.Where(m => m.GroupId == groupId && userIds.Contains(m.UserId)).ToList();
+			db.GroupMembers.RemoveRange(members);
+
+			await db.SaveChangesAsync();
+			return members;
+		}
+		
+		public async Task<List<GroupMember>> CopyUsersFromOneGroupToAnother(int fromGroupId, int toGroupId, List<string> userIds)
+		{
+			var membersUserIds = db.GroupMembers.Where(m => m.GroupId == fromGroupId && userIds.Contains(m.UserId)).Select(m => m.UserId).ToList();
+			var newMembers = new List<GroupMember>();
+			foreach (var memberUserId in membersUserIds)
+				newMembers.Add(await AddUserToGroup(toGroupId, memberUserId));
+			
+			return newMembers;
 		}
 
 		public Group FindGroupById(int groupId)
@@ -443,8 +466,11 @@ namespace Database.DataContexts
 		public async Task EnableInviteLink(int groupId, bool isEnabled)
 		{
 			var group = db.Groups.Find(groupId);
-			group.IsInviteLinkEnabled = isEnabled;
-			await db.SaveChangesAsync();
+			if (group != null)
+			{
+				group.IsInviteLinkEnabled = isEnabled;
+				await db.SaveChangesAsync();
+			}
 		}
 
 		public IEnumerable<string> GetUsersIdsForAllGroups(string courseId)
@@ -492,8 +518,8 @@ namespace Database.DataContexts
 			var accessibleGroupsIds = new HashSet<int>(GetMyGroupsFilterAccessibleToUser(courseId, instructor).Select(g => g.Id));
 			var userGroupsIds = db.GroupMembers
 				.Where(m => m.Group.CourseId == courseId && m.UserId == userId && !m.Group.IsDeleted)
-				.DistinctBy(m => m.GroupId)
 				.Select(m => m.GroupId)
+				.Distinct()
 				.ToList();
 			
 			/* Return true if exists at least one group with enabled DefaultProhibitFutherReview */

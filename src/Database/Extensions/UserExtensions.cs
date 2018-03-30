@@ -80,7 +80,7 @@ namespace Database.Extensions
 
 		public static async Task<ClaimsIdentity> GenerateUserIdentityAsync(this ApplicationUser user, UserManager<ApplicationUser> manager, UserRolesRepo userRoles)
 		{
-			var identity = await manager.CreateIdentityAsync(user, DefaultAuthenticationTypes.ApplicationCookie);
+			var identity = await manager.CreateIdentityAsync(user, "Identity.Application");
 			identity.AddCourseRoles(userRoles.GetRoles(user.Id));
 			return identity;
 		}

@@ -129,13 +129,20 @@ p {
 }
 
 .revealed {
-	background-color: #313131;
+	background-color: #e7f1ff;
 	padding: 20px;
-	color: white !important;
+	color: #000 !important;
+    margin-left: -20px;
+    margin-right: -20px;
 }
 
-.revealed .cm-s-pastel-on-dark.CodeMirror {
-	background-color: #313131;
+.revealed .CodeMirror {
+	background-color: #e7f1ff;
+}
+
+.revealed .CodeMirror .CodeMirror-gutters {
+    background-color: #e7f1ff;
+	color: #333;
 }
 
 .revealed__description {
@@ -143,9 +150,10 @@ p {
 	margin-bottom: 15px;
 }
 
-.revealed code {
-	color: white;
-	background-color: #39562d;
+.revealed code,
+.revealed pre:not(.CodeMirror-line),
+.revealed .inline-pre {
+	background-color: #e0edff;
 }
 
 .revealed h2 {
@@ -159,6 +167,10 @@ p {
 
 .revealed p:last-child {
 	margin: 0;
+}
+
+p + .revealed {
+    margin-top: 20px;
 }
 
 .statistic-container {
@@ -890,8 +902,7 @@ li.li-success {
 
 .comments .comment:not(.is-reply):not(:nth-child(2)),
 .comments.comments__feed .comment:not(:nth-child(2)) {
-	border-top: 1px solid rgba(200, 200, 200, 0.5);
-	padding-top: 15px;
+	padding-top: 7px;
 }
 
 .comments .comment .comment__new-text {
@@ -1018,6 +1029,111 @@ li.li-success {
 	background-color: #fcfcf3;
 }
 
+/* Instructors-only comments */
+.comments-for-instructors-only {
+    background-color: #e7f1ff;
+    padding: 20px;
+    color: #000 !important;
+    margin: 5px -20px 20px;
+}
+
+.comments-for-instructors-only .cm-s-pastel-on-dark.CodeMirror,
+.comments-for-instructors-only .cm-s-xq-dark.CodeMirror {
+    background-color: #e7f1ff;
+}
+
+.comments-for-instructors-only__description {
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.notifications__notification .comments-for-instructors-only__description {
+    font-style: normal;
+}
+
+.comments-for-instructors-only code,
+.comments-for-instructors-only pre,
+.comments-for-instructors-only .inline-pre {
+    background-color: #e0edff;
+}
+
+.comments-for-instructors-only h2 {
+    margin-bottom: 20px;
+}
+
+.comments-for-instructors-only h3 {
+    margin-bottom: 20px;
+    line-height: 20px;
+}
+
+.comments-for-instructors-only p:last-child {
+    margin: 0;
+}
+
+.comments-for-instructors-only [name=commentText] {
+    background-color: #e7f1ff;
+    border: 1px solid #8dacda;
+}
+
+.comments-for-instructors-only [name=commentText]::placeholder {
+    color: #98b9e3;
+}
+
+.comments-for-instructors-only .btn-primary {
+    background-color: #e7f1ff;
+	color: #235db1;
+	border-color: #8dacda;
+}
+
+.comments-for-instructors-only .btn-primary[disabled] {
+    color: #235db1;
+    border: 1px solid #8dacda;
+}
+
+.comments-for-instructors-only .btn-primary[disabled]:hover,
+.comments-for-instructors-only .btn-primary[disabled]:focus,
+.comments-for-instructors-only .btn-primary[disabled]:active{
+    background-color: #e7f1ff;
+    border: 1px solid #8dacda;
+	color: #235db1;
+}
+
+.comments-for-instructors-only .btn-primary:hover,
+.comments-for-instructors-only .btn-primary:focus,
+.comments-for-instructors-only .btn-primary:active {
+    background-color: #4279ca;
+	color: white;
+}
+
+
+.comments-for-instructors-only .btn-link,
+.comments-for-instructors-only a,
+.comments-for-instructors-only a:hover,
+.comments-for-instructors-only a:focus,
+.comments-for-instructors-only a:active {
+    /*color: #7d7d7d;*/
+}
+
+.comments-for-instructors-only .comment .comment__delete-link * {
+    color: #ff9393;
+}
+
+.comments-for-instructors-only .comment .comment__likes-count:not(.is-liked):hover .glyphicon,
+.comments-for-instructors-only .comment .comment__likes-count.is-liked .glyphicon,
+.comments-for-instructors-only .comment .comment__likes-count.is-liked .comment__likes-count__counter {
+    color: #f14747;
+}
+
+.comments-for-instructors-only .comment:not(.is-pinned) .label-switcher.comment__pinned {
+    background-color: #e7f1ff;
+}
+
+.comments-for-instructors-only .comment .comment__likes-count .glyphicon,
+.comments-for-instructors-only .comment .comment__publish-time,
+.comments-for-instructors-only .comment .comment__publish-time a,
+.comments-for-instructors-only .comment .comment__footer .comment__hide-link a {
+    color: #7d7d7d;
+}
 
 /* User avatars */
 .user__avatar {
@@ -1589,7 +1705,8 @@ h1 .copy-group-link {
 }
 
 .modal__edit-group__members {
-	padding-left: 15px;
+	padding-left: 0px;
+    list-style: none;
 }
 
 .modal__edit-group__members .group__member {
@@ -1605,6 +1722,7 @@ h1 .copy-group-link {
 
 .modal__edit-group__members .group__member .group__member__remove-link {
 	font-size: 18px;
+    line-height: 18px;
 	color: #c55;
 	display: none;
 }
@@ -1617,6 +1735,59 @@ h1 .copy-group-link {
 	text-decoration: none;
 	color: #611;
 }
+
+/* Mass operations */
+.modal__edit-group__members .group__member .checkbox {
+    display: inline;
+    vertical-align: text-bottom;
+}
+
+.modal__edit-group__members li.group__member .checkbox label:before {
+    top: 1px;
+}
+
+.modal__edit-group__members li.group__member .checkbox label:after {
+    margin-top: 1px;
+}
+
+.modal__edit-group__members .group__member .checkbox .user__avatar {
+    margin-left: 2px;
+}
+
+.modal__edit-group__mass-operations {
+    margin-bottom: 7px;
+    color: #666;
+}
+
+.modal__edit-group__mass-operations .checkbox {
+	display: inline-block;
+	margin: 0;
+	height: 24px;
+}
+
+/* Dirty hack */
+.modal__edit-group__mass-operations .checkbox input:not(:checked) + label {
+	top: 1px;
+}
+
+.modal__edit-group__mass-operations .modal__edit-group__mass-copy-button {
+    margin-left: 5px;
+}
+
+.modal__edit-group__mass-operations .input-group {
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+.modal__edit-group__mass-copy-status.text-success {
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+.modal__edit-group__mass-remove-button {
+	margin-right: 20px;
+}
+/* End of mass operations */
 
 .modal__create-group__step3__enable-invite_link {
 	display: block;	

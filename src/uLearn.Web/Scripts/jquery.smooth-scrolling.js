@@ -6,14 +6,14 @@
 			var scrollTo = function () {
 				if (!needScroll)
 					return;
-				$('body').animate({
+				$('html').animate({
 					scrollTop: $object.first().offset().top - $('.navbar').height()
 				},
 				{
 					duration: 1000,
 					complete: callback
 				});
-			}
+			};
 			if ($link && $link.data('toggle')) {
 				if (!$object.is(':visible')) {
 					$object.data('originalClasses', $object.attr('class'));
@@ -29,7 +29,7 @@
 			return true;
 		} 
 		return false;
-	}
+	};
 
 	$('a[href*="#"]:not([href="#"]):not(.no-smooth-scrolling)').click(function() {
 		if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {

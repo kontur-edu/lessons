@@ -28,23 +28,25 @@
 			CanViewAuthorSubmissions = slide is ExerciseSlide && Model.CanViewAuthorSubmissions,
 			CurrentUser = Model.CurrentUser,
 			CanViewAuthorProfile = Model.CanViewAuthorProfiles,
+			IsCommentForInstructorsOnly = comment.IsForInstructorsOnly
 		};
 	}
 
 }
 
-@helper TopLevelReplyForm()
+@helper TopLevelReplyForm(bool forInstructorsOnly)
 {
 	<div class="reply-form media">
 		@using (Html.BeginForm("AddComment", "Comments", FormMethod.Post))
 		{
 			@Html.Hidden("courseId", Model.CourseId)
 			@Html.Hidden("slideId", Model.Slide.Id)
+			@Html.Hidden("forInstructorsOnly", forInstructorsOnly)
 			<div class="pull-left">
 				@UserAvatar.SmallAvatar(Model.CurrentUser)
 			</div>
 			<div class="media-body">
-				@Html.TextArea("commentText", "", new { placeholder = "Комментировать.." })
+				@Html.TextArea("commentText", "", new { placeholder = forInstructorsOnly ? "Оставить комментарий для преподавателей" : "Комментировать..." })
 				<button class="reply-form__send-button btn btn-primary" disabled="disabled">Отправить</button>
 			</div>
 		}
@@ -54,44 +56,69 @@
 @* Used for ajax in addAntiForgeryToken() *@
 <form id="__AjaxAntiForgeryForm" action="#" method="post">@Html.AntiForgeryToken()</form>
 
-@if (Model.TopLevelComments.Any() || Model.IsAuthorizedAndCanComment)
-{
-	<div class="comments">
-		<h3>Комментарии</h3>
-		@foreach (var topLevelComment in Model.TopLevelComments)
-		{
-			@Html.Partial("_Comment", BuildCommentViewModel(topLevelComment, Model.Slide))
-		}
-
-		@if (Model.IsAuthorizedAndCanComment)
-		{
-			@TopLevelReplyForm()
-		}
-		else if (Model.CommentsPolicy.IsCommentsEnabled)
-		{
-			<div class="comments_policy__message gray">
-                @Html.ActionLink("Войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new { }), чтобы оставить комментарий 
-			</div>
-		}
-		else
-		{
-			<div class="comments_policy__message gray">
-				Только преподаватели могут оставлять комментарии
-			</div>
-		}
-	</div>
+@{
+	var forInstructorsOnlyTopLevelComments = Model.TopLevelComments.Where(c => c.IsForInstructorsOnly).ToList();
+	var forAllTopLevelComments = Model.TopLevelComments.Where(c => !c.IsForInstructorsOnly).ToList();
 }
-else
+
+<h3>Комментарии</h3>
+
+@if (Model.CanViewAndAddCommentsForInstructorsOnly)
 {
-	if (Model.CommentsPolicy.IsCommentsEnabled)
-	{
-		<div class="comments">
-            <h3>Комментарии</h3>
-            <div class="comments_policy__message">
-                Комментариев пока нет. @Html.ActionLink("Войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new { }), чтобы написать свой.
-            </div>
+	<div class="comments comments-for-instructors-only">
+        <div class="comments-for-instructors-only__description">
+            Студенты не&nbsp;видят эти комментарии
+            <span class="with-long-tooltip cursor-pointer" data-toggle="tooltip" data-placement="top" title="Это блок комментариев, доступных только преподавателям">
+                <span class="fa fa-question-circle"></span>
+            </span>
         </div>
-	}
+        @foreach (var topLevelComment in forInstructorsOnlyTopLevelComments)
+        {
+	        @Html.Partial("_Comment", BuildCommentViewModel(topLevelComment, Model.Slide))
+        }
+        @TopLevelReplyForm(forInstructorsOnly: true)
+    </div>
+}
+ 
+@if (!Model.ShowOnlyInstructorsOnlyComments)
+{
+	 if (forAllTopLevelComments.Any() || Model.IsAuthorizedAndCanComment)
+	 {
+		 <div class="comments">
+             @foreach (var topLevelComment in forAllTopLevelComments)
+             {
+	             @Html.Partial("_Comment", BuildCommentViewModel(topLevelComment, Model.Slide))
+             }
+
+             @if (Model.IsAuthorizedAndCanComment)
+             {
+	             @TopLevelReplyForm(forInstructorsOnly: false)
+             }
+             else if (Model.CommentsPolicy.IsCommentsEnabled)
+             {
+	             <div class="comments_policy__message gray">
+                     @Html.ActionLink("Войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new { }), чтобы оставить комментарий
+                 </div>
+             }
+             else
+             {
+	             <div class="comments_policy__message gray">
+                     Только преподаватели могут оставлять комментарии
+                 </div>
+             }
+         </div>
+	 }
+	 else
+	 {
+		 if (Model.CommentsPolicy.IsCommentsEnabled)
+		 {
+			 <div class="comments">
+                 <div class="comments_policy__message">
+                     Комментариев пока нет. @Html.ActionLink("Войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new { }), чтобы написать свой.
+                 </div>
+             </div>
+		 }
+	 }
 }
 
 <div class="comments__rules alert alert-warning">

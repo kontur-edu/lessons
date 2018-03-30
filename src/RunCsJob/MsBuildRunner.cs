@@ -28,7 +28,7 @@ namespace RunCsJob
 
 	public static class MsBuildRunner
 	{
-		private static readonly string[] obligatoryLibs = {"System.Runtime", "System.Reflection"};
+		private static readonly string[] obligatoryLibs = {"System.Runtime", "System.Reflection", "netstandard"};
 
 		public static MSbuildResult BuildProject(MsBuildSettings settings, string projectFileName, DirectoryInfo dir)
 		{

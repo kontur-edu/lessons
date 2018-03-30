@@ -77,15 +77,18 @@ namespace Database.DataContexts
 			CancelCascaseDeleting<RevokedAccessToGroupNotification, GroupAccess, int>(modelBuilder, c => c.Access, c => c.AccessId);
 			CancelCascaseDeleting<GroupMemberHasBeenRemovedNotification, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
 			CancelCascaseDeleting<GroupMemberHasBeenRemovedNotification, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
+			CancelCascaseDeleting<GroupMembersHaveBeenRemovedNotification, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
+			CancelCascaseDeleting<GroupMembersHaveBeenAddedNotification, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
 			CancelCascaseDeleting<CreatedGroupNotification, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
 			CancelCascaseDeleting<PassedManualExerciseCheckingNotification, ManualExerciseChecking, int>(modelBuilder, c => c.Checking, c => c.CheckingId);
 			CancelCascaseDeleting<PassedManualQuizCheckingNotification, ManualQuizChecking, int>(modelBuilder, c => c.Checking, c => c.CheckingId);
 			CancelCascaseDeleting<ReceivedAdditionalScoreNotification, AdditionalScore, int?>(modelBuilder, c => c.Score, c => c.ScoreId, isRequired: false);
-
+			
 			CancelCascaseDeleting<NewCommentNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
 			CancelCascaseDeleting<LikedYourCommentNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
 			CancelCascaseDeleting<RepliedToYourCommentNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
 			CancelCascaseDeleting<RepliedToYourCommentNotification, Comment, int>(modelBuilder, c => c.ParentComment, c => c.ParentCommentId);
+			CancelCascaseDeleting<NewCommentForInstructorsOnlyNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
 			
 			CancelCascaseDeleting<UploadedPackageNotification, CourseVersion, Guid>(modelBuilder, c => c.CourseVersion, c => c.CourseVersionId);
 			CancelCascaseDeleting<PublishedPackageNotification, CourseVersion, Guid>(modelBuilder, c => c.CourseVersion, c => c.CourseVersionId);

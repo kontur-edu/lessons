@@ -90,7 +90,8 @@ function autoEnlargeTextarea() {
 	}
 
 	var showCommentsRulesIfNeeded = function ($textarea) {
-		if ($('.comments__rules:visible').length === 0)
+		/* Don't show comments rules if they are already shown or under instructors-only comments */
+		if ($('.comments__rules:visible').length === 0 && $textarea.closest('.comments-for-instructors-only').length === 0)
 			$textarea.after($commentsRules.clone());
 	}
 
@@ -324,12 +325,10 @@ function autoEnlargeTextarea() {
 	var scrollToCommentFromHash = function() {
 		var hash = window.location.hash;
 		var match;
-		if ((match = /^#comment-(\d+)$/.exec(hash)) !== null && $('.comment[data-comment-id=' + match[1] + ']').length > 0)
-			scrollTo($('.comment[data-comment-id=' + match[1] + ']')
-				.animate({ backgroundColor: '#ffe6e3' })
-				.delay(1500)
-				.animate({ backgroundColor: 'initial' })
-				);
+		if ((match = /^#comment-(\d+)$/.exec(hash)) !== null && $('.comment[data-comment-id=' + match[1] + ']').length > 0) {
+			var $comment = $('.comment[data-comment-id=' + match[1] + ']');
+            scrollTo($comment);
+        }
 	};	
 
     let $comments = $('.comments');

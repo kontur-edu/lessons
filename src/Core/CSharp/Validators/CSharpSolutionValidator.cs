@@ -25,6 +25,7 @@ namespace uLearn.CSharp.Validators
 			new ExcessLinesValidator(),
 			new RefArgumentsValidator(),
 			new VarInVariableDeclarationValidator(),
+            new BracketValidator(),
 			new IndentsValidator()
 		};
 

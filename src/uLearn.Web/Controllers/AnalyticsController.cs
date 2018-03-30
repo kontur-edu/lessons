@@ -60,7 +60,7 @@ namespace uLearn.Web.Controllers
 			var unitId = param.UnitId;
 			var periodStart = param.PeriodStartDate;
 			var periodFinish = param.PeriodFinishDate;
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 
 			var realPeriodFinish = periodFinish.Add(TimeSpan.FromDays(1));
 
@@ -368,7 +368,7 @@ namespace uLearn.Web.Controllers
 			var courseId = param.CourseId;
 			var periodStart = param.PeriodStartDate;
 			var periodFinish = param.PeriodFinishDate;
-			var groupsIds = Request.GetMultipleValues("group");
+			var groupsIds = Request.GetMultipleValuesFromQueryString("group");
 			var isInstructor = User.HasAccessFor(courseId, CourseRole.Instructor);
 			var isStudent = !isInstructor;
 

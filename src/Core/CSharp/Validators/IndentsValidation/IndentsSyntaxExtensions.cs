@@ -81,6 +81,11 @@ namespace uLearn.CSharp.Validators.IndentsValidation
 					yield return SyntaxNodeOrToken.Create(rootTree, whileStatement.Statement,
 						innerWhileStatement is WhileStatementSyntax ? (bool?)null : false);
 					yield break;
+				case UsingStatementSyntax usingStatementSyntax:
+					var innerUsingStatement = usingStatementSyntax.Statement;
+					yield return SyntaxNodeOrToken.Create(rootTree, usingStatementSyntax.Statement,
+						innerUsingStatement is UsingStatementSyntax ? (bool?)null : false);
+					yield break;
 				default:
 					yield break;
 			}

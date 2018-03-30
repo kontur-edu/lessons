@@ -144,7 +144,7 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> UpdateExerciseCodeReview(string courseId, int reviewId, string comment)
 		{
 			var review = slideCheckingsRepo.FindExerciseCodeReviewById(reviewId);
-			if (!string.Equals(review.ExerciseChecking.CourseId, courseId, StringComparison.OrdinalIgnoreCase))
+			if (!review.ExerciseChecking.CourseId.EqualsIgnoreCase(courseId))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 			if (review.AuthorId != User.Identity.GetUserId())
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
@@ -211,7 +211,7 @@ namespace uLearn.Web.Controllers
 				return HttpNotFound();
 			
 			var currentUserId = User.Identity.GetUserId();
-			var courseId = comment.Review.ExerciseChecking.CourseId;
+			var courseId = comment.Review.ExerciseCheckingId.HasValue ? comment.Review.ExerciseChecking.CourseId : comment.Review.Submission.CourseId;
 			if (comment.AuthorId != currentUserId && ! User.HasAccessFor(courseId, CourseRole.CourseAdmin))
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
@@ -220,10 +220,12 @@ namespace uLearn.Web.Controllers
 			return Json(new CodeReviewOperationResult { Status = "ok" });
 		}
 
+		
+		/* Call NotifyAboutCodeReviewComment() only for checking's comment, not for submission's ones */
 		private async Task NotifyAboutCodeReviewComment(ExerciseCodeReviewComment comment)
 		{
-			var courseId = comment.Review.ExerciseChecking.CourseId;
-			await notificationsRepo.AddNotification(courseId, new ReceivedCommentToCodeReviewNotification
+			var courseId = comment.Review.ExerciseCheckingId.HasValue ? comment.Review.ExerciseChecking.CourseId : comment.Review.Submission.CourseId;
+			await notificationsRepo.AddNotification(courseId, new ReceivedCommentToCodeReviewNotification 
 			{
 				CommentId = comment.Id,
 			}, comment.AuthorId);

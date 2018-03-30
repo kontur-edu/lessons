@@ -5,7 +5,7 @@ using uLearn.SpellChecking;
 
 namespace uLearn.Extensions
 {
-	public static class SpellCheckExtentions
+	public static class SpellCheckExtensions
 	{
 		public static string[] SpellCheck(this Course course)
 		{

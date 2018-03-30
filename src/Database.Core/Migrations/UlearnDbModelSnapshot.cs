@@ -2020,7 +2020,7 @@ namespace Database.Migrations
                         .HasForeignKey("ExerciseCheckingId");
 
                     b.HasOne("Database.Models.UserExerciseSubmission", "Submission")
-                        .WithMany()
+                        .WithMany("Reviews")
                         .HasForeignKey("SubmissionId");
                 });
 

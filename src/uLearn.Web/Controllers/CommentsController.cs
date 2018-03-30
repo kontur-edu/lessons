@@ -40,7 +40,7 @@ namespace uLearn.Web.Controllers
 		{
 		}
 
-		public ActionResult SlideComments(string courseId, Guid slideId)
+		public ActionResult SlideComments(string courseId, Guid slideId, bool showOnlyInstructorsOnlyComments=false)
 		{
 			var slide = courseManager.GetCourse(courseId).GetSlideById(slideId);
 			var comments = commentsRepo.GetSlideComments(courseId, slideId).ToList();
@@ -86,6 +86,8 @@ namespace uLearn.Web.Controllers
 				CurrentUser = User.Identity.IsAuthenticated ? userManager.FindById(userId) : null,
 				CommentsPolicy = commentsPolicy,
 				CanViewAuthorProfiles = canViewProfiles,
+				CanViewAndAddCommentsForInstructorsOnly = CanViewAndAddCommentsForInstructorsOnly(User, courseId),
+				ShowOnlyInstructorsOnlyComments = showOnlyInstructorsOnlyComments
 			};
 			return PartialView(model);
 		}
@@ -116,6 +118,11 @@ namespace uLearn.Web.Controllers
 			return true;
 		}
 
+		private bool CanViewAndAddCommentsForInstructorsOnly(IPrincipal user, string courseId)
+		{
+			return user.HasAccessFor(courseId, CourseRole.Instructor);
+		}
+
 		private bool CanAddCommentNow(IPrincipal user, string courseId)
 		{
 			// Instructors have unlimited comments
@@ -132,7 +139,7 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ValidateInput(false)]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> AddComment(string courseId, Guid slideId, string commentText, string parentCommentId)
+		public async Task<ActionResult> AddComment(string courseId, Guid slideId, bool forInstructorsOnly, string commentText, string parentCommentId)
 		{
 			var parentCommentIdInt = -1;
 			if (parentCommentId != null)
@@ -159,7 +166,12 @@ namespace uLearn.Web.Controllers
 				});
 			}
 
-			var comment = await commentsRepo.AddComment(User, courseId, slideId, parentCommentIdInt, commentText);
+			if (forInstructorsOnly && !CanViewAndAddCommentsForInstructorsOnly(User, courseId))
+			{
+				forInstructorsOnly = false;
+			}
+
+			var comment = await commentsRepo.AddComment(User, courseId, slideId, parentCommentIdInt, forInstructorsOnly, commentText);
 			if (comment.IsApproved)
 				await NotifyAboutNewComment(comment);
 			var canReply = CanAddCommentHere(User, courseId, isReply: true);
@@ -204,10 +216,9 @@ namespace uLearn.Web.Controllers
 
 			/* Create NewCommentNotification later than RepliedToYourCommentNotification, because the last one is blocker for the first one.
 			 * We don't send NewCommentNotification if there is a RepliedToYouCommentNotification */
-			var notification = new NewCommentNotification
-			{
-				Comment = comment,
-			};
+			var notification = comment.IsForInstructorsOnly
+				? (Notification) new NewCommentForInstructorsOnlyNotification { Comment = comment } 
+				: new NewCommentNotification { Comment = comment };
 			await notificationsRepo.AddNotification(courseId, notification, comment.AuthorId);
 		}
 
@@ -345,5 +356,7 @@ namespace uLearn.Web.Controllers
 		public ImmutableHashSet<int> CommentsLikedByUser { get; set; }
 		public ApplicationUser CurrentUser { get; set; }
 		public CommentsPolicy CommentsPolicy { get; set; }
+		public bool CanViewAndAddCommentsForInstructorsOnly { get; set; }
+		public bool ShowOnlyInstructorsOnlyComments { get; set; }
 	}
 }

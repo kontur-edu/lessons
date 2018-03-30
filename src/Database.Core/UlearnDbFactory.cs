@@ -11,6 +11,7 @@ namespace Database
 			var configuration = GetConfiguration();
 
 			var optionsBuilder = new DbContextOptionsBuilder<UlearnDb>();
+			optionsBuilder.UseLazyLoadingProxies();
 			optionsBuilder.UseSqlServer(configuration.GetValue<string>("database"));
 			
 			return new UlearnDb(optionsBuilder.Options);

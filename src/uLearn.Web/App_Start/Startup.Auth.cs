@@ -1,16 +1,22 @@
 ﻿using System;
+using System.IO;
 using System.Web.Configuration;
 using Database.DataContexts;
 using Database.Extensions;
 using Database.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Owin;
+using Microsoft.Owin.Infrastructure;
 using Microsoft.Owin.Security.Cookies;
+using Microsoft.Owin.Security.Interop;
 using Owin;
+using uLearn.Configuration;
 using uLearn.Web.Kontur.Passport;
 using uLearn.Web.LTI;
 using uLearn.Web.Microsoft.Owin.Security.VK;
+using Web.Api.Configuration;
 
 namespace uLearn.Web
 {
@@ -21,20 +27,35 @@ namespace uLearn.Web
 		{
 			app.CreatePerOwinContext(() => new ULearnUserManager(new ULearnDb()));
 
+			var configuration = ApplicationConfiguration.Read<WebApiConfiguration>();
+			
 			// Enable the application to use a cookie to store information for the signed in user
 			app.UseCookieAuthentication(new CookieAuthenticationOptions
 			{
-				AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+				AuthenticationType = "Identity.Application",
+				CookieName = "ulearn.auth",			
+				
 				LoginPath = new PathString("/Login"),
 				Provider = new CookieAuthenticationProvider
 				{
-					OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<UserManager<ApplicationUser>, ApplicationUser, String>(
+					OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ULearnUserManager, ApplicationUser, string>(
 						validateInterval: TimeSpan.FromMinutes(30),
 						regenerateIdentityCallback: (manager, user) => user.GenerateUserIdentityAsync(manager),
 						getUserIdCallback: identity => identity.GetUserId()
 					)
-				}
+				},
+				/* Configure sharing cookies between application.
+			       See https://docs.microsoft.com/en-us/aspnet/core/security/cookie-sharing?tabs=aspnetcore2x for details */
+				TicketDataFormat = new AspNetTicketDataFormat(
+					new DataProtectorShim(
+						DataProtectionProvider.Create(new DirectoryInfo(configuration.Web.CookieKeyRingDirectory), builder => builder.SetApplicationName("ulearn"))
+							.CreateProtector(
+								"Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationMiddleware",
+								"Identity.Application",
+								// DefaultAuthenticationTypes.ApplicationCookie,
+								"v2"))),
 			});
+			
 			// Use a cookie to temporarily store information about a user logging in with a third party login provider
 			app.UseExternalSignInCookie(DefaultAuthenticationTypes.ExternalCookie);
 

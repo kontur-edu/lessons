@@ -139,7 +139,8 @@ namespace uLearn.Web.Controllers
 			var verdictForMetric = automaticChecking.GetVerdict().Replace(" ", "");
 			metricSender.SendCount($"exercise.{exerciseMetricId}.{verdictForMetric}");
 
-			await CreateStyleErrorsReviewsForSubmission(submission, buildResult.StyleErrors);
+			if (automaticChecking.IsRightAnswer)
+				await CreateStyleErrorsReviewsForSubmission(submission, buildResult.StyleErrors);
 
 			var result = new RunSolutionResult
 			{

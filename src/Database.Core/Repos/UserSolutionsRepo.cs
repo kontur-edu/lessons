@@ -22,7 +22,7 @@ namespace Database.Repos
 		private readonly UlearnDb db;
 		private readonly TextsRepo textsRepo;
 		private readonly VisitsRepo visitsRepo;
-		private readonly CourseManager courseManager;
+		private readonly WebCourseManager courseManager;
 
 		private static readonly ConcurrentDictionary<int, DateTime> unhandledSubmissions = new ConcurrentDictionary<int, DateTime>();
 		private static readonly ConcurrentDictionary<int, DateTime> handledSubmissions = new ConcurrentDictionary<int, DateTime>();
@@ -31,7 +31,7 @@ namespace Database.Repos
 		public UserSolutionsRepo(
 			UlearnDb db,
 			TextsRepo textsRepo, VisitsRepo visitsRepo, 
-			CourseManager courseManager)
+			WebCourseManager courseManager)
 		{
 			this.db = db;
 			this.textsRepo = textsRepo;

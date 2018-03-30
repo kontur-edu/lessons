@@ -67,6 +67,16 @@ namespace uLearn.CSharp.IndentsValidation.TestData.Incorrect
 
             for (;;)
 SomeMethod();
+
+            using (new DisposableMock())
+                    using (new DisposableMock())
+            {
+            }
+
+        using (new DisposableMock())
+            using (new DisposableMock())
+            {
+            }
         }
 
         public static void SomeMethod()

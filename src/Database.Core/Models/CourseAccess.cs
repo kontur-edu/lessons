@@ -47,7 +47,18 @@ namespace Database.Models
 		[Display(Name = "Назначать преподавателей")]
 		AddAndRemoveInstructors = 3,
 		
+		[Display(Name = "Получать в АПИ статистику по код-ревью (/codereveiew/statistics)")]
+		ApiViewCodeReviewStatistics = 101,
+		
 		[Display(Name = "Фича: антиплагиат")]
 		FeatureAntiPlagiarism = 1001,
+	}
+
+	public static class CourseAccessTypeExtensions
+	{
+		public static string GetAuthorizationPolicyName(this CourseAccessType accessType)
+		{
+			return "CourseAccess." + Enum.GetName(typeof(CourseAccessType), accessType);
+		}
 	}
 }

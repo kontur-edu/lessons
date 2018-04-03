@@ -15,6 +15,7 @@ using Database.DataContexts;
 using Database.Extensions;
 using Database.Models;
 using Microsoft.VisualBasic.FileIO;
+using uLearn.CSharp;
 using uLearn.Extensions;
 using uLearn.Model.Blocks;
 using uLearn.Quizes;
@@ -46,6 +47,7 @@ namespace uLearn.Web.Controllers
 		private readonly AdditionalScoresRepo additionalScoresRepo;
 		private readonly NotificationsRepo notificationsRepo;
 		private readonly SystemAccessesRepo systemAccessesRepo;
+		private readonly StyleErrorsRepo styleErrorsRepo;
 
 		public AdminController()
 		{
@@ -64,6 +66,7 @@ namespace uLearn.Web.Controllers
 			additionalScoresRepo = new AdditionalScoresRepo(db);
 			notificationsRepo = new NotificationsRepo(db);
 			systemAccessesRepo = new SystemAccessesRepo(db);
+			styleErrorsRepo = new StyleErrorsRepo(db);
 		}
 
 		public ActionResult CourseList(string courseCreationLastTry = null)
@@ -1528,6 +1531,20 @@ namespace uLearn.Web.Controllers
 			else
 				await coursesRepo.RevokeAccess(courseId, userId, accessType);
 
+			return Json(new { status = "ok" });
+		}
+
+		[SysAdminsOnly]
+		public async Task<ActionResult> StyleValidations()
+		{
+			return View(await styleErrorsRepo.GetStyleErrorSettingsAsync());
+		}
+
+		[SysAdminsOnly]
+		[HttpPost]
+		public async Task<ActionResult> EnableStyleValidation(StyleErrorType errorType, bool isEnabled)
+		{
+			await styleErrorsRepo.EnableStyleErrorAsync(errorType, isEnabled);
 			return Json(new { status = "ok" });
 		}
 	}

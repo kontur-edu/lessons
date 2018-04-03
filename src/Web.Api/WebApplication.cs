@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Database;
@@ -20,7 +21,7 @@ using Serilog.Events;
 using uLearn;
 using uLearn.Configuration;
 using Ulearn.Common.Extensions;
-using Ulearn.Web.Api.Attributes;
+using Ulearn.Web.Api.Authorization;
 using Ulearn.Web.Api.Models.Binders;
 using Vostok.Commons.Extensions.UnitConvertions;
 using Vostok.Hosting;
@@ -90,6 +91,7 @@ namespace Ulearn.Web.Api
 			services.AddSingleton<WebCourseManager>();
 			services.AddSingleton(configuration);
 			services.AddScoped<IAuthorizationHandler, CourseRoleAuthorizationHandler>();
+			services.AddScoped<IAuthorizationHandler, CourseAccessAuthorizationHandler>();
 			
 			/* DI for database repos */
 			services.AddScoped<UsersRepo>();
@@ -143,6 +145,12 @@ namespace Ulearn.Web.Api
 					context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 					return Task.CompletedTask;
 				};
+				options.Events.OnRedirectToAccessDenied = context =>
+				{
+					/* Replace standart redirecting to AccessDenied */
+					context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+					return Task.CompletedTask;
+				};
 			});
 
 			services.AddAuthorization(options =>
@@ -150,11 +158,13 @@ namespace Ulearn.Web.Api
 				options.AddPolicy("Instructors", policy => policy.Requirements.Add(new CourseRoleRequirement(CourseRole.Instructor)));
 				options.AddPolicy("CourseAdmins", policy => policy.Requirements.Add(new CourseRoleRequirement(CourseRole.CourseAdmin)));
 				options.AddPolicy("SysAdmins", policy => policy.RequireRole(new List<string> { LmsRoles.SysAdmin.GetDisplayName() }));
+
+				foreach (var courseAccessType in Enum.GetValues(typeof(CourseAccessType)).Cast<CourseAccessType>())
+				{
+					var policyName = courseAccessType.GetAuthorizationPolicyName();
+					options.AddPolicy(policyName, policy => policy.Requirements.Add(new CourseAccessRequirement(courseAccessType)));
+				}
 			});
-
-
-			//			services.AddAuthentication();
-			//.AddVk()
 		}
 	}
 }

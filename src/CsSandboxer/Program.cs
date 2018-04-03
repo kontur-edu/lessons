@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -77,27 +79,33 @@ namespace CsSandboxer
 			var permSet = new PermissionSet(PermissionState.None);
 			permSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.Read, assemblyPath));
 			permSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, assemblyPath));
+			permSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, Path.GetDirectoryName(typeof(Sandboxer).Assembly.Location)));
 			permSet.AddPermission(new EnvironmentPermission(EnvironmentPermissionAccess.Read, "InsideSandbox"));
 			
-			/* Permissions for NUnit: see https://github.com/nunit/nunit/blob/master/src/NUnitFramework/tests/Assertions/LowTrustFixture.cs#L166 for details */
+			/*
+			 * Permissions for NUnit: see https://github.com/nunit/nunit/blob/master/src/NUnitFramework/tests/Assertions/LowTrustFixture.cs#L166
+			 * and https://github.com/nunit/nunit/issues/2792 for details
+			 */
 			permSet.AddPermission(new ReflectionPermission(
 				ReflectionPermissionFlag.MemberAccess));            // Required to instantiate classes that contain test code and to get cross-appdomain communication to work.
 			permSet.AddPermission(new SecurityPermission(
 				SecurityPermissionFlag.Execution |                  // Required to execute test code
-				SecurityPermissionFlag.SerializationFormatter));    // Required to support cross-appdomain test result formatting by NUnit TestContext
-			permSet.AddPermission(new SecurityPermission(
-				SecurityPermissionFlag.UnmanagedCode));				// Required for NUnit 3.10's System.Console.SetOut() call
+				SecurityPermissionFlag.SerializationFormatter       // Required to support cross-appdomain test result formatting by NUnit TestContext
+			));
+			/* In .NET < 3.5 add following EnvironmentPermission:
+			permSet.AddPermission(new EnvironmentPermission(PermissionState.Unrestricted)); // Required for NUnit.Framework.Assert.GetStackTrace()
+			*/ 
 
 			var evidence = new Evidence();
 			evidence.AddHostEvidence(new Zone(SecurityZone.Untrusted));
-			var fullTrustAssembly = typeof(Sandboxer).Assembly.Evidence.GetHostEvidence<StrongName>();
+			var fullyTrustAssemblies = typeof(Sandboxer).Assembly.Evidence.GetHostEvidence<StrongName>();
 
 			var adSetup = new AppDomainSetup
 			{
 				ApplicationBase = Path.GetDirectoryName(assemblyPath),
 			};
 
-			var domain = AppDomain.CreateDomain(id, evidence, adSetup, permSet, fullTrustAssembly);
+			var domain = AppDomain.CreateDomain(id, evidence, adSetup, permSet, fullyTrustAssemblies);
 			return domain;
 		}
 

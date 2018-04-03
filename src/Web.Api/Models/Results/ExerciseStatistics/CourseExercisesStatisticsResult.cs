@@ -10,6 +10,9 @@ namespace Ulearn.Web.Api.Models.Results.ExerciseStatistics
 	{
 		[DataMember(Name = "exercises")]
 		public Dictionary<Guid, OneExerciseStatistics> Exercises { get; set; }
+		
+		[DataMember(Name = "analyzed_submissions_count")]
+		public int AnalyzedSubmissionsCount { get; set; }
 	}
 
 	[DataContract]

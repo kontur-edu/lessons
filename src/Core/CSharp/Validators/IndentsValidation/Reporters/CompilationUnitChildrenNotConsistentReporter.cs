@@ -21,7 +21,7 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 			return childLineIndents
 				.Skip(1)
 				.Where(i => i.LengthInSpaces != firstIndent.LengthInSpaces)
-				.Select(i => new SolutionStyleError(i.IndentedToken, "На верхнем уровне все объявления и инструкции должны иметь одинаковый отступ."));
+				.Select(i => new SolutionStyleError(StyleErrorType.Indents06, i.IndentedToken));
 		}
 	}
 }

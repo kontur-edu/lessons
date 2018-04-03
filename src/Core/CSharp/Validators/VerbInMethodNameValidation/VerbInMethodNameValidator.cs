@@ -42,7 +42,7 @@ namespace uLearn.CSharp.Validators.VerbInMethodNameValidation
                     yield break;
             }
 
-			yield return new SolutionStyleError(syntaxToken, "В названии метода отсутствует глагол.");
+			yield return new SolutionStyleError(StyleErrorType.VerbInMethod01, syntaxToken);
         }
 
         private IEnumerable<string> SplitMethodName(string methodName)

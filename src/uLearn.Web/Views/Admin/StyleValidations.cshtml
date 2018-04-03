@@ -1,0 +1,38 @@
+﻿@using uLearn.CSharp
+@using Ulearn.Common.Extensions
+@model Dictionary<StyleErrorType, bool>
+
+@{
+	ViewBag.Title = "Стилевые ошибки в программах на C#";
+}
+
+<div class="container">
+    <h2>Стилевые ошибки в программах на C#</h2>
+    
+    <div class="text-muted">
+        Вы можете выключить проверку конкретных ошибок. В&nbsp;этом случае во время выключения такие ошибки создаваться не&nbsp;будут.
+        Валидации у&nbsp;старых решений при этом никуда не&nbsp;исчезнут. После включения ошибки пропущенные решения не&nbsp;будут
+        вновь проверены на&nbsp;эту ошибку.
+    </div>
+    
+    <div class="style-errors__settings">
+        @foreach (var kvp in Model)
+        {
+            var errorType = kvp.Key;
+            var isEnabled = kvp.Value;
+            
+            <div class="checkbox checkbox-default">
+                <input @(isEnabled ? "checked=\"checked\"" : "")
+                    id="style-errors__settings__@errorType"
+                    name="style-errors__settings__@errorType" type="checkbox"
+                    value="@(isEnabled.ToString().ToLower())"
+                    data-change-url="@Url.Action("EnableStyleValidation", "Admin", new { errorType = errorType, isEnabled = "IS_ENABLED"})"
+                    >
+                <label for="style-errors__settings__@errorType">
+                    @Html.Raw(errorType.GetTemplate().RenderSimpleMarkdown())
+                    <span class="style-errors__settings__status"></span>
+                </label>
+            </div>
+        }
+    </div>
+ </div>

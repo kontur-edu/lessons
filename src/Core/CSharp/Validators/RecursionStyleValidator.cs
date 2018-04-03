@@ -21,11 +21,11 @@ namespace uLearn.CSharp.Validators
 			SolutionStyleError error = null;
 			if (requireRecursion && !recursiveMethods.Any())
 			{
-			 	error = new SolutionStyleError(userSolution.GetRoot(), "Решение должно быть рекурсивным");
+			 	error = new SolutionStyleError(StyleErrorType.Recursion01, userSolution.GetRoot());
 			}
 
 			if (!requireRecursion && recursiveMethods.Any())
-				error = new SolutionStyleError(recursiveMethods.First(), "Решение должно быть нерекурсивным");
+				error = new SolutionStyleError(StyleErrorType.Recursion02, recursiveMethods.First());
 
 			if (error != null)
 				return new List<SolutionStyleError> { error };

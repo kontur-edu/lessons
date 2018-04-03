@@ -13,7 +13,7 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 					.Select(node => node.GetFirstToken())
 					.Any(t => braces.TokenInsideBraces(t) && t.GetLine() == braces.Open.GetLine());
 				if (openBraceHasCodeOnSameLine)
-					yield return new SolutionStyleError(braces.Open, "После открывающей фигурной скобки на той же строке не должно быть кода.");
+					yield return new SolutionStyleError(StyleErrorType.Indents12, braces.Open);
 			}
 		}
 	}

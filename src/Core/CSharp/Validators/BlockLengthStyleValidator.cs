@@ -5,14 +5,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace uLearn.CSharp.Validators
 {
-	public class HasRecursionStyleValidator : BaseStyleValidator
-	{
-		public override List<SolutionStyleError> FindErrors(SyntaxTree userSolution, SemanticModel semanticModel)
-		{
-			throw new System.NotImplementedException();
-		}
-	}
-
 	public class BlockLengthStyleValidator : BaseStyleValidator
 	{
 		private readonly int maxLen;
@@ -32,7 +24,7 @@ namespace uLearn.CSharp.Validators
 			var startPosition = GetSpan(block.OpenBraceToken).StartLinePosition;
 			var endPosition = GetSpan(block.CloseBraceToken).EndLinePosition;
 			if (endPosition.Line - startPosition.Line >= maxLen)
-				yield return new SolutionStyleError(new FileLinePositionSpan("", startPosition, endPosition), "Слишком длинный блок инструкций. Попытайтесь разбить его на вспомогательные методы.");
+				yield return new SolutionStyleError(StyleErrorType.BlockLength01, new FileLinePositionSpan("", startPosition, endPosition));
 		}
 	}
 }

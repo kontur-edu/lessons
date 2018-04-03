@@ -202,6 +202,7 @@
     <Compile Include="DataContexts\SlideHintRepo.cs" />
     <Compile Include="DataContexts\SlideRateRepo.cs" />
     <Compile Include="DataContexts\StepikRepo.cs" />
+    <Compile Include="DataContexts\StyleErrorsRepo.cs" />
     <Compile Include="DataContexts\SystemAccessesRepo.cs" />
     <Compile Include="DataContexts\TextsRepo.cs" />
     <Compile Include="DataContexts\ULearnDb.cs" />
@@ -614,6 +615,10 @@
     <Compile Include="Migrations\201803160501457_AddCommentsForInstructorsOnly.Designer.cs">
       <DependentUpon>201803160501457_AddCommentsForInstructorsOnly.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803300553347_AddStyleErrorSettings.cs" />
+    <Compile Include="Migrations\201803300553347_AddStyleErrorSettings.Designer.cs">
+      <DependentUpon>201803300553347_AddStyleErrorSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AdditionalScore.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -648,6 +653,7 @@
     <Compile Include="Models\StepikAccessToken.cs" />
     <Compile Include="Models\StepikExportProcess.cs" />
     <Compile Include="Models\StepikExportSlideAndStepMap.cs" />
+    <Compile Include="Models\StyleErrorSettings.cs" />
     <Compile Include="Models\SystemAccess.cs" />
     <Compile Include="Models\TextBlob.cs" />
     <Compile Include="Models\UnitAppearance.cs" />
@@ -960,6 +966,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803160501457_AddCommentsForInstructorsOnly.resx">
       <DependentUpon>201803160501457_AddCommentsForInstructorsOnly.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803300553347_AddStyleErrorSettings.resx">
+      <DependentUpon>201803300553347_AddStyleErrorSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

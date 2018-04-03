@@ -97,7 +97,8 @@ namespace uLearn.Web
 				"~/Scripts/stepik.js",
 				"~/Scripts/modals.js",
 				"~/Scripts/connect-checkboxes.js",
-				"~/Scripts/antiplagiarism.js"
+				"~/Scripts/antiplagiarism.js",
+				"~/Scripts/style-errors-settings.js"
 			};
 		}
 

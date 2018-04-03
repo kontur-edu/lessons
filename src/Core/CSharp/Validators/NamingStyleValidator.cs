@@ -20,13 +20,13 @@ namespace uLearn.CSharp.Validators
 			if (method.AttributeLists.Any()) 
 				yield break; // Turn this check off for [Test], [TestCase] and all other special cases marked with attribute
 			if (method.IsVoidGetter() && !method.AttributeLists.Any())
-				yield return new SolutionStyleError(method.Identifier, "`Get`-метод без возвращаемого значения — это бессмыслица.");
+				yield return new SolutionStyleError(StyleErrorType.NamingStyle01, method.Identifier);
 			if (method.IsNoArgsSetter())
-				yield return new SolutionStyleError(method.Identifier, "`Set`-метод без аргументов — это бессмыслица.");
+				yield return new SolutionStyleError(StyleErrorType.NamingStyle02, method.Identifier);
 			if (name.IsSingleWordGerundIdentifier())
-				yield return new SolutionStyleError(method.Identifier, "Называйте методы простыми глаголами! Например, `Move`, а не `Moving`.");
+				yield return new SolutionStyleError(StyleErrorType.NamingStyle03, method.Identifier);
 			if (name.IsSingleWordIonIdentifier())
-				yield return new SolutionStyleError(method.Identifier, "Называйте методы глаголами! Например, `Convert`, а не `Conversion`.");
+				yield return new SolutionStyleError(StyleErrorType.NamingStyle04, method.Identifier);
 		}
 	}
 }

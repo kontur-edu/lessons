@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using uLearn;
+using Ulearn.Web.Api.Authorization;
 using Ulearn.Web.Api.Models.Results.CodeReviewStatistics;
 
 namespace Ulearn.Web.Api.Controllers
@@ -36,7 +37,7 @@ namespace Ulearn.Web.Api.Controllers
 		}
 		
 		[Route("{courseId}/instructors")]
-		[Authorize(Policy = "CourseAdmins")]
+		[CourseAccessAuthorize(CourseAccessType.ApiViewCodeReviewStatistics)]
 		public async Task<IActionResult> InstructorsStatistics(Course course, int count=1000, DateTime? from=null, DateTime? to=null)
 		{
 			if (course == null)
@@ -65,6 +66,7 @@ namespace Ulearn.Web.Api.Controllers
 
 			var result = new CodeReviewInstructorsStatisticsResult
 			{
+				AnalyzedCodeReviewsCount = allSlideCheckings.Count,
 				Instructors = new List<CodeReviewInstructorStatistics>()
 			};
 			foreach (var instructor in instructors)
@@ -82,7 +84,7 @@ namespace Ulearn.Web.Api.Controllers
 						slide => new CodeReviewExerciseStatistics
 						{
 							Exercise = BuildSlideInfo(course.Id, slide),
-							ReviewedSubmissionsCount = checkingsCheckedByInstructor.Count(c => c.SlideId == slide.Id),
+							ReviewedSubmissionsCount = checkingsCheckedByInstructor.Where(c => c.SlideId == slide.Id).DistinctBy(c => c.SubmissionId).Count(),
 							QueueSize = checkingQueue.Count(c => c.SlideId == slide.Id),
 							CommentsCount = comments.Count(c => c.ExerciseChecking.SlideId == slide.Id),
 						}

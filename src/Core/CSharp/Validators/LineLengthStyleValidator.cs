@@ -24,10 +24,7 @@ namespace uLearn.CSharp.Validators
 
 			return new List<SolutionStyleError>
 			{
-				new SolutionStyleError(
-					position,
-					"Слишком длинная строка. Не заставляйте людей использовать горизонтальный скролл"
-				)
+				new SolutionStyleError(StyleErrorType.LineLength01, position)
 			};
 		}
 	}

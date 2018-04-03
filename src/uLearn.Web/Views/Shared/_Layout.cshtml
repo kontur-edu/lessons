@@ -81,7 +81,8 @@
 						<ul class="dropdown-menu">
 							<li>@Html.ActionLink("Пользователи", "List", "Account", new { role = LmsRoles.SysAdmin }, null)</li>
 							<li>@Html.ActionLink("Статистика", "SystemStatistics", "Analytics")</li>
-							<li>@Html.ActionLink("Песочница C#", "Index", "Sandbox")</li>
+                            <li>@Html.ActionLink("Песочница C#", "Index", "Sandbox")</li>
+                            <li>@Html.ActionLink("Стилевые ошибки в C#", "StyleValidations", "Admin")</li>
 							<li class="divider"></li>
 							<li class="dropdown-header">Курсы <a href="@Url.Action("CourseList", "Admin")">создать<span class="glyphicon glyphicon-plus"></span></a></li>
 							@CoursesDropdown(courses)

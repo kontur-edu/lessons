@@ -2817,3 +2817,9 @@ h4 + div > .notifications__transport-settings__course__link {
 		padding-left: 12px;
 	}
 }
+
+/* Style errors settings */
+.style-errors__settings__status {
+	margin-left: 50px;
+	display: inline-block;
+}

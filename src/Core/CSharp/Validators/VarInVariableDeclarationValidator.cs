@@ -34,7 +34,7 @@ namespace uLearn.CSharp.Validators
                     yield break;
 
                 if (Equals(initializerTypeInfo.Type, variableTypeInfo.Type))
-                    yield return new SolutionStyleError(variable, "Используйте `var` при инициализации локальной переменной.");
+                    yield return new SolutionStyleError(StyleErrorType.VarInVariableDeclaration01, variable);
             }
         }
 

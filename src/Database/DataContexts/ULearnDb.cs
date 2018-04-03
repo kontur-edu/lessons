@@ -214,6 +214,8 @@ namespace Database.DataContexts
 
 		public DbSet<CourseAccess> CourseAccesses { get; set; }
 		public DbSet<SystemAccess> SystemAccesses { get; set; }
+		
+		public DbSet<StyleErrorSettings> StyleErrorSettings { get; set; }
 	}
 }
  

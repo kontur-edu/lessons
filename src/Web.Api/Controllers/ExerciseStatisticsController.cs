@@ -24,8 +24,7 @@ namespace Ulearn.Web.Api.Controllers
 		}
 
 		[Route("{courseId}")]
-		[Authorize(Policy = "CourseAdmins")]
-		public async Task<IActionResult> CourseStatistics(Course course, int count=1000, DateTime? from=null, DateTime? to=null)
+		public async Task<IActionResult> CourseStatistics(Course course, int count=10000, DateTime? from=null, DateTime? to=null)
 		{
 			if (course == null)
 				return NotFound();
@@ -35,7 +34,7 @@ namespace Ulearn.Web.Api.Controllers
 			if (! to.HasValue)
 				to = DateTime.MaxValue;
 
-			count = Math.Max(count, 1000);
+			count = Math.Max(count, 10000);
 			
 			var exerciseSlides = course.Slides.OfType<ExerciseSlide>().ToList();
 			/* TODO (andgein): I can't select all submissions because ApplicationUserId column doesn't exist in database (ApplicationUser_Id exists).
@@ -51,6 +50,7 @@ namespace Ulearn.Web.Api.Controllers
 			const int daysLimit = 30;
 			var result = new CourseExercisesStatisticsResult
 			{
+				AnalyzedSubmissionsCount = submissions.Count,
 				Exercises = exerciseSlides.ToDictionary(
 					slide => slide.Id,
 					slide =>

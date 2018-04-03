@@ -126,9 +126,9 @@ namespace Database.Repos
 				.ToDefaultDictionary();
 		}
 
-		public bool HasCourseAccess(string userId, string courseId, CourseAccessType accessType)
+		public Task<bool> HasCourseAccessAsync(string userId, string courseId, CourseAccessType accessType)
 		{
-			return db.CourseAccesses.Any(a => a.CourseId == courseId && a.UserId == userId && a.AccessType == accessType && a.IsEnabled);
+			return db.CourseAccesses.AnyAsync(a => a.CourseId == courseId && a.UserId == userId && a.AccessType == accessType && a.IsEnabled);
 		}
 	}
 }

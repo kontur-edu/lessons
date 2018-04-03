@@ -13,7 +13,7 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 				var closeBraceIndent = new Indent(braces.Close);
 				if (openBraceIndent.IndentedTokenIsFirstAtLine && !closeBraceIndent.IndentedTokenIsFirstAtLine)
 				{
-					yield return new SolutionStyleError(braces.Close, "Перед закрывающей фигурной скобкой на той же строке не должно быть кода.");
+					yield return new SolutionStyleError(StyleErrorType.Indents05, braces.Close);
 				}
 			}
 		}

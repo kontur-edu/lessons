@@ -38,12 +38,12 @@ namespace uLearn.CSharp.Validators
 			if (openBraceLine != firstStatementLine
 				&& openBraceLine + 1 != firstStatementLine
 				&& !IsComment(bracesPair.Open.Parent, openBraceLine + 1))
-				yield return new SolutionStyleError(bracesPair.Open, "После открывающей скобки не должно быть лишнего переноса строки.");
+				yield return new SolutionStyleError(StyleErrorType.ExcessLines01, bracesPair.Open);
 
 			if (closeBraceLine != lastStatementLine
 				&& closeBraceLine - 1 != lastStatementLine
 				&& !IsComment(bracesPair.Open.Parent, closeBraceLine - 1))
-				yield return new SolutionStyleError(bracesPair.Close, "Перед закрывающей скобкой не должно быть лишнего переноса строки.");
+				yield return new SolutionStyleError(StyleErrorType.ExcessLines02, bracesPair.Close);
 		}
 
 		private SolutionStyleError ReportWhenExistExcessLineBetweenDeclaration(BracesPair bracesPair)
@@ -54,7 +54,7 @@ namespace uLearn.CSharp.Validators
 				return null;
 
 			if (declarationLine + 1 != openBraceLine)
-				return new SolutionStyleError(bracesPair.Open, "Между объявлением и открывающей скобкой не должно быть лишнего переноса строки.");
+				return new SolutionStyleError(StyleErrorType.ExcessLines03, bracesPair.Open);
 
 			return null;
 		}
@@ -69,7 +69,7 @@ namespace uLearn.CSharp.Validators
 				return null;
 			var nextSyntaxNodeLine = GetStartLine(nextSyntaxNode);
 			if (closeBraceLine + 1 == nextSyntaxNodeLine && closeBraceLine != openBraceLine)
-				return new SolutionStyleError(bracesPair.Close, "После закрывающей скобки нужно оставить одну пустую строку.");
+				return new SolutionStyleError(StyleErrorType.ExcessLines04, bracesPair.Close);
 
 			return null;
 		}

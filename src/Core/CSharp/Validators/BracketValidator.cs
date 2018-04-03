@@ -24,7 +24,7 @@ namespace uLearn.CSharp.Validators
                 yield break;
 
             if (ContainsRedundantBrackets(syntaxKinds))
-                yield return new SolutionStyleError(returnStatementSyntax, "Не следует выделять возвращаемое выражение скобками.");
+                yield return new SolutionStyleError(StyleErrorType.Brackets01, returnStatementSyntax);
         }
 
         private bool NeedToCheckExpression(SyntaxKind[] syntaxKinds) =>

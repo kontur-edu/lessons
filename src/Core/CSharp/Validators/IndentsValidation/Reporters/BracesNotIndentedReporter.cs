@@ -17,8 +17,7 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 				var parentLineIndent = new Indent(correctOpenbraceParent);
 				var openbraceLineIndent = new Indent(braces.Open);
 				if (openbraceLineIndent.LengthInSpaces < parentLineIndent.LengthInSpaces)
-					yield return new SolutionStyleError(braces.Open,
-						$"Парные фигурные скобки ({braces}) должны иметь отступ не меньше, чем у родителя.");
+					yield return new SolutionStyleError(StyleErrorType.Indents04, braces.Open, braces);
 			}
 		}
 	}

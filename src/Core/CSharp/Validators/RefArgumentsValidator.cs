@@ -39,7 +39,7 @@ namespace uLearn.CSharp.Validators
         {
             SolutionStyleError GetErrorForParameter(ParameterSyntax parameter)
             {
-                return new SolutionStyleError(parameter.GetFirstToken(), $"Разрешено передавать через `ref` только примитивные типы.");
+                return new SolutionStyleError(StyleErrorType.RefArguments01, parameter.GetFirstToken());
             }
 
             return methodDeclaration.ParameterList.Parameters

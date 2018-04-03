@@ -32,7 +32,7 @@ namespace uLearn.CSharp.Validators
 												.Call(r => r.Expression as LiteralExpressionSyntax)
 												.Call(IsBoolLiteral, false);
 			if (trueStatementIsReturnBoolLiteral && falseStatementIsReturnBoolLiteral == true)
-				yield return new SolutionStyleError(ifElseStatement, "Используйте return вместо if");
+				yield return new SolutionStyleError(StyleErrorType.RedundantIf01, ifElseStatement);
 		}
 
 		private static bool IsBoolLiteral(LiteralExpressionSyntax node)

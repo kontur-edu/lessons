@@ -19,9 +19,9 @@ namespace uLearn.CSharp.Validators
 			var isLower = char.IsLower(name[0]);
 
 			if (mustStartWithLower && !isLower)
-				yield return new SolutionStyleError(identifier, "Имя должно начинаться с маленькой буквы.");
+				yield return new SolutionStyleError(StyleErrorType.NamingCase01, identifier);
 			if (mustStartWithUpper && !isUpper)
-				yield return new SolutionStyleError(identifier, "Имя должно начинаться с большой буквы.");
+				yield return new SolutionStyleError(StyleErrorType.NamingCase02, identifier);
 		}
 
 		private bool MustStartWithUpper(SyntaxNode node)

@@ -9,7 +9,10 @@ namespace Ulearn.Web.Api.Models.Results.CodeReviewStatistics
 	public class CodeReviewInstructorsStatisticsResult
 	{
 		[DataMember(Name = "instructors")]
-		public List<CodeReviewInstructorStatistics> Instructors { get; set; } 
+		public List<CodeReviewInstructorStatistics> Instructors { get; set; }
+		
+		[DataMember(Name = "analyzed_code_reviews_count")]
+		public int AnalyzedCodeReviewsCount { get; set; }
 	}
 
 	[DataContract]

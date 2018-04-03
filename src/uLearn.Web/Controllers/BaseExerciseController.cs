@@ -30,9 +30,10 @@ namespace uLearn.Web.Controllers
 		protected readonly VisitsRepo visitsRepo;
 		protected readonly NotificationsRepo notificationsRepo;
 		protected readonly UsersRepo usersRepo;
-
+		protected readonly StyleErrorsRepo styleErrorsRepo;
+		
 		private static readonly TimeSpan executionTimeout = TimeSpan.FromSeconds(45);
-
+		
 		public BaseExerciseController()
 			: this(new ULearnDb(), WebCourseManager.Instance, new GraphiteMetricSender("web"))
 		{
@@ -50,6 +51,7 @@ namespace uLearn.Web.Controllers
 			visitsRepo = new VisitsRepo(db);
 			notificationsRepo = new NotificationsRepo(db);
 			usersRepo = new UsersRepo(db);
+			styleErrorsRepo = new StyleErrorsRepo(db);
 		}
 
 		private string GenerateSubmissionName(Slide exerciseSlide, string userName)
@@ -165,6 +167,10 @@ namespace uLearn.Web.Controllers
 		{
 			var ulearnBotUserId = usersRepo.GetUlearnBotUserId();
 			foreach (var error in styleErrors)
+			{
+				if (! await styleErrorsRepo.IsStyleErrorEnabledAsync(error.ErrorType))
+					continue;
+				
 				await slideCheckingsRepo.AddExerciseCodeReview(
 					submission,
 					ulearnBotUserId,
@@ -174,6 +180,7 @@ namespace uLearn.Web.Controllers
 					error.Span.EndLinePosition.Character,
 					error.Message
 				);
+			}
 		}
 	}
 }

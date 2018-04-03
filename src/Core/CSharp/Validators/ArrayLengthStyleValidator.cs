@@ -49,7 +49,7 @@ namespace uLearn.CSharp.Validators
 					var variableName = variableSymbol.ToString();
 					if (!cycleStatement.ContainsAssignmentOf(variableName, semanticModel)
 						&& !methodInvocations.Any(m => m.HasVariableAsArgument(variableName, semanticModel)))
-						yield return new SolutionStyleError(methodInvocation, "Неэффективный код. GetLength вызывается в цикле для константы и возвращает каждый раз одно и то же. Лучше вынести результат выполнения метода в переменную за цикл.");
+						yield return new SolutionStyleError(StyleErrorType.ArrayLength01, methodInvocation);
 				}
 			}
 		}

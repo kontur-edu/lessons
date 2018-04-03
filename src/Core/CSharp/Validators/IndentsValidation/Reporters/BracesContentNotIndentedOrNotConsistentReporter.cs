@@ -26,13 +26,11 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 				var minimalIndentAfterOpenbrace = new Indent(firstTokenOfLineWithMinimalIndent);
 				var firstChild = childLineIndents.First();
 				if (firstChild.LengthInSpaces <= minimalIndentAfterOpenbrace.LengthInSpaces)
-					yield return new SolutionStyleError(firstChild.IndentedToken,
-						$"Содержимое парных фигурных скобок ({braces}) должно иметь дополнительный отступ.");
+					yield return new SolutionStyleError(StyleErrorType.Indents01, firstChild.IndentedToken, braces);
 				var badLines = childLineIndents.Where(t => t.LengthInSpaces != firstChild.LengthInSpaces);
 				foreach (var badIndent in badLines)
 				{
-					yield return new SolutionStyleError(badIndent.IndentedToken,
-						$"Содержимое парных фигурных скобок ({braces}) должно иметь одинаковый отступ.");
+					yield return new SolutionStyleError(StyleErrorType.Indents02, badIndent.IndentedToken, braces);
 				}
 			}
 		}

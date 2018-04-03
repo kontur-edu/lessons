@@ -1107,6 +1107,7 @@
     <Content Include="Scripts\slide-versions.js" />
     <Content Include="Scripts\slide-video.js" />
     <Content Include="Scripts\stepik.js" />
+    <Content Include="Scripts\style-errors-settings.js" />
     <Content Include="Scripts\table-configurator.js" />
     <Content Include="Scripts\tooltips.js" />
     <Content Include="Scripts\suggest-mail-notifications.js" />
@@ -1212,6 +1213,7 @@
     <Content Include="tablesorter-master\README.md" />
     <Content Include="tablesorter-master\tablesorter.jquery.json" />
     <Content Include="tablesorter-master\test.html" />
+    <Content Include="Views\Admin\StyleValidations.cshtml" />
     <Content Include="Views\AntiPlagiarism\Details.cshtml" />
     <Content Include="Views\Errors\404.cshtml" />
     <Content Include="Views\Errors\Error.cshtml" />

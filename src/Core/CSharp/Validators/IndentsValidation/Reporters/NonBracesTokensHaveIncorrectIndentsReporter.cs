@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 {
@@ -31,10 +33,10 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 				var parentStart = parent.GetValidationStartIndexInSpaces();
 				if (rootStart == 0)
 					yield break;
-				var validateIndent = ValidateIndent(rootStatementSyntax, rootStart, parentStart, rootLine, parentLine);
-				if (validateIndent != null)
+				var errorType = GetIndentErrorType(rootStart, parentStart, rootLine, parentLine);
+				if (errorType.HasValue)
 				{
-					yield return new SolutionStyleError(rootStatementSyntax, validateIndent);
+					yield return new SolutionStyleError(errorType.Value, rootStatementSyntax);
 					yield break;
 				}
 			}
@@ -61,9 +63,7 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 
 				if (statementClause.HasExcessNewLines())
 				{
-					yield return new SolutionStyleError(
-						statementClause,
-						"Не рекомендуется оставлять лишние пустые строки. Пожалуйста, уберите их");
+					yield return new SolutionStyleError(StyleErrorType.Indents10, statementClause);
 					continue;
 				}
 
@@ -71,10 +71,10 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 				{
 					if (statementStart != rootStart)
 					{
-						var report = ValidateIndent(rootStatementSyntax, statementStart, rootStart, statementLine, rootLine);
-						if (report != null)
+						var errorType = GetIndentErrorType(statementStart, rootStart, statementLine, rootLine);
+						if (errorType.HasValue)
 						{
-							yield return new SolutionStyleError(statementClause, report);
+							yield return new SolutionStyleError(errorType.Value, statementClause);
 							continue;
 						}
 					}
@@ -85,9 +85,7 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 					{
 						if (statementStart != rootStart)
 						{
-							yield return new SolutionStyleError(
-								statementClause,
-								"Рекомендуется выровнять таким же отступом, как и родительский блок");
+							yield return new SolutionStyleError(StyleErrorType.Indents11, statementClause);
 							continue;
 						}
 					}
@@ -95,10 +93,10 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 					{
 						if (IsAllowedOneLineSyntaxToken(rootEndLine, statementLine, rootStatementSyntax, statementClause))
 							continue;
-						var report = ValidateIndent(rootStatementSyntax, statementStart, rootStart, statementLine, rootLine);
-						if (report != null)
+						var errorType = GetIndentErrorType(statementStart, rootStart, statementLine, rootLine);
+						if (errorType.HasValue)
 						{
-							yield return new SolutionStyleError(statementClause, report);
+							yield return new SolutionStyleError(errorType.Value, statementClause);
 							continue;
 						}
 					}
@@ -125,27 +123,25 @@ namespace uLearn.CSharp.Validators.IndentsValidation.Reporters
 					statementClause.Kind != SyntaxKind.DoStatement;
 		}
 
-		private static string ValidateIndent(
-			SyntaxNodeOrToken root,
-			int statementStart,
+		private static StyleErrorType? GetIndentErrorType(int statementStart,
 			int rootStart,
 			int statementLine,
 			int rootLine)
 		{
 			if (statementLine == rootLine)
 			{
-				return "Добавьте, пожалуйста, дополнительный перенос строки";
+				return StyleErrorType.Indents07;
 			}
 
 			if (statementStart <= rootStart)
 			{
-				return "Выражение имеет слишком маленький отступ по сравнению с родительским блоком";
+				return StyleErrorType.Indents08;
 			}
 
 			var delta = statementStart - rootStart;
 			if (delta < 4)
 			{
-				return "Выражение имеет слишком маленький отступ по сравнению с родительским блоком. Рекомендуется ставить 4 пробела";
+				return StyleErrorType.Indents09;
 			}
 
 			return null;

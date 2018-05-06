@@ -83,10 +83,18 @@ namespace RunCsJob
 			{
 				RunningResults result;
 				var instance = new SandboxRunner(submission, settings);
-				if (submission is ProjRunnerSubmission)
-					result = instance.RunMsBuild(submissionCompilationDirectory.FullName);
-				else
-					result = instance.RunCsc(submissionCompilationDirectory.FullName);
+				switch (submission)
+				{
+					case JsRunnerSubmission _:
+						result = instance.RunJsBuild(submissionCompilationDirectory.FullName);
+						break;
+					case ProjRunnerSubmission _:
+						result = instance.RunMsBuild(submissionCompilationDirectory.FullName);
+						break;
+					default:
+						result = instance.RunCsc(submissionCompilationDirectory.FullName);
+						break;
+				}
 				result.Id = submission.Id;
 				return result;
 			}
@@ -111,6 +119,27 @@ namespace RunCsJob
 			this.settings = settings ?? new SandboxRunnerSettings();
 		}
 
+		private RunningResults RunJsBuild(string submissionCompilationDirectory)
+		{
+			var jsSubmission = (JsRunnerSubmission)submission;
+			log.Info($"Запускаю проверку Js-решения {jsSubmission.Id}");
+			var dir = new DirectoryInfo(submissionCompilationDirectory);
+
+			try
+			{
+				Utils.UnpackZip(jsSubmission.ZipFileData, dir.FullName);
+			}
+			catch (Exception ex)
+			{
+				log.Error("Не могу распаковать решение", ex);
+				return new RunningResults(jsSubmission.Id, Verdict.SandboxError, error: ex.ToString());
+			}
+			
+			log.Info($"Запускаю Docker для решения {jsSubmission.Id} в папке {dir.FullName}");
+
+			return JsRunner.Run(settings, dir);
+		}
+		
 		private RunningResults RunMsBuild(string submissionCompilationDirectory)
 		{
 			var projSubmission = (ProjRunnerSubmission)submission;

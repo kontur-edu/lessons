@@ -106,14 +106,15 @@ namespace RunCsJob
 			{
 				"docker run",
 				LinkDirectory(dir, "src"),
-				LinkDirectory(dir, "ui-test"),
-				LinkDirectory(dir, "unit-test"),
+				LinkDirectory(dir, "ui_test"),
+				LinkDirectory(dir, "unit_test"),
 				LinkDirectory(dir, "output"),
-				"--privileged", // TODO: remove if sandbox is fixed
-				"--netowrk none",
+				//$"--security-opt seccomp=$(pwd)/chrome.json",
+				"--privileged",
+				"--network none",
 				"--restart no",
+				"--rm",
 				"-it",
-				"-rm",
 				$"-m {settings.MemoryLimit}b",
 				"js-sandbox",
 			};

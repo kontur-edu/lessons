@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CliWrap;
 using log4net;
@@ -36,10 +37,10 @@ namespace RunCsJob
 		private static async Task<RunningResults> RunDocker(SandboxRunnerSettings settings, DirectoryInfo dir, string shellCommand)
 		{
 			using (var cli = new Cli("cmd.exe"))
-			// using (var cts = new CancellationTokenSource())
+			using (var cts = new CancellationTokenSource())
 			{
-				// cts.CancelAfter(settings.IdleTimeLimit);
-				var output = await cli.ExecuteAsync(shellCommand/*, cts.Token*/);
+				cts.CancelAfter(settings.IdleTimeLimit);
+				var output = await cli.ExecuteAsync(shellCommand, cts.Token);
 
 				if (output.ExitCode != 0)
 				{

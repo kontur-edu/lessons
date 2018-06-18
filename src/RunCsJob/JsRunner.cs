@@ -40,13 +40,20 @@ namespace RunCsJob
 			using (var cts = new CancellationTokenSource())
 			{
 				cts.CancelAfter(settings.IdleTimeLimit);
-				var output = await cli.ExecuteAsync(shellCommand, cts.Token);
+				var token = cts.Token;
+				var output = await cli.ExecuteAsync(shellCommand, token);
+
+				if (token.IsCancellationRequested)
+				{
+					log.Info($"Таймаут в папке {dir.FullName}");
+					return new RunningResults(Verdict.TimeLimit);
+				}
 
 				if (output.ExitCode != 0)
 				{
 					log.Info($"Упал docker в папке {dir.FullName}");
 					return new RunningResults(Verdict.SandboxError, error: output.StandardError);
-				};
+				}
 			}
 
 			var result = LoadResult(dir);

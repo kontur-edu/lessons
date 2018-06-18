@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -98,11 +98,15 @@ namespace RunCsJob
 			var parts = new List<string>
 			{
 				"docker run",
-				"--privileged",
 				LinkDirectory(dir, "src"),
 				LinkDirectory(dir, "ui-test"),
 				LinkDirectory(dir, "unit-test"),
 				LinkDirectory(dir, "output"),
+				"--privileged", // TODO: remove if sandbox is fixed
+				"--netowrk none",
+				"--restart no",
+				"-it",
+				"-rm",
 				$"-m {settings.MemoryLimit}b",
 				"js-sandbox",
 			};

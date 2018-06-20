@@ -85,7 +85,7 @@ namespace RunCsJob
 				var instance = new SandboxRunner(submission, settings);
 				switch (submission)
 				{
-					case JsRunnerSubmission _:
+					case ZipRunnerSubmission _:
 						result = instance.RunJsBuild(submissionCompilationDirectory.FullName);
 						break;
 					case ProjRunnerSubmission _:
@@ -121,7 +121,7 @@ namespace RunCsJob
 
 		private RunningResults RunJsBuild(string submissionCompilationDirectory)
 		{
-			var jsSubmission = (JsRunnerSubmission)submission;
+			var jsSubmission = (ZipRunnerSubmission)submission;
 			log.Info($"Запускаю проверку Js-решения {jsSubmission.Id}");
 			var dir = new DirectoryInfo(submissionCompilationDirectory);
 

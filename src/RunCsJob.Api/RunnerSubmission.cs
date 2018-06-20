@@ -27,9 +27,10 @@ namespace RunCsJob.Api
 		public string ProjectFileName;
 	}
 
-	[DisplayName("js")]
-	public class JsRunnerSubmission : RunnerSubmission
+	[DisplayName("zip")]
+	public class ZipRunnerSubmission : RunnerSubmission
 	{
 		public byte[] ZipFileData;
+		public string LangId;
 	}
 }

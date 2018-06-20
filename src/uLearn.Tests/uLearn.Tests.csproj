@@ -545,13 +545,6 @@
     <Content Include="tests\regions.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="toZip\notForRemove.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="toZip\toRemove\r1.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="toZip\toRemove\toRemove1\r2.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />

@@ -45,8 +45,7 @@ namespace uLearn
 
 		public static bool HasAutomaticChecking(this SubmissionLanguage language)
 		{
-			/* For a while only C# has automatic checking on ulearn */
-			return language == SubmissionLanguage.CSharp;
+			return language == SubmissionLanguage.CSharp || language == SubmissionLanguage.JavaScript;
 		}
 	}
 }

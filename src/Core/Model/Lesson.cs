@@ -43,6 +43,9 @@ namespace uLearn.Model
 
 		[XmlEnum("proj-exercise")]
 		ProjectExerciseBlock,
+
+		[XmlEnum("zip-exercise")]
+		ZipExerciseBlock,
 	}
 
 	[XmlRoot("Lesson", IsNullable = false, Namespace = "https://ulearn.azurewebsites.net/lesson")]
@@ -76,6 +79,7 @@ namespace uLearn.Model
 		[XmlElement(typeof(IncludeMdBlock))]
 		[XmlElement(typeof(IncludeImageGalleryBlock))]
 		[XmlElement(typeof(ProjectExerciseBlock))]
+		[XmlElement(typeof(ZipExerciseBlock))]
 		[XmlElement(typeof(SingleFileExerciseBlock))]
 		[XmlElement("exercise", typeof(SingleFileExerciseBlock))]
 		[XmlElement("execirse", typeof(SingleFileExerciseBlock))]
@@ -109,6 +113,7 @@ namespace uLearn.Model
 				case IncludeMdBlock _: return BlockType.IncludeMd;
 				case MdBlock _: return BlockType.Md;
 				case ProjectExerciseBlock _: return BlockType.ProjectExerciseBlock;
+				case ZipExerciseBlock _: return BlockType.ZipExerciseBlock;
 				case SingleFileExerciseBlock _: return BlockType.SingleFileExerciseBlock;
 				case TexBlock _: return BlockType.Tex; 
 				default: throw new Exception("Unknown slide block " + b);

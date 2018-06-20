@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using CliWrap;
 using log4net;
 using Newtonsoft.Json;
 using RunCsJob.Api;
@@ -29,30 +28,45 @@ namespace RunCsJob
 				return new RunningResults(Verdict.SandboxError, error: e.ToString());
 			}
 
-			var shellCommand = BuildDockerCommand(settings, dir);
-
-			return RunDocker(settings, dir, shellCommand).Result;
+			return RunDocker(settings, dir).Result;
 		}
 
-		private static async Task<RunningResults> RunDocker(SandboxRunnerSettings settings, DirectoryInfo dir, string shellCommand)
+		private static async Task<RunningResults> RunDocker(SandboxRunnerSettings settings, DirectoryInfo dir)
 		{
-			using (var cli = new Cli("cmd.exe"))
-			using (var cts = new CancellationTokenSource())
 			{
-				cts.CancelAfter(settings.IdleTimeLimit);
-				var token = cts.Token;
-				var output = await cli.ExecuteAsync(shellCommand, token);
+				var name = Guid.NewGuid();
+				var shellCommand = BuildDockerCommand(settings, dir, name);
 
-				if (token.IsCancellationRequested)
+				var shellProcess = BuildShellProcess(shellCommand);
+
+				shellProcess.Start();
+				var isFinished = shellProcess.WaitForExit((int)settings.IdleTimeLimit.TotalMilliseconds);
+
+				if (!isFinished)
 				{
-					log.Info($"Таймаут в папке {dir.FullName}");
+					log.Info($"Не хватило времени на работу Docker в папке {dir.FullName}");
+					shellProcess.Kill();
+					Action clean = () =>
+					{
+						var cleanup = BuildShellProcess($"docker container rm -f {name}");
+						cleanup.Start();
+						var isCleanupFinished = cleanup.WaitForExit((int)settings.TimeLimit.TotalMilliseconds);
+						if (isCleanupFinished)
+							log.Info($"Повисший контейнер {name} очищен");
+						else
+							log.Error($"Не удалось очистить повисший контейнер {name}");
+					};
+					clean.BeginInvoke(ar => { }, null);
+					
 					return new RunningResults(Verdict.TimeLimit);
 				}
 
-				if (output.ExitCode != 0)
+				log.Info($"Docker закончил работу и написал: {shellProcess.StandardOutput.ReadToEnd()}");
+
+				if (shellProcess.ExitCode != 0)
 				{
 					log.Info($"Упал docker в папке {dir.FullName}");
-					return new RunningResults(Verdict.SandboxError, error: output.StandardError);
+					return new RunningResults(Verdict.SandboxError, error: shellProcess.StandardError.ReadToEnd());
 				}
 			}
 
@@ -61,16 +75,41 @@ namespace RunCsJob
 			return MakeVerdict(result);
 		}
 
+		private static Process BuildShellProcess(string shellCommand)
+		{
+			return new Process
+			{
+				StartInfo =
+				{
+					Arguments = $"/C {shellCommand}",
+					FileName = "cmd.exe",
+					RedirectStandardOutput = true,
+					RedirectStandardError = true,
+					CreateNoWindow = true,
+					UseShellExecute = false
+				}
+			};
+		}
+
 		private static RunningResults MakeVerdict(JsTestResult result)
 		{
 			if (result is null)
 				return new RunningResults(Verdict.SandboxError);
 
-			if (result.ui.stats.failures == 0 && result.unit.stats.failures == 0)
-				return new RunningResults(Verdict.Ok);
+			var hasUiTests = result.ui.stats != null;
+			var hasUnitTests = result.unit.stats != null;
 
-			var firstFailedTest = result.ui.failures.FirstOrDefault() ?? result.unit.failures.First();
-			return new RunningResults(Verdict.RuntimeError, error: firstFailedTest.err.message ?? "");
+			if (hasUiTests && result.ui.stats.failures != 0)
+			{
+				return new RunningResults(Verdict.RuntimeError, error: result.ui.failures.First().err.message);
+			}
+
+			if (hasUnitTests && result.unit.stats.failures != 0)
+			{
+				return new RunningResults(Verdict.RuntimeError, error: result.unit.failures.First().err.message);
+			}
+
+			return new RunningResults(Verdict.Ok);
 		}
 
 		private static JsTestResult LoadResult(DirectoryInfo dir)
@@ -100,20 +139,20 @@ namespace RunCsJob
 			}
 		}
 
-		private static string BuildDockerCommand(SandboxRunnerSettings settings, DirectoryInfo dir)
+		private static string BuildDockerCommand(SandboxRunnerSettings settings, DirectoryInfo dir, Guid name)
 		{
 			var parts = new List<string>
 			{
 				"docker run",
 				LinkDirectory(dir, "src"),
-				LinkDirectory(dir, "ui_test"),
-				LinkDirectory(dir, "unit_test"),
+				LinkDirectory(dir, "tests"),
 				LinkDirectory(dir, "output"),
 				//$"--security-opt seccomp=$(pwd)/chrome.json",
 				"--privileged",
 				"--network none",
 				"--restart no",
 				"--rm",
+				$"--name {name}",
 				"-it",
 				$"-m {settings.MemoryLimit}b",
 				"js-sandbox",

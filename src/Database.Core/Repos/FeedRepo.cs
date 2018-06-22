@@ -118,7 +118,7 @@ namespace Database.Repos
 		
 		public Task<List<NotificationDelivery>> GetFeedNotificationDeliveriesAsync(string userId, params FeedNotificationTransport[] transports)
 		{
-			return GetFeedNotificationDeliveriesAsync<object>(userId, null, transports);
+			return GetFeedNotificationDeliveriesAsync<object>(userId, null, transports: transports);
 		}
 
 		private IQueryable<NotificationDelivery> GetFeedNotificationDeliveriesQueryable(string userId, params FeedNotificationTransport[] transports)
@@ -127,7 +127,15 @@ namespace Database.Repos
 			var userCourses = visitsRepo.GetUserCourses(userId);
 			return notificationsRepo.GetTransportsDeliveriesQueryable(transportsIds, DateTime.MinValue)
 				.Where(d => userCourses.Contains(d.Notification.CourseId))
-				.Where(d => d.Notification.InitiatedById != userId);
+				.Where(d => d.Notification.InitiatedById != userId)
+				
+				/* TODO (andgein): bad code. we need to make these navigation properties loading via Notification' interface */
+				.Include(d => (d.Notification as AbstractCommentNotification).Comment)
+				.Include(d => (d.Notification as CourseExportedToStepikNotification).Process)
+				.Include(d => (d.Notification as ReceivedCommentToCodeReviewNotification).Comment)
+				.Include(d => (d.Notification as PassedManualExerciseCheckingNotification).Checking)
+				.Include(d => (d.Notification as ReceivedCommentToCodeReviewNotification).Comment)
+				.Include(d => (d.Notification as AbstractPackageNotification).CourseVersion);
 		}
 	}
 }

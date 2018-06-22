@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Database.Extensions;
 using Database.Models;
 using JetBrains.Annotations;
+using Microsoft.EntityFrameworkCore;
 using Ulearn.Common;
 using Ulearn.Common.Extensions;
 
@@ -21,7 +22,7 @@ namespace Database.Repos
 			this.db = db;
 		}
 
-		public async Task<Comment> AddComment(ClaimsPrincipal author, string courseId, Guid slideId, int parentCommentId, string commentText)
+		public async Task<Comment> AddCommentAsync(ClaimsPrincipal author, string courseId, Guid slideId, int parentCommentId, string commentText)
 		{
 			var commentsPolicy = GetCommentsPolicy(courseId);
 			var isInstructor = author.HasAccessFor(courseId, CourseRole.Instructor);
@@ -45,15 +46,21 @@ namespace Database.Repos
 			db.Comments.Add(comment);
 			await db.SaveChangesAsync();
 
-			return db.Comments.Find(comment.Id);
+			return await db.Comments.FindAsync(comment.Id);
 		}
 
 		[CanBeNull]
-		public Comment FindCommentById(int commentId)
+		public Task<Comment> FindCommentByIdAsync(int commentId)
 		{
-			return db.Comments.Find(commentId);
+			return db.Comments.FindAsync(commentId);
 		}
 
+		public Task<List<Comment>> GetCommentsByIdsAsync(IEnumerable<int> commentIds)
+		{
+			return db.Comments.Where(c => commentIds.Contains(c.Id)).ToListAsync();
+		}
+
+		/* Not asynced versions below */
 		public IEnumerable<Comment> GetSlideComments(string courseId, Guid slideId)
 		{
 			return db.Comments.Where(x => x.SlideId == slideId && !x.IsDeleted);

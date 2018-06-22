@@ -32,6 +32,7 @@
     <UseGlobalApplicationHostFile />
     <TargetFrameworkProfile />
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -778,7 +779,7 @@
     <!-- Hack to copy Microsoft.Win32.Registry.dll. Without this Content item dll is not copying. I think it's bug
          in Framework + netstandard compatibility. Maybe it's related to https://github.com/dotnet/corefx/issues/24483 -->
     <!--<Content Include="..\packages\Microsoft.Win32.Registry.4.5.0\lib\net461\Microsoft.Win32.Registry.dll">-->
-      <!--<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>-->
+    <!--<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>-->
     <!--</Content>-->
     <Content Include="codemirror\addon\comment\comment.js" />
     <Content Include="codemirror\addon\comment\continuecomment.js" />
@@ -1512,7 +1513,7 @@
       <Name>Database</Name>
     </ProjectReference>
     <ProjectReference Include="..\Metrics\Metrics.csproj">
-      <Project>{6BF55402-68F0-4BA3-9F03-E42C3912C9CA}</Project>
+      <Project>{b6b60d19-c6bd-4d66-95da-14480a18770c}</Project>
       <Name>Metrics</Name>
     </ProjectReference>
     <ProjectReference Include="..\RunCsJob.Api\RunCsJob.Api.csproj">

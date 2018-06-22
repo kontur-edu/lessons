@@ -22,7 +22,7 @@ namespace uLearn.Web.Controllers
 		private readonly RestoreRequestRepo requestRepo;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly ULearnDb db;
-		private readonly GraphiteMetricSender metricSender;
+		private readonly MetricSender metricSender;
 
 		private readonly string spamChannelId;
 		private readonly SpamClient spamClient;
@@ -32,7 +32,7 @@ namespace uLearn.Web.Controllers
 			this.db = db;
 			userManager = new ULearnUserManager(db);
 			requestRepo = new RestoreRequestRepo(db);
-			metricSender = new GraphiteMetricSender("web");
+			metricSender = new MetricSender("web");
 
 			var spamEndpoint = WebConfigurationManager.AppSettings["ulearn.spam.endpoint"] ?? "";
 			var spamLogin = WebConfigurationManager.AppSettings["ulearn.spam.login"] ?? "ulearn";

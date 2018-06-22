@@ -2,6 +2,7 @@
 using Database;
 using Database.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Serilog;
 using uLearn;
 using uLearn.Quizes;
@@ -15,13 +16,25 @@ namespace Ulearn.Web.Api.Controllers
 	{
 		protected readonly ILogger logger;
 		protected readonly WebCourseManager courseManager;
+		private readonly UlearnDb db;
 
-		public BaseController(ILogger logger, WebCourseManager courseManager)
+		public BaseController(ILogger logger, WebCourseManager courseManager, UlearnDb db)
 		{
 			this.logger = logger;
 			this.courseManager = courseManager;
+			this.db = db; 
 		}
-		
+
+		public override void OnActionExecuted(ActionExecutedContext context)
+		{
+			base.OnActionExecuted(context);
+			
+			/* Disable change tracking in EF Core for GET requests due to perfomance issues */
+			/* TODO (andgein): we need a way to enable change tracking for some GET requests in future */
+			var isRequestSafe = context.HttpContext.Request.Method == "GET";
+			db.ChangeTracker.AutoDetectChangesEnabled = !isRequestSafe;
+		}
+
 		protected UnitInfo BuildUnitInfo(string courseId, Unit unit)
 		{
 			return new UnitInfo
@@ -73,6 +86,9 @@ namespace Ulearn.Web.Api.Controllers
 
 		protected CommentInfo BuildCommentInfo(Comment comment)
 		{
+			if (comment == null)
+				return null;
+			
 			return new CommentInfo
 			{
 				Id = comment.Id,

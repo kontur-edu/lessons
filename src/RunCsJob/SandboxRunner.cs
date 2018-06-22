@@ -40,7 +40,7 @@ namespace RunCsJob
 	public class SandboxRunner
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SandboxRunner));
-		private readonly GraphiteMetricSender metricSender = new GraphiteMetricSender("runcsjob");
+		private readonly MetricSender metricSender = new MetricSender("runcsjob");
 
 		private readonly RunnerSubmission submission;
 		private readonly SandboxRunnerSettings settings;

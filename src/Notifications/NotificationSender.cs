@@ -16,7 +16,7 @@ namespace Notifications
 	{
 		private readonly ILog log = LogManager.GetLogger(typeof(NotificationSender));
 
-		private readonly GraphiteMetricSender metricSender;
+		private readonly MetricSender metricSender;
 
 		private readonly IEmailSender emailSender;
 		private readonly ITelegramSender telegramSender;
@@ -24,7 +24,7 @@ namespace Notifications
 		private readonly string baseUrl;
 		private readonly string secretForHashes;
 
-		public NotificationSender(CourseManager courseManager, IEmailSender emailSender, ITelegramSender telegramSender, GraphiteMetricSender metricSender)
+		public NotificationSender(CourseManager courseManager, IEmailSender emailSender, ITelegramSender telegramSender, MetricSender metricSender)
 		{
 			this.emailSender = emailSender;
 			this.telegramSender = telegramSender;
@@ -36,7 +36,7 @@ namespace Notifications
 		}
 
 		public NotificationSender(CourseManager courseManager)
-			: this(courseManager, new KonturSpamEmailSender(), new TelegramSender(), new GraphiteMetricSender("notifications"))
+			: this(courseManager, new KonturSpamEmailSender(), new TelegramSender(), new MetricSender("notifications"))
 		{
 		}
 

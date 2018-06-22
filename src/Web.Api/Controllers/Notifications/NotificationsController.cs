@@ -11,7 +11,7 @@ using Serilog;
 using Ulearn.Common.Extensions;
 using Ulearn.Web.Api.Models.Results.Notifications;
 
-namespace Ulearn.Web.Api.Controllers
+namespace Ulearn.Web.Api.Controllers.Notifications
 {
 	[Route("/notifications")]
 	public class NotificationsController : BaseController
@@ -19,16 +19,18 @@ namespace Ulearn.Web.Api.Controllers
 		private readonly UlearnDb db;
 		private readonly NotificationsRepo notificationsRepo;
 		private readonly FeedRepo feedRepo;
-		
+		private readonly NotificationDataPreloader notificationDataPreloader;
+
 		private static FeedNotificationTransport commentsFeedNotificationTransport;
 
-		public NotificationsController(ILogger logger, WebCourseManager courseManager, UlearnDb db, NotificationsRepo notificationsRepo, FeedRepo feedRepo)
-			: base(logger, courseManager)
+		public NotificationsController(ILogger logger, WebCourseManager courseManager, UlearnDb db, NotificationsRepo notificationsRepo, FeedRepo feedRepo, NotificationDataPreloader notificationDataPreloader)
+			: base(logger, courseManager, db)
 		{
 			this.db = db ?? throw new ArgumentNullException(nameof(db));
 			this.notificationsRepo = notificationsRepo ?? throw new ArgumentNullException(nameof(notificationsRepo));
 			this.feedRepo = feedRepo ?? throw new ArgumentNullException(nameof(feedRepo));
-			
+			this.notificationDataPreloader = notificationDataPreloader;
+
 			if (commentsFeedNotificationTransport == null)
 				commentsFeedNotificationTransport = feedRepo.GetCommentsFeedNotificationTransport();
 		}
@@ -53,69 +55,74 @@ namespace Ulearn.Web.Api.Controllers
 			var notificationTransport = await feedRepo.GetUsersFeedNotificationTransportAsync(userId);
 
 			var importantNotifications = new List<Notification>();
-			var commentsNotifications = new List<Notification>();
 			if (notificationTransport != null)
 			{
-				importantNotifications = (await feedRepo.GetFeedNotificationDeliveriesAsync(userId, n => n.Notification.InitiatedBy, notificationTransport))
-					.Select(d => d.Notification)
-					.ToList();
-				commentsNotifications = (await feedRepo.GetFeedNotificationDeliveriesAsync(userId, n => n.Notification.InitiatedBy, commentsFeedNotificationTransport))
+				importantNotifications = (await feedRepo.GetFeedNotificationDeliveriesAsync(userId, n => n.Notification.InitiatedBy, transports: notificationTransport))
 					.Select(d => d.Notification)
 					.ToList();
 			}
+			var commentsNotifications = (await feedRepo.GetFeedNotificationDeliveriesAsync(userId, n => n.Notification.InitiatedBy, transports: commentsFeedNotificationTransport))
+				.Select(d => d.Notification)
+				.ToList();
 			
-			logger.Debug($"[GetNotificationList] Step 1 done: found {importantNotifications.Count} important notifications and {commentsNotifications.Count} comment notifications");
+			logger.Information($"[GetNotificationList] Step 1 done: found {importantNotifications.Count} important notifications and {commentsNotifications.Count} comment notifications");
 
 			importantNotifications = RemoveBlockedNotifications(importantNotifications).ToList();
 			commentsNotifications = RemoveBlockedNotifications(commentsNotifications, importantNotifications).ToList();
 			
-			logger.Debug($"[GetNotificationList] Step 2 done, removed blocked notifications: left {importantNotifications.Count} important notifications and {commentsNotifications.Count} comment notifications");
+			logger.Information($"[GetNotificationList] Step 2 done, removed blocked notifications: left {importantNotifications.Count} important notifications and {commentsNotifications.Count} comment notifications");
 
 			importantNotifications = RemoveNotActualNotifications(importantNotifications).ToList();
 			commentsNotifications = RemoveNotActualNotifications(commentsNotifications).ToList();
 			
-			logger.Debug($"[GetNotificationList] Step 3 done, removed not actual notifications: left {importantNotifications.Count} important notifications and {commentsNotifications.Count} comment notifications");
+			logger.Information($"[GetNotificationList] Step 3 done, removed not actual notifications: left {importantNotifications.Count} important notifications and {commentsNotifications.Count} comment notifications");
 
 			var importantLastViewTimestamp = await feedRepo.GetFeedViewTimestampAsync(userId, notificationTransport?.Id ?? -1);
 			var commentsLastViewTimestamp = await feedRepo.GetFeedViewTimestampAsync(userId, commentsFeedNotificationTransport.Id);
 
-			logger.Debug("[GetNotificationList] Step 4, building models");
+			logger.Information("[GetNotificationList] Step 4, building models");
+
+			var allNotifications = importantNotifications.Concat(commentsNotifications).ToList();
+			var notificationsData = await notificationDataPreloader.LoadAsync(allNotifications);
 			
 			var importantNotificationList = new NotificationList
 			{
 				LastViewTimestamp = importantLastViewTimestamp,
-				Notifications = importantNotifications.Select(BuildNotificationInfo).ToList(),
+				Notifications = importantNotifications.Select(notification => BuildNotificationInfo(notification, notificationsData)).ToList(),
 			};
 			var commentsNotificationList = new NotificationList
 			{
 				LastViewTimestamp = commentsLastViewTimestamp,
-				Notifications = commentsNotifications.Select(BuildNotificationInfo).ToList(),
+				Notifications = commentsNotifications.Select(notification => BuildNotificationInfo(notification, notificationsData)).ToList(),
 			};
 			
 			return (importantNotificationList, commentsNotificationList);
 		}
-		
+
 		private IEnumerable<Notification> RemoveBlockedNotifications(IReadOnlyCollection<Notification> notifications, IReadOnlyCollection<Notification> searchBlockersAlsoIn=null)
 		{
-			var notificationsIds = notifications.Select(n => n.Id).ToList();
-			var searchBlockersAlsoInIds = searchBlockersAlsoIn?.Select(n => n.Id).ToList();
+			var allNotifications = notifications.ToList();
+			if (searchBlockersAlsoIn != null)
+				allNotifications = allNotifications.Concat(searchBlockersAlsoIn).ToList();
+			
 			foreach (var notification in notifications)
 			{
-				var blockers = notification.GetBlockerNotifications(db);
-				if (blockers.Select(b => b.Id).Intersect(notificationsIds).Any())
-					continue;
-				if (searchBlockersAlsoInIds != null && blockers.Select(b => b.Id).Intersect(searchBlockersAlsoInIds).Any())
+				if (notification.IsBlockedByAnyNotificationFrom(db, allNotifications))
 					continue;
 				yield return notification;
 			}
 		}
 		
-		private static IEnumerable<Notification> RemoveNotActualNotifications(IEnumerable<Notification> notifications)
+		private IEnumerable<Notification> RemoveNotActualNotifications(IEnumerable<Notification> notifications)
 		{
-			return notifications.Where(notification => notification.IsActual());
-		}
-
-		private NotificationInfo BuildNotificationInfo(Notification notification)
+			return notifications.Where(notification =>
+			{
+				logger.Information($"Checking actuality of notification #{notification.Id}: {notification} ({notification.GetNotificationType().ToString()})");
+				return notification.IsActual();
+			});
+		}		
+		
+		private NotificationInfo BuildNotificationInfo(Notification notification, NotificationDataStorage notificationsData)
 		{
 			return new NotificationInfo
 			{
@@ -124,15 +131,15 @@ namespace Ulearn.Web.Api.Controllers
 				Type = notification.GetNotificationType().ToString(),
 				CreateTime = notification.CreateTime,
 				CourseId = notification.CourseId,
-				Data = BuildNotificationData(notification),
+				Data = BuildNotificationData(notification, notificationsData),
 			};
 		}
 
-		private NotificationData BuildNotificationData(Notification notification)
+		private NotificationData BuildNotificationData(Notification notification, NotificationDataStorage notificationsData)
 		{
 			var data = new NotificationData();
 			if (notification is AbstractCommentNotification commentNotification)
-				data.Comment = BuildCommentInfo(commentNotification.Comment);
+				data.Comment = BuildCommentInfo(notificationsData.CommentsByIds.GetOrDefault(commentNotification.CommentId));
 			return data;
 		}
 	}

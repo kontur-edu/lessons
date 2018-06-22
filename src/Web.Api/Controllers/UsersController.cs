@@ -17,8 +17,8 @@ namespace Ulearn.Web.Api.Controllers
 		private readonly UsersRepo usersRepo;
 		private readonly UserRolesRepo userRolesRepo;
 
-		public UsersController(ILogger logger, WebCourseManager courseManager, UsersRepo usersRepo, UserRolesRepo userRolesRepo)
-			: base(logger, courseManager)
+		public UsersController(ILogger logger, WebCourseManager courseManager, UsersRepo usersRepo, UserRolesRepo userRolesRepo, UlearnDb db)
+			: base(logger, courseManager, db)
 		{
 			this.usersRepo = usersRepo ?? throw new ArgumentNullException(nameof(usersRepo));
 			this.userRolesRepo = userRolesRepo ?? throw new ArgumentNullException(nameof(userRolesRepo));

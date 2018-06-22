@@ -8,8 +8,8 @@ namespace Ulearn.Web.Api.Controllers
 	[Route("/account")]
 	public class AccountController : BaseController
 	{
-		public AccountController(ILogger logger, WebCourseManager courseManager)
-			: base(logger, courseManager)
+		public AccountController(ILogger logger, WebCourseManager courseManager, UlearnDb db)
+			: base(logger, courseManager, db)
 		{
 		}
 

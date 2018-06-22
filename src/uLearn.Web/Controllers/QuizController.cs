@@ -36,7 +36,7 @@ namespace uLearn.Web.Controllers
 
 		private readonly ULearnDb db = new ULearnDb();
 		private readonly CourseManager courseManager = WebCourseManager.Instance;
-		protected readonly GraphiteMetricSender metricSender;
+		protected readonly MetricSender metricSender;
 
 		private readonly UserQuizzesRepo userQuizzesRepo;
 		private readonly VisitsRepo visitsRepo;
@@ -47,7 +47,7 @@ namespace uLearn.Web.Controllers
 
 		public QuizController()
 		{
-			metricSender = new GraphiteMetricSender("web");
+			metricSender = new MetricSender("web");
 
 			userQuizzesRepo = new UserQuizzesRepo(db);
 			visitsRepo = new VisitsRepo(db);

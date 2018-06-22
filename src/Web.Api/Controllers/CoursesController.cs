@@ -11,8 +11,8 @@ namespace Ulearn.Web.Api.Controllers
 	[Route("/courses")]
 	public class CoursesController : BaseController
 	{
-		public CoursesController(ILogger logger, WebCourseManager courseManager)
-			: base(logger, courseManager)
+		public CoursesController(ILogger logger, WebCourseManager courseManager, UlearnDb db)
+			: base(logger, courseManager, db)
 		{
 		}
 

@@ -22,7 +22,7 @@ namespace uLearn.Web.Controllers
 
 		protected readonly ULearnDb db;
 		protected readonly CourseManager courseManager;
-		protected readonly GraphiteMetricSender metricSender;
+		protected readonly MetricSender metricSender;
 
 		protected readonly UserSolutionsRepo userSolutionsRepo;
 		protected readonly SlideCheckingsRepo slideCheckingsRepo;
@@ -35,11 +35,11 @@ namespace uLearn.Web.Controllers
 		private static readonly TimeSpan executionTimeout = TimeSpan.FromSeconds(45);
 		
 		public BaseExerciseController()
-			: this(new ULearnDb(), WebCourseManager.Instance, new GraphiteMetricSender("web"))
+			: this(new ULearnDb(), WebCourseManager.Instance, new MetricSender("web"))
 		{
 		}
 
-		public BaseExerciseController(ULearnDb db, CourseManager courseManager, GraphiteMetricSender metricSender)
+		public BaseExerciseController(ULearnDb db, CourseManager courseManager, MetricSender metricSender)
 		{
 			this.db = db;
 			this.courseManager = courseManager;

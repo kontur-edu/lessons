@@ -16,7 +16,7 @@ namespace Notifications
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(TelegramSender));
 
-		private readonly GraphiteMetricSender metricSender;
+		private readonly MetricSender metricSender;
 
 		private readonly TelegramBotClient bot;
 
@@ -35,7 +35,7 @@ namespace Notifications
 
 			log.Info($"Initialized telegram bot with token \"{botToken.MaskAsSecret()}\"");
 
-			metricSender = new GraphiteMetricSender("notifications");
+			metricSender = new MetricSender("notifications");
 		}
 
 		public async Task SendMessageAsync(long chatId, string html, TelegramButton button = null)

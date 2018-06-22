@@ -4,17 +4,17 @@ namespace Metrics
 {
 	public class ServiceKeepAliver
 	{
-		private readonly GraphiteMetricSender sender;
+		private readonly MetricSender sender;
 		public DateTime LastPingTime { get; private set; }
 
-		public ServiceKeepAliver(GraphiteMetricSender sender)
+		public ServiceKeepAliver(MetricSender sender)
 		{
 			this.sender = sender;
 			LastPingTime = DateTime.MinValue;
 		}
 		
 		public ServiceKeepAliver(string serviceName)
-			:this(new GraphiteMetricSender(serviceName))
+			:this(new MetricSender(serviceName))
 		{
 		}
 

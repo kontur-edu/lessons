@@ -27,8 +27,8 @@ namespace Ulearn.Web.Api.Controllers
 			SlideCheckingsRepo slideCheckingsRepo,
 			UserRolesRepo userRolesRepo,
 			UsersRepo usersRepo,
-			GroupsRepo groupsRepo)
-			: base(logger, courseManager)
+			GroupsRepo groupsRepo, UlearnDb db)
+			: base(logger, courseManager, db)
 		{
 			this.slideCheckingsRepo = slideCheckingsRepo;
 			this.userRolesRepo = userRolesRepo;

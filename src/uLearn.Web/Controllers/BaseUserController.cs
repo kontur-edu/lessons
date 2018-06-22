@@ -21,7 +21,7 @@ namespace uLearn.Web.Controllers
 		protected UserManager<ApplicationUser> userManager;
 		protected readonly UsersRepo usersRepo;
 
-		protected readonly GraphiteMetricSender metricSender;
+		protected readonly MetricSender metricSender;
 
 		protected readonly string secretForHashes;
 
@@ -34,7 +34,7 @@ namespace uLearn.Web.Controllers
 			this.db = db;
 			userManager = new ULearnUserManager(db);
 			usersRepo = new UsersRepo(db);
-			metricSender = new GraphiteMetricSender("web");
+			metricSender = new MetricSender("web");
 
 			secretForHashes = WebConfigurationManager.AppSettings["ulearn.secretForHashes"] ?? "";
 

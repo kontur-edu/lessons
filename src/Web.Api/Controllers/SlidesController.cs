@@ -9,8 +9,8 @@ namespace Ulearn.Web.Api.Controllers
 	[Route("/slides")]
 	public class SlidesController : BaseController
 	{
-		public SlidesController(ILogger logger, WebCourseManager courseManager)
-			: base(logger, courseManager)
+		public SlidesController(ILogger logger, WebCourseManager courseManager, UlearnDb db)
+			: base(logger, courseManager, db)
 		{
 		}
 

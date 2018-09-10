@@ -2,21 +2,22 @@
 	actualHeader = actualHeader || 'Вывод вашей программы';
 	expectedHeader = expectedHeader || 'Ожидаемый вывод';
 	hideEqualsLines = hideEqualsLines === undefined ? false : hideEqualsLines;
-	this.getEoln = function (s) {
+	
+	var getEoln = function (s) {
 		var good = ["\r\n", "\n", "\r"].filter(function(eoln) { return s.indexOf(eoln) >= 0 });
 		return good.length > 0 ? good[0] : "\n";
 	};
 
-	this.split = function (s) {
-		return s.split(this.getEoln(s));
+	var getLines = function (s) {
+		return s === undefined ? [] : s.split(getEoln(s));
 	};
 
-	this.toString = function(s) {
+	var toHtml = function(s) {
 		return s === undefined ? "" : $('<div/>').text(s).html();
 	};
-
-	var actualList = this.split(actual);
-	var expectedList = this.split(expected);
+	
+	var actualList = getLines(actual);
+	var expectedList = getLines(expected);
 
 	var linesCount = Math.max(actualList.length, expectedList.length);
 
@@ -32,8 +33,8 @@
 		}
 		var cssClass = equals ? "equals" : "different";
 		res += '<tr class="' + cssClass + '"> <th> ' + (i + 1) + '</th>';
-		res += '<td>' + this.toString(actualList[i]) + '</td>';
-		res += '<td>' + this.toString(expectedList[i]) + '</td>';
+		res += '<td>' + toHtml(actualList[i]) + '</td>';
+		res += '<td>' + toHtml(expectedList[i]) + '</td>';
 		res += '</tr>';
 	}
 	res += '</table>';

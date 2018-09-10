@@ -41,6 +41,8 @@ namespace uLearn.Model.Blocks
 			var exerciseCode = regionRemover.Prepare(code);
 			exerciseCode = regionRemover.Remove(exerciseCode, RemovedLabels, out var _);
 			exerciseCode = regionRemover.RemoveSolution(exerciseCode, SolutionLabel, out var index);
+			if (index < 0)
+				index = 0;
 			index += prelude.Length;
 
 			ExerciseInitialCode = ExerciseInitialCode.RemoveCommonNesting();

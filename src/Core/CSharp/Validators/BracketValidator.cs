@@ -19,6 +19,9 @@ namespace uLearn.CSharp.Validators
             if (expression == null)
                 yield break;
 
+            if (expression is TupleExpressionSyntax)
+                yield break;
+
             var syntaxKinds = expression.DescendantTokens().Select(x => x.Kind()).ToArray();
             if (!NeedToCheckExpression(syntaxKinds))
                 yield break;

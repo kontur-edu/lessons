@@ -33,6 +33,7 @@ namespace uLearn.CSharp
         [TestCase(@"int SetX(int x, int y){ return 2*(x+y); }")]
         [TestCase(@"int SetX(int x){ return 1; }")]
         [TestCase(@"void SetX(int x){ return; }")]
+        [TestCase(@"(int, int) SetX(int x){ return (1, 2) }")]
         public void ignore_correct_return_statement(string code)
         {
             FindErrors(code).Should().BeNullOrEmpty();

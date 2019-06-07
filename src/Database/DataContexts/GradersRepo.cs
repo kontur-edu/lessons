@@ -9,8 +9,9 @@ using Database.Models;
 using EntityFramework.Functions;
 using JetBrains.Annotations;
 using log4net;
-using uLearn;
 using Ulearn.Common;
+using Ulearn.Common.Extensions;
+using Ulearn.Core;
 
 namespace Database.DataContexts
 {
@@ -31,7 +32,7 @@ namespace Database.DataContexts
 		public GraderClient FindGraderClient(string courseId, Guid clientId)
 		{
 			var client = db.GraderClients.Find(clientId);
-			if (client == null || client.CourseId != courseId)
+			if (client == null || ! client.CourseId.EqualsIgnoreCase(courseId))
 				return null;
 			return client;
 		}

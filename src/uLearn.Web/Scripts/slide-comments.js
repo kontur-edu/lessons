@@ -1,3 +1,21 @@
+/* Set this function as handler for `input` event on textarea */
+function autoEnlargeTextarea() {
+    var $this = $(this);
+    // Save current height as min height in first time
+    if (!$this.data('min-height'))
+        $this.data('min-height', parseInt($this.css('height')));
+    // By default, max textarea's height is 400px, after it will be scrollable
+    var maxHeight = $this.data('max-height') ? $this.data('max-height') : 400;
+
+    var $clone = $this.clone().css('visibility', 'hidden');
+    $this.after($clone);
+    $clone.css('height', 'auto');
+    var newHeight = Math.max($clone[0].scrollHeight + 5, $this.data('min-height'));
+    $clone.remove();
+    newHeight = Math.min(newHeight, maxHeight);
+    $this.css('height', newHeight + 'px');
+}
+
 (function ($) {
 	var scrollTo = function ($element, topPadding, duration) {
 		topPadding = topPadding || 100;
@@ -22,7 +40,7 @@
         }
 	};
 
-	var $commentsRules = $('.comments__rules');
+	var $commentsRules;
 
 	String.prototype.br2nl = function () {
 		return this.replace(/<br\s*\/?>/gi, "\n");
@@ -72,7 +90,8 @@
 	}
 
 	var showCommentsRulesIfNeeded = function ($textarea) {
-		if ($('.comments__rules:visible').length === 0)
+		/* Don't show comments rules if they are already shown or under instructors-only comments */
+		if ($('.comments__rules:visible').length === 0 && $textarea.closest('.comments-for-instructors-only').length === 0)
 			$textarea.after($commentsRules.clone());
 	}
 
@@ -306,49 +325,36 @@
 	var scrollToCommentFromHash = function() {
 		var hash = window.location.hash;
 		var match;
-		if ((match = /^#comment-(\d+)$/.exec(hash)) !== null && $('.comment[data-comment-id=' + match[1] + ']').length > 0)
-			scrollTo($('.comment[data-comment-id=' + match[1] + ']')
-				.animate({ backgroundColor: '#ffe6e3' })
-				.delay(1500)
-				.animate({ backgroundColor: 'initial' })
-				);
+		if ((match = /^#comment-(\d+)$/.exec(hash)) !== null && $('.comment[data-comment-id=' + match[1] + ']').length > 0) {
+			var $comment = $('.comment[data-comment-id=' + match[1] + ']');
+            scrollTo($comment);
+        }
 	};
 
-	var autoEnlargeTextarea = function () {
-		var $this = $(this);
-		// Save current height as min height in first time
-		if (!$this.data('min-height'))
-			$this.data('min-height', parseInt($this.css('height')));
-		// By default, max textarea's height is 400px, after it will be scrollable
-		var maxHeight = $this.data('max-height') ? $this.data('max-height') : 400;
+    window.documentReadyFunctions = window.documentReadyFunctions || [];
+	
+    window.documentReadyFunctions.push(function () {
+        var $comments = $('.comments');
+		$commentsRules = $('.comments__rules');
 
-		var $clone = $this.clone().css('visibility', 'hidden');
-		$this.after($clone);
-		$clone.css('height', 'auto');
-		var newHeight = Math.max($clone[0].scrollHeight + 5, $this.data('min-height'));
-		$clone.remove();
-		newHeight = Math.min(newHeight, maxHeight);
-		$this.css('height', newHeight + 'px');
-	}
+        /* Set up handlers */
+        $comments.on('click', '.reply-form input[name=commentText]', expandReplyForm);
+        $comments.on('click', '.comment .comment__likes-count', likeComment);
+        $comments.on('keyup', 'textarea[name=commentText]', onTextareaKeyUp);
+        $comments.on('blur', '.comment textarea[name=commentText]', hideCommentsRules);
+        $comments.on('blur', '.reply-form textarea[name=commentText]', hideCommentsRules);
+        $comments.on('blur', '.reply-form.is-reply textarea[name=commentText]', collapseReplyForm);
+        $comments.on('click', '.reply-form .reply-form__send-button', sendComment);
+        $comments.on('click', '.comment .comment__inline-reply', createReplyForm);
+        $comments.on('click', '.comment .comment__not-approved.label-switcher', approveComment);
+        $comments.on('click', '.comment .comment__hide-link', approveComment);
+        $comments.on('click', '.comment .comment__edit-link', editComment);
+        $comments.on('click', '.comment .comment__delete-link', deleteComment);
+        $comments.on('click', '.comment .comment__pinned.label-switcher', pinOrUnpinComment);
+        $comments.on('click', '.comment .comment__correct-answer.label-switcher', markCommentAsCorrect);
+        $comments.on('input', 'textarea[name=commentText]', autoEnlargeTextarea);
+        $comments.on('focus', 'textarea[name=commentText]', onTextareaFocus);
 
-	$('.comments').on('click', '.reply-form input[name=commentText]', expandReplyForm);
-	$('.comments').on('click', '.comment .comment__likes-count', likeComment);
-	$('.comments').on('keyup', 'textarea[name=commentText]', onTextareaKeyUp);
-	$('.comments').on('blur', '.comment textarea[name=commentText]', hideCommentsRules);
-	$('.comments').on('blur', '.reply-form textarea[name=commentText]', hideCommentsRules);
-	$('.comments').on('blur', '.reply-form.is-reply textarea[name=commentText]', collapseReplyForm);
-	$('.comments').on('click', '.reply-form .reply-form__send-button', sendComment);
-	$('.comments').on('click', '.comment .comment__inline-reply', createReplyForm);
-	$('.comments').on('click', '.comment .comment__not-approved.label-switcher', approveComment);
-	$('.comments').on('click', '.comment .comment__hide-link', approveComment);
-	$('.comments').on('click', '.comment .comment__edit-link', editComment);
-	$('.comments').on('click', '.comment .comment__delete-link', deleteComment);
-	$('.comments').on('click', '.comment .comment__pinned.label-switcher', pinOrUnpinComment);
-	$('.comments').on('click', '.comment .comment__correct-answer.label-switcher', markCommentAsCorrect);
-	$('.comments').on('input', 'textarea[name=commentText]', autoEnlargeTextarea);
-	$('.comments').on('focus', 'textarea[name=commentText]', onTextareaFocus);
-
-	$(document).ready(function() {
-		scrollToCommentFromHash();
-	});
+        scrollToCommentFromHash();        
+    });
 })(jQuery);

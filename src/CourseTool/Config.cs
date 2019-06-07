@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace uLearn.CourseTool
@@ -8,6 +8,7 @@ namespace uLearn.CourseTool
 		public string Organization;
 		public string LtiId;
 		public string ULearnCourseId;
+		public string ULearnCoursePackageRoot;
 		public string Video;
 		public Profile[] Profiles;
 

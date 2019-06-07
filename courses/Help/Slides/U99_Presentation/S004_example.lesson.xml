@@ -1,11 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Lesson xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://ulearn.azurewebsites.net/lesson">
-	
-	<title>Первый шаг</title>
-	<id>{90BCB61E-57F0-4BAA-8BC9-10C9CFD27F59}</id>
-	<default-include-code-file>_FirstStep.cs</default-include-code-file>
-	
-	<md>
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Первый шаг" id="{90BCB61E-57F0-4BAA-8BC9-10C9CFD27F59}">
+  <scoring group="homework" passedTestsScore="50" codeReviewScore="0"/>
+  <defaultIncludeCodeFile>_FirstStep.cs</defaultIncludeCodeFile>
+  <markdown>
 		Любая, даже самая сложная дорога, начинается с первого шага.
 
 		Выведите на консоль фразу `The first step!`
@@ -19,21 +16,17 @@
 		</note>
 
 		Допишите код функции `Main`, а затем запустите и проверьте ваше решение с помощью кнопки «Отправить».
-	</md>
-	
-	<exercise>
-		<inital-code>
+  </markdown>
+  <exercise.file>
+    <initialCode>
 			static public void Main()
 			{
 			// пишите код тут
 			}
-		</inital-code>
-		<hint>Вывод на консоль производится методом ```Console.WriteLine```</hint>
-		<comment>Молодец</comment>
-		<expected>The first step!</expected>
-		<require-review>true</require-review>
-		<scoring-group>homework</scoring-group>
-		<solution>Main</solution>
-	</exercise>
-	
-</Lesson>
+		</initialCode>
+    <hint>Вывод на консоль производится методом ```Console.WriteLine```</hint>
+    <comment>Молодец</comment>
+    <expected>The first step!</expected>
+    <solution>Main</solution>
+  </exercise.file>
+</slide.exercise>

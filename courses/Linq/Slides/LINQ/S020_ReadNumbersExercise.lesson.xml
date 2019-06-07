@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Чтение массива чисел" id="cba7bc68-f1b9-46b1-93d4-49ac113a1d02">
+  <scoring passedTestsScore="5"/>
+  <markdown>`LINQ` удобно использовать для чтения из файла и разбора простых текстовых форматов.
+Особенно удобно сочетать методы `LINQ` с методами класса `File`: 
+`File.ReadLines(filename)`, `File.WriteLines(filename, lines)`.
+
+Пусть у вас есть файл, в котором каждая строка либо пустая, либо содержит одно целое число. 
+Кто-то уже вызвал метод `File.ReadAllLines(filename)` и теперь у вас есть массив всех строк этого файла.
+
+У вас даже есть метод `Main`, запускающий ваш метод на тестовых данных:</markdown>
+  <includeCode>
+    <display onlyBody="false">Main</display>
+  </includeCode>
+  <markdown>Реализуйте метод `ParseNumbers` в одно `LINQ`-выражение.</markdown>
+  <exercise.file file="_ReadNumbersExercise.cs" type="check-output" language="csharp">
+    <initialCode>public static int[] ParseNumbers(IEnumerable&lt;string&gt; lines)
+{
+	return lines
+		.Where(...)
+		.Select(...)
+		...
+}</initialCode>
+    <hint>`int.Parse` преобразует строку в целое число.</hint>
+    <expected>0
+0
+1
+-3
+0</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs SingleStatementMethod</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">ParseNumbers</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_ReadNumbersExercise.cs</defaultIncludeCodeFile>
+</slide.exercise>

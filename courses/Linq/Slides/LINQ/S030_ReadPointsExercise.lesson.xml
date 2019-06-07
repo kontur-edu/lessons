@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Чтение списка точек" id="563307c9-f265-4ea0-b06e-8390582f718e">
+  <scoring passedTestsScore="5"/>
+  <markdown>
+В файле в каждой строке написаны две координаты точки (X, Y), разделенные пробелом.
+Кто-то уже вызвал метод `File.ReadLines(filename)` и теперь у вас есть массив всех строк файла.</markdown>
+  <includeCode>
+    <display onlyBody="false">Main</display>
+    <display onlyBody="false">Point</display>
+  </includeCode>
+  <markdown>Реализуйте метод `ParsePoints` в одно `LINQ`-выражение.
+
+Постарайтесь не использовать функцию преобразования строки в число более одного раза.</markdown>
+  <exercise.file file="_ReadPointsExercise.cs" type="check-output" language="csharp">
+    <initialCode>public static List&lt;Point&gt; ParsePoints(IEnumerable&lt;string&gt; lines)
+{
+	return lines
+		.Select(...)
+		...
+}</initialCode>
+    <hint>string.Split — разбивает строку на части по разделителю</hint>
+    <hint>int.Parse преобразует строку в целое число.</hint>
+    <hint>Каждую строку нужно преобразовать в точку. Преобразование — это дело для метода Select. 
+			Но каждая строка — это список координат, каждую из которых нужно преобразовать из строки в число.
+			Подумайте про Select внутри Select-а.</hint>
+    <expected>1 -2
+-3 4
+0 2
+1 -42</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs SingleStatementMethod</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">ParsePoints</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_ReadPointsExercise.cs</defaultIncludeCodeFile>
+</slide.exercise>

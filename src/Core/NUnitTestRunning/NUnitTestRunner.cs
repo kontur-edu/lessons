@@ -10,11 +10,11 @@ using NUnit.Framework.Internal;
 
 [assembly: InternalsVisibleTo("NUnit.Framework")]
 
-namespace uLearn.NUnitTestRunning
+namespace Ulearn.Core.NUnitTestRunning
 {
 	/// <summary>
 	/// Этот файл включен в ресурсы и добавляется в пришедший на проверку проект с задачей, если у нее в качестве способа проверки 
-	/// установлен nunit-test-class, а не startup-object
+	/// установлен nunitTestClass, а не startupObject
 	/// </summary>
 	public class NUnitTestRunner
 	{
@@ -79,7 +79,7 @@ namespace uLearn.NUnitTestRunning
 				if (result.ResultState.Status == TestStatus.Failed && result.ResultState.Site != FailureSite.Child
 					&& result.ResultState.Label != "Cancelled")
 				{
-					Console.WriteLine($"Error on NUnit test: {result.Name} {result.Message} {result.StackTrace}");
+					Console.WriteLine($"Как минимум один из тестов не пройден!\nНазвание теста: {result.Name}\nСообщение:\n{result.Message}\nСтек вызовов:\n{result.StackTrace}");
 				}
 			}
 

@@ -6,20 +6,6 @@ namespace uLearn.Web.Extensions
 {
 	public static class StringExtensions
 	{
-		public static string TruncateWithEllipsis(this string s, int maxLength, string ellipsis="...")
-		{
-			if (maxLength < 0)
-				return s;
-
-			if (ellipsis.Length > maxLength)
-				throw new ArgumentOutOfRangeException("length", maxLength, "length must be at least as long as ellipsis.");
-
-			if (s.Length > maxLength - ellipsis.Length)
-				return s.Substring(0, maxLength - ellipsis.Length) + ellipsis;
-
-			return s;
-		}
-
 		public static string TruncateHtmlWithEllipsis(this string s, int maxLength, string ellipsis = "...")
 		{
 			if (maxLength < 0)
@@ -108,13 +94,13 @@ namespace uLearn.Web.Extensions
 			for (var i = 0; i < lineNumber; i++)
 			{
 				currentIndex = s.IndexOf('\n', currentIndex) + 1;
-				if (currentIndex == -1)
+				if (currentIndex == 0)
 					return 0;
 			}
 			return currentIndex;
 		}
 
-		public static int FindPositionByLineAndCharacted(this string s, int lineNumber, int charNumber)
+		public static int FindPositionByLineAndCharacter(this string s, int lineNumber, int charNumber)
 		{
 			return s.FindLineStartIndex(lineNumber) + charNumber;
 		}

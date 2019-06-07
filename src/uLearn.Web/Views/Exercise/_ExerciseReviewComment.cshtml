@@ -1,0 +1,39 @@
+﻿@using Database.Extensions
+@using Database.Models
+@using Microsoft.AspNet.Identity
+@using uLearn.Web.Extensions
+@using uLearn.Web.Views.Shared
+@using Ulearn.Common.Extensions
+
+@model Database.Models.ExerciseCodeReviewComment
+
+<div class="exercise__review-comment">
+    <div class="exercise__review__comment__header with-timestamp">
+        <div class="media">
+            <div class="media-left">
+                @UserAvatar.SmallAvatar(Model.Author)
+            </div>
+            <div class="media-body">
+                @{
+                    var courseId = Model.Review.ExerciseCheckingId.HasValue ? Model.Review.ExerciseChecking.CourseId : Model.Review.Submission.CourseId;
+                    var canDelete = Model.AuthorId == User.Identity.GetUserId() || User.HasAccessFor(courseId, CourseRole.CourseAdmin);
+                    if (canDelete)
+                    {
+                        <span class="pull-right exercise__delete-review-comment visible-on-parent-hover"
+                              title="Удалить комментарий"
+                              data-url="@Url.Action("DeleteExerciseCodeReviewComment", "Exercise", new { commentId = Model.Id })">
+                            &times;
+                        </span>
+                    }
+                }
+                
+                <div class="author">@Model.Author.VisibleName</div>
+                <div class="timestamp" title="@Model.AddingTime.ToPrettyString()">@Model.AddingTime.ToAgoPrettyString()</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="exercise__review__comment">
+        @Html.Raw(Html.HighlightLinks(Html.EncodeMultiLineText(Model.Text, keepFirstSpaces: true).RenderSimpleMarkdown()))
+    </div>
+</div>

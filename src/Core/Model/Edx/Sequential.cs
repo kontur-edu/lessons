@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace uLearn.Model.Edx
+namespace Ulearn.Core.Model.Edx
 {
 	[XmlRoot("sequential")]
 	public class Sequential : EdxItem

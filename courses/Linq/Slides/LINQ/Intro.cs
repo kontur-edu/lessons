@@ -9,7 +9,7 @@ namespace uLearn.Courses.Linq.Slides.LINQ
 {
 	public class S010_Intro
 	{
-		public List<int> GetNewLettersIds_ClassicWay()
+		public List<int> GetNewLetterIds_ClassicWay()
 		{
 			var res = new List<int>();
 			for(int i=0; i<letters.Length; i++)
@@ -20,9 +20,9 @@ namespace uLearn.Courses.Linq.Slides.LINQ
 			return res;
 		}
 
-		public IEnumerable<int> GetNewLettersIds_LinqWay()
+		public IEnumerable<int> GetNewLetterIds_LinqWay()
 		{
-			return letters.Where(l => l.IsNew).Select(l => l.Id);
+			return letters.Where(letter => letter.IsNew).Select(letter => letter.Id);
 		}
 
 		[Test]

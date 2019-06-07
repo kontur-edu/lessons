@@ -1,10 +1,13 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Database.Models;
+using Database.Models.Quizzes;
+using Database.Models.Comments;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +27,7 @@ namespace Database
 
 		public Task CreateInitialDataAsync(InitialDataCreator creator)
 		{
-			return creator.CreateInitialDataAsync();
+			return creator.CreateAllAsync();
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -67,6 +70,29 @@ namespace Database
 			modelBuilder.Entity<MailNotificationTransport>();
 			modelBuilder.Entity<TelegramNotificationTransport>();
 			modelBuilder.Entity<FeedNotificationTransport>();
+
+			var notificationClasses = GetNonAbstractSubclasses(typeof(Notification));
+			foreach (var notificationClass in notificationClasses)
+				modelBuilder.Entity(notificationClass);
+
+			/* For backward compatibility with EF 6.0 */
+			modelBuilder.Entity<ReceivedCommentToCodeReviewNotification>().Property(n => n.CommentId).HasColumnName("CommentId");
+			modelBuilder.Entity<NewCommentNotification>().Property(n => n.CommentId).HasColumnName("CommentId1");
+			modelBuilder.Entity<NewCommentForInstructorsOnlyNotification>().Property(n => n.CommentId).HasColumnName("CommentId1");
+			modelBuilder.Entity<NewCommentFromYourGroupStudentNotification>().Property(n => n.CommentId).HasColumnName("CommentId1");
+			modelBuilder.Entity<RepliedToYourCommentNotification>().Property(n => n.CommentId).HasColumnName("CommentId1");
+			modelBuilder.Entity<LikedYourCommentNotification>().Property(n => n.CommentId).HasColumnName("CommentId1");
+			modelBuilder.Entity<CreatedGroupNotification>().Property(n => n.GroupId).HasColumnName("GroupId");
+			modelBuilder.Entity<SystemMessageNotification>().Property(n => n.Text).HasColumnName("Text");
+			modelBuilder.Entity<InstructorMessageNotification>().Property(n => n.Text).HasColumnName("Text");
+
+			modelBuilder.Entity<GroupMembersHaveBeenRemovedNotification>().Property(n => n.GroupId).HasColumnName("GroupId");
+			modelBuilder.Entity<GroupMembersHaveBeenRemovedNotification>().Property(n => n.UserDescriptions).HasColumnName("UserDescriptions");
+			modelBuilder.Entity<GroupMembersHaveBeenRemovedNotification>().Property(n => n.UserIds).HasColumnName("UserIds");
+			
+			modelBuilder.Entity<GroupMembersHaveBeenAddedNotification>().Property(n => n.GroupId).HasColumnName("GroupId");
+			modelBuilder.Entity<GroupMembersHaveBeenAddedNotification>().Property(n => n.UserDescriptions).HasColumnName("UserDescriptions");
+			modelBuilder.Entity<GroupMembersHaveBeenAddedNotification>().Property(n => n.UserIds).HasColumnName("UserIds");
 			
 			
 			modelBuilder.Entity<CommentLike>()
@@ -91,62 +117,80 @@ namespace Database
 				.HasOne(d => d.Notification)
 				.WithMany(n => n.Deliveries)
 				.HasForeignKey(d => d.NotificationId)
+				.OnDelete(DeleteBehavior.Cascade);
+			
+			modelBuilder.Entity<UserQuizSubmission>()
+				.HasOne(s => s.AutomaticChecking)
+				.WithOne(c => c.Submission)
+				.HasForeignKey<AutomaticQuizChecking>(p => p.Id)
 				.OnDelete(DeleteBehavior.Restrict);
 
-			CancelCascaseDeleting<ExerciseCodeReview, ApplicationUser>(modelBuilder, c => c.Author, c => c.AuthorId);
+			modelBuilder.Entity<UserQuizSubmission>()
+				.HasOne(s => s.ManualChecking)
+				.WithOne(c => c.Submission)
+				.HasForeignKey<ManualQuizChecking>(p => p.Id)
+				.OnDelete(DeleteBehavior.Restrict);			
 
-			CancelCascaseDeleting<UserExerciseSubmission, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
-			CancelCascaseDeleting<ManualExerciseChecking, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+			SetDeleteBehavior<CourseRole, ApplicationUser>(modelBuilder, r => r.User, r => r.UserId, DeleteBehavior.Cascade);
 
-			CancelCascaseDeleting<Certificate, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
-			CancelCascaseDeleting<Certificate, ApplicationUser>(modelBuilder, c => c.Instructor, c => c.InstructorId);
+			SetDeleteBehavior<ExerciseCodeReview, ApplicationUser>(modelBuilder, c => c.Author, c => c.AuthorId);
 
-			CancelCascaseDeleting<AdditionalScore, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
-			CancelCascaseDeleting<AdditionalScore, ApplicationUser>(modelBuilder, c => c.Instructor, c => c.InstructorId);
+			SetDeleteBehavior<UserExerciseSubmission, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+			SetDeleteBehavior<ManualExerciseChecking, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
 
-			CancelCascaseDeleting<GraderClient, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+			SetDeleteBehavior<Certificate, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+			SetDeleteBehavior<Certificate, ApplicationUser>(modelBuilder, c => c.Instructor, c => c.InstructorId);
 
-			CancelCascaseDeleting<Notification, ApplicationUser>(modelBuilder, c => c.InitiatedBy, c => c.InitiatedById);
-			CancelCascaseDeleting<AddedInstructorNotification, ApplicationUser>(modelBuilder, c => c.AddedUser, c => c.AddedUserId);
-			CancelCascaseDeleting<LikedYourCommentNotification, ApplicationUser>(modelBuilder, c => c.LikedUser, c => c.LikedUserId);
-			CancelCascaseDeleting<JoinedToYourGroupNotification, ApplicationUser>(modelBuilder, c => c.JoinedUser, c => c.JoinedUserId);
-			CancelCascaseDeleting<JoinedToYourGroupNotification, Group>(modelBuilder, c => c.Group, c => c.GroupId);
-			CancelCascaseDeleting<GrantedAccessToGroupNotification, GroupAccess>(modelBuilder, c => c.Access, c => c.AccessId);
-			CancelCascaseDeleting<RevokedAccessToGroupNotification, GroupAccess>(modelBuilder, c => c.Access, c => c.AccessId);
-			CancelCascaseDeleting<GroupMemberHasBeenRemovedNotification, Group>(modelBuilder, c => c.Group, c => c.GroupId);
-			CancelCascaseDeleting<GroupMemberHasBeenRemovedNotification, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
-			CancelCascaseDeleting<CreatedGroupNotification, Group>(modelBuilder, c => c.Group, c => c.GroupId);
-			CancelCascaseDeleting<PassedManualExerciseCheckingNotification, ManualExerciseChecking>(modelBuilder, c => c.Checking, c => c.CheckingId);
-			CancelCascaseDeleting<PassedManualQuizCheckingNotification, ManualQuizChecking>(modelBuilder, c => c.Checking, c => c.CheckingId);
-			CancelCascaseDeleting<ReceivedAdditionalScoreNotification, AdditionalScore>(modelBuilder, c => c.Score, c => c.ScoreId);
+			SetDeleteBehavior<AdditionalScore, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+			SetDeleteBehavior<AdditionalScore, ApplicationUser>(modelBuilder, c => c.Instructor, c => c.InstructorId);
 
-			CancelCascaseDeleting<NewCommentNotification, Comment>(modelBuilder, c => c.Comment, c => c.CommentId);
-			CancelCascaseDeleting<LikedYourCommentNotification, Comment>(modelBuilder, c => c.Comment, c => c.CommentId);
-			CancelCascaseDeleting<RepliedToYourCommentNotification, Comment>(modelBuilder, c => c.Comment, c => c.CommentId);
-			CancelCascaseDeleting<RepliedToYourCommentNotification, Comment>(modelBuilder, c => c.ParentComment, c => c.ParentCommentId);
+			SetDeleteBehavior<GraderClient, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+
+			SetDeleteBehavior<Notification, ApplicationUser>(modelBuilder, c => c.InitiatedBy, c => c.InitiatedById);
+			SetDeleteBehavior<AddedInstructorNotification, ApplicationUser>(modelBuilder, c => c.AddedUser, c => c.AddedUserId);
+			SetDeleteBehavior<LikedYourCommentNotification, ApplicationUser>(modelBuilder, c => c.LikedUser, c => c.LikedUserId);
+			SetDeleteBehavior<JoinedToYourGroupNotification, ApplicationUser>(modelBuilder, c => c.JoinedUser, c => c.JoinedUserId);
+			SetDeleteBehavior<JoinedToYourGroupNotification, Group>(modelBuilder, c => c.Group, c => c.GroupId);
+			SetDeleteBehavior<GrantedAccessToGroupNotification, GroupAccess>(modelBuilder, c => c.Access, c => c.AccessId);
+			SetDeleteBehavior<RevokedAccessToGroupNotification, GroupAccess>(modelBuilder, c => c.Access, c => c.AccessId);
+			SetDeleteBehavior<GroupMemberHasBeenRemovedNotification, Group>(modelBuilder, c => c.Group, c => c.GroupId);
+			SetDeleteBehavior<GroupMemberHasBeenRemovedNotification, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+			SetDeleteBehavior<CreatedGroupNotification, Group>(modelBuilder, c => c.Group, c => c.GroupId);
+			SetDeleteBehavior<PassedManualExerciseCheckingNotification, ManualExerciseChecking>(modelBuilder, c => c.Checking, c => c.CheckingId);
+			SetDeleteBehavior<PassedManualQuizCheckingNotification, ManualQuizChecking>(modelBuilder, c => c.Checking, c => c.CheckingId);
+			SetDeleteBehavior<ReceivedAdditionalScoreNotification, AdditionalScore>(modelBuilder, c => c.Score, c => c.ScoreId);
+
+			SetDeleteBehavior<NewCommentNotification, Comment>(modelBuilder, c => c.Comment, c => c.CommentId);
+			SetDeleteBehavior<NewCommentFromYourGroupStudentNotification, Comment>(modelBuilder, c => c.Comment, c => c.CommentId);
+			SetDeleteBehavior<LikedYourCommentNotification, Comment>(modelBuilder, c => c.Comment, c => c.CommentId);
+			SetDeleteBehavior<RepliedToYourCommentNotification, Comment>(modelBuilder, c => c.Comment, c => c.CommentId);
+			SetDeleteBehavior<RepliedToYourCommentNotification, Comment>(modelBuilder, c => c.ParentComment, c => c.ParentCommentId);
 			
-			CancelCascaseDeleting<UploadedPackageNotification, CourseVersion>(modelBuilder, c => c.CourseVersion, c => c.CourseVersionId);
-			CancelCascaseDeleting<PublishedPackageNotification, CourseVersion>(modelBuilder, c => c.CourseVersion, c => c.CourseVersionId);
+			SetDeleteBehavior<UploadedPackageNotification, CourseVersion>(modelBuilder, c => c.CourseVersion, c => c.CourseVersionId);
+			SetDeleteBehavior<PublishedPackageNotification, CourseVersion>(modelBuilder, c => c.CourseVersion, c => c.CourseVersionId);
 
-			CancelCascaseDeleting<CourseExportedToStepikNotification, StepikExportProcess>(modelBuilder, c => c.Process, c => c.ProcessId);
+			SetDeleteBehavior<CourseExportedToStepikNotification, StepikExportProcess>(modelBuilder, c => c.Process, c => c.ProcessId);
 			
-			CancelCascaseDeleting<XQueueWatcher, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+			SetDeleteBehavior<XQueueWatcher, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
 
-			CancelCascaseDeleting<StepikExportProcess, ApplicationUser>(modelBuilder, c => c.Owner, c => c.OwnerId);
+			SetDeleteBehavior<StepikExportProcess, ApplicationUser>(modelBuilder, c => c.Owner, c => c.OwnerId);
 
-			CancelCascaseDeleting<NotificationTransport, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
+			SetDeleteBehavior<NotificationTransport, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId);
 
-			CancelCascaseDeleting<LabelOnGroup, Group>(modelBuilder, c => c.Group, c => c.GroupId);
-			CancelCascaseDeleting<GroupLabel, ApplicationUser>(modelBuilder, c => c.Owner, c => c.OwnerId);
-			CancelCascaseDeleting<LabelOnGroup, GroupLabel>(modelBuilder, c => c.Label, c => c.LabelId);
+			SetDeleteBehavior<GroupAccess, ApplicationUser>(modelBuilder, c => c.User, c => c.UserId, DeleteBehavior.Cascade);
+			SetDeleteBehavior<GroupAccess, ApplicationUser>(modelBuilder, c => c.GrantedBy, c => c.GrantedById, DeleteBehavior.Cascade);
 			
-			CancelCascaseDeleting<SystemAccess, ApplicationUser>(modelBuilder, c => c.GrantedBy, c => c.GrantedById);
+			SetDeleteBehavior<LabelOnGroup, Group>(modelBuilder, c => c.Group, c => c.GroupId);
+			SetDeleteBehavior<GroupLabel, ApplicationUser>(modelBuilder, c => c.Owner, c => c.OwnerId);
+			SetDeleteBehavior<LabelOnGroup, GroupLabel>(modelBuilder, c => c.Label, c => c.LabelId);
+			
+			SetDeleteBehavior<SystemAccess, ApplicationUser>(modelBuilder, c => c.GrantedBy, c => c.GrantedById);
 
 
 			CreateIndexes(modelBuilder);
 		}
 
-		private static void CancelCascaseDeleting<T1, T2>(ModelBuilder modelBuilder, Expression<Func<T1, T2>> oneWay, Expression<Func<T1, object>> secondWay, DeleteBehavior deleteBehavior=DeleteBehavior.Restrict)
+		private static void SetDeleteBehavior<T1, T2>(ModelBuilder modelBuilder, Expression<Func<T1, T2>> oneWay, Expression<Func<T1, object>> secondWay, DeleteBehavior deleteBehavior=DeleteBehavior.Restrict)
 			where T1 : class
 			where T2 : class
 		{
@@ -164,6 +208,7 @@ namespace Database
 			AddIndex<AdditionalScore>(modelBuilder, c => c.UnitId);
 
 			AddIndex<ApplicationUser>(modelBuilder, c => c.TelegramChatId);
+			AddIndex<ApplicationUser>(modelBuilder, c => c.IsDeleted);
 
 			AddIndex<Certificate>(modelBuilder, c => c.TemplateId);
 			AddIndex<Certificate>(modelBuilder, c => c.UserId);
@@ -217,7 +262,7 @@ namespace Database
 
 			AddIndex<LtiConsumer>(modelBuilder, c => c.Key);
 
-			AddIndex<LtiSlideRequest>(modelBuilder, c => new { c.SlideId, c.UserId });
+			AddIndex<LtiSlideRequest>(modelBuilder, c => new { c.CourseId, c.SlideId, c.UserId });
 
 			AddIndex<NotificationTransport>(modelBuilder, c => c.UserId);
 			AddIndex<NotificationTransport>(modelBuilder, c => new { c.UserId, c.IsDeleted });
@@ -235,9 +280,6 @@ namespace Database
 			AddIndex<Notification>(modelBuilder, c => c.CreateTime);
 			AddIndex<Notification>(modelBuilder, c => c.AreDeliveriesCreated);
 
-			AddIndex<QuizVersion>(modelBuilder, c => c.SlideId);
-			AddIndex<QuizVersion>(modelBuilder, c => new { c.SlideId, c.LoadingTime });
-		
 			AddIndex<ManualExerciseChecking>(modelBuilder, c => new { c.CourseId, c.SlideId });
 			AddIndex<ManualExerciseChecking>(modelBuilder, c => new { c.CourseId, c.SlideId, c.UserId, c.ProhibitFurtherManualCheckings });
 			AddIndex<ManualExerciseChecking>(modelBuilder, c => new { c.CourseId, c.SlideId, c.Timestamp });
@@ -257,7 +299,10 @@ namespace Database
 
 			AddIndex<AutomaticExerciseChecking>(modelBuilder, c => c.IsRightAnswer);
 
-			AddIndex<SlideHint>(modelBuilder, c => new { c.SlideId, c.HintId, c.UserId, c.IsHintHelped });
+			AddIndex<ExerciseCodeReviewComment>(modelBuilder, c => new { c.ReviewId, c.IsDeleted });
+			AddIndex<ExerciseCodeReviewComment>(modelBuilder, c => c.AddingTime);
+
+			AddIndex<SlideHint>(modelBuilder, c => new { c.CourseId, c.SlideId, c.HintId, c.UserId, c.IsHintHelped });
 
 			AddIndex<SlideRate>(modelBuilder, c => new { c.SlideId, c.UserId });
 
@@ -282,10 +327,15 @@ namespace Database
 			AddIndex<UserExerciseSubmission>(modelBuilder, c => new { c.CourseId, c.SlideId, c.Timestamp });
 			AddIndex<UserExerciseSubmission>(modelBuilder, c => new { c.CourseId, c.AutomaticCheckingIsRightAnswer });
 			AddIndex<UserExerciseSubmission>(modelBuilder, c => new { c.CourseId, c.SlideId, c.AutomaticCheckingIsRightAnswer });
-			AddIndex<UserExerciseSubmission>(modelBuilder, c => new { c.AntiPlagiarismSubmissionId });
+			AddIndex<UserExerciseSubmission>(modelBuilder, c => c.AntiPlagiarismSubmissionId);
+			AddIndex<UserExerciseSubmission>(modelBuilder, c => c.Language);
 
-			AddIndex<UserQuiz>(modelBuilder, c => new { c.SlideId, c.Timestamp });
-			AddIndex<UserQuiz>(modelBuilder, c => new { c.UserId, c.SlideId, c.isDropped, c.QuizId, c.ItemId });
+			AddIndex<UserQuizAnswer>(modelBuilder, c => new { c.SubmissionId, c.BlockId });
+			AddIndex<UserQuizAnswer>(modelBuilder, c => new { c.ItemId });
+
+			AddIndex<UserQuizSubmission>(modelBuilder, c => new { c.CourseId, c.SlideId });
+			AddIndex<UserQuizSubmission>(modelBuilder, c => new { c.CourseId, c.SlideId, c.UserId });
+			AddIndex<UserQuizSubmission>(modelBuilder, c => new { c.CourseId, c.SlideId, c.Timestamp });
 			
 			AddIndex<Visit>(modelBuilder, c => new { c.SlideId, c.UserId });
 			AddIndex<Visit>(modelBuilder, c => new { c.CourseId, c.SlideId, c.UserId });
@@ -297,7 +347,11 @@ namespace Database
 			modelBuilder.Entity<TEntity>().HasIndex(indexFunction).IsUnique(isUnique);
 		}
 
-		/* Construct easy understandable message on DbEntityValidationException */
+		private static List<Type> GetNonAbstractSubclasses(Type type)
+		{
+			return type.Assembly.GetTypes().Where(t => t.IsSubclassOf(type) && !t.IsAbstract && t != type).ToList();
+		}		
+
 		public override int SaveChanges()
 		{
 			ValidateChanges();
@@ -328,27 +382,30 @@ namespace Database
 		public DbSet<Visit> Visits { get; set; }
 		public DbSet<SlideHint> Hints { get; set; }
 		public DbSet<Like> SolutionLikes { get; set; }
-		public DbSet<UserQuiz> UserQuizzes { get; set; }
+		public DbSet<UserQuizAnswer> UserQuizAnswers { get; set; }
 		public DbSet<UnitAppearance> UnitAppearances { get; set; }
 		public DbSet<TextBlob> Texts { get; set; }
 		public DbSet<LtiConsumer> Consumers { get; set; }
 		public DbSet<LtiSlideRequest> LtiRequests { get; set; }
 		public DbSet<RestoreRequest> RestoreRequests { get; set; }
-		public DbSet<UserRole> UserRoles { get; set; }
+		public DbSet<CourseRole> CourseRoles { get; set; }
 
 		public DbSet<Comment> Comments { get; set; }
 		public DbSet<CommentLike> CommentLikes { get; set; }
 		public DbSet<CommentsPolicy> CommentsPolicies { get; set; }
 
-		public DbSet<QuizVersion> QuizVersions { get; set; }
 		public DbSet<CourseVersion> CourseVersions { get; set; }
+		public DbSet<CourseFile> CourseFiles { get; set; }
+		public DbSet<CourseGit> CourseGitRepos { get; set; }
 
 		public DbSet<ManualExerciseChecking> ManualExerciseCheckings { get; set; }
 		public DbSet<AutomaticExerciseChecking> AutomaticExerciseCheckings { get; set; }
 		public DbSet<ManualQuizChecking> ManualQuizCheckings { get; set; }
 		public DbSet<AutomaticQuizChecking> AutomaticQuizCheckings { get; set; }
 		public DbSet<UserExerciseSubmission> UserExerciseSubmissions { get; set; }
+		public DbSet<UserQuizSubmission> UserQuizSubmissions { get; set; }
 		public DbSet<ExerciseCodeReview> ExerciseCodeReviews { get; set; }
+		public DbSet<ExerciseCodeReviewComment> ExerciseCodeReviewComments { get; set; }
 
 		public DbSet<Group> Groups { get; set; }
 		public DbSet<GroupMember> GroupMembers { get; set; }
@@ -357,6 +414,7 @@ namespace Database
 		public DbSet<GroupAccess> GroupAccesses { get; set; }
 
 		public DbSet<CertificateTemplate> CertificateTemplates { get; set; }
+		public DbSet<CertificateTemplateArchive> CertificateTemplateArchives { get; set; }
 		public DbSet<Certificate> Certificates { get; set; }
 
 		public DbSet<AdditionalScore> AdditionalScores { get; set; }

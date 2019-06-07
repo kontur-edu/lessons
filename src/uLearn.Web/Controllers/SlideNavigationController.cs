@@ -7,9 +7,13 @@ using Database.DataContexts;
 using Database.Extensions;
 using Database.Models;
 using Microsoft.AspNet.Identity;
-using uLearn.Quizes;
 using uLearn.Web.Models;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Quizzes;
 
 namespace uLearn.Web.Controllers
 {
@@ -102,7 +106,7 @@ namespace uLearn.Web.Controllers
 			};
 
 			var userGroups = groupsRepo.GetUserGroups(course.Id, User.Identity.GetUserId());
-			var tocGroupsForStatistics = userGroups.Select(g => new TocGroupForStatistics
+			var tocGroupsForStatistics = userGroups.Where(g => g.CanUsersSeeGroupProgress).Select(g => new TocGroupForStatistics
 			{
 				GroupName = g.Name,
 				StatisticsUrl = Url.Action("CourseStatistics", "Analytics", new { courseId = course.Id, group = g.Id })
@@ -117,7 +121,7 @@ namespace uLearn.Web.Controllers
 			var course = courseManager.GetCourse(courseId);
 			var slide = course.GetSlideById(slideId);
 			var userId = User.Identity.GetUserId();
-			var nextIsAcceptedSolutions = !onSolutionsSlide && slide is ExerciseSlide && visitsRepo.IsSkippedOrPassed(slide.Id, userId) && !((ExerciseSlide)slide).Exercise.HideShowSolutionsButton;
+			var nextIsAcceptedSolutions = !onSolutionsSlide && slide is ExerciseSlide && visitsRepo.IsSkippedOrPassed(courseId, slide.Id, userId) && !((ExerciseSlide)slide).Exercise.HideShowSolutionsButton;
 			var visibleUnits = unitsRepo.GetVisibleUnits(course, User);
 			var nextSlide = course.Slides.FirstOrDefault(s => s.Index > slide.Index && visibleUnits.Contains(s.Info.Unit));
 			var prevSlide = course.Slides.LastOrDefault(s => s.Index < slide.Index && visibleUnits.Contains(s.Info.Unit));
@@ -126,6 +130,7 @@ namespace uLearn.Web.Controllers
 				course,
 				slide.Id,
 				nextIsAcceptedSolutions,
+				(slide as ExerciseSlide)?.Exercise.HideShowSolutionsButton ?? false,
 				nextSlide,
 				prevSlide,
 				!User.Identity.IsAuthenticated);

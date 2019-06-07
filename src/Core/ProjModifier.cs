@@ -4,11 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Build.Evaluation;
-using uLearn.Helpers;
-using uLearn.Model.Blocks;
+using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Helpers;
 
-namespace uLearn
+namespace Ulearn.Core
 {
 	public class FileToCopy
 	{
@@ -26,8 +28,14 @@ namespace uLearn
 	{
 		public static byte[] ModifyCsproj(FileInfo csproj, Action<Project> changingAction, string toolsVersion=null)
 		{
-			var proj = new Project(csproj.FullName, null, toolsVersion, new ProjectCollection());
-			return ModifyCsproj(proj, changingAction);
+			return FuncUtils.Using(
+				new ProjectCollection(),
+				projectCollection =>
+				{
+					var proj = new Project(csproj.FullName, null, toolsVersion, projectCollection);
+					return ModifyCsproj(proj, changingAction);
+				}, 
+				projectCollection => projectCollection.UnloadAllProjects());
 		}
 
 		private static byte[] ModifyCsproj(Project proj, Action<Project> changingAction)
@@ -41,7 +49,7 @@ namespace uLearn
 			}
 		}
 		
-		public static void PrepareForStudentZip(Project proj, ProjectExerciseBlock ex)
+		public static void PrepareForStudentZip(Project proj, CsProjectExerciseBlock ex)
 		{
 			var toExclude = FindItemNames(proj, file => ExerciseStudentZipBuilder.NeedExcludeFromStudentZip(ex, file)).ToList();
 			var solutionsOfOtherTasks = toExclude.Where(n => ExerciseStudentZipBuilder.IsAnySolution(n) && ex.CorrectSolutionPath != n).ToList();
@@ -53,7 +61,7 @@ namespace uLearn
 			
 			RemoveCheckingFromCsproj(proj);
 			
-			var userCodeFilepathsOfOtherTasks = solutionsOfOtherTasks.Select(ProjectExerciseBlock.SolutionFilepathToUserCodeFilepath);
+			var userCodeFilepathsOfOtherTasks = solutionsOfOtherTasks.Select(CsProjectExerciseBlock.SolutionFilepathToUserCodeFilepath);
 			SetFilepathItemTypeToCompile(proj, userCodeFilepathsOfOtherTasks.Concat(new[] { ex.UserCodeFilePath }));
 			
 			ReplaceLinksWithItems(proj);
@@ -74,7 +82,7 @@ namespace uLearn
 				|| item.DirectMetadata.Any(md => md.Name == "Link" && md.EvaluatedValue.StartsWith("checking" + Path.DirectorySeparatorChar));
 		}
 
-		public static void PrepareForCheckingUserCode(Project proj, ProjectExerciseBlock ex, List<string> excludedPaths)
+		public static void PrepareForCheckingUserCode(Project proj, CsProjectExerciseBlock ex, List<string> excludedPaths)
 		{
 			var solutionRelativePath = ex.ExerciseFolder.GetRelativePathsOfFiles()
 				.SingleOrDefault(n => n.Equals(ex.CorrectSolutionPath, StringComparison.InvariantCultureIgnoreCase));

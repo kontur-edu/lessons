@@ -1,5 +1,4 @@
 ﻿using System;
-using uLearn.Extensions;
 using Ulearn.Common.Extensions;
 
 namespace AntiPlagiarism.Web.CodeAnalyzing.Hashers

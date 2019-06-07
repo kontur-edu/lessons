@@ -1,0 +1,22 @@
+Инструкция по сборке https://github.com/alex-weaver/libgit2sharp на коммит 2ab9fdd1
+
+1) Клонируем https://github.com/alex-weaver/libgit2sharp.nativebinaries
+2) Не выполняем (хотя, рекомендуется в README.md)
+.\UpdateLibgit2ToSha.ps1 master
+rm -Recurse .\nuget.package\runtimes\*
+Потому что последняя версия сабмодуля libgit2 не собиралась.
+А папок runtimes и так нет после чистого clone
+3) Нужна VS 2017 c пакетом разработки под C++. В 2019 не собиралась 64-бит версия
+Нужен cmake: https://cmake.org/download/ Встроенный в VS старый, не совместим с VS 2019.
+Прописываем cmake в path
+4) В повершелл под администратором выполняем Set-ExecutionPolicy unrestricted, чтобы резрешить запускать повершелл-скрипты
+5) В папке с репозиторием выполняем .\build.libgit2.ps1 15 (15 для VS 2017, 16 для VS 2019)
+6) Запускаем .\buildpackage.ps1 1.0.251
+Появится собранный .nupkg в корне репозитория
+Публикуем пакет локально Install-Package SomePackage -Source C:\PathToThePackageDir\
+В этой папке появится локальный репозиторий
+7) Клоним проект https://github.com/alex-weaver/libgit2sharp
+Options -> Nuget package Manager -> Package Sources Добавляем и указываем путь до папки 
+Открываем VS, правим зависимости на версию собранного пакета
+8) Проверям, что всё билдится
+Выполняем dotnet pack -c Release Собранные бинарники и пакет в папке Release

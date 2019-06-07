@@ -6,7 +6,6 @@ using LtiLibrary.Core.Common;
 using LtiLibrary.Core.OAuth;
 using LtiLibrary.Owin.Security.Lti;
 using LtiLibrary.Owin.Security.Lti.Provider;
-using Microsoft.AspNet.Identity;
 using Owin;
 using uLearn.Web.Extensions;
 
@@ -65,7 +64,8 @@ namespace uLearn.Web.LTI
 					// Generate a username using the LisPersonEmailPrimary from the LTI request
 					OnGenerateUserName = context => SecurityHandler.OnGenerateUserName(context)
 				},
-				SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
+				//SignInAsAuthenticationType = DefaultAuthenticationTypes.ApplicationCookie
+				SignInAsAuthenticationType = "Identity.Application"
 			});
 
 			return app;

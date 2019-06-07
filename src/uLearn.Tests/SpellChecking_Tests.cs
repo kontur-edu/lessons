@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
-using uLearn.SpellChecking;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Properties;
+using Ulearn.Core.SpellChecking;
 
 namespace uLearn
 {
@@ -15,7 +16,7 @@ namespace uLearn
 			{
 				CollectionAssert.IsEmpty(spellChecker.SpellCheckString("привет"));
 				CollectionAssert.IsNotEmpty(spellChecker.SpellCheckString("превет"));
-				var dictionaryLines = Properties.Resources.customDictionary.SplitToLines();
+				var dictionaryLines = Resources.customDictionary.SplitToLines();
 				var errors = dictionaryLines.SelectMany(spellChecker.SpellCheckString).ToList();
 				Console.WriteLine(string.Join("\r\n", errors));
 				CollectionAssert.IsEmpty(errors);

@@ -1,0 +1,55 @@
+@import "../../../../variables.less";
+
+label {
+  font-weight: 400;
+}
+
+.wrapper {
+  width: 100%;
+  margin: 0 0 20px 0;
+
+  @media (max-width: @maxTabletWidth) {
+    margin: 0 auto 20px;
+  }
+}
+
+.change-name {
+  margin-bottom: 20px;
+
+  @media (max-width: @maxTabletWidth) {
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: @maxPhoneWidth) {
+    margin-bottom: 4px;
+  }
+}
+
+.change-name-header {
+  display: inline-block;
+  margin: 0 20px 0 0;
+}
+
+.change-name-label,
+.settings-header {
+  font-weight: 500;
+  font-size: 18px;
+  margin: 0 0 7px 0;
+}
+
+.settings-header {
+  padding-top: 7px;
+}
+
+.checkbox-block {
+  margin-bottom: 20px;
+
+  @media (max-width: @maxPhoneWidth) {
+    margin-bottom: 10px;
+  }
+}
+
+.settings-text {
+  margin-top: 0;
+  margin-bottom: 10px;
+}

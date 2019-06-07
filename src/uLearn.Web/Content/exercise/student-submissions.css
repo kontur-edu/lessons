@@ -1,0 +1,100 @@
+.legacy-page .student-submissions {
+    font-size: 15px;
+    margin-bottom: 40px;
+    margin-top: 30px;
+}
+
+@media(max-width: 720px) {
+	.legacy-page .student-submissions {
+        font-size: 14px;
+    }
+}
+
+.legacy-page .student-submissions table {
+    margin-left: -5px;
+    width: 100%;
+}
+
+.legacy-page .student-submissions table th,
+.legacy-page .student-submissions table td {
+    padding: 5px 40px 3px 5px;
+}
+
+.legacy-page .student-submissions table th:last-child,
+.legacy-page .student-submissions table td:last-child {
+    padding-right: 3px;
+}
+
+@media(max-width: 720px) {
+	.legacy-page .student-submissions table th,
+	.legacy-page .student-submissions table td {
+        padding-right: 15px;
+    }
+}
+
+.legacy-page .student-submissions table thead th {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 10px;
+}
+
+
+.legacy-page .student-submissions__comment-row td {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    color: #999;
+    font-size: 14px;
+}
+
+.legacy-page .student-submissions table tbody .student-submissions__show-all td {
+    text-align: center;
+    padding-top: 0;    
+}
+
+.legacy-page .student-submissions table tbody td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    vertical-align: top;
+}
+
+.legacy-page .student-submissions table tbody tr.has-submissions:hover {       
+    background-color: #E4F3FF;
+    cursor: pointer;
+}
+
+.legacy-page .student-submissions table tbody tr.has-submissions:hover a {
+    text-decoration: underline;
+}
+
+.legacy-page .student-submissions__filter {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.legacy-page .student-submissions__filter__input {
+    display: inline-block;
+    margin-right: 5px;
+    max-width: 300px;
+}
+
+.legacy-page .student-submissions__filter .loading-icon {
+    color: rgba(0, 0, 0, 0.8);
+    top: 2px;
+}
+
+.legacy-page .student-submissions__name-column {
+    min-width: 200px;
+    max-width: 350px;
+    width: 350px;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+}
+
+@media(max-width: 720px) {
+	.legacy-page .student-submissions__name-column {
+        min-width: 100px;
+    }
+}
+
+.legacy-page .student-submissions__group-names {
+    font-size: 11px;
+    color: #999;
+}

@@ -1,4 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
+using Ulearn.Core.CSharp;
+using Ulearn.Core.CSharp.Validators;
 
 namespace uLearn.CSharp
 {
@@ -23,17 +27,19 @@ namespace uLearn.CSharp
 
 		private static void CheckCorrect(string code)
 		{
-			Assert.That(FindErrors(code), Is.Null, code);
+			Assert.That(FindErrors(code), Is.Empty, code);
 		}
 
 		private void CheckIncorrect(string incorrectCode, string messageSubstring)
 		{
-			Assert.That(FindErrors(incorrectCode), Does.Contain("Строка 1").And.Contain(messageSubstring), incorrectCode);
+			var errors = FindErrors(incorrectCode);
+			Assert.That(errors.Select(e => e.Span.StartLinePosition.Line), Does.Contain(0), incorrectCode);
+			errors.ForEach(e => Assert.That(e.Message, Does.Contain(messageSubstring)));
 		}
 
-		private static string FindErrors(string code)
+		private static List<SolutionStyleError> FindErrors(string code)
 		{
-			return new LineLengthStyleValidator(10).FindError(code);
+			return new LineLengthStyleValidator(10).FindErrors(code);
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace uLearn.Model.Edx.EdxComponents
+namespace Ulearn.Core.Model.Edx.EdxComponents
 {
 	[XmlRoot("video")]
 	public class VideoComponent : Component

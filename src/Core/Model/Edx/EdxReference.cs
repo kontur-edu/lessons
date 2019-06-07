@@ -1,7 +1,7 @@
 ﻿using System.Xml.Serialization;
-using uLearn.Model.Edx.EdxComponents;
+using Ulearn.Core.Model.Edx.EdxComponents;
 
-namespace uLearn.Model.Edx
+namespace Ulearn.Core.Model.Edx
 {
 	public class EdxReference
 	{

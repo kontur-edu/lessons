@@ -14,7 +14,7 @@ namespace AntiPlagiarism.Tests.Extensions
 		[Test]
 		public void TestGetTokens()
 		{
-			var syntaxTree = CSharpSyntaxTree.ParseText(TestData.SimpleProgramWithMethodAndProperty);
+			var syntaxTree = CSharpSyntaxTree.ParseText(CommonTestData.SimpleProgramWithMethodAndProperty);
 			var syntaxTreeRoot = syntaxTree.GetRoot();
 			var tokens = syntaxTreeRoot.GetTokens().ToList();
 			

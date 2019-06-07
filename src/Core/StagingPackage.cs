@@ -1,6 +1,6 @@
 using System;
 
-namespace uLearn
+namespace Ulearn.Core
 {
 	public class StagingPackage
 	{

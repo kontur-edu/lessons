@@ -1,5 +1,6 @@
 ﻿@using uLearn.Web.Controllers
 @using Ulearn.Common.Extensions
+@using FormMethod = System.Web.Mvc.FormMethod
 
 @model DiagnosticsModel
 
@@ -8,9 +9,9 @@
 }
 
 <div class="container">
-    @if (Model.IsVersionPublished)
+	@if (Model.IsVersionPublished)
 	{
-		<h1>Курс обновлён, @Html.RouteLink("перейти к курсу →", "Course", new { courseId = Model.CourseId, action = "Slide" }, new { })</h1>
+		<h1>Курс обновлён, @Html.RouteLink("перейти к курсу →", "Course.Slide", new { courseId = Model.CourseId }, new { })</h1>
 
 		<div>
 			@Html.ActionLink("Скопировать на Степик", "ExportCourse", "Stepik", new { courseId = Model.CourseId }, new { @class = "btn btn-warning" })

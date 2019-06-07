@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<slide xmlns="https://ulearn.me/schema/v2" id="FC2AE2E7-0C6C-43EE-981B-E411E4DF80C8" title="Simple slide">
+	<markdown hide="true">
+		Привет, это маркдаун блок.
+	</markdown>
+	<markdown>
+		Это второй маркдаун блок. Здесь есть выделение **полужирным** и __курсивом__.
+	</markdown>
+	<markdown>
+		Это многострочный
+		маркдаун-
+		блок
+	</markdown>
+	<markdown>
+		Внутрь маркдаун-блоков можно вставлять код:
+		
+		<code>
+			public static void Main()
+			{
+				var x = 0.5;
+				Console.WriteLine(x);
+			}
+		</code>
+		
+		<note>
+			и заметки преподавателей.
+		</note>
+	</markdown>
+</slide>

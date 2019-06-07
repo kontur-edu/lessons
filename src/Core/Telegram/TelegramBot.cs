@@ -1,18 +1,19 @@
 ﻿using Telegram.Bot;
-using uLearn.Configuration;
+using Ulearn.Core.Configuration;
 
-namespace uLearn.Telegram
+namespace Ulearn.Core.Telegram
 {
 	public class TelegramBot
 	{
 		private readonly string token;
 		protected string channel;
 		protected readonly TelegramBotClient telegramClient;
+		
+		protected const int MaxMessageSize = 2048;
 
 		protected TelegramBot()
 		{
 			token = ApplicationConfiguration.Read<UlearnConfiguration>().Telegram.BotToken;
-			// token = ConfigurationManager.AppSettings["ulearn.telegram.botToken"];
 			if (! string.IsNullOrEmpty(token))
 				telegramClient = new TelegramBotClient(token);
 		}

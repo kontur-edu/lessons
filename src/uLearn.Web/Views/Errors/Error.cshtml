@@ -1,0 +1,22 @@
+﻿@model HandleErrorInfo
+
+@{
+	ViewBag.Title = "Ошибка";
+}
+
+<div class="container">
+    <h2>Произошла ошибка</h2>
+    <div class="row">
+        <div class="col-xs-12 col-md-8">
+            <p>
+                К&nbsp;сожалению, мы не смогли обработать ваш запрос &mdash; произошла ошибка. Мы уже знаем о&nbsp;ней и
+                постараемся всё починить как можно скорее.
+            </p>
+            <p>
+                Если вам нужна помощь, напишите нам на&nbsp;<a href="mailto:support@ulearn.me">support@ulearn.me</a>.
+            </p>
+        </div>
+    </div>
+    
+    @Html.Partial("_Footer")
+</div>

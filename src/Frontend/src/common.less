@@ -1,0 +1,40 @@
+@import "variables.less";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", "Helvetica Neue", Roboto, Arial, sans-serif;
+}
+
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid \9;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+@media (min-width: @maxTabletWidth) {
+  .visible-only-desktop {
+    display: initial;
+  }
+}
+
+@media (max-width: @maxPhoneWidth) {
+  .visible-only-phone {
+    display: initial;
+  }
+}
+
+@media (max-width: @maxPhoneWidth) {
+  .visible-at-least-tablet {
+    display: none !important;
+  }
+}
+

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database.Models
 {
@@ -23,5 +22,15 @@ namespace Database.Models
 		public string AuthorId { get; set; }
 
 		public virtual ApplicationUser Author { get; set; }
+		
+		public string RepoUrl { get; set; }
+
+		[StringLength(40)]
+		public string CommitHash { get; set; }
+
+		public string Description { get; set; }
+
+		// Устанавливается из настройки курса или как пусть единственного course.xml, если курс загружен из репозитория
+		public string PathToCourseXml { get; set; }
 	}
 }

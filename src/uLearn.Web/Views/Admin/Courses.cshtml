@@ -1,0 +1,45 @@
+﻿@using Database.Extensions
+@using FormMethod = System.Web.Mvc.FormMethod
+
+@model uLearn.Web.Controllers.CourseListViewModel
+
+@{
+	ViewBag.Title = "Курсы";
+}
+<div class="container">
+	<h1>Курсы</h1>
+	<ul>
+		@foreach (var course in Model.Courses)
+		{
+			if (User.IsSystemAdministrator())
+			{
+				<li>
+					@Html.RouteLink(course.Id, "Course.Slide", new { courseId = course.Id }):
+					«@course.Title»
+				</li>
+			}
+			else
+			{
+				<li>@Html.RouteLink(course.Title, "Course.Slide", new { courseId = course.Id }):</li>
+			}
+		}
+	</ul>
+
+	@if (User.IsSystemAdministrator())
+	{
+		<h1>Создать курс</h1>
+		using (Html.BeginForm("CreateCourse", "Admin", FormMethod.Post, new { @class = "form-inline" }))
+		{
+			@Html.AntiForgeryToken()
+			<input type="text" class="form-control" name="courseId" value="@Model.LastTryCourseId" placeholder="CourseId"/>
+			<input type="text" class="form-control" name="courseTitle" value="@Model.LastTryCourseTitle" placeholder="Заголовок курса"/>
+			<input type="submit" class="btn btn-danger" value="Создать"/>
+			<p class="text-muted">CourseId используется как часть URL, имя файла, часть путей. Лучше использовать только латинские буквы и цифры.</p>
+		}
+		if (!string.IsNullOrEmpty(Model.LastTryCourseId))
+		{
+			<div style="margin: 10px">Что-то пошло не так. Вероятно, в CourseId присутствуют недопустимы символы: <pre style="display: inline-block">@Model.InvalidCharacters</pre>
+			</div>
+		}
+	}
+</div>

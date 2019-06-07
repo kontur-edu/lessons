@@ -1,0 +1,141 @@
+@import "../../../../variables.less";
+
+@indent: 50px;
+@tabletIndent: 25px;
+@phoneIndent: 15px;
+
+.wrapper {
+  padding: 5px @indent 20px;
+  position: relative;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, .02);
+
+    a.groupLink {
+      text-decoration: underline;
+      text-decoration-color: #3072c4;
+    }
+  }
+
+  @media (max-width: @maxTabletWidth) {
+    padding-left: @tabletIndent;
+    padding-right: 0;
+  }
+
+  @media (max-width: @maxPhoneWidth) {
+    padding-left: @phoneIndent;
+    padding-top: 0;
+    padding-bottom: 15px;
+  }
+}
+
+.content-wrapper {
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.link-to-group-page {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: block;
+}
+
+.content-block {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  @media (max-width: @maxTabletWidth) {
+    flex-direction: column;
+  }
+
+  a {
+    text-decoration: none;
+    color: @linkColor;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.content {
+  width: 55%;
+  align-self: baseline;
+
+  @media (max-width: @maxTabletWidth) {
+    width: 100%;
+  }
+
+  @media (max-width: @maxPhoneWidth) {
+    font-size: 12px;
+  }
+}
+
+.group-name {
+  font-size: 18px;
+  font-weight: 500;
+  color: @linkColor;
+  margin-top: 12px;
+  margin-bottom: 7px;
+  opacity: 0.99;
+  z-index: 1;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: @maxPhoneWidth) {
+    font-size: 16px;
+  }
+}
+
+.link-to-group-members {
+  opacity: 0.99;
+  z-index: 1;
+}
+
+.group-settings {
+  width: 35%;
+  align-self: flex-end;
+
+  @media (max-width: @maxTabletWidth) {
+    width: 100%;
+  }
+
+  @media (max-width: @maxPhoneWidth) {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+}
+
+.settings-on {
+  color: @successColor;
+}
+
+.settings-off {
+  color: @accentColor;
+}
+
+.group-action {
+  justify-self: end;
+  margin-right: 5px;
+  height: 30px;
+  cursor: pointer;
+  align-self: baseline;
+  z-index: 1;
+}

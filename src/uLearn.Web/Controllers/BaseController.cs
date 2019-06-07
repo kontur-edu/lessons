@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -42,6 +43,14 @@ namespace uLearn.Web.Controllers
 			}
 
 			return redirectResult;
+		}
+
+		protected string GetRealClientIp()
+		{
+			var xForwardedFor = Request.Headers["X-Forwarded-For"];
+			if (string.IsNullOrEmpty(xForwardedFor))
+				return Request.UserHostAddress;
+			return xForwardedFor.Split(',').FirstOrDefault() ?? "";
 		}
 	}
 }

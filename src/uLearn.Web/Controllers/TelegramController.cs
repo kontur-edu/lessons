@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Database.DataContexts;
 using log4net;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Ulearn.Common.Extensions;
@@ -55,7 +56,7 @@ namespace uLearn.Web.Controllers
 
 			switch (update.Type)
 			{
-				case UpdateType.MessageUpdate:
+				case UpdateType.Message:
 					await OnMessage(update.Message);
 					break;
 			}
@@ -104,7 +105,16 @@ namespace uLearn.Web.Controllers
 			}
 
 			if (!string.IsNullOrEmpty(reply))
-				await telegramBot.SendTextMessageAsync(chatId, reply);
+			{
+				try
+				{
+					await telegramBot.SendTextMessageAsync(chatId, reply);
+				}
+				catch (ApiRequestException e) when (e.Message.Contains("bot was blocked by the user"))
+				{
+					log.Warn(e);
+				}
+			}
 		}
 
 		private static string GetChatTitle(Chat chat)

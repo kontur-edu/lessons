@@ -1,0 +1,48 @@
+@import "../../../variables.less";
+@import "./../commonStyles.less";
+
+.formContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 10px 0 40px;
+  width: 100%;
+}
+
+.avatar {
+  border-radius: 4px;
+  min-width: 55px;
+  height: 55px;
+  margin-right: 12px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+
+  textarea {
+    max-width: 100%;
+
+    @media (max-width: @maxPhoneWidth) {
+      max-width: 95%;
+    }
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+    span {
+      margin-right: 10px;
+    }
+
+  @media (max-width: @maxPhoneWidth) {
+    margin-bottom: 10px;
+  }
+}
+

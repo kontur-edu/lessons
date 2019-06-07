@@ -12,6 +12,7 @@ using Database.Models;
 using Microsoft.AspNet.Identity;
 using uLearn.Web.Extensions;
 using uLearn.Web.FilterAttributes;
+using Ulearn.Core;
 
 namespace uLearn.Web.Controllers
 {
@@ -28,7 +29,7 @@ namespace uLearn.Web.Controllers
 		private readonly string telegramBotName;
 		private readonly string secretForHashes;
 
-		private TimeSpan notificationEnablingLinkExpiration = TimeSpan.FromDays(7);
+		private readonly TimeSpan notificationEnablingLinkExpiration = TimeSpan.FromDays(7);
 
 		public NotificationsController(ULearnDb db, CourseManager courseManager)
 		{
@@ -59,6 +60,8 @@ namespace uLearn.Web.Controllers
 				return new HttpStatusCodeResult(HttpStatusCode.OK);
 
 			var user = usersRepo.FindUserById(userId);
+			if (user == null)
+				return new HttpNotFoundResult();
 			if (string.IsNullOrEmpty(user.Email) || !user.EmailConfirmed)
 				return new HttpStatusCodeResult(HttpStatusCode.OK);
 
@@ -67,7 +70,7 @@ namespace uLearn.Web.Controllers
 				UserId = User.Identity.GetUserId(),
 				IsEnabled = false,
 			};
-			notificationsRepo.AddNotificationTransport(mailNotificationTransport).Wait(5000);
+			AddNotificationTransport(mailNotificationTransport).Wait(5000);
 
 			var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds();
 			var signature = GetNotificationTransportEnablingSignature(mailNotificationTransport.Id, timestamp);
@@ -79,6 +82,11 @@ namespace uLearn.Web.Controllers
 				LinkTimestamp = timestamp,
 				LinkSignature = signature,
 			});
+		}
+
+		public async Task AddNotificationTransport(MailNotificationTransport transport)
+		{
+			await notificationsRepo.AddNotificationTransport(transport).ConfigureAwait(false);
 		}
 
 		public string GetNotificationTransportEnablingSignature(int transportId, long timestamp)
@@ -140,7 +148,7 @@ namespace uLearn.Web.Controllers
 			var allNotificationTypes = NotificationsRepo.GetAllNotificationTypes();
 
 			var notificationTransportsSettings = courseIds.SelectMany(
-				c => notificationsRepo.GetNotificationTransportsSettings(c).Select(
+				c => notificationsRepo.GetNotificationTransportsSettings(c, user.Id).Select(
 					kvp => Tuple.Create(Tuple.Create(c, kvp.Key.Item1, kvp.Key.Item2), kvp.Value.IsEnabled)
 				)
 			).ToDictionary(kvp => kvp.Item1, kvp => kvp.Item2);
@@ -221,13 +229,13 @@ namespace uLearn.Web.Controllers
 
 			await notificationsRepo.SetNotificationTransportSettings(courseId, transportId, realNotificationType, isEnabled);
 
-			return Json(new { status = "ok", notificationTransportsSettings = GetNotificationTransportsSettings() });
+			return Json(new { status = "ok", notificationTransportsSettings = GetNotificationTransportsSettings(userId) });
 		}
 
-		private IEnumerable<NotificationTransportsSettingsViewModel> GetNotificationTransportsSettings()
+		private IEnumerable<NotificationTransportsSettingsViewModel> GetNotificationTransportsSettings(string userId)
 		{
 			var notificationTransportsSettings = courseManager.GetCourses().SelectMany(
-				c => notificationsRepo.GetNotificationTransportsSettings(c.Id).Select(
+				c => notificationsRepo.GetNotificationTransportsSettings(c.Id, userId).Select(
 					kvp => new NotificationTransportsSettingsViewModel
 					{
 						courseId = c.Id,

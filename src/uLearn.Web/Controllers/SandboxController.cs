@@ -9,6 +9,9 @@ using Microsoft.AspNet.Identity;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises;
 
 namespace uLearn.Web.Controllers
 {
@@ -44,10 +47,12 @@ namespace uLearn.Web.Controllers
 		{
 			var code = Request.InputStream.GetString();
 
-			var submission = await solutionsRepo.AddUserExerciseSubmission("web", Guid.Empty, code, null, null, User.Identity.GetUserId(), "null", User.Identity.Name + ": CsSandbox Web Executor");
+			var submission = await solutionsRepo.AddUserExerciseSubmission(
+				"web", Guid.Empty, code, null, null, User.Identity.GetUserId(), "null", User.Identity.Name + ": CsSandbox Web Executor", Language.CSharp
+			).ConfigureAwait(false);
 			try
 			{
-				await solutionsRepo.RunSubmission(submission, timeout, waitUntilChecked: true);
+				await solutionsRepo.RunAutomaticChecking(submission, timeout, waitUntilChecked: true).ConfigureAwait(false);
 			}
 			catch (SubmissionCheckingTimeout)
 			{

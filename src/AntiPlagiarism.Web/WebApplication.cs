@@ -1,8 +1,6 @@
-using System;
 using AntiPlagiarism.Web.CodeAnalyzing;
 using AntiPlagiarism.Web.CodeAnalyzing.CSharp;
 using AntiPlagiarism.Web.Configuration;
-using AntiPlagiarism.Web.Controllers;
 using AntiPlagiarism.Web.Database;
 using AntiPlagiarism.Web.Database.Repos;
 using Microsoft.AspNetCore.Builder;
@@ -10,10 +8,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
+using Swashbuckle.AspNetCore.Filters;
+using Ulearn.Common.Api;
 using Vostok.Commons.Extensions.UnitConvertions;
 using Vostok.Hosting;
 using Vostok.Instrumentation.AspNetCore;
@@ -23,57 +21,32 @@ using Vostok.Metrics;
 
 namespace AntiPlagiarism.Web
 {
-    public class WebApplication : AspNetCoreVostokApplication
+    public class WebApplication : BaseApiWebApplication
     {
-        protected override void OnStarted(IVostokHostingEnvironment hostingEnvironment)
-        {
-            hostingEnvironment.MetricScope.SystemMetrics(1.Minutes());
-        }
-
-        protected override IWebHost BuildWebHost(IVostokHostingEnvironment hostingEnvironment)
-        {
-            var loggerConfiguration = new LoggerConfiguration()
-                .Enrich.With<ThreadEnricher>()
-                .Enrich.With<FlowContextEnricher>()
-                .MinimumLevel.Debug()
-                .WriteTo.Airlock(LogEventLevel.Information);
-			
-            if (hostingEnvironment.Log != null)
-                loggerConfiguration = loggerConfiguration.WriteTo.VostokLog(hostingEnvironment.Log);
-            var logger = loggerConfiguration.CreateLogger();
-			
-            return new WebHostBuilder()
-                .UseKestrel()
-                .UseUrls($"http://*:{hostingEnvironment.Configuration["port"]}/")
-                .AddVostokServices()
-                .ConfigureServices(s => ConfigureServices(s, hostingEnvironment, logger))
-                .UseSerilog(logger)
-                .Configure(app =>
-                {
-                    var env = app.ApplicationServices.GetRequiredService<IHostingEnvironment>();
-                    app.UseVostok();
-					if (env.IsDevelopment())
-					{
-						app.UseDeveloperExceptionPage();
-						app.UseBrowserLink();
-					}
-
-					app.UseMvc();
-
-					var database = app.ApplicationServices.GetService<AntiPlagiarismDb>();
-					database.MigrateToLatestVersion();
-				})
-                .Build();
-        }
-
-		private void ConfigureServices(IServiceCollection services, IVostokHostingEnvironment hostingEnvironment, ILogger logger)
+		protected override IApplicationBuilder ConfigureWebApplication(IApplicationBuilder app)
 		{
+			var database = app.ApplicationServices.GetService<AntiPlagiarismDb>();
+			database.MigrateToLatestVersion();
+
+			return app;
+		}
+
+		protected override void ConfigureServices(IServiceCollection services, IVostokHostingEnvironment hostingEnvironment, ILogger logger)
+		{
+			base.ConfigureServices(services, hostingEnvironment, logger);
+			
 			services.AddDbContext<AntiPlagiarismDb>(
 				options => options.UseSqlServer(hostingEnvironment.Configuration["database"])
 			);
-			services.AddSingleton(logger);
-
+			
 			services.Configure<AntiPlagiarismConfiguration>(options => hostingEnvironment.Configuration.GetSection("antiplagiarism").Bind(options));
+			
+			services.AddSwaggerExamplesFromAssemblyOf<WebApplication>();
+		}
+
+		public override void ConfigureDi(IServiceCollection services, ILogger logger)
+		{
+			base.ConfigureDi(services, logger);
 			
 			/* Database repositories */
 			/* TODO (andgein): make auto-discovering of repositories */
@@ -86,9 +59,8 @@ namespace AntiPlagiarism.Web
 			services.AddScoped<PlagiarismDetector>();
 			services.AddScoped<StatisticsParametersFinder>();
 			services.AddSingleton<CodeUnitsExtractor>();
-			
-			/* Asp.NET Core MVC */
-			services.AddMvc();
+			services.AddScoped<SnippetsExtractor>();
+			services.AddScoped<SubmissionSnippetsExtractor>();
 		}
 	}
 }

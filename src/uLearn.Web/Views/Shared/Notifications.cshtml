@@ -1,11 +1,17 @@
 ﻿@* Generator: MvcHelper GeneratePrettyNames: true DisableLinePragmas: true *@
 @using Database.Models
-@using uLearn
-@using uLearn.Quizes
+@using Microsoft.AspNet.Identity
 @using uLearn.Web.Extensions
 @using uLearn.Web.Views.Shared
 @using Ulearn.Common
 @using Ulearn.Common.Extensions
+@using Ulearn.Core
+@using Ulearn.Core.Courses
+@using Ulearn.Core.Courses.Slides
+@using Ulearn.Core.Courses.Slides.Exercises
+@using Ulearn.Core.Courses.Slides.Quizzes
+@using Ulearn.Core.Extensions
+@using HtmlHelper = System.Web.Mvc.HtmlHelper
 
 @functions
 {
@@ -81,6 +87,24 @@
 	</div>
 }
 
+@helper Notification(NewCommentFromYourGroupStudentNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
+{
+	var slide = course.GetSlideById(notification.Comment.SlideId);
+	<div class="notifications__new-comment-from-your-group-student-notification media" data-href="@GetSlideUrl(Url, course, slide)#comment-@notification.Comment.Id">
+		<div class="media-left">
+			@UserAvatar.Avatar(notification.Comment.Author)
+		</div>
+		<div class="media-body">
+			<div class="notifications__notification__header">
+				@UserName(notification.Comment.Author)
+				<span class="notifications__notification__subheader">к&nbsp;слайду @SlideLink(Url, course, slide)</span>
+			</div>
+			<div title="@notification.Comment.Text.TruncateWithEllipsis(200)" class="notifications__comment-notification__text">@CollapseIfNeed(collapse, Html, notification.Comment.Text, 100, renderSimpleMarkdown: true)</div>
+			<div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
+		</div>
+	</div>
+}
+
 @helper Notification(RepliedToYourCommentNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
 {
 	var slide = course.GetSlideById(notification.Comment.SlideId);
@@ -90,7 +114,7 @@
 		</div>
 		<div class="media-body">
 			<div class="notifications__notification__header">
-				@UserName(notification.Comment.Author) ответил@( notification.Comment.Author.Gender.ChooseEnding()) на&nbsp;ваш комментарий
+				@UserName(notification.Comment.Author) ответил@(notification.Comment.Author.Gender.ChooseEnding()) на&nbsp;ваш комментарий
 				<span title="@notification.ParentComment.Text.TruncateWithEllipsis(200)" class="notifications__comment-notification__cite">@CollapseIfNeed(collapse, Html, notification.ParentComment.Text, 50, renderSimpleMarkdown: true)</span>
 			</div>
 			<div title="@notification.Comment.Text.TruncateWithEllipsis(200)" class="notifications__comment-notification__text">@CollapseIfNeed(collapse, Html, notification.Comment.Text, 100, renderSimpleMarkdown: true)</div>
@@ -110,7 +134,7 @@
 			@UserAvatar.Avatar(notification.LikedUser)
 		</div>
 		<div class="media-body">
-			<div class="notifications__notification__header">@UserName(notification.LikedUser) лайкнул@( notification.LikedUser.Gender.ChooseEnding()) ваш комментарий</div>
+			<div class="notifications__notification__header">@UserName(notification.LikedUser) лайкнул@(notification.LikedUser.Gender.ChooseEnding()) ваш комментарий</div>
 			<div title="@notification.Comment.Text.TruncateWithEllipsis(200)" class="notifications__comment-notification__text">@CollapseIfNeed(collapse, Html, notification.Comment.Text, 100, renderSimpleMarkdown: true)</div>
 			<div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
 		</div>
@@ -125,9 +149,9 @@
 			@UserAvatar.Avatar(notification.InitiatedBy)
 		</div>
 		<div class="media-body">
-			<div class="notifications__notification__header">@UserName(notification.InitiatedBy) проверил@( notification.InitiatedBy.Gender.ChooseEnding()) ваше решение<br/>по&nbsp;«@slide.Title.MakeNestedQuotes()»
+			<div class="notifications__notification__header">@UserName(notification.InitiatedBy) @(notification.IsRecheck ? "пере" : "")проверил@(notification.InitiatedBy.Gender.ChooseEnding()) ваше решение<br/>по&nbsp;«@slide.Title.MakeNestedQuotes()»
 			</div>
-			<div class="notifications__notification__score">Вы получили @notification.Checking.Score из @slide.Exercise.MaxReviewScore.PluralizeInRussian(RussianPluralizationOptions.Score)</div>
+			<div class="notifications__notification__score">Вы получили @notification.Checking.Score из @slide.Scoring.CodeReviewScore.PluralizeInRussian(RussianPluralizationOptions.Score)</div>
 			<div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
 		</div>
 	</div>
@@ -141,7 +165,7 @@
 			@UserAvatar.Avatar(notification.InitiatedBy)
 		</div>
 		<div class="media-body">
-			<div class="notifications__notification__header">@UserName(notification.InitiatedBy)проверил@( notification.InitiatedBy.Gender.ChooseEnding()) ваш тест<br/>«@slide.Title.MakeNestedQuotes()»
+			<div class="notifications__notification__header">@UserName(notification.InitiatedBy) проверил@( notification.InitiatedBy.Gender.ChooseEnding()) ваш тест<br/>«@slide.Title.MakeNestedQuotes()»
 			</div>
 			<div class="notifications__notification__score">Вы получили @notification.Checking.Score из @slide.MaxScore.PluralizeInRussian(RussianPluralizationOptions.ScoreDative)</div>
 			<div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
@@ -179,6 +203,22 @@
 	</div>
 }
 
+@helper Notification(ReceivedCommentToCodeReviewNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
+{
+	var slide = course.GetSlideById(notification.Comment.Review.ExerciseChecking.SlideId);
+	<div class="notifications__received-comment-to-code-review-notification media" data-href="@notification.GetUrl(course, "", User.Identity.GetUserId())">
+        <div class="media-left">
+            @UserAvatar.Avatar(notification.InitiatedBy)
+        </div>
+        <div class="media-body">
+            <div class="notifications__notification__header">@UserName(notification.InitiatedBy) прокомментировал@( notification.InitiatedBy.Gender.ChooseEnding()) код-ревью задания «@slide.Title.MakeNestedQuotes()»
+            </div>
+            <div title="@notification.Comment.Text.TruncateWithEllipsis(200)" class="notifications__comment-notification__text">@CollapseIfNeed(collapse, Html, notification.Comment.Text, 100, renderSimpleMarkdown: true)</div>
+            <div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
+        </div>
+    </div>
+}
+
 @helper Notification(JoinedToYourGroupNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
 {
 	<div class="notifications__joined-to-your-group-notification media" data-href="@Url.Action("Groups", "Admin", new { courseId = notification.CourseId })">
@@ -186,7 +226,7 @@
 			@UserAvatar.Avatar(notification.JoinedUser)
 		</div>
 		<div class="media-body">
-			<div class="notifications__notification__header">@UserName(notification.JoinedUser) присоедини@( notification.InitiatedBy.Gender.ChooseEnding("лся", "лась")) к&nbsp;вашей группе <b>«@notification.Group.Name»</b>
+			<div class="notifications__notification__header">@UserName(notification.JoinedUser) присоедини@( notification.JoinedUser.Gender.ChooseEnding("лся", "лась")) к&nbsp;вашей группе <b>«@notification.Group.Name»</b>
 			</div>
 			<div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
 		</div>
@@ -238,6 +278,57 @@
 	</div>
 }
 
+@helper Notification(GroupMembersHaveBeenRemovedNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
+{
+	<div class="notifications__group-members-have-been-removed-notification media" data-href="@Url.Action("Groups", "Admin", new { courseId = notification.CourseId })">
+        <div class="media-left">
+            @UserAvatar.Avatar(notification.InitiatedBy)
+        </div>
+        <div class="media-body">
+            <div class="notifications__notification__header">
+                @UserName(notification.InitiatedBy) удалил@(notification.InitiatedBy.Gender.ChooseEnding()) @notification.UsersCount.PluralizeInRussian(RussianPluralizationOptions.StudentsDative)
+                из группы&nbsp;<b>«@notification.Group.Name.MakeNestedQuotes()»</b> в&nbsp;курсе «@course.Title.MakeNestedQuotes()»: @notification.UserDescriptions.
+            </div>
+            <div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
+        </div>
+    </div>
+}
+
+@helper Notification(GroupMembersHaveBeenAddedNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
+{
+	<div class="notifications__group-members-have-been-added-notification media" data-href="@Url.Action("Groups", "Admin", new { courseId = notification.CourseId })">
+        <div class="media-left">
+            @UserAvatar.Avatar(notification.InitiatedBy)
+        </div>
+        <div class="media-body">
+            <div class="notifications__notification__header">
+                @UserName(notification.InitiatedBy) добавил@(notification.InitiatedBy.Gender.ChooseEnding()) @notification.UsersCount.PluralizeInRussian(RussianPluralizationOptions.StudentsDative)
+                в группу&nbsp;<b>«@notification.Group.Name.MakeNestedQuotes()»</b> в&nbsp;курсе «@course.Title.MakeNestedQuotes()»: @notification.UserDescriptions.
+            </div>
+            <div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
+        </div>
+    </div>
+}
+
+@helper Notification(NewCommentForInstructorsOnlyNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
+{
+	var slide = course.GetSlideById(notification.Comment.SlideId);
+	<div class="notifications__new-comment-for-instructors-only-notification media" data-href="@GetSlideUrl(Url, course, slide)#comment-@notification.Comment.Id">
+        <div class="media-left">
+            @UserAvatar.Avatar(notification.Comment.Author)
+        </div>
+        <div class="media-body">
+            <div class="notifications__notification__header">
+                @UserName(notification.Comment.Author)
+                <span class="notifications__notification__subheader">к&nbsp;слайду @SlideLink(Url, course, slide)</span>
+            </div>
+            <div class="comments-for-instructors-only__description">Комментарий для преподавателей:</div>
+            <div title="@notification.Comment.Text.TruncateWithEllipsis(200)" class="notifications__comment-notification__text">@CollapseIfNeed(collapse, Html, notification.Comment.Text, 100, renderSimpleMarkdown: true)</div>
+            <div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
+        </div>
+    </div>
+}
+
 @helper Notification(AddedInstructorNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
 {
 	<div class="notifications__added-instructor-notification media" data-href="@Url.Action("Users", "Admin", new { courseId = notification.CourseId })">
@@ -245,7 +336,7 @@
 			@UserAvatar.Avatar(notification.AddedUser)
 		</div>
 		<div class="media-body">
-			<div class="notifications__notification__header">@UserName(notification.AddedUser) стал@(notification.InitiatedBy.Gender.ChooseEnding()) преподавателем курса «@course.Title.MakeNestedQuotes()»</div>
+			<div class="notifications__notification__header">@UserName(notification.AddedUser) стал@(notification.AddedUser.Gender.ChooseEnding()) преподавателем курса «@course.Title.MakeNestedQuotes()»</div>
 			<div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
 		</div>
 	</div>
@@ -272,6 +363,19 @@
 		</div>
 		<div class="media-body">
 			<div class="notifications__notification__header">@UserName(notification.InitiatedBy) загрузил@( notification.InitiatedBy.Gender.ChooseEnding()) новую версию курса «@course.Title.MakeNestedQuotes()»</div>
+			<div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
+		</div>
+	</div>
+}
+
+@helper Notification(NotUploadedPackageNotification notification, Course course, HtmlHelper Html, UrlHelper Url, bool collapse = true)
+{
+	<div class="notifications__notuploaded-package-notification media" data-href="@GitUtils.RepoUrlToCommitLink(notification.RepoUrl, notification.CommitHash)">
+		<div class="media-left">
+			@UserAvatar.Avatar(notification.InitiatedBy)
+		</div>
+		<div class="media-body">
+			<div class="notifications__notification__header">Ошибка загрузки новой версии курса «@course.Title.MakeNestedQuotes()». Коммит @notification.CommitHash.Substring(0, 8)</div>
 			<div class="notifications__notification__footer" title="@notification.CreateTime.ToPrettyString()">@notification.CreateTime.ToAgoPrettyString()</div>
 		</div>
 	</div>

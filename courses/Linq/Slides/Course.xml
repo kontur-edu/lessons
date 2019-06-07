@@ -1,5 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Course xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://ulearn.azurewebsites.net/course">
-	<title>Практикум по LINQ</title>
-	<language name="cs" version="4.5" />
-</Course>
+<?xml version='1.0' encoding='UTF-8'?>
+<course xmlns="https://ulearn.me/schema/v2" title="Практикум по LINQ">
+  <dictionaryFile>dictionary.txt</dictionaryFile>
+  <defaultLanguage>csharp</defaultLanguage>
+  <preludes>
+    <prelude language="csharp">Prelude.cs</prelude>
+  </preludes>
+  <units>
+    <add>*/unit.xml</add>
+  </units>
+</course>

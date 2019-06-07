@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Декартово произведение" id="ff3215d3-5cc7-4c28-83b1-77465f570dc8">
+  <scoring passedTestsScore="5"/>
+  <markdown>
+Одно из не совсем очевидных применений `SelectMany` — это вычисление декартова произведения двух множеств.
+Опробуйте этот трюк на следующей задаче:
+
+Вычислить координаты всех восьми соседей заданной точки.
+
+Можете полагаться на то, что в классе `Point` переопределен метод `Equals`, 
+сравнивающий точки покоординатно.</markdown>
+  <exercise.file file="_CartesianProduct.cs" type="check-output" language="csharp">
+    <initialCode>public static IEnumerable&lt;Point&gt; GetNeighbours(Point p)
+{
+	int[] d = {-1, 0, 1}; // используйте подсказку, если не понимаете зачем тут этот массив :)
+	return ...
+}</initialCode>
+    <hint>Декартово произведение множества {-1, 0, 1} на себя даст все возможные относительные координаты соседей</hint>
+    <hint>Используйте вызов Select внутри вызова SelectMany</hint>
+    <expected>Neighbours of (1 2)
+0 1
+0 2
+0 3
+1 1
+1 3
+2 1
+2 2
+2 3
+Neighbours of (0 0)
+-1 -1
+-1 0
+-1 1
+0 -1
+0 1
+1 -1
+1 0
+1 1
+</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">GetNeighbours</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_CartesianProduct.cs</defaultIncludeCodeFile>
+</slide.exercise>

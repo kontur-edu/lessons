@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace uLearn
+namespace Ulearn.Core
 {
 	public class DisplayNameSerializationBinder : DefaultSerializationBinder
 	{

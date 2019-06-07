@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading;
 using NUnit.Framework;
 using RunCsJob.Api;
-using uLearn;
+using Ulearn.Core;
 
 namespace RunCsJob
 {
@@ -276,7 +276,7 @@ for (var i = 0; i < 2*1000*1000*1000; ++i) a[i % memory] = (byte)i;
 				NeedRun = true
 			};
 
-			var result = new SandboxRunner(model).RunCsc60(".");
+			var result = new SandboxRunner(model).RunCsc(".");
 			Assert.IsNotNull(result);
 			Console.WriteLine(result);
 			return result;

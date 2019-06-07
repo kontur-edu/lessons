@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Поиск самого длинного слова" id="04a35ae5-67b9-4674-b4c5-98e8976f87f9">
+  <scoring passedTestsScore="5"/>
+  <markdown>
+Дан список слов, нужно найти самое длинное слово из этого списка, 
+а из всех самых длинных — лексикографически первое слово.
+
+Решите эту задачу в одно выражение. 
+
+Не используйте методы сортировки — сложность сортировки `O(N * log(N))`, однако эту задачу можно решить за `O(N)`.</markdown>
+  <includeCode>
+    <display onlyBody="false">Main</display>
+  </includeCode>
+  <exercise.file file="_AggregateExercise.cs" type="check-output" language="csharp">
+    <initialCode>public static string GetLongest(IEnumerable&lt;string&gt; words)
+{
+	//ваш код
+}</initialCode>
+    <hint>Вспомните про кортежи</hint>
+    <hint>Вспомните про особенности сравнения кортежей</hint>
+    <expected>azaz
+sdsd
+12345</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs SingleStatementMethod</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">GetLongest</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_AggregateExercise.cs</defaultIncludeCodeFile>
+</slide.exercise>

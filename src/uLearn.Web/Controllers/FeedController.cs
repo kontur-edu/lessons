@@ -11,6 +11,7 @@ using Database.Models;
 using log4net;
 using Microsoft.AspNet.Identity;
 using uLearn.Web.FilterAttributes;
+using Ulearn.Core;
 
 namespace uLearn.Web.Controllers
 {
@@ -24,7 +25,7 @@ namespace uLearn.Web.Controllers
 
 		private readonly FeedRepo feedRepo;
 
-		private readonly FeedNotificationTransport commonFeedNotificationTransport;
+		private static FeedNotificationTransport commonFeedNotificationTransport;
 
 		public FeedController()
 			: this(new ULearnDb(), WebCourseManager.Instance)
@@ -37,7 +38,8 @@ namespace uLearn.Web.Controllers
 			this.courseManager = courseManager;
 			feedRepo = new FeedRepo(db);
 
-			commonFeedNotificationTransport = feedRepo.GetCommonFeedNotificationTransport();
+			if (commonFeedNotificationTransport == null)
+				commonFeedNotificationTransport = feedRepo.GetCommonFeedNotificationTransport();
 		}
 
 		protected override void OnActionExecuting(ActionExecutingContext context)
@@ -45,7 +47,12 @@ namespace uLearn.Web.Controllers
 			base.OnActionExecuting(context);
 
 			var userId = User.Identity.GetUserId();
-			feedRepo.AddFeedNotificationTransportIfNeeded(userId).Wait();
+			AddFeedNotificationTransportIfNeeded(userId).Wait(5000);
+		}
+
+		private async Task AddFeedNotificationTransportIfNeeded(string userId)
+		{
+			await feedRepo.AddFeedNotificationTransportIfNeeded(userId).ConfigureAwait(false);
 		}
 
 		public async Task<ActionResult> Index()

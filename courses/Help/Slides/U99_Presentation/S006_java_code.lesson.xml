@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="Код на джаве" id="C1DA3BA7256142D58F245CCEF2B176A1">
+  <defaultIncludeCodeFile>_Code.java</defaultIncludeCodeFile>
+  <markdown>###Весь файл</markdown>
+  <includeCode/>
+  <markdown>###Класс Main</markdown>
+  <includeCode>
+    <display>Main</display>
+  </includeCode>
+</slide>

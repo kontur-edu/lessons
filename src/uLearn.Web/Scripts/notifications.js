@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function () {
 	var $notificaticationsIconLink = $('.notifications__icon-link');
 	var $counter = $('.notifications__counter');
 	var $dropdownContent = $('.notifications__dropdown');
@@ -22,7 +24,8 @@
 		if (!isDesktopVersionOpened && !isMobileVersionOpened) {
 			var loadUrl = $self.data('notificationsUrl');
 			$dropdownContent.html('<li class="notifications__info">Загружаю последние уведомления...</li>');
-			$dropdownContent.load(loadUrl, function() {
+			$.get(loadUrl, function(data) {
+                $dropdownContent.html(data);
 				$counter.text('0').hide();
 			});
 		}
@@ -33,9 +36,19 @@
 	$(document).on('click', '.notifications__notification', function(e) {
 		e.preventDefault();
 		
-		var link = $(this).find('> *').data('href');
+		var linkElem = $(this).find('> *');
+		var link = linkElem.data('href');
+
 		if (link) {
-			window.location.href = link;
+			var getLocation = function(href) {
+				var l = document.createElement("a");
+				l.href = href;
+				return l;
+			};
+			if(window.location.hostname !== getLocation(link).hostname)
+				window.open(link, '_blank');
+			else
+				window.location.href = link;
 		}
 	});
 

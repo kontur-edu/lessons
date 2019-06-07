@@ -13,6 +13,8 @@ using log4net;
 using Microsoft.AspNet.Identity;
 using Stepik.Api;
 using uLearn.Web.FilterAttributes;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
 
 namespace uLearn.Web.Controllers
 {

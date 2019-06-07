@@ -1,11 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Course xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://ulearn.azurewebsites.net/course"  xmlns:types="https://ulearn.azurewebsites.net/types">
-	<title>Справка для авторов курсов (xml)</title>
-	<language name="cs" version="4.5" />
-	<manual-checking>false</manual-checking>
-	<scoring defaultQuiz="laboratory" defaultExercise="homework" default="laboratory">
-		<group id="laboratory" abbr="ЛЗ" set_by_instructor="true" max_additional_score="10">Лабораторные занятия</group>
-	    <group id="homework" abbr="ДЗ" set_by_instructor="true" max_additional_score="20">Домашняя работа</group>
-		<group id="activity" abbr="Акт" set_by_instructor="true" enable_for_everyone="true">Активность на уроках</group>
-	</scoring>
-</Course>
+<?xml version='1.0' encoding='UTF-8'?>
+<course xmlns="https://ulearn.me/schema/v2" title="Справка для авторов курсов (xml)">
+  <enableCodeReviewAndQuizManualCheckForEveryone>false</enableCodeReviewAndQuizManualCheckForEveryone>
+  <dictionaryFile>dictionary.txt</dictionaryFile>
+  <defaultLanguage>csharp</defaultLanguage>
+  <preludes>
+    <prelude language="csharp">Prelude.cs</prelude>
+  </preludes>
+  <units>
+    <add>*/unit.xml</add>
+  </units>
+  <scoring defaultQuiz="laboratory" defaultExercise="homework" default="laboratory">
+    <group id="laboratory" abbr="ЛЗ" maxAdditionalScore="10">Лабораторные занятия</group>
+    <group id="homework" abbr="ДЗ" maxAdditionalScore="20">Домашняя работа</group>
+    <group id="activity" abbr="Акт" maxAdditionalScore="0" enableForEveryone="true">Активность на уроках</group>
+  </scoring>
+</course>

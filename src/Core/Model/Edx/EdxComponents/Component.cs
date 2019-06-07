@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 
-namespace uLearn.Model.Edx.EdxComponents
+namespace Ulearn.Core.Model.Edx.EdxComponents
 {
 	public abstract class Component : EdxItem
 	{

@@ -1,8 +1,8 @@
 ﻿@* Generator: MvcHelper GeneratePrettyNames: true DisableLinePragmas: true *@
 
 @using System.Globalization
-@using uLearn
 @using uLearn.Web.Views.Course
+@using Ulearn.Core.Courses
 @model TocModel
 
 <div class="side-bar navbar-collapse collapse navbar-nav container">
@@ -23,7 +23,7 @@
 {
 	<ul class="nav">
 		<li class="units-list-item full-width units-list-item-text course-name">
-			<a data-score="@SlideHtml.Score(toc.Score, toc.MaxScore)">@toc.Course.Title</a>
+			<a data-score="@SlideHtml.ShowScore(toc.Score, toc.MaxScore)">@toc.Course.Title</a>
 		</li>
 		@foreach (var group in toc.GroupsForStatistics)
 		{
@@ -41,11 +41,12 @@
 		}
 	</ul>
 }
+
 @helper TocUnit(TocUnitModel unit, int index)
 {
 	var collapseOption = unit.IsCurrent ? "collapse in" : "collapse";
 	<li class="units-list-item clickable full-width">
-		<a data-toggle="collapse" href=@( "#N" + index) class="units-list-item-text no-smooth-scrolling" data-score="@SlideHtml.Score(unit.Score, unit.MaxScore)">@unit.UnitName</a>
+		<a data-toggle="collapse" href=@( "#N" + index) class="units-list-item-text no-smooth-scrolling" data-score="@SlideHtml.ShowScore(unit.Score, unit.MaxScore)">@unit.UnitName</a>
 		<ul id=@( "N" + index) class="slides-list @collapseOption">
 			@foreach (var page in unit.Pages)
 			{
@@ -61,14 +62,15 @@
 	</li>
 }
 
-
 @helper TocItem(TocPageInfo page)
 {
-	<li class="slide-list-item clickable @( page.IsCurrent ? "selected" : "") full-size" onclick="window.location.href = '@page.Url'" data-slide-id="@page.SlideId">
-		<i class="@GetPageIconClass(page) navbar-label" title="@GetTocPageTytle(page.PageType)"></i>
-		<a href="@page.Url" style="margin-right: 5px">@page.Name</a>
-		<span class="score right">@SlideHtml.Score(page.Score, page.MaxScore)</span>
-	</li>
+	<a href="@page.Url" class="@(page.IsCurrent ? "selected" : "")">
+        <span class="slide-list-item clickable full-size" data-slide-id="@page.SlideId">
+            <i class="@GetPageIconClass(page) navbar-label" title="@GetTocPageTytle(page.PageType)"></i>
+            <span class="underline-on-parent-hover" style="margin-right: 5px">@page.Name</span>
+            <span class="score right">@SlideHtml.ShowScore(page.Score, page.MaxScore)</span>
+        </span>
+    </a>
 }
 
 @helper TocAdditionalScore(ScoringGroup group, int score)
@@ -76,7 +78,7 @@
 	<li class="slide-list-item full-size">
 		<i class="navbar-label" title=""></i>
 		<span style="margin-right: 5px">@group.Name</span>
-		<span class="score right">@SlideHtml.Score(score, group.MaxAdditionalScore)</span>
+		<span class="score right">@SlideHtml.ShowScore(score, group.MaxAdditionalScore)</span>
 	</li>
 }
 

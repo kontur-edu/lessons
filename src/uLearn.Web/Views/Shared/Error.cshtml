@@ -1,8 +1,36 @@
-﻿@model HandleErrorInfo
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @{
+	    var metaImageUrl = "/Content/logo.png";
+	    var metaTitle = "Ошибка";
+	    var metaDescription = "Интерактивные учебные онлайн-курсы по программированию";
+	    var metaKeywords = "";
 
-@{
-	ViewBag.Title = "Ошибка";
-}
+	    if (ViewBag.Meta != null)
+	    {
+		    if (!string.IsNullOrEmpty(ViewBag.Meta.AbsoluteImageUrl)) { metaImageUrl = ViewBag.Meta.AbsoluteImageUrl; }
+		    if (!string.IsNullOrEmpty(ViewBag.Meta.Description)) { metaDescription = ViewBag.Meta.Description; }
+		    if (!string.IsNullOrEmpty(ViewBag.Meta.Keywords)) { metaKeywords = ViewBag.Meta.Keywords; }
+	    }
+    }
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title &bull; ulearn</title>
+    <meta name="title" content="@metaTitle"/>
+    <meta property="og:title" content="@metaTitle"/>
+    <meta property="og:image" content="@metaImageUrl"/>
+    <meta property="og:image:alt" content="@metaDescription"/>
+    <meta property="og:description" content="@metaDescription"/>
+    <meta property="og:locale" content="ru_RU"/>
+    <meta property="og:site_name" content="Ulearn"/>
+    <meta name="description" content="@metaDescription"/>
+    <meta name="keywords" content="@metaKeywords"/>
+    <link rel="image_src" href="@metaImageUrl">
+    <link rel="shortcut icon" href="~/favicon.ico?v=4"/>
+    @Styles.Render("~/ulearn.bundle.css")
+</head>
+<body>
 
 
 <div class="container">
@@ -18,6 +46,9 @@
             </p>
         </div>
     </div>
-    
-    @Html.Partial("_Footer")
 </div>
+
+
+
+</body>
+</html>

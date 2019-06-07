@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using Database.DataContexts;
 using Ulearn.Common.Extensions;
 
@@ -28,7 +29,7 @@ namespace Database.Migrations
 			{
 				var id = (int)reader["Id"];
 				var unitName = reader["UnitName"] as string;
-				var newUnitId = unitName.ToDeterministicGuid();
+				var newUnitId = unitName.ToDeterministicGuid(Encoding.GetEncoding(1251));
 
 				unitAppearancesNewUnitsIds[id] = newUnitId;
 			}

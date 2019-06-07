@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using AntiPlagiarism.Api.ModelBinders;
 using Microsoft.AspNetCore.Mvc;
+using Ulearn.Common.Api.Models.Parameters;
 
 namespace AntiPlagiarism.Api.Models.Parameters
 {

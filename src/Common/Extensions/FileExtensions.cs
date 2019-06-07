@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Ionic.Zip;
 using Newtonsoft.Json;
@@ -26,23 +27,20 @@ namespace Ulearn.Common.Extensions
 			return File.ReadAllText(file.FullName, Encoding.UTF8);
 		}
 
-		public static byte[] Content(this FileInfo file)
+		public static byte[] ReadAllContent(this FileInfo file)
 		{
 			return File.ReadAllBytes(file.FullName);
 		}
-
-		public static T DeserializeXml<T>(this FileInfo file)
+		
+		public static async Task<byte[]> ReadAllContentAsync(this FileInfo file)
 		{
-			var serializer = new XmlSerializer(typeof(T));
-			using (var stream = file.OpenRead())
-				return (T)serializer.Deserialize(stream);
-		}
-
-		public static T DeserializeXml<T>(this string content)
-		{
-			var serializer = new XmlSerializer(typeof(T));
-			using (var stream = new StringReader(content))
-				return (T)serializer.Deserialize(stream);
+			byte[] result;
+			using (var stream = File.Open(file.FullName, FileMode.Open))
+			{
+				result = new byte[stream.Length];
+				await stream.ReadAsync(result, 0, (int)stream.Length);
+			}
+			return result;
 		}
 
 		public static T DeserializeJson<T>(this string content)
@@ -63,7 +61,7 @@ namespace Ulearn.Common.Extensions
 			var fileInfo = di.GetFile(filepath);
 			if (fileInfo.Exists)
 				return File.ReadAllBytes(fileInfo.FullName);
-			throw new Exception("No " + filepath + " in " + di.FullName);
+			throw new Exception("Can't find file " + filepath + " in " + di.FullName);
 		}
 
 		/// <param name="excludeCriterias"><see cref="M:Ionic.Zip.ZipFile.AddSelectedFiles(System.String)" /></param>

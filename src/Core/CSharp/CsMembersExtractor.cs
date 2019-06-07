@@ -4,11 +4,11 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using uLearn.Model;
-using uLearn.Model.Blocks;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Model;
 
-namespace uLearn.CSharp
+namespace Ulearn.Core.CSharp
 {
 	public class CsMembersExtractor : ISingleRegionExtractor
 	{
@@ -25,13 +25,15 @@ namespace uLearn.CSharp
 				);
 		}
 
-		public string GetRegion(Label label)
+		public string GetRegion(Label label, bool withoutAttributes=false)
 		{
 			if (!members.ContainsKey(label.Name))
 				return null;
 			var nodes = members[label.Name];
 			if (label.OnlyBody)
 				return string.Join("\r\n\r\n", nodes.Select(GetBody));
+			if (withoutAttributes)
+				nodes = nodes.Select(node => node.WithoutAttributes()).ToList();
 			return String.Join("\r\n\r\n", nodes.Select(node => node.ToPrettyString()));
 		}
 

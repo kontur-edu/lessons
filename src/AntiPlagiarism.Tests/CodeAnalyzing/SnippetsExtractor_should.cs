@@ -12,11 +12,11 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing
 	public class SnippetsExtractor_should
 	{
 		[Test]
-		public void TestGetSnippets()
+		public void ExtractSnippets()
 		{
 			const int snippetTokensCount = 12;			
 			
-			var syntaxTree = CSharpSyntaxTree.ParseText(TestData.SimpleProgramWithMethodAndProperty);
+			var syntaxTree = CSharpSyntaxTree.ParseText(CommonTestData.SimpleProgramWithMethodAndProperty);
 			var syntaxTreeRoot = syntaxTree.GetRoot();
 			var tokens = syntaxTreeRoot.GetTokens().ToList();
 

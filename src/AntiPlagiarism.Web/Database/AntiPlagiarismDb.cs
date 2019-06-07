@@ -23,6 +23,10 @@ namespace AntiPlagiarism.Web.Database
 			modelBuilder.Entity<SnippetOccurence>()
 				.HasIndex(c => new { c.SubmissionId, c.FirstTokenIndex })
 				.IsUnique(false);
+			
+			modelBuilder.Entity<SnippetOccurence>()
+				.HasIndex(c => new { c.SubmissionId, c.SnippetId })
+				.IsUnique(false);
 
 			modelBuilder.Entity<Snippet>()
 				.HasIndex(c => new { c.TokensCount, c.SnippetType, c.Hash })
@@ -35,11 +39,24 @@ namespace AntiPlagiarism.Web.Database
 			var submissionEntityBuilder = modelBuilder.Entity<Submission>();
 			submissionEntityBuilder.HasIndex(c => new { c.ClientId, c.TaskId });
 			submissionEntityBuilder.HasIndex(c => new { c.ClientId, c.TaskId, c.AuthorId });
+			submissionEntityBuilder.HasIndex(c => new { c.ClientId, c.TaskId, c.Language, c.AuthorId });
 		}
 
 		public void MigrateToLatestVersion()
 		{
 			Database.Migrate();
+		}
+		
+		/* We stands with perfomance issue on EF Core: https://github.com/aspnet/EntityFrameworkCore/issues/11680
+  		   So we decided to disable AutoDetectChangesEnabled temporary for some queries */
+		public void DisableAutoDetectChanges()
+		{
+			ChangeTracker.AutoDetectChangesEnabled = false;
+		}
+
+		public void EnableAutoDetectChanges()
+		{
+			ChangeTracker.AutoDetectChangesEnabled = true;
 		}
 
 		public DbSet<Client> Clients { get; set; }

@@ -1,4 +1,6 @@
-﻿$(document).ready(function() {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function() {
 	$('.modal-header__tabs a').click(function(e) {
 		e.preventDefault();
 
@@ -19,7 +21,7 @@
 
 	$('.modal').on('show.bs.modal', function() {
 		$(this).find('.field-validation-error').text('');
-	})
+	});
 
 	$('.modal').on('shown.bs.modal', function () {
 		$(this).find('[autofocus]').focus();

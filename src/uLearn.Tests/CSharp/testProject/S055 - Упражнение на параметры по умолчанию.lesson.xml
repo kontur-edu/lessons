@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" id="d6165afa-81b2-452f-9e61-78d3580e0c27" title="Упражнение на параметры по умолчанию">
+	<scoring />
+	
+	<defaultIncludeCodeFile>_Упражнение на параметры по умолчанию.cs</defaultIncludeCodeFile>
+	
+	<markdown>Отрефакторьте класс MyFile, чтобы в нем остался только один метод</markdown>
+	
+	<includeCode>
+		<display onlyBody="false">Main</display>
+	</includeCode>
+	
+	<exercise.file file="_Упражнение на параметры по умолчанию.cs" language="csharp" type="check-output">
+		<initialCode xml:space="preserve">
+class MyFile
+{
+    public static string ReadAll(string filename, Encoding enc)
+    {
+        Console.WriteLine("Use encoding " + enc);
+        return null;
+    }
+  
+    public static string ReadAll(string filename)
+    {
+        return ReadAll(filename, Encoding.UTF8);
+    }
+}</initialCode>
+    <expected xml:space="preserve">
+Use encoding System.Text.UTF8Encoding
+Use encoding System.Text.UTF32Encoding
+1</expected>
+		<hideExpectedOutput>false</hideExpectedOutput>
+		<validator>cs</validator>
+		<checkForPlagiarism>true</checkForPlagiarism>
+		<hideSolutions>false</hideSolutions>
+		<solution onlyBody="false">MyFile</solution>
+	</exercise.file>	
+</slide.exercise>

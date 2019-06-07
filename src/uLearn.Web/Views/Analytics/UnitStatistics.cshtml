@@ -1,9 +1,14 @@
-﻿@using Database.Models
-@using uLearn
-@using uLearn.Quizes
+﻿@using System.Web.UI.WebControls
+@using Database.Models
 @using uLearn.Web.Extensions
 @using Ulearn.Common
 @using Ulearn.Common.Extensions
+@using Ulearn.Core.Courses.Slides
+@using Ulearn.Core.Courses.Slides.Exercises
+@using Ulearn.Core.Courses.Slides.Quizzes
+@using Ulearn.Core.Extensions
+@using FormMethod = System.Web.Mvc.FormMethod
+@using SelectListItem = System.Web.Mvc.SelectListItem
 
 @model UnitStatisticPageModel
 @{
@@ -19,7 +24,7 @@
 			return !((QuizSlide)slide).ManualChecking;
 
 		if (slide is ExerciseSlide)
-			return !((ExerciseSlide)slide).Exercise.RequireReview;
+			return !((ExerciseSlide)slide).Scoring.RequireReview;
 		return true;
 	}
 
@@ -210,135 +215,134 @@
 		}
 
 		<h2>Студенты</h2>
-
-		<div class="small-table__title">
-			<div class="small-table__title__cell">пользователь</div>
-			<div class="pull-right">
-				<div class="small-table__title__cell  hidden-xs-inline-block">прогресс</div>
+		
+		<table id="unit-statistics-students-table">
+			<tr class="small-table__title">
+			<td class="small-table__title__cell">пользователь</td>
+				<td class="small-table__title__cell small-table__student-progress-cell hidden-xs-table-cell">прогресс</td>
 				@foreach (var slide in exercisesAndQuizzes)
 				{
 					var isHiddenOnSmallScreens = IsSlideHiddenOnSmallScreens(slide);
 					if (slide is QuizSlide)
 					{
-						<span class="glyphicon glyphicon-pushpin small-table__title__cell @(isHiddenOnSmallScreens ? "hidden-xs-inline-block" : "")" title="@slide.Title"></span>
+						<td class="glyphicon glyphicon-pushpin small-table__title__cell @(isHiddenOnSmallScreens ? "hidden-xs-table-cell" : "")" title="@slide.Title"></td>
 					}
 					else if (slide is ExerciseSlide)
 					{
-						<span class="glyphicon glyphicon-edit small-table__title__cell @(isHiddenOnSmallScreens ? "hidden-xs-inline-block" : "")" title="@slide.Title"></span>
+						<td class="glyphicon glyphicon-edit small-table__title__cell @(isHiddenOnSmallScreens ? "hidden-xs-table-cell" : "")" title="@slide.Title"></td>
 					}
 				}
 
 				@foreach (var scoringGroup in modifiableScoringGroups)
 				{
-					<span class="small-table__title__cell" title="@scoringGroup.Name — @scoringGroup.MaxAdditionalScore.PluralizeInRussian(new RussianPluralizationOptions { One = "балл", Two = "балла", Five = "баллов", Gender = Gender.Male, hideNumberOne = false, smallNumbersAreWords = false })">
+					<td class="small-table__title__cell" title="@scoringGroup.Name — @scoringGroup.MaxAdditionalScore.PluralizeInRussian(new RussianPluralizationOptions { One = "балл", Two = "балла", Five = "баллов", Gender = Gender.Male, hideNumberOne = false, smallNumbersAreWords = false })">
 						@scoringGroup.Abbreviation (@scoringGroup.MaxAdditionalScore)
-					</span>
+					</td>
 				}
-			</div>
-		</div>
+			</tr>
 
-		@if (!Model.VisitedUsers.Any())
-		{
-			<div class="text-muted">Здесь пока никого не было.</div>
-		}
+			@foreach (var userInfo in Model.VisitedUsers)
+			{
+				var visitedSlidesCount = Model.VisitedSlidesCountByUser.GetOrDefault(userInfo.UserId, 0);
+				var visitedSlidesCountAllTime = Model.VisitedSlidesCountByUserAllTime.GetOrDefault(userInfo.UserId, 0);
+				var userVisibleName = userInfo.UserVisibleName != "" ? userInfo.UserVisibleName : userInfo.UserName;
+				var userGroupsIds = Model.UsersGroupsIds.GetOrDefault(userInfo.UserId, new List<int>());
+				var userModifiableScoringGroupsIds = Model.EnabledAdditionalScoringGroupsForGroups
+					.Where(kv => userGroupsIds.Contains(kv.Key))
+					.SelectMany(kv => kv.Value)
+					.ToList();
 
-		@foreach (var userInfo in Model.VisitedUsers)
-		{
-			var visitedSlidesCount = Model.VisitedSlidesCountByUser.GetOrDefault(userInfo.UserId, 0);
-			var visitedSlidesCountAllTime = Model.VisitedSlidesCountByUserAllTime.GetOrDefault(userInfo.UserId, 0);
-			var userVisibleName = userInfo.UserVisibleName != "" ? userInfo.UserVisibleName : userInfo.UserName;
-			var userGroupsIds = Model.UsersGroupsIds.GetOrDefault(userInfo.UserId, new List<int>());
-			var userModifiableScoringGroupsIds = Model.EnabledAdditionalScoringGroupsForGroups
-				.Where(kv => userGroupsIds.Contains(kv.Key))
-				.SelectMany(kv => kv.Value)
-				.ToList();
-
-			<div class="student">
-				<div class="ib" title="@userInfo.UserName">
-					@Html.ActionLink(userVisibleName.TruncateWithEllipsis(25), "UserUnitStatistics", new { courseId = Model.Course.Id, unitId = Model.Unit.Id, userId = userInfo.UserId }, new { title = "Посмотреть статистику пользователя " + userInfo.UserName })
-				</div>
-				<div class="ib pull-right">
-					<div class="student-progress progress  hidden-xs-inline-block">
-						<div class="progress-bar progress-bar-warning"
-							style="width: @(100 * (visitedSlidesCountAllTime - visitedSlidesCount) / Model.Slides.Count)%"
-							title="Посмотрел(а) @((visitedSlidesCountAllTime - visitedSlidesCount).PluralizeInRussian(new RussianPluralizationOptions
-							                      {
-								                      One = "слайд",
-								                      Two = "слайда",
-								                      Five = "слайдов",
-								                      Gender = Gender.Male
-							                      })) вне указанного период">
-						</div>
-						<div class="progress-bar progress-bar-success"
-							style="width: @(100 * visitedSlidesCount / Model.Slides.Count)%"
-							title="Посмотрел(а) @visitedSlidesCount.PluralizeInRussian(new RussianPluralizationOptions
-							                    {
-								                    One = "слайд",
-								                    Two = "слайда",
-								                    Five = "слайдов",
-								                    Gender = Gender.Male
-							                    }) в указанный период">
-						</div>
-					</div>
-
-					@foreach (var exerciseOrQuiz in exercisesAndQuizzes)
-					{
-						var visit = Model.SlidesVisits.GetOrDefault(exerciseOrQuiz.Id, new List<Visit>()).FirstOrDefault(v => v.UserId == userInfo.UserId);
-						var isHiddenOnSmallScreens = IsSlideHiddenOnSmallScreens(exerciseOrQuiz);
-						if (visit != null && visit.IsPassed)
+					<tr class="student">
+						<td class="small-table__student-name-cell" title="@userInfo.UserName">
+							@Html.ActionLink(userVisibleName.TruncateWithEllipsis(25), "UserUnitStatistics", new { courseId = Model.Course.Id, unitId = Model.Unit.Id, userId = userInfo.UserId }, new { title = "Посмотреть статистику пользователя " + userInfo.UserName })
+						</td>
+						<td class="small-table__student-progress-cell hidden-xs-table-cell">
+							<div class="student-progress progress">
+								<div class="progress-bar progress-bar-warning"
+									style="width: @(100 * (visitedSlidesCountAllTime - visitedSlidesCount) / Model.Slides.Count)%"
+									title="Посмотрел(а) @((visitedSlidesCountAllTime - visitedSlidesCount).PluralizeInRussian(new RussianPluralizationOptions
+									                      {
+										                      One = "слайд",
+										                      Two = "слайда",
+										                      Five = "слайдов",
+										                      Gender = Gender.Male
+									                      })) вне указанного период">
+								</div>
+								<div class="progress-bar progress-bar-success"
+									style="width: @(100 * visitedSlidesCount / Model.Slides.Count)%"
+									title="Посмотрел(а) @visitedSlidesCount.PluralizeInRussian(new RussianPluralizationOptions
+									                    {
+										                    One = "слайд",
+										                    Two = "слайда",
+										                    Five = "слайдов",
+										                    Gender = Gender.Male
+									                    }) в указанный период">
+								</div>
+							</div>
+						</td>
+						
+						@foreach (var exerciseOrQuiz in exercisesAndQuizzes)
 						{
-							var isFullScore = visit.Score == exerciseOrQuiz.MaxScore;
-							<span class="small-table__right-cell score @(isHiddenOnSmallScreens ? "hidden-xs-inline-block" : "") @(isFullScore ? "full-score" : "") @(visit.Score == 0 ? "zero-score" : "")" title="@visit.Timestamp.ToPrettyString()">
-								@if (exerciseOrQuiz is ExerciseSlide)
-								{
-									@Html.ActionLink(
-										visit.Score.ToString(),
-										"UserSolutions",
-										"Analytics",
-										new { courseId = Model.Course.Id, slideId = exerciseOrQuiz.Id, userId = userInfo.UserId },
-										new { title = "Посмотреть решения", target = "_blank" })
-								}
-								else
-								{
-									@visit.Score
-								}
-							</span>
-						}
-						else
-						{
-							<span class="small-table__right-cell score @(isHiddenOnSmallScreens ? "hidden-xs-inline-block" : "") zero-score">&nbsp;</span>
-						}
-					}
-
-					@foreach (var scoringGroup in modifiableScoringGroups)
-					{
-						var userAndScoringGroup = Tuple.Create(userInfo.UserId, scoringGroup.Id);
-						var isModifiableForUser = scoringGroup.EnabledForEveryone || userModifiableScoringGroupsIds.Contains(scoringGroup.Id);
-						<span class="small-table__title__cell additional-score">
-							@if (isModifiableForUser)
+							var visit = Model.SlidesVisits.GetOrDefault(exerciseOrQuiz.Id, new List<Visit>()).FirstOrDefault(v => v.UserId == userInfo.UserId);
+							var isHiddenOnSmallScreens = IsSlideHiddenOnSmallScreens(exerciseOrQuiz);
+							if (visit != null && visit.IsPassed)
 							{
-								<a href="#" class="internal-page-link additional-score-link" title="Изменить оценку «@scoringGroup.Name»" data-scoring-type="@scoringGroup.Id">
-									@if (Model.AdditionalScores.ContainsKey(userAndScoringGroup))
+								var isFullScore = visit.Score == exerciseOrQuiz.MaxScore;
+								<td class="small-table__right-cell score @(isHiddenOnSmallScreens ? "hidden-xs-table-cell" : "") @(isFullScore ? "full-score" : "") @(visit.Score == 0 ? "zero-score" : "")" title="@visit.Timestamp.ToPrettyString()">
+									@if (exerciseOrQuiz is ExerciseSlide)
 									{
-										@Model.AdditionalScores[userAndScoringGroup]
+										@Html.ActionLink(
+											visit.Score.ToString(),
+											"UserSolutions",
+											"Analytics",
+											new { courseId = Model.Course.Id, slideId = exerciseOrQuiz.Id, userId = userInfo.UserId },
+											new { title = "Посмотреть решения", target = "_blank" })
 									}
 									else
 									{
-										<span>&mdash;</span>
+										@visit.Score
 									}
-								</a>
-								<input name="additional-score"
-										class="form-control input-sm additional-score-input"
-										min="0"
-										max="@scoringGroup.MaxAdditionalScore"
-										value="@(Model.AdditionalScores.ContainsKey(userAndScoringGroup) ? Model.AdditionalScores[userAndScoringGroup].ToString() : "")"
-										data-scoring-type="@scoringGroup.Id"
-										data-url="@Url.Action("SetAdditionalScore", "Admin", new { courseId = Model.Course.Id, unitId = Model.Unit.Id, userId = userInfo.UserId, scoringGroupId = scoringGroup.Id })"/>
+								</td>
 							}
-						</span>
-					}
-				</div>
-			</div>
+							else
+							{
+								<td class="small-table__right-cell score @(isHiddenOnSmallScreens ? "hidden-xs-table-cell" : "") zero-score">&nbsp;</td>
+							}
+						}
+
+						@foreach (var scoringGroup in modifiableScoringGroups)
+						{
+							var userAndScoringGroup = Tuple.Create(userInfo.UserId, scoringGroup.Id);
+							var isModifiableForUser = scoringGroup.EnabledForEveryone || userModifiableScoringGroupsIds.Contains(scoringGroup.Id);
+							<td class="small-table__title__cell additional-score">
+								@if (isModifiableForUser)
+								{
+									<a href="#" class="internal-page-link additional-score-link" title="Изменить оценку «@scoringGroup.Name»" data-scoring-type="@scoringGroup.Id">
+										@if (Model.AdditionalScores.ContainsKey(userAndScoringGroup))
+										{
+											@Model.AdditionalScores[userAndScoringGroup]
+										}
+										else
+										{
+											<span>&mdash;</span>
+										}
+									</a>
+									<input name="additional-score"
+											class="form-control input-sm additional-score-input"
+											min="0"
+											max="@scoringGroup.MaxAdditionalScore"
+											value="@(Model.AdditionalScores.ContainsKey(userAndScoringGroup) ? Model.AdditionalScores[userAndScoringGroup].ToString() : "")"
+											data-scoring-type="@scoringGroup.Id"
+											data-url="@Url.Action("SetAdditionalScore", "Admin", new { courseId = Model.Course.Id, unitId = Model.Unit.Id, userId = userInfo.UserId, scoringGroupId = scoringGroup.Id })"/>
+								}
+							</td>
+						}
+					</tr>
+			}
+		</table>
+		@if (!Model.VisitedUsers.Any())
+		{
+			<div class="text-muted">Здесь пока никого не было.</div>
 		}
 		@if (modifiableScoringGroups.Count > 0)
 		{
@@ -347,7 +351,6 @@
 			</div>
 		}
 	</div>
-
 </div>
 
 @if (Model.VisitedUsersIsMore)
@@ -359,9 +362,3 @@
 </div>
 </div>
 </body>
-
-@section scripts{
-	<script src="//code.highcharts.com/highcharts.js"></script>
-	<script src="//code.highcharts.com/modules/data.js"></script>
-	<script src="~/Scripts/analytics-highcharts.js"></script>
-}

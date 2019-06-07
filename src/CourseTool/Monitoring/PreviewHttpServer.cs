@@ -4,18 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 using NHttp;
 using RunCsJob;
 using RunCsJob.Api;
-using uLearn.Helpers;
-using uLearn.Model;
-using uLearn.Model.Blocks;
-using uLearn.Quizes;
 using uLearn.Web.Models;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Courses.Slides.Quizzes;
+using Ulearn.Core.Helpers;
 
 namespace uLearn.CourseTool.Monitoring
 {
@@ -144,7 +149,7 @@ namespace uLearn.CourseTool.Monitoring
 			
 			var zipBytes = GenerateExerciseStudentZip(slide);
 			context.Response.Headers.Add("Content-Type", "application/zip");
-			var projectExerciseBlock = ((slide as ExerciseSlide).Exercise as ProjectExerciseBlock);
+			var projectExerciseBlock = ((slide as ExerciseSlide).Exercise as CsProjectExerciseBlock);
 			context.Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{projectExerciseBlock?.ExerciseDirName.ToLatin()}.zip\"");
 			
 			return zipBytes;
@@ -178,9 +183,9 @@ namespace uLearn.CourseTool.Monitoring
 
 		private byte[] ServeAddQuiz(HttpRequestEventArgs context, string path)
 		{
-			var quiz = new Quiz
+			var quiz = new QuizSlide
 			{
-				Id = Guid.NewGuid().ToString("N"),
+				Id = Guid.NewGuid(),
 				Title = "Новый quiz"
 			};
 			return AddNewSlide(context, path, quiz);
@@ -188,23 +193,27 @@ namespace uLearn.CourseTool.Monitoring
 
 		private byte[] ServeAddLesson(HttpRequestEventArgs context, string path)
 		{
-			var lesson = new Lesson(
-				"Новый слайд", 
-				Guid.NewGuid(), 
-				new MdBlock("текст"));
+			var lesson = new Slide(new MarkdownBlock("текст"))
+			{
+				Id = Guid.NewGuid(),
+				Title = "Новый слайд",
+			};
 			return AddNewSlide(context, path, lesson);
 		}
 
-		private byte[] AddNewSlide<TLessonOrQuiz>(HttpRequestEventArgs context, string path, TLessonOrQuiz lessonOrQuiz)
+		private byte[] AddNewSlide<TSlide>(HttpRequestEventArgs context, string path, TSlide lessonOrQuiz) where TSlide : Slide
 		{
-			var prevSlide = course.FindSlide(GetSlideIndex(path));
+			var prevSlide = course.FindSlideByIndex(GetSlideIndex(path));
 			if (prevSlide == null)
 			{
 				context.Response.StatusCode = 404;
 				return new byte[0];
 			}
-			var serializer = new XmlSerializer(typeof(TLessonOrQuiz));
-			var newFile = GenerateSlideFilename<TLessonOrQuiz>(prevSlide);
+
+			lessonOrQuiz.DefineBlockTypes();
+			
+			var serializer = new XmlSerializer(typeof(TSlide));
+			var newFile = GenerateSlideFilename<TSlide>(prevSlide);
 			using (var s = new FileStream(Path.Combine(prevSlide.Info.Directory.FullName, newFile), FileMode.OpenOrCreate))
 				serializer.Serialize(s, lessonOrQuiz);
 			ReloadCourse();
@@ -214,11 +223,15 @@ namespace uLearn.CourseTool.Monitoring
 
 		private static string GenerateSlideFilename<T>(Slide prevSlide)
 		{
-			var prefix = prevSlide.Info.SlideFile.Name.Split('-', ' ', '_')[0];
-			var i = int.Parse(prefix.Substring(1));
-			i += 10;
-			var newFile = "S" + i.ToString().PadLeft(prefix.Length - 1, '0') + "_." + typeof(T).Name.ToLower() + ".xml";
-			return newFile;
+			var filename = prevSlide.Info.SlideFile.Name;
+			
+			var match = Regex.Match(filename, @"^(\w?)([0-9]+)(.+)$");
+			if (!match.Success)
+				return filename.Remove(filename.Length - prevSlide.Info.SlideFile.Extension.Length) + "_next.xml";
+
+			var prefix = match.Groups[1].Value;
+			var num = int.Parse(match.Groups[2].Value);
+			return prefix + (num + 1) + ".xml";
 		}
 
 		private async Task<byte[]> ServeNeedRefresh(bool reloaded, DateTime requestTime)
@@ -231,7 +244,7 @@ namespace uLearn.CourseTool.Monitoring
 					Console.WriteLine($@"needRefresh:{reloaded}, LastChanged:{lastChangeTime}");
 					return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(reloaded));
 				}
-				await Task.Delay(1000);
+				await Task.Delay(1000).ConfigureAwait(false);
 				reloaded = ReloadCourseIfChanged(requestTime);
 			}
 		}
@@ -246,7 +259,7 @@ namespace uLearn.CourseTool.Monitoring
 			return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(runResult));
 		}
 
-		private static RunSolutionResult GetRunResult(ExerciseBlock exercise, string code)
+		private static RunSolutionResult GetRunResult(AbstractExerciseBlock exercise, string code)
 		{
 			var buildResult = exercise.BuildSolution(code);
 			if (buildResult.HasErrors)
@@ -254,18 +267,18 @@ namespace uLearn.CourseTool.Monitoring
 			var result = SandboxRunner.Run(exercise.CreateSubmission(Utils.NewNormalizedGuid(), code));
 			var runSolutionResult = new RunSolutionResult
 			{
-				IsRightAnswer = result.Verdict == Verdict.Ok && result.GetOutput().NormalizeEoln() == exercise.ExpectedOutput.NormalizeEoln(),
-				ActualOutput = result.GetOutput().NormalizeEoln(),
+				IsRightAnswer = exercise.IsCorrectRunResult(result),
+				ActualOutput = result.GetOutput()?.NormalizeEoln() ?? "",
 				ErrorMessage = result.CompilationOutput,
-				ExecutionServiceName = "this",
+				ExecutionServiceName = "course.exe",
 				IsCompileError = result.Verdict == Verdict.CompilationError,
-				ExpectedOutput = exercise.ExpectedOutput.NormalizeEoln(),
+				ExpectedOutput = exercise.ExpectedOutput?.NormalizeEoln() ?? "",
 				SubmissionId = 0,
 			};
-			if (buildResult.HasStyleIssues)
+			if (buildResult.HasStyleErrors)
 			{
 				runSolutionResult.IsStyleViolation = true;
-				runSolutionResult.StyleMessage = buildResult.StyleMessage;
+				runSolutionResult.StyleMessage = string.Join("\n", buildResult.StyleErrors.Select(e => e.GetMessageWithPositions()));
 			}
 			return runSolutionResult;
 		}
@@ -309,7 +322,7 @@ namespace uLearn.CourseTool.Monitoring
 
 		Course ReloadCourse()
 		{
-			var loadedCourse = new CourseLoader().LoadCourse(new DirectoryInfo(courseDir));
+			var loadedCourse = new CourseLoader().Load(new DirectoryInfo(courseDir));
 			var renderer = new SlideRenderer(new DirectoryInfo(htmlDir), loadedCourse);
 			foreach (var slide in loadedCourse.Slides)
 				renderer.RenderSlideToFile(slide, htmlDir);

@@ -1,0 +1,34 @@
+﻿@model Database.Models.Group
+
+@{
+	ViewBag.Title = "Вы присоединились к группе";
+}
+
+<div class="container">
+	<h1>Присоединиться к&nbsp;группе</h1>
+
+	<div class="row">
+		<div class="col-md-8">
+
+			<p>
+				@Model.Owner.VisibleName приглашает вас присоединиться к&nbsp;группе «@Model.Name».
+				Преподаватели группы смогут проверять ваши задания и тесты, проводить код-ревью и выставлять вам дополнительные баллы.
+
+				@if (Model.CanUsersSeeGroupProgress)
+				{
+					<text>Вступив, вы сможете смотреть ведомость всей группы прямо на&nbsp;сайте.</text>
+				}
+			</p>
+			<p class="help-block">
+				Чтобы преподаватели могли связаться с&nbsp;вами в&nbsp;случае необходимости, мы покажем им вашу электронную почту и привязанные аккаунты социальных сетей.
+			</p>
+			
+			<p>
+				<b>Вы присоединились к группе «@Model.Name»</b>.
+			</p>
+			
+			<a href="@Url.RouteUrl("Course.Slide", new { courseId = Model.CourseId })" class="btn btn-primary btn-large">Перейти к курсу →</a>
+		</div>
+	</div>
+</div>
+

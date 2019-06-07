@@ -1,10 +1,14 @@
 ﻿@using System.Web.Mvc.Html
+@using Database.DataContexts
+@using Database.Extensions
 @using Database.Models
 @using Microsoft.AspNet.Identity
-@using uLearn
 @using uLearn.Web.Controllers
 @using uLearn.Web.Views.Shared
 @using Ulearn.Common.Extensions
+@using Ulearn.Core.Courses.Slides
+@using Ulearn.Core.Courses.Slides.Exercises
+@using FormMethod = System.Web.Mvc.FormMethod
 
 @model SlideCommentsModel
 
@@ -28,23 +32,25 @@
 			CanViewAuthorSubmissions = slide is ExerciseSlide && Model.CanViewAuthorSubmissions,
 			CurrentUser = Model.CurrentUser,
 			CanViewAuthorProfile = Model.CanViewAuthorProfiles,
+			IsCommentForInstructorsOnly = comment.IsForInstructorsOnly
 		};
 	}
 
 }
 
-@helper TopLevelReplyForm()
+@helper TopLevelReplyForm(bool forInstructorsOnly)
 {
 	<div class="reply-form media">
 		@using (Html.BeginForm("AddComment", "Comments", FormMethod.Post))
 		{
 			@Html.Hidden("courseId", Model.CourseId)
 			@Html.Hidden("slideId", Model.Slide.Id)
+			@Html.Hidden("forInstructorsOnly", forInstructorsOnly)
 			<div class="pull-left">
 				@UserAvatar.SmallAvatar(Model.CurrentUser)
 			</div>
 			<div class="media-body">
-				@Html.TextArea("commentText", "", new { placeholder = "Комментировать.." })
+				@Html.TextArea("commentText", "", new { placeholder = forInstructorsOnly ? "Оставить комментарий для преподавателей" : "Комментировать..." })
 				<button class="reply-form__send-button btn btn-primary" disabled="disabled">Отправить</button>
 			</div>
 		}
@@ -54,65 +60,26 @@
 @* Used for ajax in addAntiForgeryToken() *@
 <form id="__AjaxAntiForgeryForm" action="#" method="post">@Html.AntiForgeryToken()</form>
 
-@if (Model.TopLevelComments.Any() || Model.IsAuthorizedAndCanComment)
-{
-	<div class="comments">
-		<h3>Комментарии</h3>
-		@foreach (var topLevelComment in Model.TopLevelComments)
-		{
-			@Html.Partial("_Comment", BuildCommentViewModel(topLevelComment, Model.Slide))
-		}
-
-		@if (Model.IsAuthorizedAndCanComment)
-		{
-			@TopLevelReplyForm()
-		}
-		else if (Model.CommentsPolicy.IsCommentsEnabled)
-		{
-			<div class="comments_policy__message">
-				Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new { })
-			</div>
-		}
-		else
-		{
-			<div class="comments_policy__message">
-				Только преподаватели могут оставлять комментарии
-			</div>
-		}
-	</div>
-}
-else
-{
-	if (Model.CommentsPolicy.IsCommentsEnabled)
+@{
+	var commentsWrapperUser = new
 	{
-		<div class="comments_policy__message">
-			Чтобы оставить комментарий, @Html.ActionLink("войдите", "Login", "Account", new { returnUrl = Request.RawUrl }, new { })
-		</div>
-	}
-	else
-	{
-		<div class="comments_policy__message">
-			Комментарии отключены
-		</div>
-	}
+		id = Model.CurrentUser == null ? null : Model.CurrentUser.Id,
+		isAuthenticated = User.Identity.IsAuthenticated,
+		visibleName = Model.CurrentUser == null ? null : Model.CurrentUser.VisibleName,
+		avatarUrl = Model.CurrentUser == null ? null : Model.CurrentUser.AvatarUrl,
+		systemAccesses = Model.SystemAccesses.Select(a => a.AccessType.ToString("G")).Select(a => char.ToLowerInvariant(a[0]) + a.Substring(1)).ToList()
+	};
+	var courseRole = User == null ? null : User.GetCourseRole(Model.CourseId);
+	var courseRoleString = courseRole == null ? null : courseRole.Value.ToString("G");
+	courseRoleString = courseRole == null ? null : char.ToLowerInvariant(courseRoleString[0]) + courseRoleString.Substring(1);
+	var courseAccesses = Model.CourseAccesses.Select(a => a.AccessType.ToString("G")).Select(a => char.ToLowerInvariant(a[0]) + a.Substring(1)).ToList();
+	var commentsWrapperUserRoles = User == null ? null : new {
+		isSystemAdministrator = User.IsSystemAdministrator(),
+		courseRole = courseRoleString,
+		courseAccesses = courseAccesses
+	};
+	var slideType = Model.SlideType;
+	var commentsViewModel = new { slideId = Model.Slide.Id, courseId = Model.CourseId, user = commentsWrapperUser, userRoles = commentsWrapperUserRoles, slideType = slideType }.JsonSerialize();
 }
 
-<div class="comments__rules alert alert-warning">
-	<div>
-		Работает форматирование: <b>**жирный текст**</b>, <i>__курсивный текст__</i>, <span class="inline-pre">`код`</span>, <span class="inline-pre">```многострочный код```</span>.
-	</div>
-	@if (Model.Slide is ExerciseSlide)
-	{
-		<div class="comments__rules__good-tone">
-			Простые правила хороших комментариев:
-			<ul>
-				<li>Используйте подсказки перед тем, как задать вопрос в комментариях.</li>
-				<li>Воздержитесь от вопросов «Почему у меня не работает?». Отлаживайте, экспериментируйте, думайте!</li>
-				<li>Пожалуйста, не публикуйте свои решения.</li>
-				<li>
-					Мы будем благодарны вам за доброжелательный тон в комментариях.
-				</li>
-			</ul>
-		</div>
-	}
-</div>
+<div class="react-render" data-component="CommentsView" data-props="@commentsViewModel"></div>

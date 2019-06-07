@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function () {
 	var submittingData = false;
 
 	var errorOnUpdateAdditionalScore = function ($input, error) {

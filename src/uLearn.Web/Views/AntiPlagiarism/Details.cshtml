@@ -1,9 +1,12 @@
 ﻿@using Database.Extensions
 @using Database.Models
+@using uLearn.Web.Controllers
 @using uLearn.Web.Extensions
 @using uLearn.Web.Views.Shared
 @using Ulearn.Common.Extensions
+@using Ulearn.Core.Extensions
 @model uLearn.Web.Controllers.AntiPlagiarismDetailsModel
+
 
 @{
 	ViewBag.Title = "Проверка на списывание";
@@ -14,7 +17,21 @@
 		.ToDictionary(s => s.AntiPlagiarismSubmissionId);
 }
 
-<div class="container">
+@helper PrintUserGroups(string userId)
+{
+	<span class="antiplagiarism__user-groups">
+        @Model.UsersGroups[userId]@*
+      *@@if (!string.IsNullOrEmpty(Model.UsersGroups[userId]) && !string.IsNullOrEmpty(Model.UsersArchivedGroups[userId])){<text>,</text>}
+        @if (!string.IsNullOrEmpty(Model.UsersArchivedGroups[userId]))
+        {
+	        <span class="antiplagiarism__user-groups__archived" title="Эта группа заархивирована">
+                @Model.UsersArchivedGroups[userId]
+            </span>
+        }
+    </span>
+}
+
+<div class="wide-container">
     @{
 	   
 	    <div class="row">
@@ -24,10 +41,12 @@
                 </h3>
 
                 @{
-	                var submissionWeights = Model.AntiPlagiarismResult.ResearchedSubmissions.ToDictionary(
-		                s => submissionsByAntiPlagiarismIds[s.SubmissionInfo.Id].Id,
-		                s => s.Plagiarisms.Max(p => p.Weight)
-		                );
+	                var submissionWeights = Model.AntiPlagiarismResponse.ResearchedSubmissions
+		                .Where(s => submissionsByAntiPlagiarismIds.ContainsKey(s.SubmissionInfo.Id))
+		                .ToDictionary(
+                            s => submissionsByAntiPlagiarismIds[s.SubmissionInfo.Id].Id,
+                            s => s.Plagiarisms.Select(p => p.Weight).DefaultIfEmpty(0).Max()
+                        );
                 }
                 <div class="antiplagiarism__submissions-panel">
                     <div class="antiplagiarism__slide-title">
@@ -44,18 +63,54 @@
             </div>
         </div>
         
-	    var researchedSubmission = Model.AntiPlagiarismResult.ResearchedSubmissions.FirstOrDefault(s => s.SubmissionInfo.Id == submission.AntiPlagiarismSubmissionId);
+	    var researchedSubmission = Model.AntiPlagiarismResponse.ResearchedSubmissions.FirstOrDefault(s => s.SubmissionInfo.Id == submission.AntiPlagiarismSubmissionId);
+	    const int maxPlagiarismsShown = 10;
 	    if (researchedSubmission != null && researchedSubmission.Plagiarisms.Count > 0)
 	    {
-		    foreach (var plagiarism in researchedSubmission.Plagiarisms.OrderByDescending(p => p.Weight))
+		    var plagiarisms = researchedSubmission.Plagiarisms.AsEnumerable();
+		    /* For each author select only one plagiarism, with maximal weight */
+		    plagiarisms = plagiarisms.GroupBy(p => p.SubmissionInfo.AuthorId).ToDictionary(g => g.Key, g => g.MaxBy(p => p.Weight)).Select(kvp => kvp.Value);
+		    plagiarisms = plagiarisms.OrderByDescending(p => p.Weight).Take(maxPlagiarismsShown + 1).ToList();
+		    var wasFaintSuspicion = false;
+		    var wasStrongSuspicion = false;
+		    foreach (var plagiarism in plagiarisms.Take(maxPlagiarismsShown))
 		    {
 			    if (!submissionsByAntiPlagiarismIds.ContainsKey(plagiarism.SubmissionInfo.Id))
 			    {
 				    continue;
 			    }
+			    
+			    if (plagiarism.Weight >= Model.AntiPlagiarismResponse.SuspicionLevels.StrongSuspicion)
+			    {
+				    if (!wasStrongSuspicion)
+				    {
+					    wasStrongSuspicion = true;
+					    <div class="suspicion-level-description strong-level">
+                            <h3>
+                                Подозрительно похожие решения
+                            </h3>
+                            <div>
+                                Скорее всего, эти решения списаны или взяты из одного источника:
+                            </div>
+                        </div>
+				    }
+			    } 
+			    else if (plagiarism.Weight >= Model.AntiPlagiarismResponse.SuspicionLevels.FaintSuspicion && !wasFaintSuspicion)
+			    {
+				    wasFaintSuspicion = true;
+				    <div class="suspicion-level-description faint-level">
+                        <h3>
+                            Похожие решения меньшей подозрительности
+                        </h3>
+                        <div>
+                            Возможно, эти решения похожи случайно. Внимательно посмотрите на них, прежде чем штрафовать студентов:
+                        </div>
+                    </div>
+			    }
+			    
 			    var plagiarismSubmission = submissionsByAntiPlagiarismIds[plagiarism.SubmissionInfo.Id];
 			    <div class="antiplagiarism row">
-                    <div class="col-xs-6">
+                    <div class="original-submission col-xs-6">
                         <div class="antiplagiarism__author">
                             @UserAvatar.SmallAvatar(submission.User)
                             @if (User.HasSystemAccess(SystemAccessType.ViewAllProfiles) || User.IsSystemAdministrator())
@@ -67,11 +122,15 @@
 	                            <span title="@submission.User.UserName">@submission.User.VisibleName</span><text>,</text>
                             }
                             <span title="@submission.Timestamp.ToPrettyString()">@submission.Timestamp.ToAgoPrettyString()</span>
+                            @PrintUserGroups(submission.UserId)
                         </div>
-                        <textarea class="code code-antiplagiarism" data-lang="cs" data-submission-id="@submission.Id-@plagiarismSubmission.Id">@submission.SolutionCode.Text</textarea>
+                        <textarea class="code code-antiplagiarism hidden" data-lang="cs" data-submission-id="@submission.Id-@plagiarismSubmission.Id">@submission.SolutionCode.Text</textarea>
                     </div>
-                    <div class="col-xs-6">
+                    <div class="plagiarism-submission col-xs-6">
                         <div class="antiplagiarism__author">
+                            <div class="pull-right" title="Процент похожести. Чем больше, тем более подозрительна эта пара">
+                                @((int) (plagiarism.Weight * 100))%
+                            </div>
                             @UserAvatar.SmallAvatar(plagiarismSubmission.User)
                             @if (User.HasSystemAccess(SystemAccessType.ViewAllProfiles) || User.IsSystemAdministrator())
                             {
@@ -82,22 +141,35 @@
 	                            <span title="@plagiarismSubmission.User.UserName">@plagiarismSubmission.User.VisibleName</span><text>,</text>
                             }
                             <span title="@plagiarismSubmission.Timestamp.ToPrettyString()">@plagiarismSubmission.Timestamp.ToAgoPrettyString()</span>
-                            <div class="pull-right" title="Процент похожести. Чем больше, тем более подозрительна эта пара">
-                                @((int) (plagiarism.Weight * 100))%
-                            </div>
+                            @PrintUserGroups(plagiarismSubmission.UserId)
+
                         </div>
                         
-                        <textarea class="code code-antiplagiarism" data-lang="cs" data-submission-id="@plagiarismSubmission.Id">@plagiarismSubmission.SolutionCode.Text</textarea>
+                        <textarea class="code code-antiplagiarism hidden" data-lang="cs" data-submission-id="@plagiarismSubmission.Id">@plagiarismSubmission.SolutionCode.Text</textarea>
                     </div>
+                </div>
+			    <div>
                     <div class="hidden antiplagiarism__data" data-original-submission-id="@submission.Id-@plagiarismSubmission.Id" data-plagiarism-submission-id="@plagiarismSubmission.Id">
                         @(new { analyzed_code_units = researchedSubmission.AnalyzedCodeUnits, tokens_positions = researchedSubmission.TokensPositions, plagiarism = plagiarism }.JsonSerialize())
                     </div>
                 </div>
-		    }	    
+		    }
+		    if (plagiarisms.Count() > maxPlagiarismsShown)
+		    {
+			    <div class="text-muted">
+                    Показано @maxPlagiarismsShown самых похожих решений.
+                </div>
+		    }
 	    }
 	    else
 	    {
-		    <div class="text-muted">Мы не нашли ничего похожего на это решение. Вероятно, этот код написан самостоятельно.</div>
+		    <div class="text-muted">
+                Мы не нашли ничего похожего на&nbsp;это решение. Вероятно, этот код написан самостоятельно. 
+            </div>
+		    <div class="text-muted">
+                Попробуйте выбрать одно из предыдущих решений этого студента по этой задаче. Список версий доступен выше.
+            </div>
+		    <br />
 		    <textarea class="code code-sample" data-lang="cs">@submission.SolutionCode.Text</textarea>
 	    }
     }

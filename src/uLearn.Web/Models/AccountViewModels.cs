@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using Database.Models;
 using Ulearn.Common;
+using Ulearn.Core.Courses;
 
 namespace uLearn.Web.Models
 {
@@ -19,6 +20,7 @@ namespace uLearn.Web.Models
 	public class ExternalLoginConfirmationViewModel
 	{
 		[Required(ErrorMessage = "{0} есть у каждого пользователя")]
+		[RegularExpression(@"^[^@]+$", ErrorMessage = "{0} не может содержать собачку «@»")]
 		[Display(Name = "Логин")]
 		public string UserName { get; set; }
 
@@ -71,7 +73,7 @@ namespace uLearn.Web.Models
 	public class LoginViewModel
 	{
 		[Required(ErrorMessage = "Ты забыл логин?")]
-		[Display(Name = "Логин")]
+		[Display(Name = "Логин или емэйл")]
 		public string UserName { get; set; }
 
 		[Required(ErrorMessage = "Введи пароль")]
@@ -83,9 +85,10 @@ namespace uLearn.Web.Models
 		public bool RememberMe { get; set; }
 	}
 
-	public class RegisterViewModel
+	public class RegistrationViewModel
 	{
 		[Required(ErrorMessage = "{0} должен быть у каждого пользователя")]
+		[RegularExpression(@"^[^@]+$", ErrorMessage = "{0} не может содержать собачку «@»")]
 		[Display(Name = "Логин")]
 		public string UserName { get; set; }
 
@@ -128,6 +131,7 @@ namespace uLearn.Web.Models
 		public bool HasPassword { get; set; }
 
 		[Required(ErrorMessage = "{0} должен быть у каждого пользователя")]
+		[RegularExpression(@"^[^@]+$", ErrorMessage = "{0} не может содержать собачку «@»")]
 		[Display(Name = "Логин")]
 		public string Name { get; set; }
 
@@ -158,6 +162,9 @@ namespace uLearn.Web.Models
 		[Required(ErrorMessage = "Укажите адрес электронной почты")]
 		[EmailAddress(ErrorMessage = "Не похоже на электронную почту")]
 		public string Email { get; set; }
+
+		/* Field for prevent error handling in AccountController.ChangeDetailsPassword() */
+		public bool Render { get; set; } = false;
 	}
 
 	public class LtiUserViewModel

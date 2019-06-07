@@ -1,0 +1,65 @@
+@import "../../../../variables.less";
+
+@indent: 50px;
+@tabletIndent: 25px;
+@phoneIndent: 15px;
+
+.wrapper {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+
+  @media (max-width: @maxTabletWidth) {
+    width: 100%;
+  }
+
+  label {
+    font-weight: 400;
+    width: 100%;
+    margin: 0;
+
+    @media (max-width: @maxTabletWidth) {
+      padding: 0 @indent;
+    }
+
+    div {
+      @media (max-width: @maxTabletWidth) {
+        left: @indent;
+      }
+    }
+  }
+
+  input {
+    max-width: 100%;
+  }
+}
+
+.content {
+  margin: 0 -@indent;
+
+  @media (max-width: @maxTabletWidth) {
+    margin-left: -@tabletIndent;
+    margin-right: -@tabletIndent;
+  }
+
+  @media (max-width: @maxPhoneWidth) {
+    margin-left: -@phoneIndent;
+    margin-right: -@phoneIndent;
+  }
+}
+
+.noGroups {
+  margin-top: 30px;
+  max-width: 800px;
+  color: #666;
+
+  @media (max-width: @maxPhoneWidth) {
+    margin-top: 15px;
+  }
+}
+
+.loaderWrapper {
+  padding-top: 20px;
+}

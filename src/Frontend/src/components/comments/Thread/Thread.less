@@ -1,0 +1,37 @@
+@import "./../../../variables.less";
+@import "../commonStyles.less";
+
+@replyIndent: 30px;
+
+.repliesWrapper {
+  width: 100%;
+  margin-top: 10px;
+
+  @media(max-width: @maxPhoneWidth) {
+    margin-left: -@replyIndent;
+    width: calc(100% + @replyIndent);
+  }
+}
+
+.replies {
+  width: 100%;
+}
+
+.reply {
+  width: 100%;
+  margin-top: 5px;
+}
+
+.action {
+  margin-top: 15px;
+  width: 100%;
+
+  @media(max-width: @maxPhoneWidth) {
+    margin-top: 10px;
+  }
+}
+
+.replyForm {
+  padding-right: 20px;
+  width: 100%;
+}

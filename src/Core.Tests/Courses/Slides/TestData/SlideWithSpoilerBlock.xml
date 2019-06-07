@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<slide xmlns="https://ulearn.me/schema/v2" id="F9E51373-CDD6-4741-A789-615CACD583A3" title="Slide With Spoiler">
+	<spoiler text="Spoiler">
+		<code language="csharp">
+			public static void Main()
+			{
+				Console.WriteLine("Hello world");
+			}
+		</code>
+		<youtube>videoId</youtube>		
+	</spoiler>
+</slide>

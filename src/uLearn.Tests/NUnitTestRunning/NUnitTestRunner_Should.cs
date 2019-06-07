@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using uLearn.NUnitTestRunning.TestsToRun;
+using Ulearn.Core.NUnitTestRunning;
 
 namespace uLearn.NUnitTestRunning
 {

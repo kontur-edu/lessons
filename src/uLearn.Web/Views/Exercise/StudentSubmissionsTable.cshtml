@@ -1,0 +1,133 @@
+﻿@using Database.Models
+@using uLearn.Web.Extensions
+@using Ulearn.Common
+@using Ulearn.Common.Extensions
+@model uLearn.Web.Controllers.StudentSubmissionsModel
+
+@{
+	var requireReview = Model.Slide.Scoring.RequireReview;
+	var studentsCount = Model.Users.Count;
+	var rowsCountToShow = Model.ShowAll ? studentsCount : 2;
+}
+
+<table>
+    <thead>
+    <tr>
+        <th class="student-submissions__name-column">Студент</th>
+        <th>Результат</th>
+        @if (requireReview)
+        {
+	        <th>Код-ревью</th>
+        }
+        <th>Последняя попытка</th>
+    </tr>
+    </thead>
+    
+    @if (studentsCount == 0)
+    {
+	    <tr>
+            <td colspan="4">
+                @(Model.HasFilterByName ? "Никого не найдено" : "Никто из ваших групп ещё не решал это задание")
+            </td>
+        </tr>
+    }
+     
+    @{
+	    var rowIndex = 0;
+	    var isFirstReviewScore = true;
+    }
+    @foreach (var user in Model.Users.Values.OrderBy(u => u.VisibleNameWithLastNameFirst, StringComparer.InvariantCultureIgnoreCase))
+    {
+	    var userSubmissions = Model.SubmissionsByUser[user.Id];
+	    var hasAccepted = userSubmissions.Any(s => s.AutomaticCheckingIsRightAnswer);
+	    var isVisible = rowIndex < rowsCountToShow;
+
+	    <tr class="@(userSubmissions.Any() ? "has-submissions" : "") @(isVisible ? "" : "no-display")" data-url="">
+            <td class="student-submissions__name-column" title="@user.UserName">
+                @user.VisibleNameWithLastNameFirst
+                <div class="student-submissions__group-names">@Model.UserGroups[user.Id]</div>
+            </td>
+            @if (hasAccepted)
+            {
+	            <td class="text-success">Accepted</td>
+            }
+            else if (userSubmissions.Any())
+            {
+	            var lastSubmissionVerdict = userSubmissions.Last().AutomaticChecking.GetVerdict();
+	            <td class="text-danger">@lastSubmissionVerdict</td>
+            }
+            else
+            {
+	            <td class="text-muted">Не решал@(user.Gender.ChooseEnding())</td>
+            }
+            
+            @if (requireReview)
+            {
+	            if (userSubmissions.Any(s => s.ManualCheckings.Any()))
+	            {
+		            <td>
+                        @if (userSubmissions.All(s => s.ManualCheckings.All(c => !c.IsChecked)))
+                        {
+	                        <span class="text-muted">Ожидает</span>    
+                        }
+                        else if (isFirstReviewScore)
+                        {
+	                        <text>+</text>@Model.ManualCheckingScores[user.Id].PluralizeInRussian(RussianPluralizationOptions.Score)
+	                        isFirstReviewScore = false;
+                        }
+                        else
+                        {
+	                        <text>+</text>@Model.ManualCheckingScores[user.Id]
+                        }
+                    </td>
+	            }
+	            else
+	            {
+		            <td>&nbsp;</td>
+	            }
+            }
+            
+            @{
+	            UserExerciseSubmission lastSubmission = null;
+	            if (hasAccepted)
+	            {
+		            lastSubmission = userSubmissions.Last(s => s.AutomaticCheckingIsRightAnswer);
+	            }
+	            else if (userSubmissions.Any())
+	            {
+		            lastSubmission = userSubmissions.Last();
+	            }
+            }
+            @if (lastSubmission != null)
+            {
+	            <td>
+                    <a href="@Url.Action("UserSolutions", "Analytics", new { courseId = Model.CourseId, slideId = Model.Slide.Id, userId = user.Id, version = lastSubmission.Id })">
+                        @lastSubmission.Timestamp.ToPrettyString(withoutYearIfItsCurrent: true)
+                    </a>
+                </td>
+            }
+            else
+            {
+	            <td></td>
+            }
+        </tr>
+
+	    rowIndex++;
+    }
+    
+    @if (studentsCount > 0)
+    {
+	    if (studentsCount > rowsCountToShow)
+	    {
+		    <tr class="student-submissions__show-all">
+                <td colspan="4">
+                    <a href="#" class="internal-page-link">Показать всех студентов</a>
+                </td>
+            </tr>
+	    }
+	    
+        <tr class="student-submissions__comment-row @(studentsCount > rowsCountToShow ? "no-display" : "")">
+            <td colspan="4">Показываются только студенты, открывавшие это задание</td>
+        </tr>
+    }
+</table>

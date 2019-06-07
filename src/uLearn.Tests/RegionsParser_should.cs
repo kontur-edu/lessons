@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
 
 namespace uLearn
 {
@@ -21,6 +22,18 @@ namespace uLearn
 			var expected = new Dictionary<string, RegionsParser.Region>
 			{
 				{ "a", new RegionsParser.Region(9, 0, 0, code.Length) }
+			};
+			CollectionAssert.AreEquivalent(expected, regions);
+		}
+		
+		[Test]
+		public void SimpleParsingWithLongRegionName()
+		{
+			const string code = "region abcdef\nendregion abcdef";
+			var regions = RegionsParser.GetRegions(code);
+			var expected = new Dictionary<string, RegionsParser.Region>
+			{
+				{ "abcdef", new RegionsParser.Region(14, 0, 0, code.Length) }
 			};
 			CollectionAssert.AreEquivalent(expected, regions);
 		}

@@ -1,12 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
-<Quiz
-	xmlns="https://ulearn.azurewebsites.net/quiz"
-	id="41138C54848F4F49856BB738B7E39D28"
-	scoringGroup="laboratory">
-	<title>Пример теста</title>
-	
-	<p xml:space="preserve">
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.quiz xmlns="https://ulearn.me/schema/v2" title="Пример теста" id="41138C54848F4F49856BB738B7E39D28">
+  <scoring tries="3" group="laboratory"/>
+  <markdown xml:space="preserve">
 Можно использовать TeX: $\Theta(n)$
 
 __Markdown__ разметку `текста`.
@@ -14,78 +9,86 @@ __Markdown__ разметку `текста`.
 Изображения:
 ![logo](img/markdown.png)
 
+Список:
+
+* элемент раз
+* элемент два
+* элемент три
+
 [Markdown Extra](https://michelf.ca/projects/php-markdown/extra) фичи. В частности, простые таблицы:
 
 Header 1				| h2
 -------------		| -------------:
 *Content1*				| 42
 `Content Cell`	| 100500
-	</p>
-	
-	
-	<fillIn id="fillInQuestion" explanation="Описание правильного ответа" maxScore="2">
-		<text>Введите корректное число</text>
-		<sample>42</sample>
-		<regex>\d+</regex>
-	</fillIn>
-
-	<isTrue id="isTrueQuestion" explanation="Описание правильного ответа" answer="true" maxScore="2">
-		<text>Верно ли утверждение?</text>
-	</isTrue>
-
-
-	<choice id="choiceQuestion" multiple="false" shuffle="true" maxScore="3">
-		<text>Выберите вариант</text>
-		<item id="1" isCorrect="true">
+	</markdown>
+  <html>
+     Можно вставлять произвольный HTML
+     <div>Вложенный тег</div>
+     <iframe width="560" height="315" src="https://www.youtube.com/embed/9NcPvmk4vfo" frameborder="0"
+				allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="allowfullscreen"/>
+  </html>
+  <spoiler text="Можно прятать спойлер под кнопку">
+    <markdown>
+       Под спойлером могут быть *любые блоки*.
+    </markdown>
+  </spoiler>
+  <question.text id="fillInQuestion" explanation="Описание правильного ответа" maxScore="2" multiline="true">
+    <text>Введите корректное число</text>
+    <sample>42</sample>
+    <regex>\d+</regex>
+  </question.text>
+  <question.isTrue id="isTrueQuestion" explanation="Описание правильного ответа" answer="true" maxScore="2">
+    <text>Верно ли утверждение?</text>
+  </question.isTrue>
+  <question.choice id="choiceQuestion" multiple="false" shuffle="true" maxScore="3">
+    <text>Выберите вариант</text>
+    <item id="1" isCorrect="true">
 Первый вариант
 Вторая строка первого варианта
 		</item>
-		<item id="2" isCorrect="false">Второй вариант. Формула TeX: $a \times b$</item>
-		<item id="3" isCorrect="false">Третий вариант</item>
-		<item id="4" isCorrect="false">Четвёртый вариант</item>
-	</choice>
-
-	<choice id="choiceQuestionMultiple" multiple="true" shuffle="true">
-		<text>Выберите варианты</text>
-		<item id="1" isCorrect="true">Первый вариант</item>
-		<item id="2" isCorrect="false">Второй вариант</item>
-		<item id="3" isCorrect="false">Третий вариант</item>
-		<item id="4" isCorrect="false">Четвёртый вариант</item>
-	</choice>
-
-	<ordering id="OrderingQuestion">
-		<text>Упорядочите элементы</text>
-		<explanation>Объяснение правильного ответа</explanation>
-		<item id="1">Первый длинный вариант, очень длинный, самый длинный, многострочный и никуда не влазящий</item>
-		<item id="2">Второй $a \times b$</item>
-		<item id="3">Третий</item>
-		<item id="4">Четвёртый</item>
-		<item id="5">Пятый</item>
-	</ordering>
-
-	<matching id="MatchingQuestion">
-		<text>Поставьте в соответствие 2</text>
-		<explanation>Объяснение правильного ответа</explanation>
-		<match id="1">
-			<fixed>Пётр Первый, очень длинный, самый длинный, многострочный и никуда не влазящий</fixed> 
-			<movable>Иван Первый</movable>
-		</match>
-		<match id="2">
-			<fixed>Пётр Второй $a \times b$</fixed> 
-			<movable>Иван Второй $a \times b$</movable>
-		</match>
-		<match id="3">
-			<fixed>Пётр Третий</fixed> 
-			<movable>Иван Третий, очень длинный, самый длинный, многострочный и никуда не влазящий</movable>
-		</match>
-		<match id="4">
-			<fixed>Пётр Четвёртый</fixed> 
-			<movable>Иван Грозный</movable>
-		</match>
-		<match id="5">
-			<fixed>Пётр Пятый</fixed> 
-			<movable>Иван Пятый</movable>
-		</match>
-	</matching>
-
-</Quiz>
+    <item id="2" isCorrect="false">Второй вариант. Формула TeX: $a \times b$</item>
+    <item id="3" isCorrect="false">Третий вариант</item>
+    <item id="4" isCorrect="false">Четвёртый вариант</item>
+  </question.choice>
+  <question.choice id="choiceQuestionMultiple" multiple="true" shuffle="true">
+    <allowedMistakes checkedUnnecessary="1" notCheckedNecessary="0"/>
+    <text>Выберите варианты</text>
+    <item id="1" isCorrect="true">Первый вариант</item>
+    <item id="2" isCorrect="false">Второй вариант</item>
+    <item id="3" isCorrect="maybe">Третий вариант. Его можно как выбрать, так и не выбирать</item>
+    <item id="4" isCorrect="false">Четвёртый вариант</item>
+  </question.choice>
+  <question.order id="OrderingQuestion" explanation="Объяснение правильного ответа">
+    <text>Упорядочите элементы</text>
+    <item id="1">Первый длинный вариант, очень длинный, самый длинный, многострочный и никуда не влазящий</item>
+    <item id="2">Второй $a \times b$</item>
+    <item id="3">Третий</item>
+    <item id="4">Четвёртый</item>
+    <item id="5">Пятый</item>
+  </question.order>
+  <question.match id="MatchingQuestion">
+    <text>Поставьте в соответствие 2</text>
+    <explanation>Объяснение правильного ответа</explanation>
+    <match id="1">
+      <fixed>Пётр Первый, очень длинный, самый длинный, многострочный и никуда не влазящий</fixed>
+      <movable>Иван Первый</movable>
+    </match>
+    <match id="2">
+      <fixed>Пётр Второй $a \times b$</fixed>
+      <movable>Иван Второй $a \times b$</movable>
+    </match>
+    <match id="3">
+      <fixed>Пётр Третий</fixed>
+      <movable>Иван Третий, очень длинный, самый длинный, многострочный и никуда не влазящий</movable>
+    </match>
+    <match id="4">
+      <fixed>Пётр Четвёртый</fixed>
+      <movable>Иван Грозный</movable>
+    </match>
+    <match id="5">
+      <fixed>Пётр Пятый</fixed>
+      <movable>Иван Пятый</movable>
+    </match>
+  </question.match>
+</slide.quiz>

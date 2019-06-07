@@ -1,24 +1,33 @@
-﻿@using Ulearn.Common
-@model Database.Models.Group
+﻿@model Database.Models.Group
 
 @{
-	ViewBag.Title = "Присоединться к группе";
+	ViewBag.Title = "Присоединиться к группе";
 }
 
 <div class="container">
-	<h1>Вступить в&nbsp;группу</h1>
+	<h1>Присоединиться к&nbsp;группе</h1>
 
-	<form method="POST" action="">
-		@Html.AntiForgeryToken()
-		<p>
-			@Model.Owner.VisibleName пригласил@(Model.Owner.Gender.ChooseEnding()) вас присоединиться к&nbsp;группе «@Model.Name».
-			Преподаватели группы смогут проверять ваши задания и тесты, проводить код-ревью и выставлять вам дополнительные баллы. 
-			Вступив, вы сможете смотреть ведомость всей группы прямо на&nbsp;сайте.
-		</p>
-		<p class="help-block">
-			Чтобы преподаватели могли связаться с&nbsp;вами в&nbsp;случае необходимости, мы покажем им вашу электронную почту и привязанные аккаунты социальных сетей.
-		</p>
-		<button class="btn btn-success btn-large">Присоединиться</button>
-	</form>
+	<div class="row">
+		<div class="col-md-8">
+
+			<form method="POST" action="">
+				@Html.AntiForgeryToken()
+				<p>
+					@Model.Owner.VisibleName приглашает вас присоединиться к&nbsp;группе «@Model.Name».
+					Преподаватели группы смогут проверять ваши задания и тесты, проводить код-ревью и выставлять вам дополнительные баллы.
+
+					@if (Model.CanUsersSeeGroupProgress)
+					{
+						<text>Вступив, вы сможете смотреть ведомость всей группы прямо на&nbsp;сайте.</text>
+					}
+				</p>
+				<p class="help-block">
+					Чтобы преподаватели могли связаться с&nbsp;вами в&nbsp;случае необходимости, мы покажем им вашу электронную почту и привязанные аккаунты социальных сетей.
+				</p>
+				<button class="btn btn-success btn-large">Присоединиться</button>
+			</form>
+			
+		</div>
+	</div>
 </div>
 

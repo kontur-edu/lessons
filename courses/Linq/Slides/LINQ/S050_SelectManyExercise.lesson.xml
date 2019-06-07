@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Объединение коллекций" id="7db3f797-b99b-4580-abe6-bb4ee929bb6b">
+  <scoring passedTestsScore="5"/>
+  <markdown>
+Вам дан список всех классов в школе. Нужно получить список всех учащихся всех классов.
+
+Учебный класс определен так:</markdown>
+  <includeCode>
+    <display onlyBody="false">Classroom</display>
+  </includeCode>
+  <markdown>
+Без использования `LINQ` решение могло бы выглядеть так:</markdown>
+  <includeCode>
+    <display onlyBody="true">GetAllStudents_NoLinq</display>
+  </includeCode>
+  <markdown>Напишите решение этой задачи с помощью `LINQ` в одно выражение.</markdown>
+  <includeCode>
+    <display onlyBody="false">Main</display>
+  </includeCode>
+  <exercise.file file="_SelectManyExercise.cs" type="check-output" language="csharp">
+    <initialCode>public static string[] GetAllStudents(Classroom[] classes)
+{
+}</initialCode>
+    <hint>`IEnumerable&lt;R&gt; SelectMany(this IEnumerable&lt;T&gt; items, Func&lt;T, IEnumerable&lt;R&gt;&gt; f)`</hint>
+    <hint>`T[] ToArray(this IEnumerable&lt;T&gt; items)`</hint>
+    <expected>Alex Anna Bulat Galina Ilya Ivan Pavel Petr Vladimir</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs SingleStatementMethod</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">GetAllStudents</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_SelectManyExercise.cs</defaultIncludeCodeFile>
+</slide.exercise>

@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
@@ -11,7 +12,7 @@ namespace RunCsJob
 {
 	public static class AssemblyCreator
 	{
-		public static CompileResult CreateAssemblyWithRoslyn(FileRunnerSubmission submission, string workingDirectory)
+		public static CompileResult CreateAssemblyWithRoslyn(FileRunnerSubmission submission, string workingDirectory, TimeSpan compilationTimeLimit)
 		{
 			var syntaxTree = CSharpSyntaxTree.ParseText(submission.Code);
 			var assemblyName = submission.Id;
@@ -28,7 +29,13 @@ namespace RunCsJob
 				}, new CSharpCompilationOptions(OutputKind.ConsoleApplication));
 			
 			var assemblyFilename = Path.Combine(workingDirectory, assemblyName + ".exe");
-			return new CompileResult(compilation.Emit(assemblyFilename), assemblyFilename);
+			
+			using (var cts = new CancellationTokenSource(compilationTimeLimit))
+			{
+				var startTime = DateTime.Now;
+				var emitResult = compilation.Emit(assemblyFilename, cancellationToken: cts.Token);
+				return new CompileResult(emitResult, assemblyFilename, DateTime.Now - startTime);
+			}
 		}
 	}
 
@@ -36,11 +43,13 @@ namespace RunCsJob
 	{
 		public readonly EmitResult EmitResult;
 		public readonly string PathToAssembly;
+		public readonly TimeSpan Elapsed;
 
-		public CompileResult(EmitResult emitResult, string pathToAssembly)
+		public CompileResult(EmitResult emitResult, string pathToAssembly, TimeSpan elapsed)
 		{
 			EmitResult = emitResult;
 			PathToAssembly = pathToAssembly;
+			Elapsed = elapsed;
 		}
 	}
 }

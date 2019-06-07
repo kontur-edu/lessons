@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace uLearn.Model.Edx.EdxComponents
+namespace Ulearn.Core.Model.Edx.EdxComponents
 {
 	[XmlRoot("html")]
 	public class HtmlComponent : Component

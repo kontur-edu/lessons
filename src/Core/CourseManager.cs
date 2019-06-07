@@ -1,30 +1,32 @@
-using Ionic.Zip;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Ionic.Zip;
 using JetBrains.Annotations;
 using log4net;
 using Telegram.Bot.Types.Enums;
-using uLearn.Configuration;
-using uLearn.Helpers;
-using uLearn.Model.Blocks;
-using uLearn.Telegram;
 using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Configuration;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Courses.Units;
+using Ulearn.Core.Helpers;
+using Ulearn.Core.Telegram;
 
-namespace uLearn
+namespace Ulearn.Core
 {
 	public class CourseManager
 	{
-		private const string helpPackageName = "Help";
+		private const string examplePackageName = "Help";
 
 		private static readonly ILog log = LogManager.GetLogger(typeof(CourseManager));
 
@@ -39,7 +41,8 @@ namespace uLearn
 
 		private readonly ExerciseStudentZipsCache exerciseStudentZipsCache = new ExerciseStudentZipsCache();
 
-		private static readonly CourseLoader loader = new CourseLoader();
+		/* TODO (andgein): Use DI */
+		private static readonly CourseLoader loader = new CourseLoader(new UnitLoader(new XmlSlideLoader()));
 		private static readonly ErrorsBot errorsBot = new ErrorsBot();
 
 		public CourseManager(DirectoryInfo baseDirectory)
@@ -58,10 +61,10 @@ namespace uLearn
 			this.coursesVersionsDirectory = coursesVersionsDirectory;
 		}
 
-		public IEnumerable<Course> GetCourses()
+		public virtual IEnumerable<Course> GetCourses()
 		{
 			LoadCoursesIfNotYet();
-			return courses.Values;
+			return courses.Values.OrderBy(c => c.Title, StringComparer.OrdinalIgnoreCase);
 		}
 
 		[NotNull]
@@ -78,10 +81,15 @@ namespace uLearn
 			{
 				return GetCourse(courseId);
 			}
-			catch (KeyNotFoundException)
+			catch (Exception e) when (e is KeyNotFoundException || e is CourseNotFoundException) 
 			{
 				return null;
 			}
+		}
+
+		public bool HasCourse(string courseId)
+		{
+			return FindCourse(courseId) != null;
 		}
 
 		public Course GetVersion(Guid versionId)
@@ -135,8 +143,12 @@ namespace uLearn
 			{
 				if (courses.Count != 0)
 					return;
-				log.Info($"Загружаю курсы из {stagedDirectory.FullName}");
 				var courseZips = stagedDirectory.GetFiles("*.zip");
+				var courseIdsWithZips = courseZips.Select(z => GetCourseId(z.FullName));
+				LoadCourseZipsToDiskFromExternalStorage(courseIdsWithZips);
+				
+				log.Info($"Загружаю курсы из {stagedDirectory.FullName}");
+				courseZips = stagedDirectory.GetFiles("*.zip");
 				foreach (var zipFile in courseZips)
 				{
 					log.Info($"Обновляю курс из {zipFile.Name}");
@@ -156,6 +168,11 @@ namespace uLearn
 			if (firstException != null)
 				throw firstException;
 		}
+
+		protected virtual void LoadCourseZipsToDiskFromExternalStorage(IEnumerable<string> existingOnDiskCourseIds)
+		{
+			// NONE
+		} 
 
 		protected Course ReloadCourse(string courseId)
 		{
@@ -223,7 +240,7 @@ namespace uLearn
 		public Course LoadCourseFromDirectory(DirectoryInfo dir)
 		{
 			WaitWhileCourseIsLocked(GetCourseId(dir.Name));
-			return loader.LoadCourse(dir);
+			return loader.Load(dir);
 		}
 
 		public static string GetCourseId(string packageName)
@@ -246,7 +263,7 @@ namespace uLearn
 			return stagedDirectory.GetFile(GetPackageName(courseId)).LastWriteTime;
 		}
 
-		public bool TryCreateCourse(string courseId)
+		public bool TryCreateCourse(string courseId, string courseTitle, Guid firstVersionId)
 		{
 			if (courseId.Any(GetInvalidCharacters().Contains))
 				return false;
@@ -255,13 +272,17 @@ namespace uLearn
 			if (package.Exists)
 				return true;
 
-			var helpPackage = stagedDirectory.GetFile(GetPackageName(helpPackageName));
-			if (!helpPackage.Exists)
-				CreateEmptyCourse(courseId, package.FullName);
+			var examplePackage = stagedDirectory.GetFile(GetPackageName(examplePackageName));
+			if (!examplePackage.Exists)
+				CreateEmptyCourse(courseId, courseTitle, package.FullName);
 			else
-				CreateCourseFromExample(courseId, package.FullName, helpPackage);
+				CreateCourseFromExample(courseId, courseTitle, package.FullName, examplePackage);
 
 			ReloadCourseFromZip(package);
+
+			var versionFile = GetCourseVersionFile(firstVersionId);
+			File.Copy(package.FullName, versionFile.FullName);
+			
 			return true;
 		}
 
@@ -275,37 +296,32 @@ namespace uLearn
 			}
 		}
 
-		private static void CreateEmptyCourse(string courseId, string path)
+		private static void CreateEmptyCourse(string courseId, string courseTitle, string path)
 		{
 			using (var zip = new ZipFile(Encoding.GetEncoding(866)))
 			{
-				zip.AddEntry("Course.xml",
+				zip.AddEntry("course.xml",
 					"<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-					"<Course xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"https://ulearn.azurewebsites.net/course\">\n" +
-					$"\t<title>{courseId}</title>\n" + "</Course>",
+					$"<course xmlns=\"https://ulearn.me/schema/v2\" title=\"{courseTitle.EncodeQuotes()}\">\n" +
+					@"<units><add>*\unit.xml</add></units>" + 
+					"</course>",
 					Encoding.UTF8);
 				zip.Save(path);
 			}
 		}
 
-		private static void CreateCourseFromExample(string courseId, string path, FileInfo helpPackage)
+		private static void CreateCourseFromExample(string courseId, string courseTitle, string path, FileInfo examplePackage)
 		{
-			helpPackage.CopyTo(path, true);
+			examplePackage.CopyTo(path, true);
+			File.SetLastWriteTime(examplePackage.FullName, DateTime.Now);
+			
 			var nsResolver = new XmlNamespaceManager(new NameTable());
-			nsResolver.AddNamespace("course", "https://ulearn.azurewebsites.net/course");
-			nsResolver.AddNamespace("lesson", "https://ulearn.azurewebsites.net/lesson");
-			nsResolver.AddNamespace("quiz", "https://ulearn.azurewebsites.net/quiz");
-			nsResolver.AddNamespace("types", "https://ulearn.azurewebsites.net/types");
+			nsResolver.AddNamespace("ulearn", "https://ulearn.me/schema/v2");
 			using (var zip = ZipFile.Read(path, new ReadOptions { Encoding = Encoding.GetEncoding(866) }))
 			{
-				if (zip.ContainsEntry("Course.xml"))
-					UpdateXmlElement(zip["Course.xml"], "//course:Course/course:title", courseId, zip, nsResolver);
-				foreach (var entry in zip.SelectEntries("name = *.lesson.xml").Where(entry => UnitLoader.IsSlideFile(Path.GetFileName(entry.FileName))))
-					UpdateXmlElement(entry, "//lesson:Lesson/lesson:id", Guid.NewGuid().ToString(), zip, nsResolver);
-				foreach (var entry in zip.SelectEntries("name = *.quiz.xml").Where(entry => UnitLoader.IsSlideFile(Path.GetFileName(entry.FileName))))
-					UpdateXmlAttribute(entry, "//quiz:Quiz", "id", Guid.NewGuid().ToString(), zip, nsResolver);
-				foreach (var entry in zip.SelectEntries("name = *.cs").Where(entry => UnitLoader.IsSlideFile(Path.GetFileName(entry.FileName))))
-					UpdateCsFiles(entry, Guid.NewGuid().ToString(), zip);
+				var courseXml = zip.Entries.FirstOrDefault(e => Path.GetFileName(e.FileName) == "course.xml" && !e.IsDirectory);
+				if (courseXml != null)
+					UpdateXmlAttribute(zip[courseXml.FileName], "//ulearn:course", "title", courseTitle, zip, nsResolver);
 			}
 		}
 
@@ -322,18 +338,6 @@ namespace uLearn
 				if (elementAttribute != null)
 					elementAttribute.Value = value;
 			}, zip, nsResolver);
-		}
-
-		private static void UpdateCsFiles(ZipEntry entry, string slideId, ZipFile zip)
-		{
-			string code;
-			using (var entryStream = entry.OpenReader())
-			{
-				code = new StreamReader(entryStream).ReadToEnd();
-			}
-			code = Regex.Replace(code, "(?<=\\[Slide\\(\".*\",\\s*\").+(?=\"\\)\\])", slideId);
-			zip.UpdateEntry(entry.FileName, code, Encoding.UTF8);
-			zip.Save();
 		}
 
 		private static void UpdateXmlEntity(ZipEntry entry, string selector, Action<XElement> update, ZipFile zip, IXmlNamespaceResolver nsResolver)
@@ -378,7 +382,7 @@ namespace uLearn
 
 		private readonly TimeSpan waitBetweenLockTries = TimeSpan.FromSeconds(0.1);
 		private readonly TimeSpan lockLifeTime = TimeSpan.FromMinutes(20);
-		private int updateCourseEachOperarionTriesCount = 5;
+		private const int updateCourseEachOperationTriesCount = 5;
 
 		private FileInfo GetCourseLockFile(string courseId)
 		{
@@ -442,25 +446,6 @@ namespace uLearn
 			ReleaseCourse(courseId);
 		}
 
-		private void TrySeveralTimes(Action function)
-		{
-			Exception lastException = null;
-			for (var tryNumber = 1; tryNumber <= updateCourseEachOperarionTriesCount; tryNumber++)
-			{
-				try
-				{
-					function.Invoke();
-					return;
-				}
-				catch (Exception e)
-				{
-					lastException = e;
-				}
-			}
-			if (lastException != null)
-				throw lastException;
-		}
-
 		public void MoveCourse(Course course, DirectoryInfo sourceDirectory, DirectoryInfo destinationDirectory)
 		{
 			var tempDirectoryName = coursesDirectory.GetSubdirectory(Path.GetRandomFileName());
@@ -468,16 +453,16 @@ namespace uLearn
 
 			try
 			{
-				TrySeveralTimes(() => Directory.Move(destinationDirectory.FullName, tempDirectoryName.FullName));
+				FuncUtils.TrySeveralTimes(() => Directory.Move(destinationDirectory.FullName, tempDirectoryName.FullName), updateCourseEachOperationTriesCount);
 
 				try
 				{
-					TrySeveralTimes(() => Directory.Move(sourceDirectory.FullName, destinationDirectory.FullName));
+					FuncUtils.TrySeveralTimes(() => Directory.Move(sourceDirectory.FullName, destinationDirectory.FullName), updateCourseEachOperationTriesCount);
 				}
 				catch (IOException)
 				{
 					/* In case of any file system's error rollback previous operation */
-					TrySeveralTimes(() => Directory.Move(tempDirectoryName.FullName, destinationDirectory.FullName));
+					FuncUtils.TrySeveralTimes(() => Directory.Move(tempDirectoryName.FullName, destinationDirectory.FullName), updateCourseEachOperationTriesCount);
 					throw;
 				}
 				FixFileReferencesInCourse(course, sourceDirectory, destinationDirectory);
@@ -488,27 +473,33 @@ namespace uLearn
 			{
 				ReleaseCourse(course.Id);
 			}
-			TrySeveralTimes(() => tempDirectoryName.ClearDirectory(true));
+			FuncUtils.TrySeveralTimes(() => tempDirectoryName.ClearDirectory(true), updateCourseEachOperationTriesCount);
 		}
 
 		private void FixFileReferencesInCourse(Course course, DirectoryInfo sourceDirectory, DirectoryInfo destinationDirectory)
 		{
 			foreach (var instructorNote in course.Units.Select(u => u.InstructorNote).Where(n => n != null))
-				instructorNote.File = (FileInfo)GetNewPathForFileAfterMoving(instructorNote.File, sourceDirectory, destinationDirectory);
+				instructorNote.File = (FileInfo) GetNewPathForFileAfterMoving(instructorNote.File, sourceDirectory, destinationDirectory);
 
 			foreach (var slide in course.Slides)
 			{
-				slide.Info.SlideFile = (FileInfo)GetNewPathForFileAfterMoving(slide.Info.SlideFile, sourceDirectory, destinationDirectory);
+				slide.Info.SlideFile = (FileInfo) GetNewPathForFileAfterMoving(slide.Info.SlideFile, sourceDirectory, destinationDirectory);
 
-				foreach (var exerciseBlock in slide.Blocks.OfType<ProjectExerciseBlock>())
-					exerciseBlock.SlideFolderPath = (DirectoryInfo)GetNewPathForFileAfterMoving(exerciseBlock.SlideFolderPath, sourceDirectory, destinationDirectory);
+				foreach (var exerciseBlock in slide.Blocks.OfType<CsProjectExerciseBlock>())
+					exerciseBlock.SlideFolderPath = (DirectoryInfo) GetNewPathForFileAfterMoving(exerciseBlock.SlideFolderPath, sourceDirectory, destinationDirectory);
+
+				slide.Meta?.FixPaths(slide.Info.SlideFile);
 			}
+
+			course.CourseXmlDirectory = (DirectoryInfo) GetNewPathForFileAfterMoving(course.CourseXmlDirectory, sourceDirectory, destinationDirectory);
 		}
 
-		private FileSystemInfo GetNewPathForFileAfterMoving(FileSystemInfo file, DirectoryInfo sourceDirectory, DirectoryInfo destinationDirectory)
+		private static FileSystemInfo GetNewPathForFileAfterMoving(FileSystemInfo file, DirectoryInfo sourceDirectory, DirectoryInfo destinationDirectory)
 		{
 			if (!file.IsInDirectory(sourceDirectory))
 				return file;
+			if (sourceDirectory.FullName == file.FullName)
+				return destinationDirectory;
 
 			var relativePath = file.GetRelativePath(sourceDirectory.FullName);
 			var newPath = Path.Combine(destinationDirectory.FullName, relativePath);

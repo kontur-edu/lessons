@@ -1,0 +1,287 @@
+@import "../../variables.less";
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: white;
+  margin-bottom: 10px;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  color: #333;
+  height: @headerHeight;
+  box-shadow: 0 0 7px 4px #ccc;
+
+  > * {
+    display: inline-block;
+    vertical-align: top;
+    height: @headerHeight;
+  }
+
+  .header__logo {
+    color: @linkColor;
+    font-size: 18px;
+
+    a {
+      display: inline-block;
+      padding: 11px 20px 15px 30px;
+      text-decoration: none;
+      color: inherit;
+
+      &:hover, &:active, &:focus {
+        text-decoration: none;
+        color: @linkHoverColor;
+      }
+
+      @media (max-width: @maxPhoneWidth) {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+    }
+
+    .visible-only-phone {
+      color: #666;
+      font-size: 20px;
+    }
+  }
+
+  .header__toc-menu,
+  .header__course-menu,
+  .header__sysadmin-menu,
+  .header__my-courses-menu {
+    display: inline-block;
+    cursor: pointer;
+
+    > * {
+      display: inline-block;
+      vertical-align: top;
+      height: @headerHeight;
+    }
+
+    .caption {
+      display: inline-block;
+      color: #666;
+      border-color: #666;
+      height: @headerHeight;
+      padding: 14px 10px;
+
+      &:hover, &:focus, &:active {
+        text-decoration: none;
+      }
+
+      &:hover {
+        background-color: #f2f2f2;
+        cursor: pointer;
+      }
+
+      .courseName {
+        display: inline-block;
+        vertical-align: top;
+        max-width: 200px;
+        overflow-x: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .icon {
+      display: inline-block;
+      color: #666;
+      font-size: 20px;
+      height: 50px;
+      padding: 11px 15px 11px 0;
+    }
+  }
+
+  .header__menu {
+    position: fixed;
+    right: 0;
+    color: #666;
+    user-select: none;
+
+    > * {
+      display: inline-block;
+      vertical-align: top;
+      height: @headerHeight;
+    }
+
+    a {
+      color: #666;
+      border-color: #666;
+      height: @headerHeight;
+
+      &:hover, &:focus, &:active {
+        text-decoration: none;
+      }
+
+      &:hover {
+        background-color: #f2f2f2;
+      }
+    }
+
+    .header__notifications-icon {
+      padding: 11px 0 11px 18px;
+      height: @headerHeight;
+
+      .icon {
+        font-size: 20px;
+      }
+
+      .counter {
+        background-color: #F69C00;
+        color: white;
+        width: 18px;
+        height: 18px;
+        display: inline-block;
+        text-align: center;
+        border-radius: 9px;
+        font-size: 11px;
+        position: relative;
+        top: -10px;
+        left: -11px;
+        padding-top: 1px;
+      }
+
+      &.without-counter {
+        padding-right: 18px;
+
+        @media (max-width: @maxPhoneWidth) {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+      }
+
+      &:hover {
+        background-color: #f2f2f2;
+        cursor: pointer;
+      }
+    }
+
+    .opened > .header__notifications-icon {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+
+    .header__profile-link {
+      .icon {
+        margin-right: 6px;
+        font-size: 20px;
+      }
+
+      > a {
+        display: inline-block;
+        padding: 11px 15px;
+        text-decoration: none;
+
+        > * {
+          vertical-align: middle;
+        }
+
+        @media (max-width: @maxTabletWidth) {
+          .username {
+            display: inline-block;
+            max-width: 100px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+
+        @media (max-width: @maxPhoneWidth) {
+          .username {
+            display: none;
+          }
+
+          padding-left: 7px;
+          padding-right: 7px;
+        }
+      }
+    }
+
+    .header__logout-link,
+    .header__login-link,
+    .header__registration-link {
+      > button,
+      > a {
+        display: inline-block;
+        padding: 15px 30px 13px 15px;
+        text-decoration: none;
+        border: none;
+        outline: none;
+        background: transparent;
+
+        @media (max-width: @maxLaptopWidth) {
+          & {
+            padding-right: 15px;
+          }
+        }
+      }
+    }
+
+    .header__registration-link > a {
+      padding-right: 15px;
+    }
+  }
+
+  .header__separator {
+    @margin: 10px;
+    width: 0;
+    height: (@headerHeight - 2 * @margin);
+    border-left: 2px solid #eee;
+    margin-top: @margin;
+    margin-bottom: @margin;
+  }
+}
+
+.dropdown-container {
+  background-color: white;
+  border: 1px solid #d5d5d5;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  min-width: 400px;
+  min-height: 90px;
+  max-width: 600px;
+
+  @media (max-width: @maxPhoneWidth) {
+    min-width: 300px;
+    width: 100%;
+
+    .notifications__dropdown {
+      width: 100%;
+    }
+  }
+}
+
+.notifications__dropdown {
+  list-style: none;
+}
+
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.visible-only-phone {
+  display: none;
+
+  @media (max-width: @maxPhoneWidth) {
+    & {
+      display: initial;
+    }
+  }
+}
+
+.visible-at-least-tablet {
+  @media (max-width: @maxPhoneWidth) {
+    & {
+      display: none !important;
+    }
+  }
+}

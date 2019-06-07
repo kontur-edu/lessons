@@ -7,16 +7,20 @@ using System.Threading.Tasks;
 using Database.Migrations;
 using Database.Models;
 using EntityFramework.Functions;
+using log4net;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Database.DataContexts
 {
 	public class ULearnDb : IdentityDbContext<ApplicationUser>
 	{
+		private readonly ILog log = LogManager.GetLogger(typeof(ULearnDb));
 		public ULearnDb()
 			: base("DefaultConnection", throwIfV1Schema: false)
 		{
 			System.Data.Entity.Database.SetInitializer(new MigrateDatabaseToLatestVersion<ULearnDb, Configuration>());
+			if(log.IsDebugEnabled)
+				Database.Log = log.Debug;
 		}
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -50,12 +54,27 @@ namespace Database.DataContexts
 				.HasRequired(d => d.Notification)
 				.WithMany(n => n.Deliveries)
 				.HasForeignKey(d => d.NotificationId)
+				.WillCascadeOnDelete(true);
+			
+			modelBuilder.Entity<UserQuizSubmission>()
+				.HasOptional(s => s.AutomaticChecking)
+				.WithRequired(c => c.Submission)
 				.WillCascadeOnDelete(false);
-
+			
+			modelBuilder.Entity<UserQuizSubmission>()
+				.HasOptional(s => s.ManualChecking)
+				.WithRequired(c => c.Submission)
+				.WillCascadeOnDelete(false);
+			
+			modelBuilder.Entity<UserRole>().HasRequired(r => r.User).WithMany().HasForeignKey(r => r.UserId).WillCascadeOnDelete();
+			
 			CancelCascaseDeleting<ExerciseCodeReview, ApplicationUser, string>(modelBuilder, c => c.Author, c => c.AuthorId);
 
 			CancelCascaseDeleting<UserExerciseSubmission, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
 			CancelCascaseDeleting<ManualExerciseChecking, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
+
+			CancelCascaseDeleting<ExerciseCodeReviewComment, ApplicationUser, string>(modelBuilder, c => c.Author, c => c.AuthorId);
+//			CancelCascaseDeleting<ExerciseCodeReviewComment, ExerciseCodeReview, int>(modelBuilder, c => c.Review, c => c.ReviewId);
 
 			CancelCascaseDeleting<Certificate, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
 			CancelCascaseDeleting<Certificate, ApplicationUser, string>(modelBuilder, c => c.Instructor, c => c.InstructorId);
@@ -74,15 +93,19 @@ namespace Database.DataContexts
 			CancelCascaseDeleting<RevokedAccessToGroupNotification, GroupAccess, int>(modelBuilder, c => c.Access, c => c.AccessId);
 			CancelCascaseDeleting<GroupMemberHasBeenRemovedNotification, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
 			CancelCascaseDeleting<GroupMemberHasBeenRemovedNotification, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
+			CancelCascaseDeleting<GroupMembersHaveBeenRemovedNotification, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
+			CancelCascaseDeleting<GroupMembersHaveBeenAddedNotification, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
 			CancelCascaseDeleting<CreatedGroupNotification, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
 			CancelCascaseDeleting<PassedManualExerciseCheckingNotification, ManualExerciseChecking, int>(modelBuilder, c => c.Checking, c => c.CheckingId);
 			CancelCascaseDeleting<PassedManualQuizCheckingNotification, ManualQuizChecking, int>(modelBuilder, c => c.Checking, c => c.CheckingId);
 			CancelCascaseDeleting<ReceivedAdditionalScoreNotification, AdditionalScore, int?>(modelBuilder, c => c.Score, c => c.ScoreId, isRequired: false);
-
+			
 			CancelCascaseDeleting<NewCommentNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
+			CancelCascaseDeleting<NewCommentFromYourGroupStudentNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
 			CancelCascaseDeleting<LikedYourCommentNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
 			CancelCascaseDeleting<RepliedToYourCommentNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
 			CancelCascaseDeleting<RepliedToYourCommentNotification, Comment, int>(modelBuilder, c => c.ParentComment, c => c.ParentCommentId);
+			CancelCascaseDeleting<NewCommentForInstructorsOnlyNotification, Comment, int>(modelBuilder, c => c.Comment, c => c.CommentId);
 			
 			CancelCascaseDeleting<UploadedPackageNotification, CourseVersion, Guid>(modelBuilder, c => c.CourseVersion, c => c.CourseVersionId);
 			CancelCascaseDeleting<PublishedPackageNotification, CourseVersion, Guid>(modelBuilder, c => c.CourseVersion, c => c.CourseVersionId);
@@ -95,6 +118,9 @@ namespace Database.DataContexts
 
 			CancelCascaseDeleting<NotificationTransport, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId, isRequired: false);
 
+			CancelCascaseDeleting<GroupAccess, ApplicationUser, string>(modelBuilder, c => c.User, c => c.UserId);
+			CancelCascaseDeleting<GroupAccess, ApplicationUser, string>(modelBuilder, c => c.GrantedBy, c => c.GrantedById);
+			
 			CancelCascaseDeleting<LabelOnGroup, Group, int>(modelBuilder, c => c.Group, c => c.GroupId);
 			CancelCascaseDeleting<GroupLabel, ApplicationUser, string>(modelBuilder, c => c.Owner, c => c.OwnerId);
 			CancelCascaseDeleting<LabelOnGroup, GroupLabel, int>(modelBuilder, c => c.Label, c => c.LabelId);
@@ -124,11 +150,11 @@ namespace Database.DataContexts
 			}
 		}
 
-		public override Task<int> SaveChangesAsync()
+		public override async Task<int> SaveChangesAsync()
 		{
 			try
 			{
-				return base.SaveChangesAsync();
+				return await base.SaveChangesAsync().ConfigureAwait(false);
 			}
 			catch (DbEntityValidationException ex)
 			{
@@ -154,7 +180,7 @@ namespace Database.DataContexts
 		public DbSet<Visit> Visits { get; set; }
 		public DbSet<SlideHint> Hints { get; set; }
 		public DbSet<Like> SolutionLikes { get; set; }
-		public DbSet<UserQuiz> UserQuizzes { get; set; }
+		public DbSet<UserQuizAnswer> UserQuizAnswers { get; set; }
 		public DbSet<UnitAppearance> UnitAppearances { get; set; }
 		public DbSet<TextBlob> Texts { get; set; }
 		public DbSet<LtiConsumer> Consumers { get; set; }
@@ -166,15 +192,18 @@ namespace Database.DataContexts
 		public DbSet<CommentLike> CommentLikes { get; set; }
 		public DbSet<CommentsPolicy> CommentsPolicies { get; set; }
 
-		public DbSet<QuizVersion> QuizVersions { get; set; }
 		public DbSet<CourseVersion> CourseVersions { get; set; }
+		public DbSet<CourseFile> CourseFiles { get; set; }
+		public DbSet<CourseGit> CourseGitRepos { get; set; }
 
 		public DbSet<ManualExerciseChecking> ManualExerciseCheckings { get; set; }
 		public DbSet<AutomaticExerciseChecking> AutomaticExerciseCheckings { get; set; }
 		public DbSet<ManualQuizChecking> ManualQuizCheckings { get; set; }
 		public DbSet<AutomaticQuizChecking> AutomaticQuizCheckings { get; set; }
 		public DbSet<UserExerciseSubmission> UserExerciseSubmissions { get; set; }
+		public DbSet<UserQuizSubmission> UserQuizSubmissions { get; set; }
 		public DbSet<ExerciseCodeReview> ExerciseCodeReviews { get; set; }
+		public DbSet<ExerciseCodeReviewComment> ExerciseCodeReviewComments { get; set; }
 
 		public DbSet<Group> Groups { get; set; }
 		public DbSet<GroupMember> GroupMembers { get; set; }
@@ -183,6 +212,7 @@ namespace Database.DataContexts
 		public DbSet<GroupAccess> GroupAccesses { get; set; }
 
 		public DbSet<CertificateTemplate> CertificateTemplates { get; set; }
+		public DbSet<CertificateTemplateArchive> CertificateTemplateArchives { get; set; }
 		public DbSet<Certificate> Certificates { get; set; }
 
 		public DbSet<AdditionalScore> AdditionalScores { get; set; }
@@ -207,6 +237,8 @@ namespace Database.DataContexts
 
 		public DbSet<CourseAccess> CourseAccesses { get; set; }
 		public DbSet<SystemAccess> SystemAccesses { get; set; }
+		
+		public DbSet<StyleErrorSettings> StyleErrorSettings { get; set; }
 	}
 }
  

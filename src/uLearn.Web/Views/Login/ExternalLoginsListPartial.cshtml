@@ -7,15 +7,6 @@
 		x => x.AuthenticationType != "LTI" && (!Model.AvailableProviders.Any() || Model.AvailableProviders.Contains(x.AuthenticationType))
 		).OrderBy(x => x.AuthenticationType).ToList();
 
-	if (Model.Type == ExternalLoginListType.Link)
-	{
-		var userLoginProviders = Model.UserLogins.Select(l => l.LoginProvider).ToList();
-		if (!loginProviders.All(l => userLoginProviders.Contains(l.AuthenticationType)))
-		{
-			<h2>Привязать социальную сеть</h2>
-		}
-	}
-
 	if (!loginProviders.Any())
 	{
 		<div>

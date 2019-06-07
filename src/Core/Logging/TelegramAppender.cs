@@ -1,11 +1,11 @@
 ﻿using log4net.Appender;
 using log4net.Core;
-using Telegram.Bot.Types.Enums;
-using uLearn.Telegram;
 using Telegram.Bot.Exceptions;
+using Telegram.Bot.Types.Enums;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Telegram;
 
-namespace uLearn.Logging
+namespace Ulearn.Core.Logging
 {
 	public class TelegramAppender : AppenderSkeleton
 	{
@@ -17,7 +17,7 @@ namespace uLearn.Logging
 			if (loggingEvent.ExceptionObject is ApiRequestException)
 				return;
 			
-			var message = $"*{loggingEvent.Level}* from `{loggingEvent.LoggerName.EscapeMarkdown()}`:\n```{RenderLoggingEvent(loggingEvent).EscapeMarkdown()}```";
+			var message = $"{loggingEvent.Level} log message from *{loggingEvent.LoggerName.EscapeMarkdown()}*:\n\n```{RenderLoggingEvent(loggingEvent).EscapeMarkdown()}```";
 			
 			errorsBot.PostToChannel(message, ParseMode.Markdown);
 		}

@@ -1,14 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using uLearn.Model.Blocks;
-using uLearn.Model.Edx;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Units;
+using Ulearn.Core.Model.Edx;
 
 namespace uLearn.CourseTool
 {
 	public static class Converter
 	{
-		private static Sequential[] UnitToSequentials(Course course, Config config, List<Unit> units, int unitIndex, string exerciseUrl, string solutionsUrl, Dictionary<string, string> videoGuids)
+		private static Sequential[] UnitToSequentials(Course course, Config config, List<Unit> units, int unitIndex, string ulearnBaseUrl, Dictionary<string, string> videoGuids, DirectoryInfo coursePackageRoot)
 		{
 			var unit = units[unitIndex];
 			var result = new List<Sequential>
@@ -16,7 +19,7 @@ namespace uLearn.CourseTool
 				new Sequential($"{course.Id}-{unitIndex}-{0}", unit.Title,
 					unit.Slides
 						.Where(s => !config.IgnoredUlearnSlides.Select(Guid.Parse).Contains(s.Id))
-						.SelectMany(y => y.ToVerticals(course.Id, exerciseUrl, solutionsUrl, videoGuids, config.LtiId))
+						.SelectMany(y => y.ToVerticals(course.Id, ulearnBaseUrl, videoGuids, config.LtiId, coursePackageRoot))
 						.ToArray())
 			};
 			var note = unit.InstructorNote;
@@ -34,7 +37,7 @@ namespace uLearn.CourseTool
 								displayName,
 								new[]
 								{
-									new MdBlock(unit.InstructorNote.Markdown)
+									new MarkdownBlock(unit.InstructorNote.Markdown)
 										.ToEdxComponent(mdBlockId, displayName, unit.Directory.FullName)
 								})
 						}) { VisibleToStaffOnly = true }
@@ -43,7 +46,7 @@ namespace uLearn.CourseTool
 			return result.ToArray();
 		}
 
-		private static Chapter[] CourseToChapters(Course course, Config config, string exerciseUrl, string solutionsUrl, Dictionary<string, string> videoGuids)
+		private static Chapter[] CourseToChapters(Course course, Config config, string ulearnBaseUrl, Dictionary<string, string> videoGuids, DirectoryInfo coursePackageRoot)
 		{
 			var units = course.Units;
 			return Enumerable
@@ -52,12 +55,12 @@ namespace uLearn.CourseTool
 					$"{course.Id}-{idx}",
 					units[idx].Title,
 					null,
-					UnitToSequentials(course, config, units, idx, exerciseUrl, solutionsUrl, videoGuids)))
+					UnitToSequentials(course, config, units, idx, ulearnBaseUrl, videoGuids, coursePackageRoot)))
 				.ToArray();
 		}
 
-		public static EdxCourse ToEdxCourse(Course course, Config config, string exerciseUrl, string solutionsUrl,
-			Dictionary<string, string> youtubeId2UlearnVideoIds)
+		public static EdxCourse ToEdxCourse(Course course, Config config, string ulearnBaseUrl,
+			Dictionary<string, string> youtubeId2UlearnVideoIds, DirectoryInfo coursePackageRoot)
 		{
 			return new EdxCourse(
 				course.Id,
@@ -65,7 +68,7 @@ namespace uLearn.CourseTool
 				course.Title,
 				new[] { "lti" },
 				null,
-				CourseToChapters(course, config, exerciseUrl, solutionsUrl, youtubeId2UlearnVideoIds));
+				CourseToChapters(course, config, ulearnBaseUrl, youtubeId2UlearnVideoIds, coursePackageRoot));
 		}
 	}
 }

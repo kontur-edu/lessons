@@ -10,6 +10,7 @@ using Graphite;
 using log4net;
 using log4net.Config;
 using Metrics;
+using Ulearn.Core.Configuration;
 
 namespace Notifications
 {
@@ -30,7 +31,7 @@ namespace Notifications
 		{
 			this.courseManager = courseManager;
 			notificationSender = new NotificationSender(courseManager);
-			keepAliver = new ServiceKeepAliver("notifications");
+			keepAliver = new ServiceKeepAliver(ApplicationConfiguration.Read<UlearnConfiguration>().GraphiteServiceName);
 
 			if (!int.TryParse(ConfigurationManager.AppSettings["ulearn.notifications.keepAlive.interval"], out var keepAliveIntervalSeconds))
 				keepAliveIntervalSeconds = 30;
@@ -45,6 +46,15 @@ namespace Notifications
 		static void Main(string[] args)
 		{
 			XmlConfigurator.Configure();
+
+			/* Pass first argument 'send' to send emails to addresses from `emails.txt` with content from `content.txt` (notifications daemon is not started in this case)*/
+			if (args.Length > 0 && args[0] == "send")
+			{
+				var sender = new OneTimeEmailSender();
+				sender.SendEmailsAsync().Wait();
+				return;
+			}
+			
 			new Program().MainLoop().Wait();
 		}
 

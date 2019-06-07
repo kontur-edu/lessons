@@ -1,3 +1,3 @@
-﻿@using uLearn
-@model uLearn.Model.Blocks.MdBlock
-@Html.Raw(Model.RenderMd(ViewBag.CourseId, ((Slide) ViewBag.Slide).Id, ((Slide)ViewBag.Slide).Info.SlideFile))
+﻿@using Ulearn.Core.Courses.Slides
+@model Ulearn.Core.Courses.Slides.Blocks.MarkdownBlock
+@Html.Raw(Model.RenderMarkdown(ViewBag.CourseId, ((Slide) ViewBag.Slide).Id, ((Slide)ViewBag.Slide).Info.SlideFile))

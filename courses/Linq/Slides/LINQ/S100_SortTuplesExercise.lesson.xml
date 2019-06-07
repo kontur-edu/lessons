@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Сортировка кортежей" id="80d43879-1099-4972-aee1-6eb3edf1e923">
+  <scoring passedTestsScore="5"/>
+  <markdown>Еще одно полезное свойство кортежей — они реализуют интерфейс `IComparable`, 
+сравнивающий кортежи по компонентам. 
+То есть `Tuple.Create(1, 2)` будет меньше `Tuple.Create(2, 1)`.
+Этот интерфейс по умолчанию используется в методах сортировки и поиска минимума и максимума.
+
+Используя этот факт, решите следующую задачу.
+
+Дан текст, нужно составить список всех встречающихся в тексте слов, 
+упорядоченный сначала по возрастанию длины слова, а потом лексикографически.
+
+Запрещено использовать `ThenBy` и `ThenByDescending`.</markdown>
+  <exercise.file file="_SortTuplesExercise.cs" type="check-output" language="csharp">
+    <initialCode>public static List&lt;string&gt;  GetSortedWords(string text)
+{
+	// ваше решение
+}</initialCode>
+    <hint>`Regex.Split` — позволяет задать регулярное выражение для разделителей слов и получить список слов.</hint>
+    <hint>`Regex.Split(s, @"\W+")` разбивает текст на слова</hint>
+    <hint>Пустая строка не является корректным словом</hint>
+    <hint>`keySelector` в `OrderBy` должен возвращать ключ сортировки. Этот ключ может быть кортежем.</hint>
+    <expected>
+GetSortedWords("A box of biscuits, a box of mixed biscuits, and a biscuit mixer.")
+'a' 'of' 'and' 'box' 'mixed' 'mixer' 'biscuit' 'biscuits'
+
+GetSortedWords("")
+
+
+GetSortedWords("Each Easter Eddie eats eighty Easter eggs.")
+'each' 'eats' 'eggs' 'eddie' 'easter' 'eighty'
+</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs SingleStatementMethod</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">GetSortedWords</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_SortTuplesExercise.cs</defaultIncludeCodeFile>
+</slide.exercise>

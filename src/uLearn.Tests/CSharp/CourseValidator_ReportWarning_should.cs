@@ -2,24 +2,29 @@
 using System.IO;
 using System.Linq;
 using FluentAssertions;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
-using uLearn.Model;
-using uLearn.Model.Blocks;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Courses.Units;
 
 namespace uLearn.CSharp
 {
 	[TestFixture]
 	public class CourseValidator_ReportWarning_should
 	{
-		private static string tempSlideFolderPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-			"ReportWarningTests_Temp_SlideFolder");
+		private static readonly string tempSlideFolderPath = Path.Combine(
+			TestContext.CurrentContext.TestDirectory,
+			"ReportWarningTests_Temp_SlideFolder"
+		);
 
-		private static DirectoryInfo tempSlideFolder = new DirectoryInfo(tempSlideFolderPath);
+		private static readonly DirectoryInfo tempSlideFolder = new DirectoryInfo(tempSlideFolderPath);
 
-		private static ProjectExerciseBlock exBlock = new ProjectExerciseBlock
+		private static readonly CsProjectExerciseBlock exerciseBlock = new CsProjectExerciseBlock
 		{
 			StartupObject = "test.Program",
 			UserCodeFilePath = TestsHelper.UserCodeFileName,
@@ -37,8 +42,9 @@ namespace uLearn.CSharp
 			if (File.Exists(studentZipFilepath))
 				File.Delete(studentZipFilepath);
 
-			var ctx = new BuildUpContext(new Unit(null, exBlock.SlideFolderPath), CourseSettings.DefaultSettings, null, "Test", string.Empty);
-			exBlock.BuildUp(ctx, ImmutableHashSet<string>.Empty).ToList();
+			var ctx = new SlideBuildingContext("Test", new Unit(null, exerciseBlock.SlideFolderPath), CourseSettings.DefaultSettings, null);
+			// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+			exerciseBlock.BuildUp(ctx, ImmutableHashSet<string>.Empty).ToList();
 		}
 
 		[SetUp]
@@ -50,40 +56,48 @@ namespace uLearn.CSharp
 		[Test]
 		public void ReportWarning_If_ExerciseFolder_DoesntContain_SolutionFile()
 		{
-			FileSystem.DeleteFile(exBlock.CorrectSolutionFile.FullName);
+			FileSystem.DeleteFile(exerciseBlock.CorrectSolutionFile.FullName);
 
-			var validatorOut = TestsHelper.ValidateBlock(exBlock);
+			var validatorOut = TestsHelper.ValidateBlock(exerciseBlock);
 
 			validatorOut
-				.Should().Contain($"Exercise directory doesn't contain {exBlock.CorrectSolutionFileName}");
+				.Should().Contain($"Exercise directory doesn't contain {exerciseBlock.CorrectSolutionFileName}");
 		}
 
 		[Test]
 		public void ReportWarning_If_WrongAnswers_Have_Errors()
 		{
-			var validatorOut = TestsHelper.ValidateBlock(exBlock);
+			var validatorOut = TestsHelper.ValidateBlock(exerciseBlock);
 
 			validatorOut
 				.Should()
 				.Contain(
-					$"Code verdict of file with wrong answer ({exBlock.UserCodeFileNameWithoutExt}.WrongAnswer.Type.cs) is not OK.")
+					$"Code verdict of file with wrong answer ({exerciseBlock.UserCodeFileNameWithoutExt}.WrongAnswer.Type.cs) is not OK.")
 				.And
 				.Contain("Verdict: CompilationError");
 			validatorOut
 				.Should().Contain(
-					$"Code of file with wrong answer ({exBlock.UserCodeFileNameWithoutExt}.WrongAnswer.21.plus.21.cs) is solution!");
+					$"Code of file with wrong answer ({exerciseBlock.UserCodeFileNameWithoutExt}.WrongAnswer.21.plus.21.cs) is solution!");
 			validatorOut
-				.Should().NotContain($"{exBlock.UserCodeFileNameWithoutExt}.WrongAnswer.27.cs");
+				.Should().NotContain($"{exerciseBlock.UserCodeFileNameWithoutExt}.WrongAnswer.27.cs");
 		}
 
 		[Test]
 		public void Not_Report_Indentation_Warning_On_Ethalon_Solution_Of_SingleFileExercise()
 		{
-			var singleBlock =
-				new ExerciseBuilder("cs", "using System; using System.Linq; using System.Text;").BuildBlockFrom(
-					CSharpSyntaxTree.ParseText(TestsHelper.ProjSlideFolder.GetFile("S055 - Упражнение на параметры по умолчанию.cs")
-						.ContentAsUtf8()), null);
-			var validatorOut = TestsHelper.ValidateBlock(singleBlock);
+			var exerciseXmlFile = TestsHelper.ProjSlideFolder.GetFile("S055 - Упражнение на параметры по умолчанию.lesson.xml");
+
+			var courseSettings = new CourseSettings(CourseSettings.DefaultSettings)
+			{
+				Preludes = new[] { new PreludeFile(Language.CSharp, TestsHelper.ProjSlideFolder.GetFile("Prelude.cs").FullName) }
+			};
+
+			var unit = new Unit(UnitSettings.CreateByTitle("Unit title", courseSettings), TestsHelper.ProjSlideFolder);
+			var slideLoadingContext = new SlideLoadingContext("Test", unit, courseSettings, exerciseXmlFile, 1);
+			var exerciseSlide = (ExerciseSlide) new XmlSlideLoader().Load(slideLoadingContext);
+			
+			var validatorOut = TestsHelper.ValidateExerciseSlide(exerciseSlide);
+			
 			validatorOut.Should().BeNullOrEmpty();
 		}
 	}

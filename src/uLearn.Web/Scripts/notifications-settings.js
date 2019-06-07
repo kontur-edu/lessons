@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function () {
 	var $modal = $('#notifications__transport-settings__modal');
 	var $panel = $modal.find('.notifications__transport-settings__panel');
 	var saveUrl = $modal.data('saveUrl');

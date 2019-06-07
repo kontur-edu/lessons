@@ -3,18 +3,19 @@
 <div class="btn-group-justified ctrl-group full-width" id="nav_arrows"
 	data-hasnext="@(Model.HasNextSlide ? "true" : "")"
 	data-hasprev="@(Model.HasPrevSlide ? "true" : "")"
-	data-isaccepted="@(Model.NextIsAcceptedSolutions ? "true" : "")">
+	data-isaccepted="@(Model.NextIsAcceptedSolutions ? "true" : "")"
+	data-hide="@(Model.HideShowSolutionsButton ? "true" : "")">
 	<a class="btn btn-default no-rounds ctrl-group"
 		id="prev_slide_button"
 		href="@Url.RouteUrl("Course.SlideById", new { courseId = Model.CourseId, slideId = Model.PrevSlide != null ? Model.PrevSlide.Url : "" })">
 		← Назад
 	</a>
-	<a class="btn btn-default no-rounds ctrl-group next_button"
+	<a class="btn btn-success no-rounds ctrl-group next_button"
 		id="next_solutions_button"
 		href="@Url.Action("AcceptedSolutions", "Course", new { courseId = Model.CourseId, slideId = Model.SlideId })">
 		Решения других участников →
 	</a>
-	<a class="btn btn-default no-rounds ctrl-group next_button"
+	<a class="btn btn-success no-rounds ctrl-group next_button"
 		id="next_slide_button"
 		href="@Url.RouteUrl("Course.SlideById", new { courseId = Model.CourseId, slideId = Model.NextSlide != null ? Model.NextSlide.Url : "", autoplay = 1 })">
 		Следующий слайд →

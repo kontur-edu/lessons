@@ -1,9 +1,9 @@
 using System;
 using MarkdownDeep;
 
-namespace uLearn
+namespace Ulearn.Core
 {
-	public class Markdown2 : Markdown
+	public class Markdown2 : MarkdownDeep.Markdown
 	{
 		private readonly string baseUrl;
 		private readonly bool checkUrl;
@@ -21,8 +21,8 @@ namespace uLearn
 		{
 			if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
 			{
-				if (RelativeUrl != null)
-					RelativeUrl.Invoke(url);
+				RelativeUrl?.Invoke(url);
+				
 				if (!checkUrl)
 					url = url.Replace("/", "_");
 			}

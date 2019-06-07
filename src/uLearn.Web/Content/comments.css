@@ -1,0 +1,412 @@
+.legacy-page .comments .comment {
+	margin-top: 15px;
+}
+
+.legacy-page .comments:not(.comments__feed) .comment.is-reply,
+.legacy-page .comments:not(.comments__feed) .reply-form.is-reply {
+	margin-left: 68px;
+}
+
+.legacy-page .comments .comment .comment__author-avatar {
+	margin-right: 2px;
+}
+
+.legacy-page .comments .comment .comment__header {
+	margin: 0;
+}
+
+.legacy-page .comments .comment .comment__header,
+.legacy-page .comments .comment .comment__footer {
+	font-size: 9pt;
+}
+
+.legacy-page .comments .comment .comment__header .glyphicon,
+.legacy-page .comments .comment .comment__footer .glyphicon:not(.glyphicon-heart){
+	font-size: 80%;
+	margin-right: 3px;
+}
+
+.legacy-page .comments .comment .comment__footer .glyphicon {
+	position: relative;
+	top: 1px;
+}
+
+.legacy-page .comments .comment .comment__header > div,
+.legacy-page .comments .comment .comment__footer > div {
+	display: inline-block;
+}
+
+.legacy-page .comments .comment .comment__header .comment__not-approved {
+	display: inline;
+}
+
+.legacy-page .comments .comment .label {
+	font-size: 7pt;
+	vertical-align: middle;
+	margin-left: 5px;
+}
+
+.legacy-page .comments .comment .label * {
+	color: white;
+}
+
+.legacy-page .comments .comment .label-as-badge {
+	padding: 1px 4px 2px;
+	border-width: 1px;
+	border-style: solid;
+}
+
+.legacy-page .comments .comment .comment__delete-link * {
+	color: #933;
+}
+
+.legacy-page .comments .comment .comment__header .show-on-comment-hover,
+.legacy-page .comments .comment .comment__footer .show-on-comment-hover,
+.legacy-page .comments .comment .comment__header .show-on-comment-hover__if-not-pinned,
+.legacy-page .comments .comment .comment__footer .show-on-comment-hover__if-not-pinned {
+	display: none;
+}
+
+.legacy-page .comments .comment:hover .comment__header .show-on-comment-hover,
+.legacy-page .comments .comment:hover .comment__footer .show-on-comment-hover,
+.legacy-page .comments .comment:not(.is-pinned):hover .comment__header .show-on-comment-hover__if-not-pinned,
+.legacy-page .comments .comment:not(.is-pinned):hover .comment__footer .show-on-comment-hover__if-not-pinned {
+	display: initial;
+}
+
+
+.legacy-page .comments .comment .comment__author-name {
+	font-size: 10pt;
+	font-weight: bold;
+}
+
+.legacy-page .comments .comment .comment__author-name sup {
+	font-weight: normal;
+}
+
+.legacy-page .comments .comment .comment__footer > :not(:first-child) {
+	padding-left: 10px;
+}
+
+.legacy-page .comments .comment .comment__publish-time,
+.legacy-page .comments .comment .comment__publish-time a {
+	color: #bbb;
+}
+
+.legacy-page .comments .comment .comment__likes-count {
+	cursor: pointer;
+}
+
+.legacy-page .comments .comment .comment__likes-count:hover {
+	color: #900;
+}
+
+.legacy-page .comments .comment .comment__likes-count .glyphicon {
+	color: #888;
+	font-size: 10pt;
+}
+
+.legacy-page .comments .comment .comment__likes-count.is-liked .glyphicon,
+.legacy-page .comments .comment .comment__likes-count.is-liked .comment__likes-count__counter {
+	color: #c00;
+}
+
+.legacy-page .comments .comment .comment__likes-count:not(.is-liked):hover .glyphicon {
+	color: #700;
+}
+
+.legacy-page .comments .comment__text b {
+	font-weight: 600;
+}
+
+.legacy-page .comments .comment__text pre:not(.inline) {
+	margin: 10px 0;
+}
+
+.legacy-page .comments .comment__text {
+	max-width: 790px;
+}
+
+@media (max-width: 992px) {
+	.legacy-page .comments .comment__text {
+		max-width: 530px;
+	}
+}
+
+@media (max-width: 630px) {
+	.legacy-page .comments .comment__text {
+		max-width: 270px;
+	}
+}
+
+.legacy-page .comments .reply-form [name=commentText] {
+	height: 24px;
+	margin-left: 7px;
+	padding: 1px 5px;
+	outline: none;
+	max-width: none;
+	width: 100%;
+	resize: none;
+}
+
+.legacy-page .comments .reply-form textarea[name=commentText] {
+	height: 60px;
+	padding-left: 6px;
+	padding-top: 1px;
+}
+
+.legacy-page .comments .reply-form .media-body {
+	padding-right: 7px;
+}
+
+.legacy-page .comments .reply-form .reply-form__send-button {
+	margin-left: 7px;
+	margin-top: 7px;
+	display: inline-block;
+}
+
+.legacy-page .comments .reply-form .comments__rules + .reply-form__send-button {
+	margin-top: 0;
+}
+
+.legacy-page .comments .reply-form .comment__error-message {
+	display: inline-block;
+	margin-top: 7px;
+	vertical-align: middle;
+	margin-left: 15px;
+	color: #B15252;
+}
+
+.legacy-page .comments .comment:not(.is-reply):not(:nth-child(2)),
+.legacy-page .comments.comments__feed .comment:not(:nth-child(2)) {
+	padding-top: 7px;
+}
+
+.legacy-page .comments .comment .comment__new-text {
+	display: block;
+	width: 100%;
+	max-width: none;
+	padding-top: 1px;
+	padding-left: 6px;
+	margin: 5px 0 10px;
+}
+
+.legacy-page .comments .comment.is-pinned .comment__footer .comment__pin-link,
+.legacy-page .comments .comment:not(.is-pinned) .comment__footer .comment__unpin-link,
+.legacy-page .comments .comment.not-approved .comment__footer .comment__hide-link,
+.legacy-page .comments .comment.not-approved .comment__header .comment__pinned,
+.legacy-page .comments .comment.not-approved .comment__header .comment__correct-answer,
+.legacy-page .comments .comment:not(.not-approved) .comment__header .comment__not-approved {
+	display: none;
+}
+
+.legacy-page .comments .comment .comment__header .comment__correct-answer
+.legacy-page .comments .comment.not-approved .comment__footer .comment__pin-link {
+	display: none;
+}
+
+.legacy-page .comments .comment.is-pinned .comment__header .comment__pinned,
+.legacy-page .comments .comment.is-correct-answer .comment__header .comment__correct-answer {
+	display: initial;
+}
+
+.legacy-page .label-switcher {
+	cursor: pointer;
+}
+
+
+.legacy-page .comments .comment:not(.is-correct-answer) .label-switcher.comment__correct-answer {
+	border: 1px solid #428bca;
+	border: 1px solid rgba(66, 139, 202, 0.52);
+	color: #428bca;
+	color: rgba(66, 139, 202, 0.58);
+	background-color: white;
+}
+
+.legacy-page .comments .comment:not(.is-correct-answer) .label-switcher.comment__correct-answer .glyphicon-remove {
+	display: none;
+}
+
+
+.legacy-page .comments .comment:not(.is-pinned) .label-switcher.comment__pinned {
+	border: 1px solid #5cb85c;
+	border: 1px solid rgba(92,184,92,0.58);
+	color: #5cb85c;
+	color: rgba(92,184,92,0.58);
+	background-color: white;
+}
+
+.legacy-page .comments .comment:not(.is-pinned) .label-switcher.comment__pinned * {
+	color: inherit;
+}
+
+.legacy-page .comments .comment .comment__footer .comment__hide-link a {
+	color: #bbb;
+}
+
+.legacy-page .comments .comment .comment__header *:hover > .hide-on-parent-hover,
+.legacy-page .comments .comment .comment__footer *:hover > .hide-on-parent-hover {
+	display: none;
+}
+
+.legacy-page .comments .comment .comment__header *:not(:hover) > .show-on-parent-hover,
+.legacy-page .comments .comment .comment__footer *:not(:hover) > .show-on-parent-hover {
+	display: none;
+}
+
+.legacy-page .comments .comment .comment__header .show-on-parent-hover__if-pinned,
+.legacy-page .comments .comment .comment__footer .show-on-parent-hover__if-pinned {
+	display: none;
+}
+
+.legacy-page .comments .comment.is-pinned .comment__header *:hover > .show-on-parent-hover__if-pinned ,
+.legacy-page .comments .comment.is-pinned .comment__footer *:hover > .show-on-parent-hover__if-pinned {
+	display: initial;
+}
+
+.legacy-page .comments .comment:not(.is-pinned) .comment__header .show__if_pinned {
+	display: none;
+}
+
+
+.legacy-page .comments_policy__message {
+	margin-top: 15px;
+}
+
+.legacy-page .comments_policy__message.gray {
+	color: #888;
+}
+
+.legacy-page .comments__rules {
+	display: none;
+}
+
+.legacy-page .comments__rules .comments__rules__good-tone {
+	margin-top: 10px;
+}
+
+.legacy-page .comments .comments__rules {
+	display: block;
+	margin-right: -7px;
+	margin-bottom: 10px;
+	margin-top: 5px;
+}
+
+.legacy-page .comments .reply-form .comments__rules {
+	margin-left: 7px;
+}
+
+.legacy-page .comments .comments__rules ul {
+	padding-left: 25px;
+}
+
+.legacy-page .comments__rules pre,
+.legacy-page .comments__rules .inline-pre {
+	background-color: #fcfcf3;
+}
+
+/* Instructors-only comments */
+.legacy-page .comments-for-instructors-only {
+	background-color: #e7f1ff;
+	padding: 20px;
+	color: #000 !important;
+	margin: 5px -20px 20px;
+}
+
+.legacy-page .comments-for-instructors-only .cm-s-pastel-on-dark.CodeMirror,
+.legacy-page .comments-for-instructors-only .cm-s-xq-dark.CodeMirror {
+	background-color: #e7f1ff;
+}
+
+.legacy-page .comments-for-instructors-only__description {
+	font-style: italic;
+	margin-bottom: 15px;
+}
+
+.legacy-page .notifications__notification .comments-for-instructors-only__description {
+	font-style: normal;
+}
+
+.legacy-page .comments-for-instructors-only code,
+.legacy-page .comments-for-instructors-only pre,
+.legacy-page .comments-for-instructors-only .inline-pre {
+	background-color: #e0edff;
+}
+
+.legacy-page .comments-for-instructors-only h2 {
+	margin-bottom: 20px;
+}
+
+.legacy-page .comments-for-instructors-only h3 {
+	margin-bottom: 20px;
+	line-height: 20px;
+}
+
+.legacy-page .comments-for-instructors-only p:last-child {
+	margin: 0;
+}
+
+.legacy-page .comments-for-instructors-only [name=commentText] {
+	background-color: #e7f1ff;
+	border: 1px solid #8dacda;
+}
+
+.legacy-page .comments-for-instructors-only [name=commentText]::placeholder {
+	color: #98b9e3;
+}
+
+.legacy-page .comments-for-instructors-only .btn-primary {
+	background-color: #e7f1ff;
+	color: #235db1;
+	border-color: #8dacda;
+}
+
+.legacy-page .comments-for-instructors-only .btn-primary[disabled] {
+	color: #235db1;
+	border: 1px solid #8dacda;
+}
+
+.legacy-page .comments-for-instructors-only .btn-primary[disabled]:hover,
+.legacy-page .comments-for-instructors-only .btn-primary[disabled]:focus,
+.legacy-page .comments-for-instructors-only .btn-primary[disabled]:active{
+	background-color: #e7f1ff;
+	border: 1px solid #8dacda;
+	color: #235db1;
+}
+
+.legacy-page .comments-for-instructors-only .btn-primary:hover,
+.legacy-page .comments-for-instructors-only .btn-primary:focus,
+.legacy-page .comments-for-instructors-only .btn-primary:active {
+	background-color: #4279ca;
+	color: white;
+}
+
+
+.legacy-page .comments-for-instructors-only .btn-link,
+.legacy-page .comments-for-instructors-only a,
+.legacy-page .comments-for-instructors-only a:hover,
+.legacy-page .comments-for-instructors-only a:focus,
+.legacy-page .comments-for-instructors-only a:active {
+	/*color: #7d7d7d;*/
+}
+
+.legacy-page .comments-for-instructors-only .comment .comment__delete-link * {
+	color: #ff9393;
+}
+
+.legacy-page .comments-for-instructors-only .comment .comment__likes-count:not(.is-liked):hover .glyphicon,
+.legacy-page .comments-for-instructors-only .comment .comment__likes-count.is-liked .glyphicon,
+.legacy-page .comments-for-instructors-only .comment .comment__likes-count.is-liked .comment__likes-count__counter {
+	color: #f14747;
+}
+
+.legacy-page .comments-for-instructors-only .comment:not(.is-pinned) .label-switcher.comment__pinned {
+	background-color: #e7f1ff;
+}
+
+.legacy-page .comments-for-instructors-only .comment .comment__likes-count .glyphicon,
+.legacy-page .comments-for-instructors-only .comment .comment__publish-time,
+.legacy-page .comments-for-instructors-only .comment .comment__publish-time a,
+.legacy-page .comments-for-instructors-only .comment .comment__footer .comment__hide-link a {
+	color: #7d7d7d;
+}

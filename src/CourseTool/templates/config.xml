@@ -23,7 +23,7 @@
 			<UlearnUrl>https://ulearn.me</UlearnUrl>
 		</Profile>
 		<Profile name="dev">
-			<UlearnUrl>https://localhost:44300</UlearnUrl>
+			<UlearnUrl>http://localhost:3000</UlearnUrl>
 		</Profile>
 	</Profiles>
 </Config>

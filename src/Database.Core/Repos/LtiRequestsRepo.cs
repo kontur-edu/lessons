@@ -10,7 +10,8 @@ using Ulearn.Common.Extensions;
 
 namespace Database.Repos
 {
-	public class LtiRequestsRepo
+	/* TODO (andgein): This repo is not fully migrated to .NET Core and EF Core */
+	public class LtiRequestsRepo : ILtiRequestsRepo
 	{
 		private readonly UlearnDb db;
 		private readonly JsonSerializer serializer;
@@ -20,22 +21,23 @@ namespace Database.Repos
 			this.db = db;
 			serializer = new JsonSerializer();
 		}
-
-		public async Task Update(string userId, Guid slideId, string ltiRequestJson)
+		
+		public Task Update(string courseId, string userId, Guid slideId, string ltiRequestJson)
 		{
-			await FuncUtils.TrySeveralTimesAsync(() => TryUpdate(userId, slideId, ltiRequestJson), 3);
+			return FuncUtils.TrySeveralTimesAsync(() => TryUpdate(courseId, slideId, userId, ltiRequestJson), 3);
 		}
 
-		private async Task TryUpdate(string userId, Guid slideId, string ltiRequestJson)
+		private Task TryUpdate(string courseId, Guid slideId, string userId, string ltiRequestJson)
 		{
-			var ltiRequestModel = FindElement(userId, slideId);
+			var ltiRequestModel = FindElement(courseId, slideId, userId);
 
 			if (ltiRequestModel == null)
 			{
 				ltiRequestModel = new LtiSlideRequest
 				{
-					UserId = userId,
+					CourseId = courseId,
 					SlideId = slideId,
+					UserId = userId,
 					Request = ltiRequestJson
 				};
 			}
@@ -43,21 +45,23 @@ namespace Database.Repos
 				ltiRequestModel.Request = ltiRequestJson;
 
 			db.AddOrUpdate(ltiRequestModel, r => r.RequestId == ltiRequestModel.RequestId);
-			await db.SaveChangesAsync();
+			return db.SaveChangesAsync();
 		}
 
-		public LtiRequest Find(string userId, Guid slideId)
+		public LtiRequest Find(string courseId, string userId, Guid slideId)
 		{
-			var ltiRequestModel = FindElement(userId, slideId);
+			var ltiRequestModel = FindElement(courseId, slideId, userId);
 			if (ltiRequestModel == null)
 				return null;
 
 			return serializer.Deserialize<LtiRequest>(new JsonTextReader(new StringReader(ltiRequestModel.Request)));
 		}
 
-		private LtiSlideRequest FindElement(string userId, Guid slideId)
+		private LtiSlideRequest FindElement(string courseId, Guid slideId, string userId)
 		{
-			return db.LtiRequests.FirstOrDefault(request => request.UserId == userId && request.SlideId == slideId);
+			return db.LtiRequests.FirstOrDefault(
+				request => request.CourseId == courseId && request.UserId == userId && request.SlideId == slideId
+			);
 		}
 	}
 }

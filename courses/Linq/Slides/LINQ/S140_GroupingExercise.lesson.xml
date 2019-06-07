@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Создание частотного словаря" id="0535734d-d258-44c6-99f3-f96258bcca6f">
+  <scoring passedTestsScore="5"/>
+  <markdown>
+Дан текст, нужно вывести `count` наиболее часто встречающихся в тексте слов вместе с их частотой.
+Среди слов, встречающихся одинаково часто, отдавать предпочтение лексикографически меньшим словам.
+Слова сравнивать регистронезависимо и выводить в нижнем регистре.
+
+Напомним сигнатуры некоторых `LINQ`-методов, которые могут понадобиться в этом упражнении:
+
+    IEnumerable&lt;IGrouping&lt;K, T&gt;&gt;    GroupBy(this IEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
+    IOrderedEnumerable&lt;T&gt;           OrderBy(this IEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
+    IOrderedEnumerable&lt;T&gt; OrderByDescending(this IEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
+    IOrderedEnumerable&lt;T&gt;            ThenBy(this IOrderedEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
+    IOrderedEnumerable&lt;T&gt;  ThenByDescending(this IOrderedEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
+    IEnumerable&lt;T&gt;                     Take(this IEnumerable&lt;T&gt; items, int count)</markdown>
+  <exercise.file file="_GroupingExercise.cs" type="check-output" language="csharp">
+    <initialCode>public static Tuple&lt;string, int&gt;[] GetMostFrequentWords(string text, int count)
+{
+	return Regex.Split(text, @"\W+")
+		.Where(word =&gt; word != "")
+		// ваш код
+		.ToArray();
+}</initialCode>
+    <expected>
+GetMostFrequentWords("A box of biscuits, a box of mixed biscuits, and a biscuit mixer.", 2)
+  a 3
+  biscuits 2
+
+GetMostFrequentWords("", 100)
+
+
+GetMostFrequentWords("Each Easter Eddie eats eighty Easter eggs.", 3)
+  easter 2
+  each 1
+  eats 1</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs SingleStatementMethod</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">GetMostFrequentWords</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_GroupingExercise.cs</defaultIncludeCodeFile>
+</slide.exercise>

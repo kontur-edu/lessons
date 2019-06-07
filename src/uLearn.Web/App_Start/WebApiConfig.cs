@@ -3,6 +3,7 @@ using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 using Elmah.Contrib.WebApi;
 using Microsoft.Owin.Security.OAuth;
+using Ulearn.Core;
 
 namespace uLearn.Web
 {

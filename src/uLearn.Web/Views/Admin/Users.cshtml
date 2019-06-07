@@ -1,5 +1,6 @@
 ﻿@using Database.Models
 @using Ulearn.Common.Extensions
+@using FormMethod = System.Web.Mvc.FormMethod
 @model Database.UserSearchQueryModel
 
 @{
@@ -10,16 +11,16 @@
 	<h1>Пользователи</h1>
 
 	<p>
-		<a class="label label-warning" href="@Url.Action("Users", new { Model.CourseId, courseRole = CourseRole.CourseAdmin })">@CourseRole.CourseAdmin.GetDisplayName()</a> может видеть служебную информацию и управлять ролями других пользователей в рамках курса.
+		<a class="label label-warning" href="@Url.Action("Users", new { courseId = Model.CourseId, courseRole = CourseRole.CourseAdmin })">@CourseRole.CourseAdmin.GetDisplayName()</a> может видеть служебную информацию и управлять ролями других пользователей в рамках курса.
 	</p>
 	<p>
-		<a class="label label-info" href="@Url.Action("Users", new { Model.CourseId, courseRole = CourseRole.Instructor })">@CourseRole.Instructor.GetDisplayName()</a> может видеть статистику по успеваемости, проверять работы, отвечать на комментарии.
+		<a class="label label-info" href="@Url.Action("Users", new { courseId = Model.CourseId, courseRole = CourseRole.Instructor })">@CourseRole.Instructor.GetDisplayName()</a> может видеть статистику по успеваемости, проверять работы, отвечать на комментарии.
 	</p>
 	<p>
-		<a class="label label-success" href="@Url.Action("Users", new { Model.CourseId, courseRole = CourseRole.Tester })">@CourseRole.Tester.GetDisplayName()</a> может видеть ещё не опубликованные материалы.
+		<a class="label label-success" href="@Url.Action("Users", new { courseId = Model.CourseId, courseRole = CourseRole.Tester })">@CourseRole.Tester.GetDisplayName()</a> может видеть ещё не опубликованные материалы.
 	</p>
 	<p>
-		<a class="label label-default" href="@Url.Action("Users", new { Model.CourseId })">Обычный пользователь</a> может видеть только опубликованные материалы.
+		<a class="label label-default" href="@Url.Action("Users", new { courseId = Model.CourseId })">Обычный пользователь</a> может видеть только опубликованные материалы.
 	</p>
 
 	<p>
@@ -29,7 +30,7 @@
 			<div class="input-group">
 				<input class="form-control" type="text" name="namePrefix" value="@Model.NamePrefix"/>
 				<span class="input-group-btn">
-					<button class="btn btn-primary button" type="submit">Фильтровать по имени</button>
+					<button class="btn btn-primary button" type="submit">Искать по имени</button>
 				</span>
 			</div>
 		}

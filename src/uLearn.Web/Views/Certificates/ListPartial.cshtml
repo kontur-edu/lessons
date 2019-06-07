@@ -1,0 +1,27 @@
+﻿@using uLearn.Web.Extensions
+@using Ulearn.Common.Extensions
+
+@model uLearn.Web.Controllers.UserCertificatesViewModel
+
+@if (Model.Certificates.Any())
+{
+	<h2>Сертификаты</h2>
+	<hr class="without-top-margin"/>
+}
+
+@{ var certificateIndex = 1; }
+@foreach (var certificate in Model.Certificates)
+{
+    <h4>
+        @certificateIndex. @Html.RouteLink(
+                               "Сертификат за курс «" + Model.CoursesTitles.GetOrDefault(certificate.Template.CourseId.ToLower(), "") + "»",
+                               "Certificate",
+                               new { certificateId = certificate.Id }
+                               )
+    </h4>
+    <div>
+        Сертификат выдан
+        <span class="text-muted" title="@certificate.Timestamp.ToPrettyString()">@certificate.Timestamp.ToLongDateString()</span>
+    </div>
+    certificateIndex++;
+}

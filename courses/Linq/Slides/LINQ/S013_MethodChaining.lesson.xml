@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="Method chaining" id="b7eda13d-77e5-40b6-b5a9-66775e900ea6">
+  <markdown>Несколько последовательных действий с перечисляемым можно объединять в одну цепочку вызовов.
+Такой прием называется [Method Chaining](http://en.wikipedia.org/wiki/Method_chaining).
+Однако для улучшения читаемости вашего кода настоятельно рекомендуется каждый вызов метода помещать в отдельную строку, вот так:</markdown>
+  <includeCode>
+    <display onlyBody="true">MethodChainingSample</display>
+  </includeCode>
+  <markdown>Method chaining делает код компактнее, но скрывает информацию о типах и семантике промежуточных значений. 
+Иногда всё же стоит оставлять вспомогательные переменные, чтобы сделать код более читаемым.
+
+В коде ниже имя переменной `girls` помогает понять неочевидную задумку автора, который (наивно) считает, 
+что все женские имена заканчиваются на 'a':</markdown>
+  <includeCode>
+    <display onlyBody="true">MoreReadable</display>
+  </includeCode>
+  <defaultIncludeCodeFile>_MethodChaining.cs</defaultIncludeCodeFile>
+</slide>

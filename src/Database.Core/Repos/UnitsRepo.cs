@@ -5,10 +5,13 @@ using System.Security.Principal;
 using Database.Extensions;
 using Database.Models;
 using uLearn;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Units;
 
 namespace Database.Repos
 {
-	public class UnitsRepo
+	/* TODO (andgein): This repo is not fully migrated to .NET Core and EF Core */
+	public class UnitsRepo : IUnitsRepo
 	{
 		private readonly UlearnDb db;
 
@@ -19,7 +22,7 @@ namespace Database.Repos
 
 		public List<Unit> GetVisibleUnits(Course course, IPrincipal user)
 		{
-			var canSeeEverything = user.HasAccessFor(course.Id, CourseRole.Tester);
+			var canSeeEverything = user.HasAccessFor(course.Id, CourseRoleType.Tester);
 			if (canSeeEverything)
 				return course.Units;
 

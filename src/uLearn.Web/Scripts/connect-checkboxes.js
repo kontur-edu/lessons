@@ -1,4 +1,6 @@
-﻿$(document).ready(function() {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function() {
 	$('input[type="checkbox"][data-connect-checkbox]').change(function() {
 		var $self = $(this);
 		var $input = $('input[name="' + $self.data('connectCheckbox') + '"]');

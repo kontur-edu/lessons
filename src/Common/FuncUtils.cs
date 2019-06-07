@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using log4net;
@@ -8,7 +9,7 @@ using NUnit.Framework;
 
 namespace Ulearn.Common
 {
-	public class FuncUtils
+	public static class FuncUtils
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(FuncUtils));
 
@@ -21,7 +22,7 @@ namespace Ulearn.Common
 				}
 				catch (Exception e) when (exceptionType.IsInstanceOfType(e))
 				{
-					log.Error("Исключение:", e);
+					log.Error($"Исключение (попытка {tryIndex + 1} из {triesCount}):", e);
 					if (tryIndex >= triesCount - 1)
 						throw;
 					log.Warn($"Попробую ещё раз (попытка {tryIndex + 2} из {triesCount})");
@@ -35,33 +36,33 @@ namespace Ulearn.Common
 			throw new Exception($"Can\'t run function {func} for {triesCount} times");
 		}
 
-		public static async Task<T> TrySeveralTimesAsync<T>(Func<Task<T>> func, int triesCount, Func<Task> runAfterFail)
+		public static Task<T> TrySeveralTimesAsync<T>(Func<Task<T>> func, int triesCount, Func<Task> runAfterFail)
 		{
-			return await TrySeveralTimesAsync(func, triesCount, runAfterFail, typeof(Exception));
+			return TrySeveralTimesAsync(func, triesCount, runAfterFail, typeof(Exception));
 		}
 
-		public static async Task<T> TrySeveralTimesAsync<T>(Func<Task<T>> func, int triesCount, Type exceptionType)
+		public static Task<T> TrySeveralTimesAsync<T>(Func<Task<T>> func, int triesCount, Type exceptionType)
 		{
-			return await TrySeveralTimesAsync(func, triesCount, () => Task.Delay(100), exceptionType);
+			return TrySeveralTimesAsync(func, triesCount, () => Task.Delay(100), exceptionType);
 		}
 
-		public static async Task<T> TrySeveralTimesAsync<T>(Func<Task<T>> func, int triesCount)
+		public static Task<T> TrySeveralTimesAsync<T>(Func<Task<T>> func, int triesCount)
 		{
-			return await TrySeveralTimesAsync(func, triesCount, () => Task.Delay(100));
+			return TrySeveralTimesAsync(func, triesCount, () => Task.Delay(100));
 		}
 
-		public static async Task TrySeveralTimesAsync(Func<Task> func, int triesCount)
+		public static Task TrySeveralTimesAsync(Func<Task> func, int triesCount)
 		{
-			await TrySeveralTimesAsync(async () =>
+			return TrySeveralTimesAsync(async () =>
 			{
-				await func();
+				await func().ConfigureAwait(false);
 				return 0;
 			}, triesCount, () => Task.Delay(100));
 		}
 
 		public static T TrySeveralTimes<T>(Func<T> func, int triesCount, Action runAfterFail, Type exceptionType)
 		{
-			return TrySeveralTimesAsync(() => Task.Run(func), triesCount, () => Task.Run(runAfterFail), exceptionType).Result;
+			return TrySeveralTimesAsync(() => Task.Run(func), triesCount, () => Task.Run(runAfterFail), exceptionType).GetAwaiter().GetResult();
 		}
 
 		public static T TrySeveralTimes<T>(Func<T> func, int triesCount, Action runAfterFail)
@@ -86,6 +87,49 @@ namespace Ulearn.Common
 				func();
 				return 0;
 			}, triesCount, () => { });
+		}
+
+		public static void Using<TDisposable>(TDisposable disposable, Action<TDisposable> body, Action<TDisposable> additionalDisposeAction = null)
+			where TDisposable : IDisposable
+		{
+			try
+			{
+				body(disposable);
+			}
+			finally
+			{
+				additionalDisposeAction?.Invoke(disposable);
+				disposable.Dispose();
+			}
+		}
+		
+		public static TOut Using<TDisposable, TOut>(TDisposable disposable, Func<TDisposable, TOut> body, Action<TDisposable> additionalDisposeAction = null)
+			where TDisposable : IDisposable
+		{
+			try
+			{
+				return body(disposable);
+			}
+			finally
+			{
+				additionalDisposeAction?.Invoke(disposable);
+				disposable.Dispose();
+			}
+		}
+		
+		public static IEnumerable<TOut> Using<TDisposable, TOut>(TDisposable disposable, Func<TDisposable, IEnumerable<TOut>> body, Action<TDisposable> additionalDisposeAction = null)
+			where TDisposable : IDisposable
+		{
+			try
+			{
+				foreach (var result in body(disposable))
+				yield return result;
+			}
+			finally
+			{
+				additionalDisposeAction?.Invoke(disposable);
+				disposable.Dispose();
+			}
 		}
 	}
 

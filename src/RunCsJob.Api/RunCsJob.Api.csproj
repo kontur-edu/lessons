@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>RunCsJob.Api</RootNamespace>
+    <TargetFrameworks>net47;netcoreapp2.2</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NETStandard.Library" Version="2.0.1" />
   </ItemGroup>
 </Project>

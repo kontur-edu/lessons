@@ -15,15 +15,17 @@ using Database.DataContexts;
 using Database.Models;
 using log4net;
 using LtiLibrary.Core.Extensions;
-using Newtonsoft.Json;
+using Metrics;
 using RunCsJob.Api;
 using Serilog;
-using Serilog.Events;
 using Telegram.Bot.Types.Enums;
-using uLearn.Telegram;
 using uLearn.Web.AntiPlagiarismUsage;
 using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Configuration;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Telegram;
 using XQueue;
 using XQueue.Models;
 
@@ -34,8 +36,13 @@ namespace uLearn.Web.Controllers
 		private static readonly ILog log = LogManager.GetLogger(typeof(RunnerController));
 
 		private readonly UserSolutionsRepo userSolutionsRepo;
+		private readonly SlideCheckingsRepo slideCheckingsRepo;
+		private readonly VisitsRepo visitsRepo;
+		private readonly GroupsRepo groupsRepo;
+		private readonly UsersRepo usersRepo;
 		private readonly ULearnDb db;
 		private readonly CourseManager courseManager;
+		private readonly MetricSender metricSender;
 
 		private static readonly List<IResultObserver> resultObserveres = new List<IResultObserver>
 		{
@@ -49,6 +56,11 @@ namespace uLearn.Web.Controllers
 			this.db = db;
 			this.courseManager = courseManager;
 			userSolutionsRepo = new UserSolutionsRepo(db, courseManager);
+			slideCheckingsRepo = new SlideCheckingsRepo(db);
+			visitsRepo = new VisitsRepo(db);
+			groupsRepo = new GroupsRepo(db, courseManager);
+			usersRepo = new UsersRepo(db);
+			metricSender = new MetricSender(ApplicationConfiguration.Read<UlearnConfiguration>().GraphiteServiceName);
 		}
 
 		public RunnerController()
@@ -56,23 +68,33 @@ namespace uLearn.Web.Controllers
 		{
 		}
 
-		[HttpGet]
-		[Route("GetSubmissions")]
-		public async Task<List<RunnerSubmission>> GetSubmissions([FromUri] string token, [FromUri] int count)
+		[System.Web.Http.HttpGet]
+		[System.Web.Http.Route("GetSubmissions")]
+		public async Task<List<RunnerSubmission>> GetSubmissions([FromUri] string token, [FromUri] string language, [FromUri] string agent = "")
 		{
-			CheckRunner(token);
+			CheckRunner(token);			
+			
+			if (!LanguageHelpers.TryParseByName(language, out var submissionLanguage))
+				throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest));
+			
 			var sw = Stopwatch.StartNew();
 			while (true)
 			{
 				var repo = new UserSolutionsRepo(new ULearnDb(), courseManager);
-				var submissions = await repo.GetUnhandledSubmissions(count);
-				if (submissions.Any() || sw.Elapsed > TimeSpan.FromSeconds(15))
+				var submission = await repo.GetUnhandledSubmission(agent, submissionLanguage).ConfigureAwait(false);
+				if (submission != null || sw.Elapsed > TimeSpan.FromSeconds(15))
 				{
-					if (submissions.Any())
-						log.Info($"Отдаю на проверку решения: [{string.Join(",", submissions.Select(c => c.Id))}]");
-					return submissions.Select(ToRunnerSubmission).ToList();
+					if (submission != null)
+						log.Info($"Отдаю на проверку решение: [{submission.Id}], агент {agent}, только сначала соберу их");
+					else
+						return new List<RunnerSubmission>();
+
+					var builtSubmissions = new List<RunnerSubmission> { ToRunnerSubmission(submission) };
+					log.Info($"Собрал решения: [{submission.Id}], отдаю их агенту {agent}");
+					return builtSubmissions;
 				}
-				await repo.WaitAnyUnhandledSubmissions(TimeSpan.FromSeconds(10));
+
+				await repo.WaitAnyUnhandledSubmissions(TimeSpan.FromSeconds(10)).ConfigureAwait(false);
 			}
 		}
 
@@ -88,6 +110,9 @@ namespace uLearn.Web.Controllers
 					NeedRun = true
 				};
 			}
+
+			log.Info($"Собираю для отправки в RunCsJob решение {submission.Id}");
+
 			var exerciseSlide = courseManager.FindCourse(submission.CourseId)?.FindSlideById(submission.SlideId) as ExerciseSlide;
 			if (exerciseSlide == null)
 				return new FileRunnerSubmission
@@ -98,7 +123,9 @@ namespace uLearn.Web.Controllers
 					NeedRun = true
 				};
 
+			log.Info($"Ожидаю, если курс {submission.CourseId} заблокирован");
 			courseManager.WaitWhileCourseIsLocked(submission.CourseId);
+			log.Info($"Курс {submission.CourseId} разблокирован");
 
 			return exerciseSlide.Exercise.CreateSubmission(
 				submission.Id.ToString(),
@@ -106,9 +133,9 @@ namespace uLearn.Web.Controllers
 			);
 		}
 
-		[HttpPost]
-		[Route("PostResults")]
-		public async Task PostResults([FromUri] string token, List<RunningResults> results)
+		[System.Web.Http.HttpPost]
+		[System.Web.Http.Route("PostResults")]
+		public async Task PostResults([FromUri] string token, [FromUri] string agent, List<RunningResults> results)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -117,8 +144,12 @@ namespace uLearn.Web.Controllers
 				throw new HttpResponseException(HttpStatusCode.BadRequest);
 			}
 			CheckRunner(token);
-			log.Info($"Получил от RunCsJob результаты проверки решений: [{string.Join(", ", results.Select(r => r.Id))}]");
-			await FuncUtils.TrySeveralTimesAsync(() => userSolutionsRepo.SaveResults(results), 3);
+			log.Info($"Получил от RunCsJob результаты проверки решений: [{string.Join(", ", results.Select(r => r.Id))}] от агента {agent}");
+
+			foreach (var result in results)
+				await FuncUtils.TrySeveralTimesAsync(() => userSolutionsRepo.SaveResult(result, 
+					submission => BaseExerciseController.SendToReviewAndUpdateScore(submission, courseManager, slideCheckingsRepo, groupsRepo, visitsRepo, metricSender, false)
+				), 3).ConfigureAwait(false);
 
 			var submissionsByIds = userSolutionsRepo
 				.FindSubmissionsByIds(results.Select(result => result.Id).ToList())
@@ -128,9 +159,10 @@ namespace uLearn.Web.Controllers
 			{
 				if (!submissionsByIds.ContainsKey(result.Id))
 					continue;
-				await SendResultToObservers(submissionsByIds[result.Id], result);
+				await SendResultToObservers(submissionsByIds[result.Id], result).ConfigureAwait(false);
 			}
 		}
+		
 
 		private Task SendResultToObservers(UserExerciseSubmission submission, RunningResults result)
 		{
@@ -166,14 +198,14 @@ namespace uLearn.Web.Controllers
 				
 			var watcher = xQueueSubmission.Watcher;
 			var client = new XQueueClient(watcher.BaseUrl, watcher.UserName, watcher.Password);
-			await client.Login();
-			if (await SendSubmissionResultsToQueue(client, xQueueSubmission))
-				await xQueueRepo.MarkXQueueSubmissionThatResultIsSent(xQueueSubmission);
+			await client.Login().ConfigureAwait(false);
+			if (await SendSubmissionResultsToQueue(client, xQueueSubmission).ConfigureAwait(false))
+				await xQueueRepo.MarkXQueueSubmissionThatResultIsSent(xQueueSubmission).ConfigureAwait(false);
 		}
 
-		private async Task<bool> SendSubmissionResultsToQueue(XQueueClient client, XQueueExerciseSubmission submission)
+		private Task<bool> SendSubmissionResultsToQueue(XQueueClient client, XQueueExerciseSubmission submission)
 		{
-			return await FuncUtils.TrySeveralTimesAsync(() => TrySendSubmissionResultsToQueue(client, submission), 5, () => Task.Delay(TimeSpan.FromMilliseconds(1)));
+			return FuncUtils.TrySeveralTimesAsync(() => TrySendSubmissionResultsToQueue(client, submission), 5, () => Task.Delay(TimeSpan.FromMilliseconds(1)));
 		}
 
 		private async Task<bool> TrySendSubmissionResultsToQueue(XQueueClient client, XQueueExerciseSubmission submission)
@@ -188,7 +220,7 @@ namespace uLearn.Web.Controllers
 				return false;
 			}
 
-			var score = (double)checking.Score / slide.Exercise.CorrectnessScore;
+			var score = (double)checking.Score / slide.Scoring.PassedTestsScore;
 			if (score > 1)
 				score = 1;
 
@@ -202,7 +234,7 @@ namespace uLearn.Web.Controllers
 					Message = message,
 					Score = score,
 				}
-			});
+			}).ConfigureAwait(false);
 		}
 	}
 
@@ -221,7 +253,7 @@ namespace uLearn.Web.Controllers
 				$"<b>Решение #{submission.Id} не запустилось в песочнице (SandboxError).</b>\n" +
 				(string.IsNullOrEmpty(output) ? "" : $"Вывод:\n<pre>{output.EscapeHtml()}</pre>"), 
 				ParseMode.Html
-			);
+			).ConfigureAwait(false);
 		}
 	}
 
@@ -251,7 +283,7 @@ namespace uLearn.Web.Controllers
 			if (result.Verdict != Verdict.Ok)
 				return;
 
-			/* Sent to antiplagiarism service only accepted submissions */
+			/* Send to antiplagiarism service only accepted submissions */
 			var checking = submission.AutomaticChecking;
 			if (!checking.IsRightAnswer)
 				return;
@@ -264,12 +296,12 @@ namespace uLearn.Web.Controllers
 				AuthorId = Guid.Parse(submission.UserId),
 				AdditionalInfo = new AntiPlagiarismAdditionalInfo { SubmissionId = submission.Id }.ToJsonString(),
 			};
-			var antiPlagiasismResult = await FuncUtils.TrySeveralTimesAsync(() => antiPlagiarismClient.AddSubmissionAsync(parameters), 3);
+			var antiPlagiarismResult = await antiPlagiarismClient.AddSubmissionAsync(parameters).ConfigureAwait(false);
 			
-			log.Info($"Получил ответ от сервиса антиплагиата: {antiPlagiasismResult}");
+			log.Info($"Получил ответ от сервиса антиплагиата: {antiPlagiarismResult}");
 			
 			var userSolutionsRepo = new UserSolutionsRepo(db, WebCourseManager.Instance);
-			await userSolutionsRepo.SetAntiPlagiarismSubmissionId(submission, antiPlagiasismResult.SubmissionId);
+			await userSolutionsRepo.SetAntiPlagiarismSubmissionId(submission, antiPlagiarismResult.SubmissionId).ConfigureAwait(false);
 		}
 	}
 }

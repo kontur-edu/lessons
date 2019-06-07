@@ -1,6 +1,7 @@
 ﻿@using Database.Models
 @using Database.Extensions
 @using uLearn.Web.Extensions
+@using Ulearn.Core.Extensions
 
 @model GroupsFilterViewModel
 
@@ -8,13 +9,6 @@
 	@{
 		var groupsListItems = new List<SelectListItemWithAttributes>
 		{
-			new SelectListItemWithAttributes
-			{
-				Text = "Все пользователи",
-				Value = "all",
-				Selected = Model.SelectedGroupsIds.Contains("all"),
-				HtmlAttributes = new { data_exclusive = "true" }
-			},
 			new SelectListItemWithAttributes
 			{
 				Text = "Мои группы",
@@ -25,11 +19,18 @@
 		};
 		if (User.HasAccessFor(Model.CourseId, CourseRole.CourseAdmin))
 		{
-			groupsListItems.Insert(1, new SelectListItemWithAttributes
+			groupsListItems.Add(new SelectListItemWithAttributes
 			{
 				Text = "Ни в одной группе",
 				Value = "not-in-group",
 				Selected = Model.SelectedGroupsIds.Contains("not-in-group"),
+				HtmlAttributes = new { data_exclusive = "true" }
+			});
+			groupsListItems.Add(new SelectListItemWithAttributes
+			{
+				Text = "Все пользователи",
+				Value = "all",
+				Selected = Model.SelectedGroupsIds.Contains("all"),
 				HtmlAttributes = new { data_exclusive = "true" }
 			});
 		}
@@ -45,7 +46,7 @@
 			Model.Groups.Select(
 				group => new SelectListItemWithAttributes
 				{
-					Text = group.Name,
+					Text = group.Name.TruncateWithEllipsis(40),    
 					Value = group.Id.ToString(),
 					Selected = Model.SelectedGroupsIds.Contains(group.Id.ToString())
 				})

@@ -1,5 +1,7 @@
 ﻿@using System.Web.Mvc.Html
 @using uLearn.Web.Extensions
+@using Ulearn.Core.Courses.Slides.Quizzes
+@using FormMethod = System.Web.Mvc.FormMethod
 
 @model uLearn.Web.Controllers.ManualCheckingQueueViewModel
 
@@ -21,18 +23,20 @@
 			{
 				new SelectListItemWithAttributes { Text = "Все задания", Value = "" },
 			};
-			if (Model.SlidesTitles.Any(s => s.Key != Guid.Empty))
+			if (Model.Slides.Any(s => s.Key != Guid.Empty))
 			{
 				slideListItems.Add(new SelectListItemWithAttributes { Value = "-", HtmlAttributes = new { data_divider = "true", data_exclusive = "true" } });
 			}
 
 			slideListItems.AddRange(
-				Model.SlidesTitles.Select(
+				Model.Slides.Select(
 					kvp => new SelectListItemWithAttributes
 					{
-						Text = kvp.Value,
+						Text = kvp.Value.Title,
 						Value = kvp.Key.ToString(),
-						HtmlAttributes = kvp.Key == Guid.Empty ? new { data_divider = "true", data_exclusive = "true" } : new object(),
+						HtmlAttributes = kvp.Key == Guid.Empty
+							? new { data_divider = "true", data_exclusive = "true" }
+							: (object) new { data_subtext = kvp.Value is QuizSlide ? "тест" : "код-ревью"}
 					}
 					)
 				);

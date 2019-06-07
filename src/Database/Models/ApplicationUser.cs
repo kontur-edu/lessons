@@ -15,7 +15,6 @@ namespace Database.Models
 			Registered = DateTime.Now;
 		}
 
-		public virtual ICollection<UserExerciseSubmission> Solutions { get; set; }
 		public virtual ICollection<UserQuestion> Questions { get; set; }
 
 		public string FirstName { get; set; }
@@ -43,6 +42,9 @@ namespace Database.Models
 		public DateTime? LastConfirmationEmailTime { get; set; }
 
 		public Gender? Gender { get; set; }
+
+		[Index("IDX_ApplicationUser_ByIsDeleted")]
+		public bool IsDeleted { get; set; }
 
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
 		public string Names

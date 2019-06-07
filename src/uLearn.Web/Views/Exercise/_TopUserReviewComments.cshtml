@@ -1,14 +1,27 @@
-﻿@using uLearn.Web.Extensions
-
+﻿@using Ulearn.Core.Extensions
 @model ExerciseBlockData
 
-<div class="exercise__top-review-comments hidden">
-	@foreach (var comment in Model.TopUserReviewComments)
+<div>
+	@if (Model.TopUserReviewComments.Count > 0)
 	{
-		<div class="comment">
-			<a href="#" title="Убрать из популярных" data-url="@Url.Action("HideFromTopCodeReviewComments", "Exercise", new { courseId = Model.CourseId, slideId = Model.Slide.Id })" data-value="@comment" class="remove-link">&times;</a>
-			<a href="#" class="copy-comment-link internal-page-link" title="@comment.TruncateWithEllipsis(200)" data-value="@comment">@comment.TruncateWithEllipsis(35)</a>
-		</div>
+		<b>Популярные комментарии</b>
+		foreach (var comment in Model.TopUserReviewComments)
+		{
+			<div class="comment with-remove-link">
+				<a href="#" title="Убрать из популярных" data-url="@Url.Action("HideFromTopCodeReviewComments", "Exercise", new { courseId = Model.CourseId, slideId = Model.Slide.Id })" data-value="@comment" class="remove-link">&times;</a>
+				<a href="#" class="copy-comment-link internal-page-link" title="@comment.TruncateWithEllipsis(200)" data-value="@comment">@comment.TruncateWithEllipsis(35)</a>
+			</div>
+		}
+	}
+	
+	@if (Model.TopOtherUsersReviewComments.Count > 0)
+	{
+		<b>Комментарии других преподавателей</b>
+		foreach (var comment in Model.TopOtherUsersReviewComments)
+		{
+			<div class="comment">
+				<a href="#" class="copy-comment-link internal-page-link" title="@comment.TruncateWithEllipsis(200)" data-value="@comment">@comment.TruncateWithEllipsis(35)</a>
+			</div>
+		}
 	}
 </div>
-

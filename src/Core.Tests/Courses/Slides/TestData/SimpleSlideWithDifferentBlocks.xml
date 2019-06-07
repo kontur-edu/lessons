@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<slide xmlns="https://ulearn.me/schema/v2" id="C6A70E4D-9673-4D02-A50C-FE667A5BD83D" title="Simple slide">
+	<markdown hide="true">
+		Привет, это маркдаун блок.
+	</markdown>
+	<youtube>123456</youtube>
+	<code language="csharp">
+		public static void Main()
+		{
+			int x = 5;
+		}
+	</code>
+	<tex>
+		<line>x = 1</line>
+		<line>a_i = \left{(}\frac{n(n+1)}{2}\right{)}</line>
+	</tex>
+	<galleryImages>
+		<image>image1.png</image>
+		<image>image2.png</image>
+	</galleryImages>
+</slide>

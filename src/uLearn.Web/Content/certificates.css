@@ -1,0 +1,73 @@
+.legacy-page .certificate-template__parameter,
+.legacy-page .add-certificate-button,
+.legacy-page .preview-certificate-button {
+	display: none;
+}
+
+.legacy-page .certificates {
+	margin: 15px 0;
+}
+
+.legacy-page ol.certificates {
+	padding-left: 15px;
+}
+
+.legacy-page .certificates-list__info {
+	padding: 10px 0;
+}
+
+.legacy-page .certificate-template__title .text-muted {
+	font-weight: 300;
+}
+
+.legacy-page .certificates .certificate .remove-certificate-link {
+	font-size: 18px;
+	line-height: 20px;
+	vertical-align: top;
+	margin-left: 15px;
+	color: #c55;
+	display: none;
+	cursor: pointer;
+}
+
+.legacy-page .certificates .certificate:hover .remove-certificate-link {
+	display: inline;
+}
+
+.legacy-page .certificates .certificate .remove-certificate-link:hover {
+	text-decoration: none;
+	color: #611;
+}
+
+.legacy-page .preview-certificates .select-another-user-block:not(.shown-by-default) {
+	display: none;
+}
+
+.legacy-page .preview-certificates .remove-certificate-preview-link,
+.legacy-page .preview-certificates .remove-certificate-preview-link * {
+	color: #933;
+	font-size: 12px;
+}
+
+.legacy-page .preview-certificates .remove-certificate-preview-parameter-link,
+.legacy-page .preview-certificates .remove-certificate-preview-parameter-link * {
+	color: #933;
+	font-size: 10px;
+}
+
+.legacy-page .loading-spinner-template {
+	display: none;
+}
+
+.legacy-page .preview-certificates .loading-spinner img {
+	height: 22px;
+	width: auto;
+}
+
+.legacy-page .generate-certificates-status {
+	padding-top: 10px;
+	max-width: 350px;
+	font-size: 14px;
+	color: #c33;
+}
+/* End of certificates */

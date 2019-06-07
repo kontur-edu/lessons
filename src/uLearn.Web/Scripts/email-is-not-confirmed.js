@@ -1,4 +1,6 @@
-﻿$(document).ready(function() {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function() {
 	var $modal = $('#emailIsNotConfirmedModal');
 	var cookieName = 'emailIsNotConfirmed';
 
@@ -14,7 +16,7 @@
 		var expires = new Date(2020, 1, 1);
 		var updatedCookie = name + "=" + encodeURIComponent(value) + ";path=/;expires=" + expires.toUTCString();
 		document.cookie = updatedCookie;
-	}
+	};
 
 	var showEmailIsNotConfirmedModal = function() {
 		if (getCookie(cookieName) === undefined) {

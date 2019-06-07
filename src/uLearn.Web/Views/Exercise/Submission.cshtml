@@ -4,6 +4,8 @@
 @using uLearn.Web.Extensions
 @using uLearn.Web.Views.Course
 @using Ulearn.Common.Extensions
+@using Ulearn.Core
+@using System.Linq
 
 @model ExerciseBlockData
 
@@ -12,8 +14,8 @@
 }
 
 <div class="exercise__submission"
-	data-version-update-url="@Url.Action("Submission", new { Model.CourseId, slideId = Model.Slide.Id, submissionId = "VERSION_ID", manualCheckingId = manualCheckingId, isLti = Model.IsLti, showOutput = Model.InstructorView ? "true" : "SHOW_OUTPUT", instructorView = Model.InstructorView, onlyAccepted = Model.ShowOnlyAccepted })"
-	@SlideHtml.GetGuestOnclick(Model.IsGuest)>
+	 data-version-update-url="@Url.Action("Submission", new { Model.CourseId, slideId = Model.Slide.Id, submissionId = "VERSION_ID", manualCheckingId = manualCheckingId, isLti = Model.IsLti, showOutput = Model.InstructorView ? "true" : "SHOW_OUTPUT", instructorView = Model.InstructorView, onlyAccepted = Model.ShowOnlyAccepted })"
+	 @SlideHtml.GetGuestOnclick(Model.IsGuest)>
 	@{
 		var currentSubmissionId = Model.SubmissionSelectedByUser != null ? (int?)Model.SubmissionSelectedByUser.Id : null;
 
@@ -40,14 +42,19 @@
 		{
 			var status = "";
 			var statusClass = "";
+			var exercise = Model.Slide.Exercise;
+			var texts = exercise.Texts;
 			if (Model.ReviewState == ExerciseReviewState.WaitingForReview)
 			{
-				status = "Все тесты пройдены, решение ожидает код-ревью";
+				status = string.IsNullOrEmpty(texts.WaitingForCodeReview) ? "Все тесты пройдены, решение ожидает код-ревью" : texts.WaitingForCodeReview;
 				if (Model.InstructorView)
 				{
+					var messageFormat = string.IsNullOrEmpty(texts.WaitingForCodeReviewInstructorView)
+						? "Все тесты пройдены, решение ожидает <a href=\"{0}\" title=\"Перейти к код-ревью\">код-ревью</a>"
+						: texts.WaitingForCodeReviewInstructorView;
 					status = string.Format(
-						"Все тесты пройдены, решение ожидает <a href=\"{0}\" title=\"Перейти к код-ревью\">код-ревью</a>",
-						Url.Action("CheckExercise", "Admin", new { courseId = Model.CourseId, id = Model.SubmissionSelectedByUser.ManualCheckings.Last().Id })
+						messageFormat,
+						Url.Action("ExerciseChecking", "Admin", new { courseId = Model.CourseId, id = Model.SubmissionSelectedByUser.ManualCheckings.Last().Id })
 						);
 				}
 			}
@@ -63,22 +70,28 @@
 				var pluralizedScore = score.PluralizeInRussian(RussianPluralizationOptions.Score);
 				if (Model.InstructorView)
 				{
-					status = string.Format("Все тесты пройдены, за&nbsp;<a href=\"{0}\" title=\"Отредактировать код-ревью\">код-ревью</a> {1} +{2}",
-						Url.Action("CheckExercise", "Admin", new { courseId = Model.CourseId, id = Model.SubmissionSelectedByUser.ManualCheckings.Last().Id, recheck = true }),
+					var messageFormat = string.IsNullOrEmpty(texts.CodeReviewPassedInstructorView)
+						? "Все тесты пройдены, за&nbsp;<a href=\"{0}\" title=\"Отредактировать код-ревью\">код-ревью</a> {1} +{2}"
+						: texts.CodeReviewPassedInstructorView;
+					status = string.Format(messageFormat,
+						Url.Action("ExerciseChecking", "Admin", new { courseId = Model.CourseId, id = Model.SubmissionSelectedByUser.ManualCheckings.Last().Id, recheck = true }),
 						scoreVerb,
 						pluralizedScore);
 				}
 				else
 				{
-					status = string.Format("Все тесты пройдены, за&nbsp;код-ревью {0} +{1}", scoreVerb, pluralizedScore);
+					var messageFormat = string.IsNullOrEmpty(texts.CodeReviewPassed) ? "Все тесты пройдены, за&nbsp;код-ревью {0} +{1}" : texts.CodeReviewPassed;
+					status = string.Format(messageFormat, scoreVerb, pluralizedScore);
 				}
 			}
 			else if (Model.SubmissionSelectedByUser.AutomaticCheckingIsRightAnswer)
 			{
-				status = "Все тесты пройдены";
-				if (!Model.Slide.Exercise.RequireReview)
+				status = string.IsNullOrEmpty(texts.AllTestsPassed) ? "Все тесты пройдены" : texts.AllTestsPassed;
+				if (!Model.Slide.Scoring.RequireReview)
 				{
-					status += ", задача сдана";
+					status = string.IsNullOrEmpty(texts.AllTestsPassedWithoutReview)
+						? "Все тесты пройдены, задача сдана"
+						: texts.AllTestsPassedWithoutReview;
 				}
 			}
 			else if (Model.SubmissionSelectedByUser.AutomaticChecking != null && Model.SubmissionSelectedByUser.AutomaticChecking.Status != AutomaticExerciseCheckingStatus.Done)
@@ -91,46 +104,72 @@
 				status = "Результат проверки: " + Model.SubmissionSelectedByUser.AutomaticChecking.GetVerdict();
 				statusClass = "wrong";
 			}
-			if (!string.IsNullOrEmpty(status) && (Model.ManualChecking == null || Model.ManualChecking.SubmissionId != Model.SubmissionSelectedByUser.Id))
+			if (!string.IsNullOrEmpty(status) && Model.ManualChecking == null)
 			{
-				<p class="exercise-status @statusClass">@Html.Raw(status)</p>
+				<p class="exercise-block-status @statusClass">@Html.Raw(status)</p>
 			}
+
 		}
 
-		if (Model.InstructorView)
+		var showAntiplagiarismStatus = Model.InstructorView && manualCheckingId != null;
+
+		if (showAntiplagiarismStatus)
 		{
-			if (User.HasCourseAccess(Model.CourseId, CourseAccessType.FeatureUseAntiPlagiarism) || User.IsSystemAdministrator())
-			{
-				<p class="antiplagiarism-status"
-                   data-antiplagiarism-url="@Url.Action("Info", "AntiPlagiarism", new { courseId = Model.CourseId, submissionId = currentSubmissionId })"
-                   data-antiplagiarism-details-url="@Url.Action("Details", "AntiPlagiarism", new { courseId = Model.CourseId, submissionId = currentSubmissionId })">
-                    Проверка на&nbsp;списывание: ищу похожие решения у&nbsp;других студентов...
-                </p>
-			}
+			<p class="antiplagiarism-status"
+			   data-antiplagiarism-url="@Url.Action("Info", "AntiPlagiarism", new { courseId = Model.CourseId, submissionId = currentSubmissionId })"
+			   data-antiplagiarism-details-url="@Url.Action("Details", "AntiPlagiarism", new { courseId = Model.CourseId, submissionId = currentSubmissionId })"
+			   data-add-exercise-code-review-url="@Url.Action("AddExerciseCodeReview", "Exercise", new { courseId = Model.CourseId, checkingId = manualCheckingId.Value })">
+				Проверка на&nbsp;списывание: ищу похожие решения у&nbsp;других студентов...
+			</p>
 		}
 
-		if (Model.ReviewState == ExerciseReviewState.Reviewed || Model.InstructorView)
+		if (Model.ReviewState == ExerciseReviewState.Reviewed || Model.InstructorView || Model.Reviews.Any())
 		{
-			/* For reviewed submission without reviews don't show reviews panel at all*/
+			var showOnlyAutomaticReviews = Model.ReviewState != ExerciseReviewState.Reviewed && !Model.InstructorView;
+			/* For reviewed submission without reviews don't show reviews panel at all */
 			var isEmpty = Model.Reviews.Count == 0 && !canAddReviews ? "empty" : "";
 			<div class="exercise__reviews @isEmpty">
 				@foreach (var review in Model.Reviews.OrderBy(r => r.StartLine).ThenBy(r => r.StartPosition))
 				{
+					/* Instructors can reply always. Students can reply only if exists a human (not ulearn bot) replied before and if checking is already checked */
+					var canReply = false;
+					if (Model.InstructorView)
+					{
+						canReply = true;
+					}
+					else
+					{
+						var existHumanReply = !review.Author.IsUlearnBot() || review.NotDeletedComments.Any(c => !c.Author.IsUlearnBot());
+						if ((!review.ExerciseCheckingId.HasValue || review.ExerciseChecking.IsChecked) && existHumanReply)
+						{
+							canReply = true;
+						}
+					}
+
+					if (showOnlyAutomaticReviews && !review.Author.IsUlearnBot())
+					{
+						continue;
+					}
+
 					@Html.Partial("_ExerciseReview", new ExerciseCodeReviewModel
 					{
 						Review = review,
 						ManualChecking = Model.ManualChecking,
+						CurrentUser = Model.CurrentUser,
+						CanReply = canReply,
+						ShowOnlyAutomaticalReviews = showOnlyAutomaticReviews,
 					})
 				}
 			</div>
 		}
 		<textarea id="secretCodeExercise" class="hide">@Model.Block.ExerciseInitialCode.EnsureEnoughLines(4)</textarea>
-		<textarea class="code @classString hidden" data-lang="@Model.Block.LangId">@(Model.Solution ?? Model.Block.ExerciseInitialCode.EnsureEnoughLines(4))</textarea>
+
+		<textarea class="code @classString hidden" data-lang="@Model.Block.Language.GetName()">@(Model.Solution ?? Model.Block.ExerciseInitialCode.EnsureEnoughLines(4))</textarea>
 		<div class="loading-spinner">
-			<img src="/Content/loading.gif"/>
+			<img src="/Content/loading.gif" />
 		</div>
 		<script type="text/javascript">
-			function cleanUserCode() {
+			window.cleanUserCode = function () {
 				var $secretCodeExercise = $('#secretCodeExercise');
 				$('.code-exercise')[0].codeMirrorEditor.setValue($secretCodeExercise.text());
 			}
@@ -170,9 +209,7 @@
 			{
 				var style = Model.ShowOutputImmediately ? "" : "display: none";
 				var isEmpty = string.IsNullOrEmpty(Model.SubmissionSelectedByUser.AutomaticChecking.Output.Text);
-				<div id="exercise__submission__output" class="@(isEmpty ? "empty" : "")" style="@style">
-					@Html.Raw(Html.EncodeMultiLineText(Model.SubmissionSelectedByUser.AutomaticChecking.Output.Text))
-				</div>
+				<div id="exercise__submission__output" class="@(isEmpty ? "empty" : "")" style="@style">@Html.Raw(Html.EncodeMultiLineText(Model.SubmissionSelectedByUser.AutomaticChecking.Output.Text))</div>
 			}
 		}
 	}
@@ -184,11 +221,19 @@
 
 @if (Model.ManualChecking != null)
 {
-	@Html.Partial("_TopUserReviewComments", Model)
+	<div class="exercise__top-review-comments hidden">
+		@Html.Partial("_TopUserReviewComments", Model)
+	</div>
 }
 
-@if (Model.ManualChecking == null && User.HasAccessFor(Model.CourseId, CourseRole.CourseAdmin))
+@if (User.HasAccessFor(Model.CourseId, CourseRole.Instructor) && !Model.InstructorView)
 {
+	@Html.Action("StudentSubmissions", "Exercise", new { courseId = Model.CourseId, slideId = Model.Slide.Id })
+}
+
+@if (Model.ManualChecking == null && User.HasAccessFor(Model.CourseId, CourseRole.CourseAdmin) && false) 
+{
+	//NOTE: feature is disabled due to performance
 	@Html.Action("SlideCodeReviewComments", "Exercise", new { courseId = Model.CourseId, slideId = Model.Slide.Id })
 }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using JetBrains.Annotations;
 
 // ReSharper disable once CheckNamespace
 namespace System.Linq
@@ -68,6 +69,12 @@ namespace System.Linq
 		public static int FindIndex<T>(this IEnumerable<T> items, T element) where T : IEquatable<T>
 		{
 			return FindIndex(items, item => item.Equals(element));
+		}
+
+		[NotNull]
+		public static List<T> EmptyIfNull<T>([CanBeNull]this List<T> items)
+		{
+			return items ?? new List<T>();
 		}
 	}
 }

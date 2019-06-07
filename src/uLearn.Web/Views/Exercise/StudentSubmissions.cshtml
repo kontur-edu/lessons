@@ -1,0 +1,12 @@
+﻿@model uLearn.Web.Controllers.StudentSubmissionsModel
+
+<div class="student-submissions">
+    <h1>Решения</h1>
+    
+    <div class="student-submissions__filter" data-url="@Url.Action("StudentSubmissionsTable", new { courseId = Model.CourseId, slideId = Model.Slide.Id, name = "NAME"})">
+        <input class="student-submissions__filter__input form-control" placeholder="Начните вводить фамилию, имя или логин"/>
+        <span class="glyphicon glyphicon-refresh glyphicon-refresh-animate loading-icon" style="display: none"></span>
+    </div>
+
+    @Html.Partial("StudentSubmissionsTable")
+</div>

@@ -1,4 +1,7 @@
-﻿$(document).ready(function () {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function () {
+	var $exerciseScoreFormWrapper = $('.exercise__score-form-wrapper');
 	var $exerciseScoreForm = $('.exercise__score-form');
 	var $exerciseSimpleScoreForm = $('.exercise__simple-score-form');
 	var isSimpleScoreForm = $exerciseSimpleScoreForm.length > 0;
@@ -12,13 +15,13 @@
 			$lock.animate({ left: 15 });
 			$lock.closest('.user-submission').find('.status').text('');
 		}, 8000);
-	}
+	};
 
 	var clearLockTimeout = function ($lock) {
 		var lockTimeout = $lock[0].lockTimeout;
 		if (lockTimeout)
 			clearTimeout(lockTimeout);
-	}
+	};
 
 	var sendSimpleScore = function ($scoreForm, ignoreNewestSubmission) {
 		ignoreNewestSubmission = ignoreNewestSubmission || false;
@@ -69,7 +72,7 @@
 		}).always(function() {
 			$status.removeClass('waiting');
 		});
-	}
+	};
 
 	$scoreBlock.on('click', '.simple-score-link', function(e) {
 		e.preventDefault();
@@ -92,6 +95,12 @@
 		$otherScoreInput.show();
 		$otherScoreInput.focus();
 		$otherScoreLink.addClass('active');
+
+		$exerciseScoreFormWrapper.removeClass('short');
+
+        /* Restore prohibitFurtherReview checkbox state */
+        var $checkbox = $exerciseScoreForm.closest('.exercise').find('[name="prohibitFurtherReview"]');
+        $checkbox.prop('checked', $checkbox.data('initial-state'));
 	});
 
 	$scoreBlock.find('.btn-group').on('click', '.btn', function () {
@@ -112,13 +121,33 @@
 			$otherScoreInput.hide();
 			$otherScoreLink.removeClass('active');
 			$otherScoreInput.val(wasActive ? "" : $self.data('value'));
+			
+			/* If score form is fixed, then open full version */
+			if (!wasActive)
+				$exerciseScoreFormWrapper.removeClass('short');
+						
+			/* Clicking on button "100%" makes prohibitFurtherReview checkbox checked. */
+            var $checkbox = $exerciseScoreForm.closest('.exercise').find('[name="prohibitFurtherReview"]');
+			if ($self.data('percent') === 100) {
+				/* Remember checkbox state before changing */
+				$checkbox.data('initial-state', $checkbox.prop('checked'));
+				$checkbox.prop('checked', true);
+			} else {
+				/* Restore checkbox state */
+				$checkbox.prop('checked', $checkbox.data('initial-state'));				
+			}
 		}
 	});
 
-	$exerciseScoreForm.find('input[type=submit]').click(function() {
+	$exerciseScoreForm.find('input[type=submit]').click(function() {		
 		if ($otherScoreInput.is(':invalid')) {
 			$otherScoreInput.show();
 			$otherScoreLink.addClass('active');
+		} else {
+			$(this).prop('disabled', true);
+			
+            // Prevent Chrome bug. See https://productforums.google.com/forum/#!topic/chrome/M7y2gZDvXAk for details
+			this.form.submit();			
 		}
 	});
 
@@ -136,6 +165,40 @@
 
 	$('.exercise__add-review').each(function () {
 		updateTopReviewComments($(this));
+	});
+
+	function getSelectedText($textarea)
+	{		
+		var textarea = $textarea[0];
+
+		// Standards Compliant Version
+		if (textarea.selectionStart !== undefined)
+		{ 
+			var startPos = textarea.selectionStart;
+			var endPos = textarea.selectionEnd;
+			return textarea.value.substring(startPos, endPos);
+		}
+		// IE Version
+		else if (document.selection !== undefined)
+		{ 
+			textarea.focus();
+			var sel = document.selection.createRange();
+			return sel.text;
+		}
+	}
+	
+	/* Ctrl+C should copy text from CodeMirror if nothing is selected in review comment form */
+	$('.exercise__add-review__comment').keydown(function(e) {
+		if (e.keyCode === 67 && e.ctrlKey) {
+			var selectedText = getSelectedText($('.exercise__add-review__comment'));			
+			if (selectedText.length === 0) {
+				var codeMirrorSelectedText = $('.code-review')[0].codeMirrorEditor.getSelection();
+				/* We use new AsyncClipboardAPI. It is supported only by modern browsers
+				   https://www.w3.org/TR/clipboard-apis/#async-clipboard-api
+				*/
+				navigator.clipboard.writeText(codeMirrorSelectedText)
+			}
+		}
 	});
 
 	$('.exercise__top-review-comments').on('click', '.comment .copy-comment-link', function(e) {

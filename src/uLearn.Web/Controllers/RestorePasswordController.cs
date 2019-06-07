@@ -12,6 +12,7 @@ using Metrics;
 using Microsoft.AspNet.Identity;
 using uLearn.Web.Models;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Configuration;
 using Message = uLearn.Web.Models.Message;
 
 namespace uLearn.Web.Controllers
@@ -22,7 +23,7 @@ namespace uLearn.Web.Controllers
 		private readonly RestoreRequestRepo requestRepo;
 		private readonly UserManager<ApplicationUser> userManager;
 		private readonly ULearnDb db;
-		private readonly GraphiteMetricSender metricSender;
+		private readonly MetricSender metricSender;
 
 		private readonly string spamChannelId;
 		private readonly SpamClient spamClient;
@@ -32,7 +33,7 @@ namespace uLearn.Web.Controllers
 			this.db = db;
 			userManager = new ULearnUserManager(db);
 			requestRepo = new RestoreRequestRepo(db);
-			metricSender = new GraphiteMetricSender("web");
+			metricSender = new MetricSender(ApplicationConfiguration.Read<UlearnConfiguration>().GraphiteServiceName);
 
 			var spamEndpoint = WebConfigurationManager.AppSettings["ulearn.spam.endpoint"] ?? "";
 			var spamLogin = WebConfigurationManager.AppSettings["ulearn.spam.login"] ?? "ulearn";
@@ -62,6 +63,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> Index(string username)
 		{
 			metricSender.SendCount("restore_password.try");
@@ -87,12 +89,6 @@ namespace uLearn.Web.Controllers
 					continue;
 				}
 
-				if (!user.EmailConfirmed)
-				{
-					answer.Messages.Add(new Message($"У пользователя {user.UserName} не подтверждена электронная почта"));
-					continue;
-				}
-
 				var requestId = await requestRepo.CreateRequest(user.Id);
 
 				if (requestId == null)
@@ -113,7 +109,7 @@ namespace uLearn.Web.Controllers
 			var user = await userManager.FindByNameAsync(info);
 			if (user != null)
 				return new List<ApplicationUser> { user };
-			return db.Users.Where(appUser => appUser.Email == info).ToList();
+			return db.Users.Where(u => u.Email == info && ! u.IsDeleted).ToList();
 		}
 
 		private async Task SendRestorePasswordEmail(string requestId, ApplicationUser user)
@@ -122,7 +118,7 @@ namespace uLearn.Web.Controllers
 
 			var subject = "Восстановление пароля от ulearn.me";
 			var textBody = "Чтобы изменить пароль к аккаунту " + user.UserName + ", перейдите по ссылке: " + url + ".";
-			var htmlBody = "Чтобы изменить пароль к аккаунту " + user.UserName + ", перейдите по ссылке: <a href=\"" + url + "\">" + url + "</a>.";
+			var htmlBody = "Чтобы изменить пароль к аккаунту " + user.UserName.EscapeHtml() + ", перейдите по ссылке: <a href=\"" + url + "\">" + url + "</a>.";
 			var messageInfo = new MessageSentInfo
 			{
 				RecipientAddress = user.Email,
@@ -162,6 +158,8 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[ValidateInput(false)]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> SetNewPassword(SetNewPasswordModel model)
 		{
 			var answer = new SetNewPasswordModel
@@ -200,6 +198,11 @@ namespace uLearn.Web.Controllers
 			await requestRepo.DeleteRequest(model.RequestId);
 
 			var user = await userManager.FindByIdAsync(userId);
+			if (user == null)
+			{
+				answer.Errors = new[] { "Пользователь был удалён администраторами" };
+				return View(answer);
+			}
 			await AuthenticationManager.LoginAsync(HttpContext, user, false);
 
 			return RedirectToAction("Index", "Home");

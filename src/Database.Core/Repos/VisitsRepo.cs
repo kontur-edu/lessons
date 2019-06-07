@@ -4,31 +4,38 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Repos
 {
-	public class VisitsRepo
+	/* TODO (andgein): This repo is not fully migrated to .NET Core and EF Core */
+	public class VisitsRepo : IVisitsRepo
 	{
 		private readonly UlearnDb db;
-		private readonly SlideCheckingsRepo slideCheckingsRepo;
+		private readonly ISlideCheckingsRepo slideCheckingsRepo;
 
-		public VisitsRepo(UlearnDb db)
+		public VisitsRepo(UlearnDb db, ISlideCheckingsRepo slideCheckingsRepo)
 		{
 			this.db = db;
-			slideCheckingsRepo = new SlideCheckingsRepo(db);
+			this.slideCheckingsRepo = slideCheckingsRepo;
 		}
 
-		public async Task AddVisit(string courseId, Guid slideId, string userId)
+		public async Task AddVisit(string courseId, Guid slideId, string userId, string ipAddress)
 		{
-			if (IsUserVisitedSlide(courseId, slideId, userId))
-				return;
-			db.Visits.Add(new Visit
+			var visit = FindVisit(courseId, slideId, userId);
+			if (visit == null)
 			{
-				UserId = userId,
-				CourseId = courseId,
-				SlideId = slideId,
-				Timestamp = DateTime.Now
-			});
+				db.Visits.Add(new Visit
+				{
+					UserId = userId,
+					CourseId = courseId,
+					SlideId = slideId,
+					Timestamp = DateTime.Now,
+					IpAddress = ipAddress,
+				});
+			}
+			else if (visit.IpAddress != ipAddress)
+				visit.IpAddress = ipAddress;
 			await db.SaveChangesAsync();
 		}
 
@@ -37,9 +44,14 @@ namespace Database.Repos
 			return db.Visits.Count(x => x.CourseId == courseId && x.SlideId == slideId);
 		}
 
+		public Visit FindVisit(string courseId, Guid slideId, string userId)
+		{
+			return db.Visits.FirstOrDefault(v => v.CourseId == courseId && v.SlideId == slideId && v.UserId == userId);
+		}
+
 		public bool IsUserVisitedSlide(string courseId, Guid slideId, string userId)
 		{
-			return db.Visits.Any(v => v.CourseId == courseId && v.SlideId == slideId && v.UserId == userId);
+			return FindVisit(courseId, slideId, userId) != null;
 		}
 
 		public HashSet<Guid> GetIdOfVisitedSlides(string courseId, string userId)
@@ -115,14 +127,9 @@ namespace Database.Repos
 				.FirstOrDefault();
 		}
 
-		public Visit FindVisiter(string courseId, Guid slideId, string userId)
-		{
-			return db.Visits.FirstOrDefault(v => v.CourseId == courseId && v.SlideId == slideId && v.UserId == userId);
-		}
-
 		public async Task SkipSlide(string courseId, Guid slideId, string userId)
 		{
-			var visiter = FindVisiter(courseId, slideId, userId);
+			var visiter = FindVisit(courseId, slideId, userId);
 			if (visiter != null)
 				visiter.IsSkipped = true;
 			else
@@ -176,12 +183,12 @@ namespace Database.Repos
 			var filteredVisits = db.Visits.Where(v => options.PeriodStart <= v.Timestamp && v.Timestamp <= options.PeriodFinish);
 			if (options.SlidesIds != null)
 				filteredVisits = filteredVisits.Where(v => options.SlidesIds.Contains(v.SlideId));
-			if (options.UsersIds != null)
+			if (options.UserIds != null)
 			{
 				if (options.IsUserIdsSupplement)
-					filteredVisits = filteredVisits.Where(v => !options.UsersIds.Contains(v.UserId));
+					filteredVisits = filteredVisits.Where(v => !options.UserIds.Contains(v.UserId));
 				else
-					filteredVisits = filteredVisits.Where(v => options.UsersIds.Contains(v.UserId));
+					filteredVisits = filteredVisits.Where(v => options.UserIds.Contains(v.UserId));
 			}
 			return filteredVisits;
 		}
@@ -198,7 +205,8 @@ namespace Database.Repos
 			var slidesCount = slidesIds.Count;
 
 			return GetVisitsInPeriod(slidesIds, periodStart, periodFinish, usersIds)
-				.DistinctBy(v => Tuple.Create(v.UserId, v.SlideId))
+				.Select(v => new { v.UserId, v.SlideId })
+				.Distinct()
 				.GroupBy(v => v.UserId)
 				.Where(g => g.Count() == slidesCount)
 				.Select(g => g.Key);
@@ -209,10 +217,11 @@ namespace Database.Repos
 			if (options.SlidesIds == null)
 				throw new ArgumentNullException(nameof(options.SlidesIds));
 
-			var slidesCount = options.SlidesIds.Count();
+			var slidesCount = options.SlidesIds.Count;
 
 			return GetVisitsInPeriod(options)
-				.DistinctBy(v => Tuple.Create(v.UserId, v.SlideId))
+				.Select(v => new { v.UserId, v.SlideId })
+				.Distinct()
 				.GroupBy(v => v.UserId)
 				.Where(g => g.Count() == slidesCount)
 				.Select(g => g.Key);
@@ -223,9 +232,9 @@ namespace Database.Repos
 			return new HashSet<string>(db.Visits.Where(v => v.UserId == userId).Select(v => v.CourseId).Distinct());
 		}
 
-		public List<string> GetCourseUsers(string courseId)
+		public Task<List<string>> GetCourseUsersAsync(string courseId)
 		{
-			return db.Visits.Where(v => v.CourseId == courseId).Select(v => v.UserId).Distinct().ToList();
+			return db.Visits.Where(v => v.CourseId == courseId).Select(v => v.UserId).Distinct().ToListAsync();
 		}
 		
 		public List<RatingEntry> GetCourseRating(string courseId, int minScore)

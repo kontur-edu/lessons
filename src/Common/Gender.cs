@@ -1,7 +1,10 @@
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Ulearn.Common
 {
+	[JsonConverter(typeof(StringEnumConverter), true)]
 	public enum Gender : short
 	{
 		Male = 1,

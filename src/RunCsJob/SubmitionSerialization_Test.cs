@@ -3,7 +3,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using RunCsJob.Api;
-using uLearn;
+using Ulearn.Core;
 
 namespace RunCsJob
 {

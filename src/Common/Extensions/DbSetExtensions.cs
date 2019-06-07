@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
@@ -14,12 +12,17 @@ namespace Ulearn.Common.Extensions
 		{
 			var dbSet = dbContext.Set<TEntity>();
 			var exists = dbSet.Any(findFunction);
-			
+
+			EntityEntry<TEntity> entry;
 			if (!exists)
-				return dbContext.Add(entity);
+			{
+				entry = dbContext.Add(entity);
+				entry.State = EntityState.Added;
+				return entry;
+			}
 
 			var dbValue = dbSet.FirstOrDefault(findFunction);
-			var entry = dbContext.Entry(dbValue);
+			entry = dbContext.Entry(dbValue);
 			entry.CurrentValues.SetValues(entity);
 			entry.State = EntityState.Modified;
 			return entry;

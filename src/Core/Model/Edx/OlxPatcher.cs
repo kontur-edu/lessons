@@ -1,13 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
-using uLearn.Model.Edx.EdxComponents;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Model.Edx.EdxComponents;
 
-namespace uLearn.Model.Edx
+namespace Ulearn.Core.Model.Edx
 {
 	public class OlxPatcher
 	{
@@ -54,7 +54,7 @@ namespace uLearn.Model.Edx
 			var newVerticals = new List<Vertical>();
 			foreach (var subverticals in verticals)
 			{
-				var existsMap = subverticals.ToDictionary(sv => sv, sv => File.Exists(string.Format("{0}/vertical/{1}.xml", OlxPath, sv.UrlName)));
+				var existsMap = subverticals.ToDictionary(sv => sv, sv => File.Exists($"{OlxPath}/vertical/{sv.UrlName}.xml"));
 				if (subverticals.Any(x => existsMap[x]))
 				{
 					if (replaceExisting)

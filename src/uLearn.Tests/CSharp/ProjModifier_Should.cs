@@ -3,6 +3,7 @@ using ApprovalTests;
 using FluentAssertions;
 using Microsoft.Build.Evaluation;
 using NUnit.Framework;
+using Ulearn.Core;
 
 namespace uLearn.CSharp
 {

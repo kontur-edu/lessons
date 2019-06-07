@@ -3,8 +3,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Database.DataContexts;
 using Database.Extensions;
 using Database.Models;
+using Microsoft.AspNet.Identity;
 
 namespace uLearn.Web.FilterAttributes
 {
@@ -30,6 +32,11 @@ namespace uLearn.Web.FilterAttributes
 
 			var user = httpContext.User;
 			if (!user.Identity.IsAuthenticated)
+				return false;
+
+			var userId = httpContext.User.Identity.GetUserId();
+			var usersRepo = new UsersRepo(new ULearnDb());
+			if (usersRepo.FindUserById(userId) == null) // I.e. if user has been deleted
 				return false;
 
 			if (MinAccessLevel == CourseRole.Student && ! ShouldBeSysAdmin)

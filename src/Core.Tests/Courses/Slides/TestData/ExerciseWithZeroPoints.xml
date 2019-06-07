@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Exercise With Zero Points" id="2B00F5C4-93DA-42FB-AE1A-6400DC72D6BF">
+	<scoring passedTestsScore="0"/>
+	<exercise.file file="Main.cs">
+		<initialCode>Initial code</initialCode>
+		<solution>Solution</solution>		
+	</exercise.file>
+</slide.exercise>

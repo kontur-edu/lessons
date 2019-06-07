@@ -12,8 +12,10 @@
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <CscToolPath>C:\Users\andgein\Documents\Work\ulearn\uLearn\src\RunCsJob\bin\Debug\Microsoft.Net.Compilers.2.4.0</CscToolPath>
+    <CscToolPath>C:\git\ulearn\src\RunCsJob\bin\Debug\Microsoft.Net.Compilers.2.4.0</CscToolPath>
     <AlwaysCompileMarkupFilesInSeparateDomain>True</AlwaysCompileMarkupFilesInSeparateDomain>
+    <DisableOutOfProcTaskHost>true</DisableOutOfProcTaskHost>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -57,6 +59,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="..\WellKnownLibs\nunit.framework.dll" />
+    <None Include="C:\Users\andgein\Documents\Work\ulearn\uLearn\src\RunCsJob\bin\Debug\WellKnownLibs\FluentAssertions.dll" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 
 namespace Ulearn.Common.Extensions
 {
@@ -27,10 +28,16 @@ namespace Ulearn.Common.Extensions
 			return false;
 		}
 
-		/* Mark your enum with [Display(Name = "any text")] and retrieve Name via this function */
+		/* Mark your enum value with [Display(Name = "any text")] and retrieve Name via this method */
 		public static string GetDisplayName(this Enum type)
 		{
 			return type.GetAttribute<DisplayAttribute>().GetName();
+		}
+		
+		/* Mark you enum value with [XmlEnum(Name = "any text")] and retrieve Name via this method */
+		public static string GetXmlEnumName(this Enum type)
+		{
+			return type.GetAttribute<XmlEnumAttribute>().Name;
 		}
 	}
 }

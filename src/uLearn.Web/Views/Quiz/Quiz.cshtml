@@ -1,129 +1,213 @@
-﻿@using uLearn.Quizes
+﻿@using Database.Extensions
+@using Database.Models
 @using uLearn.Web.Controllers
+@using uLearn.Web.Extensions
 @using uLearn.Web.Views.Course
 @using Ulearn.Common.Extensions
+@using Ulearn.Core.Courses.Slides.Quizzes
+@using Ulearn.Core.Courses.Slides.Quizzes.Blocks
+@using FormMethod = System.Web.Mvc.FormMethod
+@using MvcForm = System.Web.Mvc.Html.MvcForm
 
 @model QuizModel
 @{
 	var quizSlide = Model.Slide;
 
 	var status = "";
-	var triesCountMessage = Model.MaxDropCount == QuizController.InfinityDropsCount ? "∞ (преподаватели не ограничены в попытках)" : (Model.MaxDropCount + 1).ToString();
-	if (!Model.IsGuest && Model.QuizState == QuizState.NotPassed)
+	var triesCountMessage = Model.MaxAttemptsCount == QuizController.InfinityTriesCount ? "∞ (преподаватели не ограничены в попытках)" : Model.MaxAttemptsCount.ToString();
+	const string allTriesExceeded = "Использованы все попытки. Вы можете пройти тест ещё раз, но ваши баллы за него не изменятся";
+	if (Model.Checking != null)
 	{
-		status = string.Format(
-			"Попытка {0} из {1}",
-			Model.TryNumber + 1,
-			triesCountMessage
-		);
+		status = string.Format("{0}, попытка {1} из {2}. {3}",
+			Model.Checking.User.VisibleName,
+			Model.QuizState.UsedAttemptsCount + 1,
+			triesCountMessage,
+			Model.Checking.Timestamp.ToPrettyString()
+			);
 	}
-	else if (!Model.IsGuest && Model.QuizState == QuizState.Subtotal)
+	else if (!Model.IsGuest && Model.QuizState.Status == QuizStatus.ReadyToSend)
 	{
-		status = string.Format(
-			"Использован{0} {1} из {2}",
-			Model.TryNumber % 10 == 1 && (Model.TryNumber / 10) % 10 != 1 ? "а" : "о",
-			Model.TryNumber.PluralizeInRussian(RussianPluralizationOptions.Tries),
-			triesCountMessage
-		);
+		if (Model.MaxAttemptsCount == QuizController.InfinityTriesCount || Model.QuizState.UsedAttemptsCount < Model.MaxAttemptsCount)
+		{
+			status = string.Format(
+				"Попытка {0} из {1}",
+				Model.QuizState.UsedAttemptsCount + 1,
+				triesCountMessage
+				);
+		}
+		else
+		{
+			status = allTriesExceeded;
+		}
 	}
-	else if (!Model.IsGuest && Model.QuizState == QuizState.Total)
+	else if (!Model.IsGuest && Model.QuizState.Status == QuizStatus.Sent)
 	{
-		status = string.Format("Решено с {0} попытки", Model.TryNumber);
+		if (Model.MaxAttemptsCount == QuizController.InfinityTriesCount || Model.QuizState.UsedAttemptsCount <= Model.MaxAttemptsCount)
+		{
+			status = string.Format(
+				"Использован{0} {1} из {2}",
+				Model.QuizState.UsedAttemptsCount % 10 == 1 && (Model.QuizState.UsedAttemptsCount / 10) % 10 != 1 ? "а" : "о",
+				Model.QuizState.UsedAttemptsCount.PluralizeInRussian(RussianPluralizationOptions.Tries),
+				triesCountMessage
+				);
+
+			if (Model.Slide.ManualChecking && Model.QuizState.UsedAttemptsCount > 0)
+			{
+				status = "Тест проверен преподавателем. " + status + ".";
+			}
+		}
+		else
+		{
+			status = allTriesExceeded;
+		}
 	}
-	else if (Model.ManualQuizCheckQueueItem != null)
+	else if (!Model.IsGuest && Model.QuizState.IsScoredMaximum)
 	{
-		status = string.Format("{0}, попытка {1} из {2}",
-			Model.ManualQuizCheckQueueItem.User.VisibleName,
-			Model.TryNumber,
-			Model.MaxDropCount + 1);
+		if (Model.MaxAttemptsCount == QuizController.InfinityTriesCount || Model.QuizState.UsedAttemptsCount <= Model.MaxAttemptsCount)
+		{
+			status = string.Format("Решено с {0} попытки", Model.QuizState.UsedAttemptsCount);
+		}
+		else
+		{
+			status = allTriesExceeded;
+		}
 	}
-	else if (Model.QuizState == QuizState.WaitForCheck)
+	else if (Model.QuizState.Status == QuizStatus.WaitsForManualChecking)
 	{
-		status = "Ожидает проверки преподавателем";
+		status = "Ожидает проверки преподавателем. Вы можете поменять ответы перед тем, как их увидит преподаватель.";
 	}
-	else if (Model.QuizState == QuizState.IsChecking)
+	else if (Model.QuizState.Status == QuizStatus.IsCheckingByInstructor)
 	{
 		status = "Проверяется преподавателем";
 	}
 
 	if (!string.IsNullOrEmpty(status))
 	{
-		<p class="quiz-status">@status</p>
+		<p class="quiz-status">
+			@status
+		</p>
 	}
-	if (!string.IsNullOrEmpty(Request.QueryString["error"]))
+	
+	if (Model.Checking != null && Model.Checking.IsLocked && !Model.Checking.IsLockedBy(User.Identity))
 	{
-		<p class="alert alert-danger">@Request.QueryString["error"]</p>
+		<div class="alert alert-danger mt10 ">Внимание. Эта работа прямо сейчас проверяется преподавателем @Model.Checking.LockedBy.VisibleName</div>
 	}
 
-	var remains = Model.MaxDropCount - Model.TryNumber + 1;
+	var remains = Model.MaxAttemptsCount - Model.QuizState.UsedAttemptsCount;
+	var isInstructor = User.HasAccessFor(Model.Course.Id, CourseRole.Instructor);
+	var isCourseAdmin = User.HasAccessFor(Model.Course.Id, CourseRole.CourseAdmin);
+	var blockData = new dynamic[Model.Slide.Blocks.Length];
+	for (var blockIndex = 0; blockIndex < Model.Slide.Blocks.Length; blockIndex++)
+	{
+		var block = quizSlide.Blocks[blockIndex];
+		if (block is AbstractQuestionBlock)
+		{
+			blockData[blockIndex] = new QuizBlockData(
+				Model,
+				blockIndex,
+				Model.QuizState,
+				questionAnswersFrequency: Model.QuestionAnswersFrequency[(block as AbstractQuestionBlock).Id],
+				isInstructor: isInstructor,
+				isCourseAdmin: isCourseAdmin
+			);
+		}
+		else
+		{
+			blockData[blockIndex] = null;
+		}
+	}
 	var context = new BlockRenderContext(
 		Model.Course,
 		Model.Slide,
 		quizSlide.Info.DirectoryRelativePath,
-		Enumerable.Range(0, Model.Slide.Blocks.Length)
-			.Select(x => quizSlide.Blocks[x] is AbstractQuestionBlock
-				? new QuizBlockData(Model, x, Model.QuizState)
-				: null)
-			.ToArray<dynamic>(),
-		Model.IsGuest,
-		true,
-		Model.ManualQuizCheckQueueItem,
-		Model.CanUserFillQuiz,
-		null,
-		Model.IsLti
+		blockData,
+		isGuest: Model.IsGuest,
+		revealHidden: true,
+		manualChecking: Model.Checking,
+		canUserFillQuiz: Model.CanUserFillQuiz,
+		groupsIds: null,
+		isLti: Model.IsLti,
+		userScores: Model.UserScores
 		);
 
 	MvcForm form = null;
-	if (Model.ManualQuizCheckQueueItem != null)
+	if (Model.Checking != null)
 	{
 		form = Html.BeginForm("ScoreQuiz", "Quiz", FormMethod.Post, new { id = "quiz__score-form" });
 	}
 
 	using (form)
 	{
-		if (Model.ManualQuizCheckQueueItem != null)
+		if (Model.Checking != null)
 		{
-			@Html.Hidden("id", Model.ManualQuizCheckQueueItem.Id)
-			@Html.Hidden("errorUrl", Url.RouteUrl("Course.SlideById", new { courseId = Model.Course.Id, slideId = Model.Slide.Url, CheckQueueItemId = Model.ManualQuizCheckQueueItem.Id, group = Model.GroupsIdsJoined }) + "&error=")
-			@Html.Hidden("nextUrl", Url.Action("ManualQuizCheckingQueue", "Admin", new { courseId = Model.Course.Id, group = Model.GroupsIdsJoined }))
+			@Html.Hidden("id", Model.Checking.Id)
+			@Html.Hidden("errorUrl", Url.RouteUrl("Course.SlideById", new { courseId = Model.Course.Id, slideId = Model.Slide.Url, CheckQueueItemId = Model.Checking.Id, group = Model.GroupsIdsJoined }) + "&error=")
+			@Html.Hidden("nextUrl", Url.Action("CheckingQueue", "Admin", new { courseId = Model.Course.Id, group = Model.GroupsIdsJoined, done = Model.Checking.IsChecked }))
 		}
-		@SlideHtml.Blocks(context, Html)
+		<div class="quiz__blocks">
+		    @SlideHtml.Blocks(context, Html)
+        </div>
 	}
 
 	if (!Model.IsGuest)
 	{
 		<div id="SubmitQuiz" data-url='@Url.Action("SubmitQuiz", "Quiz")'>
-			@if (Model.QuizState == QuizState.NotPassed)
+			@if (Model.Checking != null)
 			{
-				<button class="btn btn-primary quiz-submit-btn" onclick="submitQuiz('@Model.Course.Id', '@Model.Slide.Id', '@Model.AnswersToQuizes.Count', @Model.IsLtiToString) ">Готово!</button>
+				/* This attempt should not be calculated as left checking */
+				Model.ManualCheckingsLeft--;
+				
+				<input type="submit" class="btn @(Model.Checking.IsChecked || Model.ManualCheckingsLeft == 0 ? "btn-primary" : "btn-default") quiz-button" form="quiz__score-form" value="Сохранить и вернуться">
+				if (!Model.Checking.IsChecked)
+				{
+					if (Model.ManualCheckingsLeft == 0)
+					{
+						<div class="text-muted no-manual-checkings-left">
+							Это последняя работа по&nbsp;тесту
+						</div>
+					}
+					else
+					{
+						<input type="submit" class="btn btn-primary quiz-button" form="quiz__score-form" value="Сохранить и перейти к следующему"
+								data-url="@Url.Action("CheckNextQuizForSlide", "Admin", new { courseId = Model.Course.Id, slideId = Model.Slide.Id, group = Model.GroupsIdsJoined, previous = Model.Checking.Id })"
+								onclick="$('[name=nextUrl]').val($(this).data('url'))">
+						<div class="text-muted manual-checkings-left">
+							По этому тесту остал@(Model.ManualCheckingsLeft % 10 == 1 && (Model.ManualCheckingsLeft % 100 / 10 != 1) ? "ась" : "ось")
+							@Model.ManualCheckingsLeft.PluralizeInRussian(RussianPluralizationOptions.Checkings)
+						</div>
+					}
+				}
 			}
-			else if (Model.QuizState == QuizState.WaitForCheck && Model.ManualQuizCheckQueueItem == null)
+			else if (Model.QuizState.Status == QuizStatus.ReadyToSend)
 			{
-				<button class="btn btn-primary quiz-submit-btn" onclick="submitQuiz('@Model.Course.Id', '@Model.Slide.Id', '@Model.AnswersToQuizes.Count', @Model.IsLtiToString) ">Переотправить ответы</button>
+				<button class="btn btn-primary quiz-button quiz-submit-btn" onclick="submitQuiz('@Model.Course.Id', '@Model.Slide.Id', '@Model.AnswersToQuizzes.Count', @Model.IsLtiToString) ">Готово!</button>
 			}
-			else if (Model.QuizState == QuizState.IsChecking && Model.ManualQuizCheckQueueItem != null)
+			else if (Model.QuizState.Status == QuizStatus.WaitsForManualChecking)
 			{
-				<input type="submit" class="btn btn-default" form="quiz__score-form" value="Сохранить и вернуться">
-				<input type="submit" class="btn btn-primary" form="quiz__score-form" value="Сохранить и перейти к следующему"
-						data-url="@Url.Action("CheckNextQuizForSlide", "Admin", new { courseId = Model.Course.Id, slideId = Model.Slide.Id, group = Model.GroupsIdsJoined })"
-						onclick="$('[name=nextUrl]').val($(this).data('url'))">
+				<button class="btn btn-primary quiz-button quiz-submit-btn" onclick="submitQuiz('@Model.Course.Id', '@Model.Slide.Id', '@Model.AnswersToQuizzes.Count', @Model.IsLtiToString) ">Переотправить ответы</button>
+				<small class="quiz__remains">Вы не потратите дополнительную попытку, пока преподаватель не проверил ваши ответы</small>
 			}
-			else if (Model.QuizState == QuizState.Subtotal)
+			/* Quizzes with enabled manual checking can not be resend if user have used all attempts already */
+			else if (Model.QuizState.Status == QuizStatus.Sent && (!Model.Slide.ManualChecking || Model.QuizState.UsedAttemptsCount < Model.MaxAttemptsCount))
 			{
-				using (Html.BeginForm("DropQuiz", "Quiz"))
+				using (Html.BeginForm("RestartQuiz", "Quiz"))
 				{
 					<input type="hidden" name="slideId" value="@Model.Slide.Id"/>
 					<input type="hidden" name="courseId" value="@Model.Course.Id"/>
 					<input type="hidden" name="isLti" value="@Model.IsLtiToString">
-					<button class="btn btn-primary" type="submit">Пройти тест ещё раз</button>
+					<button class="btn btn-primary quiz-button quiz-retry-btn" type="submit">Пройти тест ещё раз</button>
 					<small class="quiz__remains">
-						@if (Model.MaxDropCount == QuizController.InfinityDropsCount)
+						@if (Model.MaxAttemptsCount == QuizController.InfinityTriesCount)
 						{
 							<text>Количество попыток для&nbsp;преподавателей неограничено</text>
 						}
-						else
+						else if (Model.QuizState.UsedAttemptsCount >= Model.MaxAttemptsCount)
 						{
-							<text>У вас остал@(remains == 1 ? "а" : "о")сь @remains.PluralizeInRussian(RussianPluralizationOptions.Tries) из @(Model.MaxDropCount + 1)</text>
+							<text>Ваши попытки закончились. Вы можете попробовать пройти тест ещё раз, <strong>но ваши баллы за&nbsp;него не&nbsp;изменятся</strong>.</text>
+						}
+                        else if (!Model.QuizState.IsScoredMaximum)
+						{
+							<text>У вас остал@(remains == 1 ? "а" : "о")сь @remains.PluralizeInRussian(RussianPluralizationOptions.Tries) из @Model.MaxAttemptsCount</text>
 						}
 					</small>
 				}

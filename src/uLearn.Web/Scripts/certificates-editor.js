@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function () {
 	var $modal = $('#createOrUpdateCertificateTemplateModal');
 	var $form = $('#createOrUpdateCertificateTemplateModal form');
 	var token = $('input[name="__RequestVerificationToken"]').val();
@@ -227,7 +229,7 @@
 			if (userId)
 				loadBuiltinParametersValuesForUser($self, userId);
 		});
-	}
+	};
 
 	initBuiltinParametersValues();
 	validateIfAllUsersFilled();

@@ -6,6 +6,9 @@ using Database.DataContexts;
 using Microsoft.AspNet.Identity;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
+using Ulearn.Core;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises;
 
 namespace uLearn.Web.Controllers
 {
@@ -58,7 +61,7 @@ namespace uLearn.Web.Controllers
 			for (var i = 0; i <= hintsCount; i++)
 			{
 				var isLiked = slideHintRepo.IsHintLiked(courseId, exerciseSlide.Id, User.Identity.GetUserId(), i);
-				ans[i] = await MakeExerciseHint(exerciseSlide.Exercise.HintsMd[i].RenderMd(exerciseSlide.Info.SlideFile), i, courseId, exerciseSlide.Id, isLiked);
+				ans[i] = await MakeExerciseHint(exerciseSlide.Exercise.HintsMd[i].RenderMarkdown(exerciseSlide.Info.SlideFile), i, courseId, exerciseSlide.Id, isLiked);
 			}
 			return ans;
 		}

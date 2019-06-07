@@ -4,10 +4,17 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using uLearn;
-using uLearn.Model.Blocks;
-using uLearn.Quizes;
 using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Courses.Slides.Quizzes;
+using Ulearn.Core.Courses.Slides.Quizzes.Blocks;
+using Ulearn.Core.Courses.Units;
 
 namespace Stepik.Api
 {
@@ -150,9 +157,9 @@ namespace Stepik.Api
 
 		private async Task TryInitialExportCourse(Course course, CourseInitialExportOptions exportOptions, CourseExportResults results)
 		{
-			var stepikCourse = await client.GetCourse(exportOptions.StepikCourseId);
+			var stepikCourse = await client.GetCourse(exportOptions.StepikCourseId).ConfigureAwait(false);
 			results.StepikCourseTitle = stepikCourse.Title;
-			await ClearCourse(stepikCourse);
+			await ClearCourse(stepikCourse).ConfigureAwait(false);
 
 			var unitIndex = 0;
 			foreach (var unit in course.Units)
@@ -161,7 +168,7 @@ namespace Stepik.Api
 				var section = ConvertUlearnUnitIntoStepikSection(unit);
 				section.CourseId = exportOptions.StepikCourseId;
 				section.Position = ++unitIndex;
-				section = await client.UploadSection(section);
+				section = await client.UploadSection(section).ConfigureAwait(false);
 				if (!section.Id.HasValue)
 					throw new StepikApiException($"Didn't receive `section`'s ID from stepik: {section.JsonSerialize()}");
 
@@ -180,7 +187,7 @@ namespace Stepik.Api
 						var lesson = await client.UploadLesson(new StepikApiLesson
 						{
 							Title = slide.Title
-						});
+						}).ConfigureAwait(false);
 						if (!lesson.Id.HasValue)
 							throw new StepikApiException($"Didn't receive `lesson`'s ID from stepik: {lesson.JsonSerialize()}");
 
@@ -191,22 +198,22 @@ namespace Stepik.Api
 							Position = ++lessonIndex,
 							SectionId = section.Id.Value,
 							LessonId = currentStepikLessonId,
-						});
+						}).ConfigureAwait(false);
 
 						blockIndex = 0;
 					}
 
-					blockIndex += await InsertSlideAsStepsInLesson(course, slide, currentStepikLessonId, blockIndex, exportOptions, results);
+					blockIndex += await InsertSlideAsStepsInLesson(course, slide, currentStepikLessonId, blockIndex, exportOptions, results).ConfigureAwait(false);
 				}
 			}
 		}
 
 		private async Task<int> InsertSlideAsStepsInLesson(Course course, Slide slide, int stepikLessonId, int position, CourseExportOptions options, CourseExportResults results)
 		{
-			var stepikBlocks = (await ConvertUlearnBlocksIntoStepikBlocks(course.Id, slide, slide.Blocks, options, stepikLessonId, results)).ToList();
+			var stepikBlocks = (await ConvertUlearnBlocksIntoStepikBlocks(course.Id, slide, slide.Blocks, options, stepikLessonId, results).ConfigureAwait(false)).ToList();
 			var blocksCountToInsert = stepikBlocks.Count;
 
-			await MoveStepsForSpaceEmpting(stepikLessonId, position, blocksCountToInsert);
+			await MoveStepsForSpaceEmpting(stepikLessonId, position, blocksCountToInsert).ConfigureAwait(false);
 
 			foreach (var stepikBlock in stepikBlocks)
 			{
@@ -218,7 +225,7 @@ namespace Stepik.Api
 					Position = ++position,
 					LessonId = stepikLessonId,
 					Cost = stepikBlock.Cost,
-				});
+				}).ConfigureAwait(false);
 
 				if (!uploadedStep.Id.HasValue)
 					throw new StepikApiException("Didn't receive `step`'s ID from stepik");
@@ -230,13 +237,13 @@ namespace Stepik.Api
 
 		private async Task MoveStepsForSpaceEmpting(int stepikLessonId, int position, int blocksCountToInsert)
 		{
-			var lesson = await client.GetLesson(stepikLessonId);
+			var lesson = await client.GetLesson(stepikLessonId).ConfigureAwait(false);
 			var stepsIds = lesson.StepsIds;
 			if (stepsIds.Count <= position)
 				return;
 
 			for (var idx = position; idx < stepsIds.Count; idx++)
-				await client.MoveStep(stepsIds[idx], idx + 1 + blocksCountToInsert);
+				await client.MoveStep(stepsIds[idx], idx + 1 + blocksCountToInsert).ConfigureAwait(false);
 		}
 
 		public async Task<CourseExportResults> UpdateCourse(Course course, CourseUpdateOptions updateOptions)
@@ -244,7 +251,7 @@ namespace Stepik.Api
 			var results = new CourseExportResults(course.Id, updateOptions.StepikCourseId);
 			try
 			{
-				await TryUpdateCourse(course, updateOptions, results);
+				await TryUpdateCourse(course, updateOptions, results).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -256,25 +263,25 @@ namespace Stepik.Api
 		private async Task TryUpdateCourse(Course course, CourseUpdateOptions updateOptions, CourseExportResults results)
 		{
 			results.Info($"Downloading stepik course #{updateOptions.StepikCourseId}");
-			var stepikCourse = await client.GetCourse(updateOptions.StepikCourseId);
+			var stepikCourse = await client.GetCourse(updateOptions.StepikCourseId).ConfigureAwait(false);
 			results.StepikCourseTitle = stepikCourse.Title;
 
 			results.Info($"Downloading stepik sections for it ({string.Join(", ", stepikCourse.SectionsIds)})");
 			var stepikSections = new Dictionary<int, StepikApiSection>();
 			// TODO (andgein): download multiple sections in one request
 			foreach (var sectionId in stepikCourse.SectionsIds)
-				stepikSections[sectionId] = await client.GetSection(sectionId);
+				stepikSections[sectionId] = await client.GetSection(sectionId).ConfigureAwait(false);
 				
 			var stepikUnitsIds = stepikSections.SelectMany(kvp => kvp.Value.UnitsIds).ToList();
 			results.Info($"Downloading stepik units ({string.Join(", ", stepikUnitsIds)}) and lessons for them");
 			var stepikUnits = new Dictionary<int, StepikApiUnit>();
 			foreach (var unitId in stepikUnitsIds)
-				stepikUnits[unitId] = await client.GetUnit(unitId);
+				stepikUnits[unitId] = await client.GetUnit(unitId).ConfigureAwait(false);
 
 			var stepikLessonsIds = stepikUnits.Select(kvp => kvp.Value.LessonId);
 			var stepikLessons = new Dictionary<int, StepikApiLesson>();
 			foreach (var lessonId in stepikLessonsIds)
-				stepikLessons[lessonId] = await client.GetLesson(lessonId);
+				stepikLessons[lessonId] = await client.GetLesson(lessonId).ConfigureAwait(false);
 
 			var sectionIndex = stepikCourse.SectionsIds.Count;
 			foreach (var slideUpdateOptions in updateOptions.SlidesUpdateOptions)
@@ -295,16 +302,16 @@ namespace Stepik.Api
 				{
 					var lessonId = stepikLessons.FirstOrDefault(kvp => kvp.Value.StepsIds.Contains(stepId)).Key;
 					// Re-download lesson because it can be changed for a while 
-					lesson = await client.GetLesson(lessonId);
+					lesson = await client.GetLesson(lessonId).ConfigureAwait(false);
 					position = lesson.StepsIds.FindIndex(stepId);
 
 					results.Info($"Removing old steps created for this slide: {string.Join(", ", slideUpdateOptions.RemoveStepsIds)}");
-					await RemoveStepsFromLesson(lesson, slideUpdateOptions.RemoveStepsIds, results);
+					await RemoveStepsFromLesson(lesson, slideUpdateOptions.RemoveStepsIds, results).ConfigureAwait(false);
 				}
 				else
 				{
 					results.Info("Creating new stepik lesson for this slide");
-					lesson = await CreateLessonAndSectionForSlide(slide, stepikCourse, ++sectionIndex);
+					lesson = await CreateLessonAndSectionForSlide(slide, stepikCourse, ++sectionIndex).ConfigureAwait(false);
 					position = 0;
 				}
 
@@ -323,7 +330,7 @@ namespace Stepik.Api
 				{
 					try
 					{
-						await client.DeleteStep(stepId);
+						await client.DeleteStep(stepId).ConfigureAwait(false);
 					}
 					catch (StepikApiException e)
 					{
@@ -334,7 +341,7 @@ namespace Stepik.Api
 				{
 					try
 					{
-						await client.MoveStep(stepId, newPosition + 1);
+						await client.MoveStep(stepId, newPosition + 1).ConfigureAwait(false);
 						// Increment newPosition only if success
 						newPosition++;
 					}
@@ -350,7 +357,7 @@ namespace Stepik.Api
 			var lesson = await client.UploadLesson(new StepikApiLesson
 			{
 				Title = slide.Title,
-			});
+			}).ConfigureAwait(false);
 			var section = await client.UploadSection(new StepikApiSection
 			{
 				CourseId = stepikCourse.Id.Value,
@@ -400,7 +407,8 @@ namespace Stepik.Api
 					}
 
 					var stepikBlock = await ConvertUlearnNonTextBlockIntoStepikStepBlock(
-						block, previousTextBlock, courseId, slide.Id, stepikLessonId, options, results);
+						block, previousTextBlock, courseId, slide, stepikLessonId, options, results
+					).ConfigureAwait(false);
 					if (stepikBlock != null)
 						stepikBlocks.Add(stepikBlock);
 				}
@@ -413,84 +421,74 @@ namespace Stepik.Api
 
 		private static bool IsCurrentBlockText(SlideBlock block, CourseExportOptions options)
 		{
-			return block is MdBlock || block is CodeBlock || (options.VideoUploadOptions == UploadVideoToStepikOption.Iframe && block is YoutubeBlock);
+			return block is MarkdownBlock || block is CodeBlock || (options.VideoUploadOptions == UploadVideoToStepikOption.Iframe && block is YoutubeBlock);
 		}
 
 		private string GetTextForStepikBlockFromUlearnBlock(string courseId, Slide slide, SlideBlock block)
 		{
-			if (block is MdBlock)
+			switch (block)
 			{
-				var mdBlock = (MdBlock)block;
-				return mdBlock.RenderMd(courseId, slide.Id, slide.Info.SlideFile, ulearnBaseUrl);
+				case MarkdownBlock markdownBlock:
+					return markdownBlock.RenderMarkdown(courseId, slide.Id, slide.Info.SlideFile, ulearnBaseUrl);
+				case CodeBlock codeBlock:
+				{
+					const string codeTemplate = "<pre><code class=\"%LANG%\">%CODE%</code></pre>";
+					return codeTemplate.Replace("%LANG%", codeBlock.Language.GetName()).Replace("%CODE%", codeBlock.Code.EscapeHtml());
+				}
+				case YoutubeBlock videoBlock:
+				{
+					const string videoTemplate = "<iframe width='864' height='480' src='//www.youtube.com/embed/%VIDEO_ID%' frameborder='0' allowfullscreen></iframe>";
+					return videoTemplate.Replace("%VIDEO_ID%", videoBlock.VideoId);
+				}
+				default:
+					throw new StepikApiException($"Unknown block type ({block.GetType().Name}) for text extracting. Can't get text from {block}");
 			}
-
-			if (block is CodeBlock)
-			{
-				const string codeTemplate = "<pre><code class=\"%LANG%\">%CODE%</code></pre>";
-				var codeBlock = (CodeBlock)block;
-				return codeTemplate.Replace("%LANG%", codeBlock.LangId).Replace("%CODE%", codeBlock.Code.EscapeHtml());
-			}
-
-			if (block is YoutubeBlock)
-			{
-				const string videoTemplate = "<iframe width='864' height='480' src='//www.youtube.com/embed/%VIDEO_ID%' frameborder='0' allowfullscreen></iframe>";
-				var videoBlock = (YoutubeBlock)block;
-				return videoTemplate.Replace("%VIDEO_ID%", videoBlock.VideoId);
-			}
-
-			throw new StepikApiException($"Unknown block type ({block.GetType().Name}) for text extracting. Can't get text from {block}");
 		}
 
-		private async Task<StepikApiBlock> ConvertUlearnNonTextBlockIntoStepikStepBlock(SlideBlock block, StepikApiBlock lastTextBlock, string courseId, Guid slideId, int lessonId, CourseExportOptions options, CourseExportResults results)
+		private async Task<StepikApiBlock> ConvertUlearnNonTextBlockIntoStepikStepBlock(SlideBlock block, StepikApiBlock lastTextBlock, string courseId, Slide slide, int lessonId, CourseExportOptions options, CourseExportResults results)
 		{
-			if (block is ExerciseBlock)
+			switch (block)
 			{
-				var exerciseBlock = (ExerciseBlock)block;
-				return new StepikApiBlock
-				{
-					Name = "external-grader",
-					Text = lastTextBlock.Text,
-					Cost = exerciseBlock.CorrectnessScore,
-					Source = new StepikApiExternalGraderBlockSource(courseId, slideId, options.XQueueName, exerciseBlock.ExerciseInitialCode, stepikCSharpLanguageName)
-				};
-			}
-
-			if (block is ChoiceBlock)
-			{
-				var choiceBlock = (ChoiceBlock)block;
-				return new StepikApiBlock
-				{
-					Name = "choice",
-					Text = lastTextBlock.Text + $"<p><br/><b>{choiceBlock.Text.EscapeHtml()}</b></p>",
-					Cost = choiceBlock.MaxScore,
-					Source = new StepikApiChoiceBlockSource(choiceBlock.Items.Select(ConvertUlearnChoiceItemIntoStepikChoiceOption))
+				case AbstractExerciseBlock exerciseBlock:
+					return new StepikApiBlock
 					{
-						IsMultipleChoice = choiceBlock.Multiple,
-						PreserveOrder = !choiceBlock.Shuffle
-					}
-				};
-			}
-
-			if (block is YoutubeBlock)
-			{
-				var videoBlock = (YoutubeBlock)block;
-				var rawVideoUrl = await youtubeVideoUrlExtractor.GetVideoUrl(videoBlock.GetYoutubeUrl());
-				var video = await client.UploadVideo(rawVideoUrl, lessonId);
-				await Task.Delay(options.PauseAfterVideoUploaded);
-				return new StepikApiBlock
+						Name = "external-grader",
+						Text = lastTextBlock.Text,
+						Cost = ((ExerciseSlide) slide).Scoring.PassedTestsScore,
+						Source = new StepikApiExternalGraderBlockSource(courseId, slide.Id, options.XQueueName, exerciseBlock.ExerciseInitialCode, stepikCSharpLanguageName)
+					};
+				case ChoiceBlock choiceBlock:
+					return new StepikApiBlock
+					{
+						Name = "choice",
+						Text = lastTextBlock.Text + $"<p><br/><b>{choiceBlock.Text.EscapeHtml()}</b></p>",
+						Cost = choiceBlock.MaxScore,
+						Source = new StepikApiChoiceBlockSource(choiceBlock.Items.Select(ConvertUlearnChoiceItemIntoStepikChoiceOption))
+						{
+							IsMultipleChoice = choiceBlock.Multiple,
+							PreserveOrder = !choiceBlock.Shuffle
+						}
+					};
+				case YoutubeBlock videoBlock:
 				{
-					Name = "video",
-					Video = video,
-				};
+					var rawVideoUrl = await youtubeVideoUrlExtractor.GetVideoUrl(videoBlock.GetYoutubeUrl()).ConfigureAwait(false);
+					var video = await client.UploadVideo(rawVideoUrl, lessonId).ConfigureAwait(false);
+					await Task.Delay(options.PauseAfterVideoUploaded).ConfigureAwait(false);
+					return new StepikApiBlock
+					{
+						Name = "video",
+						Video = video,
+					};
+				}
+				default:
+					results.Error($"Unknown block type for converting into stepik step: {block.GetType().Name}, ignoring it");
+					return null;
 			}
-
-			results.Error($"Unknown block type for converting into stepik step: {block.GetType().Name}, ignoring it");
-			return null;
 		}
 
 		private static StepikApiChoiceOption ConvertUlearnChoiceItemIntoStepikChoiceOption(ChoiceItem item)
 		{
-			return new StepikApiChoiceOption(item.Description, item.IsCorrect, item.Explanation);
+			return new StepikApiChoiceOption(item.Description, item.IsCorrect.IsTrueOrMaybe(), item.Explanation);
 		}
 
 		private static StepikApiSection ConvertUlearnUnitIntoStepikSection(Unit unit)
@@ -504,7 +502,7 @@ namespace Stepik.Api
 		private async Task ClearCourse(StepikApiCourse course)
 		{
 			foreach (var sectionId in course.SectionsIds)
-				await client.DeleteSection(sectionId);
+				await client.DeleteSection(sectionId).ConfigureAwait(false);
 		}
 	}
 }

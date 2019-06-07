@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace uLearn
+namespace Ulearn.Core
 {
 	[Serializable]
 	public class NotFoundException : Exception

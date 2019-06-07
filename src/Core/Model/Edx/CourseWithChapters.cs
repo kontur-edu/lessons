@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 using Newtonsoft.Json;
 using Ulearn.Common.Extensions;
 
-namespace uLearn.Model.Edx
+namespace Ulearn.Core.Model.Edx
 {
 	[XmlRoot("course")]
 	public class CourseWithChapters : EdxItem

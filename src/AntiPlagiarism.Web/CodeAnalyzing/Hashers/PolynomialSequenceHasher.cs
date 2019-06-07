@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv.Internal.Networking;
 
 namespace AntiPlagiarism.Web.CodeAnalyzing.Hashers
 {
@@ -30,6 +29,8 @@ namespace AntiPlagiarism.Web.CodeAnalyzing.Hashers
 
 		public void Dequeue()
 		{
+			if (objectsHashes.Count == 0)
+				throw new InvalidOperationException("Can't dequeue from empty sequence");
 			var valueToSubstract = GetBasePower(objectsHashes.Count - 1);
 			currentHash = unchecked(currentHash - valueToSubstract * objectsHashes.Dequeue());
 		}

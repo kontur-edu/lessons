@@ -1,0 +1,698 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"           
+           xmlns="https://ulearn.me/schema/v2"
+           elementFormDefault="qualified"
+           targetNamespace="https://ulearn.me/schema/v2">
+
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/XML/1998/namespace" />
+    
+    <!-- Course -->
+
+    <xs:element name="course" type="Course">        
+    </xs:element>
+
+    <xs:complexType name="Course">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">Information about course</xs:documentation>
+            <xs:documentation xml:lang="ru">Информация о курсе</xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="defaultLanguage" type="NonEmptyString" minOccurs="0" maxOccurs="1" />
+            <xs:element name="videoAnnotationsGoogleDoc" type="NonEmptyString" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="ru">
+                        Идентификатор GoogleDocs документа, в котором находятся транскрибция видео. Нужно для импорта транскрибции в слайды курса.
+
+                        К документу должен быть доступ на чтение по ссылке.
+
+                        Документ должен быть в строгом машиночитаемом формате:
+
+                        # Заголовок слайда (для редакторов)
+                        guid слайда
+                        описание всего видео-эпизода
+                        * 00:01 О чем рассказывает лектор
+                        * 01:01 О чем сейчас рассказывает лектор
+
+                        # Заголовок следующего слайда
+                        guid второго слайда
+                        описание всего видео-эпизода
+                        * 00:01 О чем рассказывает лектор
+
+                        ...
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="preludes" type="CoursePreludes" minOccurs="0" maxOccurs="1" />
+            <xs:element name="enableCodeReviewAndQuizManualCheckForEveryone" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+            <xs:element name="scoring" type="ScoringGroups" minOccurs="0" maxOccurs="1" />
+            <xs:element name="units" type="CourseUnits" minOccurs="0" maxOccurs="1" />
+            <xs:element name="dictionaryFile" type="NonEmptyString" minOccurs="0" maxOccurs="1" />
+        </xs:all>
+        <xs:attribute name="title" type="NonEmptyString" use="required"/>
+    </xs:complexType>
+    
+    <xs:complexType name="CoursePreludes">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">List of preludes file for each language</xs:documentation>
+            <xs:documentation xml:lang="ru">Список файлов-prelude, которые будут добавляться в начале каждого решения на данном языке программирования</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="prelude" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:simpleContent>
+                        <xs:extension base="NonEmptyString">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">Prelude filename</xs:documentation>
+                                <xs:documentation xml:lang="ru">Путь до файла-prelude</xs:documentation>
+                            </xs:annotation>
+                            <xs:attribute name="language" use="required"/>
+                        </xs:extension>
+                    </xs:simpleContent>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CourseUnits">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">List of units in the course</xs:documentation>
+            <xs:documentation xml:lang="ru">Список модулей в курсе</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="add" type="NonEmptyString" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Unit(s) XML filename. Supports masks with * and ?</xs:documentation>
+                    <xs:documentation xml:lang="ru">Путь до XML файла с модулем или модулями. Поддерживает маски с * и ?</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Unit -->
+
+    <xs:element name="unit" type="Unit">
+    </xs:element>
+
+    <xs:complexType name="Unit">        
+        <xs:all>            
+            <xs:element name="scoring" type="ScoringGroups" minOccurs="0" maxOccurs="1" />
+            <xs:element name="defaultIncludeCodeFile" type="NonEmptyString" minOccurs="0" maxOccurs="1" />
+            <xs:element name="slides" type="UnitSlides" minOccurs="0" maxOccurs="1" />
+        </xs:all>
+        <xs:attribute name="id" type="NonEmptyString" use="required"/>
+        <xs:attribute name="url" type="NonEmptyString" use="optional"/>
+        <xs:attribute name="title" type="NonEmptyString" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="UnitSlides">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">List of slides in the unit</xs:documentation>
+            <xs:documentation xml:lang="ru">Список слайдов в модуле</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="add" type="NonEmptyString" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Slide(s) XML filename. Supports masks with * and ?</xs:documentation>
+                    <xs:documentation xml:lang="ru">Путь до XML файла со слайдом или слайдами. Поддерживает маски с * и ?</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>        
+    </xs:complexType>
+    
+    <!-- Slide -->
+
+	<xs:element name="slide" type="Slide"/>
+	<xs:element name="slide.quiz" type="QuizSlide"/>
+	<xs:element name="slide.exercise" type="ExerciseSlide"/>	
+
+    <xs:complexType name="Slide">
+        <xs:group ref="SlideInternals" />
+        <xs:attributeGroup ref="SlideAttributes" />
+    </xs:complexType>
+
+    <xs:complexType name="QuizSlide" >
+        <xs:sequence>
+            <xs:element name="scoring" type="QuizScoring" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Quiz scoring settings</xs:documentation>
+					<xs:documentation xml:lang="ru">Настройки оценивания теста: количество попыток, ручная проверка и так далее...</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+            <xs:group ref="SlideInternals" />
+        </xs:sequence>
+        <xs:attributeGroup ref="SlideAttributes" />
+    </xs:complexType>
+
+    <xs:complexType name="ExerciseSlide" >
+        <xs:sequence>
+            <xs:element name="scoring" type="ExerciseScoring" minOccurs="0" maxOccurs="1" />
+            <xs:group ref="SlideInternals" />            
+        </xs:sequence>
+        <xs:attributeGroup ref="SlideAttributes" />
+    </xs:complexType>
+    
+    <xs:group name="SlideInternals">
+        <xs:sequence>
+            <xs:element name="meta" type="SlideMeta" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Slide's meta: keywords, description, image</xs:documentation>
+                    <xs:documentation xml:lang="ru">Мета-информация о слайде, попадёт на итоговую страницу в виде тегов keywords, description, image</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="defaultIncludeCodeFile" type="NonEmptyString" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Default path for &lt;includeCode&gt;, &lt;exercise.file&gt;, &lt;exercise.csproj&gt;</xs:documentation>
+                    <xs:documentation xml:lang="ru">Путь по умолчанию для блоков &lt;includeCode&gt;, &lt;exercise.file&gt;, &lt;exercise.csproj&gt;</xs:documentation>
+                </xs:annotation>
+            </xs:element>            
+            <xs:group ref="Blocks" minOccurs="0" maxOccurs="unbounded"/>            
+        </xs:sequence>
+    </xs:group>
+    
+    <xs:attributeGroup name="SlideAttributes">
+        <xs:attribute name="id" type="NonEmptyString" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Slide's id, should be guid</xs:documentation>
+                <xs:documentation xml:lang="ru">Идентификатор слайда, должен быть гуидом</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="title" type="NonEmptyString" use="required">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Slide's title</xs:documentation>
+                <xs:documentation xml:lang="ru">Заголовок слайда</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:attributeGroup>
+
+    <xs:complexType name="SlideMeta">
+        <xs:sequence>
+            <xs:element name="image" type="NonEmptyString" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Image for slide. Will be used i.e. on social network posting</xs:documentation>
+                    <xs:documentation xml:lang="ru">Изображение для слайда. Будет использовано, например, при постинге в соцсети</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="keywords" type="NonEmptyString" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Keywords for slide. Used by search engines</xs:documentation>
+                    <xs:documentation xml:lang="ru">Ключевые слова для слайда. Используются, например, поисковыми роботами</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="description" type="NonEmptyString" minOccurs="0" maxOccurs="1">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Description for slide. Used by search engines</xs:documentation>
+                    <xs:documentation xml:lang="ru">Описание для слайда. Используются, например, поисковыми роботами, выводится в результатах поиска</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <!-- Blocks -->
+
+    <xs:group name="Blocks">
+        <xs:choice>
+			<xs:group ref="CommonBlocks"/>            
+            
+            <!-- Quiz blocks -->
+            <xs:element name="question.isTrue" type="IsTrueBlock" />
+            <xs:element name="question.choice" type="ChoiceBlock">
+                <xs:unique name="UniqueChoiceItemId">
+                    <xs:selector xpath="*" />
+                    <xs:field xpath="@id" />
+                </xs:unique>
+            </xs:element>
+            <xs:element name="question.order" type="OrderingBlock">
+                <xs:unique name="UniqueOrderingItemId">
+                    <xs:selector xpath="*" />
+                    <xs:field xpath="@id" />
+                </xs:unique>
+            </xs:element>
+            <xs:element name="question.match" type="MatchingBlock">
+                <xs:unique name="UniqueMatchingItemId">
+                    <xs:selector xpath="*" />
+                    <xs:field xpath="@id" />
+                </xs:unique>
+            </xs:element>
+            <xs:element name="question.text" type="FillInBlock" />
+            
+            <!-- Exercise blocks -->
+            <xs:element name="exercise.csproj" type="ProjectExercise" />
+            <xs:element name="exercise.file" type="SingleFileExercise" />
+        </xs:choice>
+    </xs:group>
+	
+	<xs:group name="CommonBlocks">
+		<xs:choice>
+			<xs:element name="galleryImages" type="GalleryImages" />
+			<xs:element name="tex" type="Tex" />
+			<xs:element name="markdown" type="MarkdownBlock" />
+			<xs:element name="code" type="Code" />
+			<xs:element name="youtube" type="NonEmptyString" />
+			<xs:element name="includeCode" type="IncludeCodeBlock" />
+			<xs:element name="includeMarkdown" type="Include" />
+			<xs:element name="gallery" type="NonEmptyString" />
+			<xs:element name="includeBlocks" type="Include" />
+			<xs:element name="html" type="Html" />
+			<xs:element name="spoiler" type="Spoiler" />
+		</xs:choice>
+	</xs:group>
+
+    <xs:complexType name="GalleryImages">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="image" type="NonEmptyString" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Tex">
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="line" type="NonEmptyString" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Code">
+        <xs:simpleContent>
+            <xs:extension base="StringWithXmlSpaces">
+                <xs:attribute name="language" type="NonEmptyString" use="required" />
+                <xs:attribute name="hide" type="xs:boolean" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="Include">
+        <xs:attribute name="file" type="NonEmptyString" use="optional" />
+        <xs:attribute name="hide" type="xs:boolean" />
+    </xs:complexType>
+
+    <xs:complexType name="Html" mixed="true">
+		<xs:sequence>
+			<xs:any processContents="skip" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="hide" type="xs:boolean" />
+	</xs:complexType>
+	
+	<xs:complexType name="Spoiler">
+		<xs:sequence>
+			<xs:group ref="CommonBlocks" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="text" type="NonEmptyString" use="required" />
+		<xs:attribute name="hideQuizButton" type="xs:boolean" use="optional" />
+		<xs:attribute name="hide" type="xs:boolean" use="optional" />
+	</xs:complexType>
+
+    <xs:complexType name="MarkdownBlock" mixed="true">
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+            <xs:choice>
+                <xs:element name="note" type="NonEmptyString" />
+                <xs:element name="code" type="NonEmptyString" />
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="hide" type="xs:boolean" />
+    </xs:complexType>
+
+    <xs:complexType name="IncludeCodeBlock">
+        <xs:complexContent>
+            <xs:extension base="IncludeCode">
+                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="display" type="Label" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="IncludeCode">
+        <xs:complexContent>
+            <xs:extension base="Include">
+                <xs:attribute name="language" type="NonEmptyString" use="optional" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="Label">
+        <xs:simpleContent>
+            <xs:extension base="NonEmptyString">
+                <xs:attribute name="onlyBody" type="xs:boolean" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractExercise">
+        <xs:complexContent>
+            <xs:extension base="IncludeCode">
+                <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="initialCode" type="StringWithXmlSpaces" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="hint" type="NonEmptyString" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="comment" type="NonEmptyString" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="expected" type="StringWithXmlSpaces" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="hideSolutions" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="checkForPlagiarism" type="xs:boolean" minOccurs="0" maxOccurs="1" />
+                    <xs:element name="hideExpectedOutput" type="xs:boolean" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="validator" type="NonEmptyString" minOccurs="1" maxOccurs="1" />
+                </xs:choice>
+                <xs:attribute name="type" use="optional">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="check-output" />
+                            <xs:enumeration value="check-exit-code" />
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="SingleFileExercise">
+        <xs:complexContent>
+            <xs:extension base="AbstractExercise">
+                <xs:sequence>
+                    <xs:element name="solution" type="Label" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="remove" type="Label" minOccurs="0" maxOccurs="unbounded" />
+                    <xs:element name="prelude" type="NonEmptyString" minOccurs="0" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ProjectExercise">
+        <xs:complexContent>
+            <xs:extension base="AbstractExercise">				
+                <xs:sequence>                    
+                    <xs:element name="userCodeFile" type="NonEmptyString">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Путь относительно директории, в котором лежит csproj.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="excludePathForChecker" type="NonEmptyString" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Путь относительно директории, в котором лежит csproj. Этот файл будет исключён из проекта при сборке для проверки.
+                                Обычно это файл с эталонным решением.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="excludePathForStudent" type="NonEmptyString" minOccurs="0" maxOccurs="unbounded" >
+                        <xs:annotation>
+                            <xs:documentation>
+                                Путь относительно директории, в котором лежит csproj. Этот файл будет исключён из проекта при сборке для студента.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="studentZipIsCompilable" type="xs:boolean" minOccurs="0" maxOccurs="1">
+                        <xs:annotation>
+                            <xs:documentation>
+                                Должен ли по задумке автора zip с проектом для студента успешно собираться без изменений? По умолчанию true.
+                                Если false, то валидатор не выдает ошибку на несобирающийся проект из zip-а для студентов.
+                            </xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:choice>
+                        <xs:element name="startupObject" type="xs:string" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Полное имя класса, содержащего точку входа.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                        <xs:element name="nunitTestClass" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Имя класса с Nunit тестами, которые будут запущенны тест раннером.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:choice>
+                </xs:sequence>
+				<xs:attribute name="csproj" type="NonEmptyString" use="required">
+					<xs:annotation>
+						<xs:documentation>
+							Путь до csproj-файла относительно директории с xml-файлом описания слайда.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+	<xs:complexType name="AbstractQuestion">
+		<xs:sequence minOccurs="1" maxOccurs="1">
+			<xs:element name="text" minOccurs="1" maxOccurs="1" type="NonEmptyString">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">Question</xs:documentation>
+					<xs:documentation xml:lang="ru">Текст вопроса</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="id" type="NonEmptyString" use="required">
+			<xs:annotation>
+				<xs:documentation xml:lang="en">Identifier of the question. Should be unique in the slide.</xs:documentation>
+				<xs:documentation xml:lang="ru">Идентификатор вопроса. Должен быть уникальным в рамках слайда.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	
+    <xs:complexType name="IsTrueBlock">
+		<xs:complexContent>
+			<xs:extension base="AbstractQuestion">
+				<xs:attribute name="answer" type="xs:boolean" use="optional" />
+				<xs:attribute name="explanation" type="xs:string" use="optional" />
+				<xs:attribute name="maxScore" type="xs:int" use="optional" />
+			</xs:extension>			
+		</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ChoiceBlock">
+		<xs:complexContent>
+			<xs:extension base="AbstractQuestion">
+				<xs:sequence minOccurs="1" maxOccurs="1">
+					<xs:element name="allowedMistakes" minOccurs="0" maxOccurs="1" type="AllowedMistakes"/>
+					<xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="NonEmptyString">
+									<xs:attribute name="id" type="NonEmptyString" use="required" />
+									<xs:attribute name="isCorrect" use="required">
+										<xs:simpleType>
+											<xs:restriction base="NonEmptyString">
+												<xs:enumeration value="true" />
+												<xs:enumeration value="false" />
+												<xs:enumeration value="maybe" />
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									<xs:attribute name="explanation" type="xs:string" use="optional" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>				
+				<xs:attribute name="multiple" type="xs:boolean" use="optional" />
+				<xs:attribute name="shuffle" type="xs:boolean" use="optional" />
+				<xs:attribute name="maxScore" type="xs:int" use="optional" />
+			</xs:extension>
+		</xs:complexContent>        
+    </xs:complexType>
+
+    <xs:complexType name="FillInBlock">
+		<xs:complexContent>
+			<xs:extension base="AbstractQuestion">
+				<xs:sequence minOccurs="1" maxOccurs="1">
+					<xs:element name="sample" minOccurs="0" maxOccurs="1" type="xs:string">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Example of answer. Should match with at least of one regex</xs:documentation>
+							<xs:documentation xml:lang="ru">Пример ответа. Показывается студенту после использования всех попыток. Должен подходить хотя бы под одно регулярное выражение из &lt;regex&gt;</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="regex" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation xml:lang="en">Regular expression for correct answers</xs:documentation>
+							<xs:documentation xml:lang="ru">Регулярное выражение для проверки правильности ответа</xs:documentation>
+						</xs:annotation>
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="xs:string">
+									<xs:attribute name="ignoreCase" type="xs:boolean" use="optional" default="false" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="explanation" type="xs:string" use="optional" />				
+				<xs:attribute name="maxScore" type="xs:int" use="optional" />
+				<xs:attribute name="multiline" type="xs:boolean" use="optional" />
+			</xs:extension>
+		</xs:complexContent>        
+    </xs:complexType>
+
+    <xs:complexType name="OrderingBlock">
+		<xs:complexContent>
+			<xs:extension base="AbstractQuestion">
+				<xs:sequence minOccurs="1" maxOccurs="1">		
+					<xs:element name="explanation" type="xs:string" minOccurs="0" maxOccurs="1" />
+					<xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:simpleContent>
+								<xs:extension base="NonEmptyString">
+									<xs:attribute name="id" type="NonEmptyString" use="required" />
+								</xs:extension>
+							</xs:simpleContent>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>				
+				<xs:attribute name="maxScore" type="xs:int" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="MatchingBlock">
+		<xs:complexContent>
+			<xs:extension base="AbstractQuestion">
+				<xs:sequence minOccurs="1" maxOccurs="1">
+					<xs:element name="explanation" type="xs:string" minOccurs="0" maxOccurs="1" />
+					<xs:element name="match" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence minOccurs="1" maxOccurs="1">
+								<xs:element name="fixed" minOccurs="1" maxOccurs="1" type="NonEmptyString"/>
+								<xs:element name="movable" minOccurs="1" maxOccurs="1" type="NonEmptyString"/>
+							</xs:sequence>
+							<xs:attribute name="id" type="NonEmptyString" use="required" />
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="shuffleFixed" type="xs:boolean" use="optional" />
+				<xs:attribute name="maxScore" type="xs:int" use="optional" />
+			</xs:extension>
+		</xs:complexContent>
+    </xs:complexType>
+
+    <!-- Types -->
+
+    <xs:simpleType name="NonEmptyString">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">Non-empty string</xs:documentation>
+            <xs:documentation xml:lang="ru">Непустая строка</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>        
+    </xs:simpleType>
+
+    <xs:complexType name="StringWithXmlSpaces">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute ref="xml:space"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="SlideType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="lesson">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Simple lesson</xs:documentation>
+                    <xs:documentation xml:lang="ru">Просто слайд-урок</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="quiz">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Quiz with question blocks</xs:documentation>
+                    <xs:documentation xml:lang="ru">Тест с вопросами разных типов</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="exercise">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">Programming exercise</xs:documentation>
+                    <xs:documentation xml:lang="ru">Задача на программирование</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="TimeCode">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]{1,2}:[0-9]{2}" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="AllowedMistakes">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">Allowed mistakes count</xs:documentation>
+            <xs:documentation xml:lang="ru">Разрешённое количество ошибок</xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="checkedUnnecessary" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Allowed count of unnecessary checked items</xs:documentation>
+                <xs:documentation xml:lang="ru">Разрешённое количество пунктов, которые были отмечены пользователем, но НЕ должны были быть отмечены</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="notCheckedNecessary" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Allowed count of necessary not-checked items</xs:documentation>
+                <xs:documentation xml:lang="ru">Разрешённое количество пунктов, которые НЕ были отмечены пользователем, но должны были быть отмечены</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>        
+    </xs:complexType>  
+    
+    <xs:complexType name="QuizScoring">
+        <xs:attribute name="tries" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Maximum tries count</xs:documentation>
+                <xs:documentation xml:lang="ru">Максимальное количество попыток</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="manualCheck" type="xs:boolean" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Is manual checking enabled</xs:documentation>
+                <xs:documentation xml:lang="ru">Включена ли ручная проверка этого теста</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="group" type="NonEmptyString" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Scoring group for this quiz</xs:documentation>
+                <xs:documentation xml:lang="ru">К какой группе баллов относится этот тест</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="ExerciseScoring">
+        <xs:attribute name="passedTestsScore" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Score for correct solution (if all tests passed)</xs:documentation>
+                <xs:documentation xml:lang="ru">Количество баллов за верное решение (если прошли все тесты)</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="codeReviewScore" type="xs:int" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Maximum score for code review</xs:documentation>
+                <xs:documentation xml:lang="ru">Максимальное количество баллов за код-ревью</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="group" type="NonEmptyString" use="optional">
+            <xs:annotation>
+                <xs:documentation xml:lang="en">Scoring group for this quiz</xs:documentation>
+                <xs:documentation xml:lang="ru">К какой группе баллов относится этот тест</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="ScoringGroups">
+        <xs:sequence>
+            <xs:element name="group" type="ScoringGroup" minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="defaultQuiz" type="NonEmptyString" />
+        <xs:attribute name="defaultExercise" type="NonEmptyString" />
+        <xs:attribute name="default" type="NonEmptyString" />
+    </xs:complexType>
+
+    <xs:complexType name="ScoringGroup">
+        <xs:simpleContent>
+            <xs:extension base="NonEmptyString">
+                <xs:attribute name="id" type="NonEmptyString" use="required" />
+                <xs:attribute name="abbr" type="NonEmptyString" use="required" />
+                <xs:attribute name="description" type="NonEmptyString" use="optional" />
+                <xs:attribute name="maxAdditionalScore" type="xs:integer" use="optional" />
+                <xs:attribute name="enableForEveryone" type="xs:boolean" use="optional" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>    
+</xs:schema>

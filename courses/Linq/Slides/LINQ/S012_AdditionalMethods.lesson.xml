@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="Take, Skip, ToArray, ToList" id="11c65f91-8698-48d9-9a97-ba5b42d27133">
+  <markdown> Пора познакомиться еще с несколькими простыми, но часто используемыми методами.
+
+`Take` обрезает последовательность после указанного количества элементов.
+
+`IEnumerable&lt;T&gt; Take(this IEnumerable&lt;T&gt; items, int count)`
+
+`Skip` обрезает последовательность, пропуская указанное количество элементов с начала.
+
+`IEnumerable&lt;T&gt; Skip(this IEnumerable&lt;T&gt; items, int count)`
+
+`ToArray` и `ToList` используются для преобразования `IEnumerable&lt;T&gt;` в массив `T[]` или в `List&lt;T&gt;`, соответственно.
+
+Эти методы, как и предыдущие, не меняют исходную коллекцию, а возвращают новую последовательность.
+
+Можете изучить пример, показывающий работу всех этих методов вместе:</markdown>
+  <includeCode>
+    <display onlyBody="true">BasicFunctional</display>
+  </includeCode>
+  <defaultIncludeCodeFile>_AdditionalMethods.cs</defaultIncludeCodeFile>
+</slide>

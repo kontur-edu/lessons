@@ -1,0 +1,24 @@
+@import "../../../../variables.less";
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: inherit;
+  align-items: baseline;
+  word-break: break-word;
+
+  & > a {
+    flex: 0 0 auto;
+  }
+}
+
+.author {
+  flex: 0 0 auto;
+  font-size: 16px;
+  margin: 0 5px 0 0;
+
+  @media (max-width: @maxPhoneWidth) {
+    font-size: 16px;
+  }
+}

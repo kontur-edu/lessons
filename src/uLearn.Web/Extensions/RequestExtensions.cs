@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 using Microsoft.Owin;
+using Ulearn.Core.Extensions;
 
 namespace uLearn.Web.Extensions
 {
@@ -25,17 +25,9 @@ namespace uLearn.Web.Extensions
 			return request.LocalPort ?? 80;
 		}
 
-		public static List<string> GetMultipleValues(this HttpRequestBase request, string key, bool splitCommaSeparated = true)
+		public static List<string> GetMultipleValuesFromQueryString(this HttpRequestBase request, string key, bool splitCommaSeparated = true)
 		{
-			var values = request.QueryString.GetValues(key);
-			if (values == null)
-				return new List<string>();
-
-			var valuesList = new List<string>(values);
-			if (splitCommaSeparated)
-				valuesList = valuesList.SelectMany(s => s.Split(',')).ToList();
-
-			return valuesList;
+			return request.QueryString.GetMultipleValues(key, splitCommaSeparated);
 		}
 	}
 }

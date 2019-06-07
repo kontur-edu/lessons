@@ -1,7 +1,10 @@
-﻿@model uLearn.Web.Controllers.ExerciseScoreFormModel
+﻿@using Ulearn.Common.Extensions
+@using Ulearn.Core.Extensions
+@model uLearn.Web.Controllers.ExerciseScoreFormModel
 
 @{
-	var block = Model.Slide.Exercise;
+	var slide = Model.Slide;
+	var block = slide.Exercise;
 }
 
 <div class="exercise__add-review" style="display: none"
@@ -9,43 +12,42 @@
 	<div class="row">
 		<h4 class="col-xs-12">
 			Добавить комментарий
-			<a class="exercise__close-review pull-right no-underline" href="#">&times;</a>
+			<a class="exercise__close-review pull-right no-underline" href="#" title="Закрыть окно (Esc)">&times;</a>
 		</h4>
 
 	</div>
 	<div class="row">
 		<div class="col-sm-6">
 			<textarea class="exercise__add-review__comment"></textarea>
-			<span class="with-long-tooltip cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="**жирный текст**, __курсивный текст__, `код`, ```многострочный код```">
+			<span class="markdown-formatting-helper with-long-tooltip cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="**жирный текст**, __курсивный текст__, `код`, ```многострочный код```">
                 <span class="fa fa-question-circle"></span>
 				Работает форматирование
 			</span>
 			<button class="exercise__add-review__button btn btn-success btn-sm mt10">Сохранить (Ctrl+Enter)</button> 
 		</div>
 		<div class="col-sm-6 exercise__add-review__top-comments">
-			<b>Популярные комментарии</b>
 
 		</div>
 	</div>
 </div>
 
-<div class="row">
-	<div class="col-xs-12 col-md-6">
+<div class="row exercise__score-form-wrapper @(Model.Checking.IsChecked ? "" : "short")">
+	<div class="col-xs-12">
 		<form method="POST" action="@Url.Action("ScoreExercise", "Exercise", new { recheck = Model.Checking.IsChecked })"
 			class="exercise__score-form" data-submission-id="@Model.Checking.Submission.Id"
 			style="@(Model.IsCurrentSubmissionChecking ? "" : "display: none")">
-			<div class="text-muted">Выделите участок кода, чтобы оставить комментарий</div>	
+			<div class="exercise__review-selection-hint text-muted">Выделите участок кода, чтобы оставить комментарий</div>	
 
 			<input type="hidden" name="id" value="@Model.Checking.Id"/>
-			<input type="hidden" name="errorUrl" value="@Url.RouteUrl("Course.SlideById", new { Model.CourseId, slideId = Model.Slide.Url, CheckQueueItemId = Model.Checking.Id, group = Model.GroupsIdsJoined })&amp;error="/>
-			<input type="hidden" name="nextUrl" value="@Url.Action("ManualExerciseCheckingQueue", "Admin", new { Model.CourseId, group = Model.GroupsIdsJoined, done = Model.Checking.IsChecked })"/>
+			<input type="hidden" name="errorUrl" value="@Url.RouteUrl("Course.SlideById", new { courseId = Model.CourseId, slideId = Model.Slide.Url, CheckQueueItemId = Model.Checking.Id, group = Model.GroupsIdsJoined })&amp;error="/>
+			<input type="hidden" name="nextUrl" value="@Url.Action("CheckingQueue", "Admin", new { courseId = Model.CourseId, group = Model.GroupsIdsJoined, done = Model.Checking.IsChecked })"/>
 
 			@if (Model.Checking.IsLocked && !Model.Checking.IsLockedBy(User.Identity))
 			{
 				<div class="alert alert-danger mt10 ">Внимание. Эта работа прямо сейчас проверяется преподавателем @Model.Checking.LockedBy.VisibleName</div>
 			}
 
-			<h4>Оцените работу (максимальный балл @block.MaxReviewScore)</h4>
+			<h4>Оцените работу (максимальный балл @slide.Scoring.CodeReviewScore)</h4>
 			<div class="exercise__score">
 				<div class="btn-group" role="group">
 					@{
@@ -53,21 +55,23 @@
 					}
 					@foreach (var scorePercent in new[] { 0, 25, 50, 75, 100 })
 					{
-						var score = block.MaxReviewScore * scorePercent / 100;
+						var score = slide.Scoring.CodeReviewScore * scorePercent / 100;
 						/* For max review score < 4 we can not define percentage score,
-					 * because they are the same (0% of 2 is equal to 25% of 2)
-					 */
-						var isActive = Model.Checking.IsChecked && Model.Checking.Score == score && block.MaxReviewScore >= 4;
+                         * because they are the same (0% of 2 is equal to 25% of 2)
+                         */
+						var isActive = Model.Checking.IsChecked && Model.Checking.Score == score && slide.Scoring.CodeReviewScore >= 4;
 						isPercentScoreActive = isPercentScoreActive || isActive;
-						<button type="button" class="btn btn-default @(isActive ? "active" : "")" data-value="@score">@scorePercent%</button>
+						<button type="button" class="btn btn-default @(isActive ? "active" : "")" data-value="@score" data-percent="@scorePercent">@scorePercent%</button>
 					}
 				</div>
-				<div class="ib">
-					<a href="#" class="exercise__other-score-link internal-page-link @(isPercentScoreActive ? "" : "active")">Другая оценка</a>
+				<div class="ib exercise__other-score-container">
 					@{
-						var otherScoreInputDisplay = Model.Checking.IsChecked && !isPercentScoreActive ? "" : "display: none";
+						var displayOtherScoreInput = Model.Checking.IsChecked && !isPercentScoreActive;
+						var otherScoreInputDisplayProperty = displayOtherScoreInput ? "" : "display: none";
 					}
-					<input type="number" class="form-control" style="@otherScoreInputDisplay" min="0" max="@block.MaxReviewScore" name="exerciseScore" required="required"
+                    <a href="#" class="exercise__other-score-link internal-page-link @(displayOtherScoreInput ? "active" : "")">Другая оценка</a>
+					<input type="number" class="form-control" style="@otherScoreInputDisplayProperty" min="0" max="@slide.Scoring.CodeReviewScore" name="exerciseScore" required="required"
+							title="Введите количество баллов. Максимум — @slide.Scoring.CodeReviewScore"
 							value="@(Model.Checking.IsChecked ? Model.Checking.Score.ToString() : "")"/>
 				</div>
 			</div>
@@ -79,28 +83,49 @@
 	            {
 		            prohibitFutherReview = false;
 	            }
-                if (!Model.Checking.IsChecked && !Model.DefaultProhibitFutherReview)
+                if (!Model.Checking.IsChecked && !Model.DefaultProhibitFurtherReview)
 	            {
 		            prohibitFutherReview = false;
 	            }
 	            // ReSharper restore ReplaceWithSingleAssignment.True
             }
             
-            <div class="checkbox checkbox-default">
-				<input data-val="true" id="prohibitFurtherReview" name="prohibitFurtherReview" type="checkbox" value="true" @(prohibitFutherReview ? "checked" : "")/>
-				<label for="prohibitFurtherReview">
-					Не принимать больше код-ревью у этого студента
-				</label>
+			<div class="hide-on-short">
+			
+				<div class="checkbox checkbox-default">
+					<input data-val="true" id="prohibitFurtherReview" name="prohibitFurtherReview" type="checkbox" value="true" @(prohibitFutherReview ? "checked" : "")/>
+					<label for="prohibitFurtherReview">
+						Не принимать больше код-ревью у&nbsp;этого студента по&nbsp;задаче «@Model.Slide.Title.MakeNestedQuotes().TruncateWithEllipsis(50)»
+					</label>
+				</div>
+	
+				@{
+					/* This submissions should not be calculated as left checking */
+					Model.ManualCheckingsLeft--;
+				}
+				
+				<input type="submit" class="btn @(Model.Checking.IsChecked || Model.ManualCheckingsLeft == 0 ? "btn-primary" : "btn-default")" value="Сохранить и вернуться"/>
+	
+				@if (!Model.Checking.IsChecked)
+				{
+					if (Model.ManualCheckingsLeft == 0)
+					{
+						<div class="text-muted no-manual-checkings-left">
+							Это последняя работа по&nbsp;задаче
+						</div>
+					}
+					else
+					{
+						<input type="submit" class="btn btn-primary" value="Сохранить и перейти к следующему"
+							   data-url="@Url.Action("CheckNextExerciseForSlide", "Admin", new { Model.CourseId, slideId = Model.Slide.Id, group = Model.GroupsIdsJoined, previous = Model.Checking.Id })"
+							   onclick="$('[name=nextUrl]').val($(this).data('url'))"/>
+						<div class="text-muted manual-checkings-left">
+							По этой задаче остал@(Model.ManualCheckingsLeft % 10 == 1 && (Model.ManualCheckingsLeft % 100 / 10 != 1) ? "ась" : "ось")
+							@Model.ManualCheckingsLeft.PluralizeInRussian(RussianPluralizationOptions.Checkings)
+						</div>
+					}
+				}
 			</div>
-
-			<input type="submit" class="btn @(Model.Checking.IsChecked ? "btn-primary" : "btn-default")" value="Сохранить и вернуться"/>
-
-			@if (!Model.Checking.IsChecked)
-			{
-				<input type="submit" class="btn btn-primary" value="Сохранить и перейти к следующему"
-						data-url="@Url.Action("CheckNextExerciseForSlide", "Admin", new { Model.CourseId, slideId = Model.Slide.Id, group = Model.GroupsIdsJoined })"
-						onclick="$('[name=nextUrl]').val($(this).data('url'))"/>
-			}
 		</form>
 	</div>
 </div>

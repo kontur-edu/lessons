@@ -1,9 +1,10 @@
 using System.Linq;
-using uLearn.CSharp;
-using uLearn.CSharp.VerbInMethodNameValidation;
-using uLearn.Model.Blocks;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.CSharp.Validators;
+using Ulearn.Core.CSharp.Validators.VerbInMethodNameValidation;
 
-namespace uLearn
+namespace Ulearn.Core
 {
 	public class ValidatorsRepository
 	{
@@ -11,7 +12,7 @@ namespace uLearn
 		{
 			var name = validatorDescription.ValidatorName ?? "";
 			var parts = name.ToLower().Split(' ');
-			if (parts.Contains("cs"))
+			if (parts.Contains("csharp"))
 			{
 				var validator = new CSharpSolutionValidator(validatorDescription.RemoveDefaults);
 				foreach (var part in parts)

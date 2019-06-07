@@ -4,6 +4,7 @@ using Microsoft.Owin;
 using Owin;
 using Telegram.Bot;
 using uLearn.Web;
+using Ulearn.Core;
 
 [assembly: OwinStartup(typeof(Startup))]
 

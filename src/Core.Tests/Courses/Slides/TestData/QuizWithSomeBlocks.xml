@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<slide.quiz xmlns="https://ulearn.me/schema/v2" id="94CAAEA0-EA61-4908-A52B-44347908D74D" title="Quiz With Some Blocks">
+	<question.text id="first" maxScore="2">
+		<text>Внимание, вопрос!</text>
+		<regex>\d+</regex>		
+	</question.text>
+	
+	<markdown>
+		Маркдаун-блок внутри теста.
+	</markdown>
+	
+	<question.choice id="second" maxScore="3">
+		<text>Внимание, вопрос!</text>
+		<item id="1" isCorrect="true">Item 1</item>
+		<item id="2" isCorrect="false">Item 2</item>
+		<item id="3" isCorrect="false">Item 3</item>
+		<item id="4" isCorrect="false">Item 4</item>
+	</question.choice>
+</slide.quiz>

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.IO;
 using log4net;
-using uLearn.Configuration;
 using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Configuration;
+using Ulearn.Core.Courses.Slides;
 
-namespace uLearn.Helpers
+namespace Ulearn.Core.Helpers
 {
 	public class ExerciseStudentZipsCache
 	{

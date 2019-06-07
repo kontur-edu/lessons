@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Database.Models;
-using uLearn;
+using Ulearn.Core;
 
 namespace Database.DataContexts
 {
@@ -17,7 +17,7 @@ namespace Database.DataContexts
 
 		public async Task<string> AddRate(string courseId, Guid slideId, string userId, SlideRates rate)
 		{
-			var lastRate = db.SlideRates.FirstOrDefault(x => x.SlideId == slideId && x.UserId == userId);
+			var lastRate = db.SlideRates.FirstOrDefault(x => x.SlideId == slideId && x.UserId == userId && x.CourseId == courseId);
 			if (lastRate == null)
 			{
 				db.SlideRates.Add(new SlideRate
@@ -43,14 +43,16 @@ namespace Database.DataContexts
 
 		public string FindRate(string courseId, Guid slideId, string userId)
 		{
-			var lastRate = db.SlideRates.FirstOrDefault(x => x.SlideId == slideId && x.UserId == userId);
-			return lastRate == null ? null : lastRate.Rate.ToString();
+			var lastRate = db.SlideRates.FirstOrDefault(
+				x => x.CourseId == courseId && x.SlideId == slideId && x.UserId == userId
+			);
+			return lastRate?.Rate.ToString();
 		}
 
 		public Rates GetRates(Guid slideId, string courseId)
 		{
 			var rates = new Rates();
-			var allRates = db.SlideRates.Where(x => x.SlideId == slideId).ToList();
+			var allRates = db.SlideRates.Where(x => x.CourseId == courseId && x.SlideId == slideId).ToList();
 			foreach (var rate in allRates)
 			{
 				if (rate.Rate == SlideRates.Good)
@@ -67,7 +69,7 @@ namespace Database.DataContexts
 
 		public string GetUserRate(string courseId, Guid slideId, string userId)
 		{
-			return ConvertMarkToPrettyString(db.SlideRates.FirstOrDefault(x => x.SlideId == slideId && x.UserId == userId));
+			return ConvertMarkToPrettyString(db.SlideRates.FirstOrDefault(x => x.CourseId == courseId && x.SlideId == slideId && x.UserId == userId));
 		}
 
 		private string ConvertMarkToPrettyString(SlideRate slideRate)

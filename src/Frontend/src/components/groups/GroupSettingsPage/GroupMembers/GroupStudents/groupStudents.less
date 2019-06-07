@@ -1,0 +1,53 @@
+@import "../../../../../variables.less";
+
+.actions-block {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.action-buttons {
+  margin: 0 0 5px 30px;
+}
+
+.action {
+  border: none;
+  background: transparent;
+  color: @disabledColor;
+  text-align: center;
+}
+
+.button-copy {
+  color: @linkColor;
+}
+
+.button-delete {
+  color: @negativeColor;
+}
+
+.action-text {
+  @media (max-width: @maxPhoneWidth) {
+    display: none;
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.student-block {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: fit-content;
+
+  & > label > div > * {
+    vertical-align: top;
+  }
+
+  .addingTime {
+    color: #999;
+  }
+}

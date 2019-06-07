@@ -1,18 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Lesson
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://ulearn.azurewebsites.net/lesson">
-	<title>Фильтрация и преобразование</title>
-	<id>{E0114584-4500-40B2-B6D6-DB8AF455978B}</id>
-	<default-include-code-file>SelectWhereToArray.cs</default-include-code-file>
-	<md>
-		<![CDATA[
-		В основе `LINQ` лежит интерфейс __последовательности__ `IEnumerable<T>`. 
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="Фильтрация и преобразование" id="{E0114584-4500-40B2-B6D6-DB8AF455978B}">
+  <defaultIncludeCodeFile>SelectWhereToArray.cs</defaultIncludeCodeFile>
+  <markdown>
+		В основе `LINQ` лежит интерфейс __последовательности__ `IEnumerable&lt;T&gt;`. 
 		Последовательность — это абстракция чего-то, что можно начать перечислять 
 		и переходить от текущего элемента к следующему пока последовательность не закончится (или пока не надоест).
 
 		Массивы, `List`, `Dictionary`, `HashSet` — все эти коллекции реализуют интерфейс последовательности.
 
-		Для `IEnumerable<T>` в пространстве имен `System.Linq` определено множество полезных методов расширения, которые и образуют основу `LINQ`.
+		Для `IEnumerable&lt;T&gt;` в пространстве имен `System.Linq` определено множество полезных методов расширения, которые и образуют основу `LINQ`.
 		
 		Чтобы понимать дальнейший материал, вы должны быть знакомы с концепцией [методов расширения](http://msdn.microsoft.com/ru-ru/library/bb383977.aspx) 
 		и синтаксисом [лямбда-выражений](http://msdn.microsoft.com/ru-ru/library/bb397687.aspx).
@@ -24,19 +20,16 @@
 		
 		Вот его полная сигнатура:
 
-		`IEnumerable<T> Where(this IEnumerable<T> items, Func<T, bool> predicate)`
+		`IEnumerable&lt;T&gt; Where(this IEnumerable&lt;T&gt; items, Func&lt;T, bool&gt; predicate)`
 
 		`Select` используется для поэлементного преобразования перечисляемого. Он принимает в качестве параметра преобразующую функцию 
 		и возвращает новое перечисляемое, полученное применением этой функции к каждому элементу исходного перечисляемого.
 		
-		`IEnumerable<R> Select(this IEnumerable<T> items, Func<T, R> map)`
+		`IEnumerable&lt;R&gt; Select(this IEnumerable&lt;T&gt; items, Func&lt;T, R&gt; map)`
 		
 		Самое время еще раз взглянуть на пример с первого слайда — его логика должна проясниться:
-	]]>
-	</md>
-
-	<include-code>
-		<display>GetNewLettersIds</display>
-	</include-code>
-
-</Lesson>
+	</markdown>
+  <includeCode>
+    <display>GetNewLetterIds</display>
+  </includeCode>
+</slide>

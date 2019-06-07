@@ -1,14 +1,14 @@
 ﻿@using System.Linq
 @using Database.Extensions
 @using Database.Models
-@using uLearn.Web.Extensions
 @using Ulearn.Common
 @using Ulearn.Common.Extensions
+@using Ulearn.Core.Extensions
+@using FormMethod = System.Web.Mvc.FormMethod
 @model CourseStatisticPageModel
 
 @functions {
-	/* Returns css class from grade-0 to grade-15*/
-
+	/* Returns css class from grade-0 to grade-15 */
 	private string GradeCssClass(int score, int maxScore, bool zerosWithoutClass = true)
 	{
 		if (score > maxScore)
@@ -18,19 +18,16 @@
 	}
 
 	/* Returns css class from only-full__grade-0 to only-full__grade-15 */
-
 	private string OnlyFullGradeCssClass(int score, int maxScore)
 	{
 		return "only-full__" + GradeCssClass(score, maxScore, false);
 	}
-
 }
 
 @{
 	ViewBag.Title = Model.Course.Title;
 }
 
-<body>
 <div class="wide-container">
 <h2>
 	@if (!Model.IsInstructor)
@@ -128,9 +125,9 @@
 			<h3>Показывать</h3>
 		}
 		<div class="checkbox checkbox-default">
-			@Html.CheckBox("only-full-scores")
+			@Html.CheckBox("only-full-scores", true)
 			<label for="only-full-scores">
-				@(Model.IsInstructor ? "Показывать только полные баллы" : "Только полные баллы")
+				@(Model.IsInstructor ? "Засчитывать только полные баллы за код-ревью" : "Только полные баллы за код-ревью")
 			</label>
 			<span class="glyphicon glyphicon-refresh glyphicon-refresh-animate loading-icon" style="display: none"></span>
 		</div>
@@ -145,7 +142,7 @@
 	var orderingHint = "Нажмите для сортироки по этому полю. Нажмите с зажатым Shift, чтобы сортировать по нескольким столбцам";
 }
 <div class="course-statistics__wrapper">
-<table class="course-statistics" data-initial-order="desc">
+<table class="course-statistics only-full-scores" data-initial-order="desc">
 <thead>
 <tr>
 	<th rowspan="2" class="student-name" data-sorter="true">Фамилия Имя</th>
@@ -332,8 +329,8 @@
 				var scoringGroupOnlyFullScore = Model.Course.Units.Sum(unit => Model.GetTotalOnlyFullScoreForUserInUnitByScoringGroup(user.UserId, unit, scoringGroup));
 				<td class="score scoring-group-score scoring-group-sum-score"
 					data-unit-id="sum" data-scoring-group="@scoringGroup.Id"
-					data-only-full-value="@scoringGroupOnlyFullScore">
-					@scoringGroupScore
+					data-not-only-full-value="@scoringGroupScore">
+                    @scoringGroupOnlyFullScore
 				</td>
 			}
 
@@ -346,18 +343,18 @@
 					var onlyFullScore = Model.GetTotalOnlyFullScoreForUserInUnitByScoringGroup(user.UserId, unit, scoringGroup);
 					var maxScore = Model.GetMaxScoreForUnitByScoringGroup(unit, scoringGroup);
 					<td class="score scoring-group-score @GradeCssClass(scoringGroupScore, maxScore) @OnlyFullGradeCssClass(onlyFullScore, maxScore)"
-						data-unit-id="@unit.Id" data-scoring-group="@scoringGroup.Id"
-						data-only-full-value="@onlyFullScore">
-						@scoringGroupScore
+                        data-unit-id="@unit.Id" data-scoring-group="@scoringGroup.Id"
+						data-not-only-full-value="@scoringGroupScore">
+						@onlyFullScore
 					</td>
 
 					foreach (var slide in shouldBeSolvedSlides)
 					{
 						var slideScore = Model.ScoreByUserAndSlide[Tuple.Create(user.UserId, slide.Id)];
-						<td class="score slide-score @GradeCssClass(slideScore, slide.MaxScore) @OnlyFullGradeCssClass(Model.GetOnlyFullScore(slideScore, slide.MaxScore), slide.MaxScore)"
+						<td class="score slide-score @GradeCssClass(slideScore, slide.MaxScore) @OnlyFullGradeCssClass(Model.GetOnlyFullScore(slideScore, slide), slide.MaxScore)"
 							data-slide-id="@slide.Id" data-unit-id="@unit.Id" data-scoring-group="@scoringGroup.Id"
-							data-only-full-value="@Model.GetOnlyFullScore(slideScore, slide.MaxScore)">
-							@slideScore
+							data-not-only-full-value="@slideScore">
+                            @Model.GetOnlyFullScore(slideScore, slide)
 						</td>
 					}
 					if (shouldBeSolvedSlides.Count > 0 && scoringGroup.CanBeSetByInstructor)
@@ -391,4 +388,3 @@
 }
 </div>
 </div>
-</body>

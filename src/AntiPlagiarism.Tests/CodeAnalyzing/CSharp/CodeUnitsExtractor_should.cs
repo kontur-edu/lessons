@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using AntiPlagiarism.Web.CodeAnalyzing.CSharp;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
+using Ulearn.Common.Extensions;
 
 namespace AntiPlagiarism.Tests.CodeAnalyzing.CSharp
 {
@@ -10,6 +13,12 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.CSharp
 	public class CodeUnitsExtractor_should
 	{
 		private CodeUnitsExtractor extractor;
+		
+		/* TODO (andgein): make this code more straighted and clear? */
+		private static DirectoryInfo TestDataDir => new DirectoryInfo(
+			Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", 
+				"CodeAnalyzing", "CSharp", "TestData")
+		);
 
 		[SetUp]
 		public void SetUp()
@@ -18,9 +27,9 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.CSharp
 		}
 
 		[Test]
-		public void TestExtract()
+		public void ExtractCodeUnits()
 		{
-			var codeUnits = extractor.Extract(TestData.SimpleProgramWithMethodAndProperty);
+			var codeUnits = extractor.Extract(CommonTestData.SimpleProgramWithMethodAndProperty);
 			
 			Assert.AreEqual(3, codeUnits.Count);
 			CollectionAssert.AreEqual(new List<int> { 31, 45, 51 }, codeUnits.Select(u => u.FirstTokenIndex));
@@ -43,9 +52,9 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.CSharp
 		}
 
 		[Test]
-		public void TestGetNodeName()
+		public void GiveCorrectNodeNames()
 		{
-			var syntaxTree = CSharpSyntaxTree.ParseText(TestData.SimpleProgramWithMethodAndProperty);
+			var syntaxTree = CSharpSyntaxTree.ParseText(CommonTestData.SimpleProgramWithMethodAndProperty);
 			var syntaxTreeRoot = syntaxTree.GetRoot();
 			
 			Assert.AreEqual("ROOT", CodeUnitsExtractor.GetNodeName(syntaxTreeRoot));
@@ -61,6 +70,42 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.CSharp
 			
 			var propertyDeclaration = classDeclaration.ChildNodes().First(n => n.Kind() == SyntaxKind.PropertyDeclaration);
 			Assert.AreEqual("A", CodeUnitsExtractor.GetNodeName(propertyDeclaration));
+		}
+
+		[Test]
+		public void ExtractInnerClass()
+		{
+			var codeUnits = ExtractCodeUnitsFromTestFile("NestedClasses.cs");
+			
+			/* At least one code unit is inside InnerClass */
+			Assert.IsTrue(codeUnits.Any(u => u.Path.Parts.Any(p => p.Name == "InnerClass")));
+		}
+
+		[Test]
+		public void ExtractConstructors()
+		{
+			var codeUnits = ExtractCodeUnitsFromTestFile("Constructors.cs");
+			
+			Assert.AreEqual(5, codeUnits.Count);
+			
+			/* One code unit should be ThisConstructorInitializer */
+			Assert.AreEqual(1, codeUnits.Count(u => u.Path.Parts.Any(p => p.Name == "ThisConstructorInitializer")));
+		}
+
+		[Test]
+		public void ExtractOperators()
+		{
+			var codeUnits = ExtractCodeUnitsFromTestFile("Operators.cs");
+			
+			Assert.AreEqual(4, codeUnits.Count(u => u.Path.Parts.Any(p => p.Name.StartsWith("Operator"))));
+			Assert.AreEqual(3, codeUnits.Count(u => u.Path.Parts.Any(p => p.Name.StartsWith("Conversion-"))));
+		}
+
+		private List<CodeUnit> ExtractCodeUnitsFromTestFile(string filename)
+		{
+			var testFile = TestDataDir.GetFile(filename);
+			var testContent = File.ReadAllText(testFile.FullName);
+			return extractor.Extract(testContent);
 		}
 	}
 }

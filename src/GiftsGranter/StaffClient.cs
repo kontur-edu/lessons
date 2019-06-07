@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Ulearn.Common;
 
 namespace GiftsGranter
 {
@@ -25,8 +25,11 @@ namespace GiftsGranter
 		private JObject Get(string url)
 		{
 			var client = CreateHttpClient();
-			var response = client.GetAsync($"https://staff.skbkontur.ru/api/{url}").Result;
-			return GetJsonResponse(response);
+			return FuncUtils.TrySeveralTimesAsync(async () =>
+			{
+				var response = await client.GetAsync($"https://staff.skbkontur.ru/api/{url}").ConfigureAwait(false);
+				return GetJsonResponse(response);
+			}, 3).GetAwaiter().GetResult();
 		}
 
 		private HttpClient CreateHttpClient()
@@ -46,7 +49,7 @@ namespace GiftsGranter
 
 		public JObject GetUser(string sid)
 		{
-			return Get($"users/getBySid?sid={sid}");
+			return Get($"users/{sid}");
 		}
 
 		public JObject GetUserGifts(int staffUserId)

@@ -12,7 +12,7 @@ namespace Database.Migrations
 		public Configuration()
 		{
 			AutomaticMigrationsEnabled = false;
-			CommandTimeout = 60 * 10;
+			CommandTimeout = 60 * 60; // in seconds
 		}
 
 		protected override void Seed(ULearnDb db)

@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\NUnit.3.10.1\build\NUnit.props" Condition="Exists('..\packages\NUnit.3.10.1\build\NUnit.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -39,8 +40,9 @@
     <Reference Include="ApprovalUtilities.Net45, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ApprovalUtilities.3.0.13\lib\net45\ApprovalUtilities.Net45.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
-      <HintPath>..\packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+    <Reference Include="DotNetZip, Version=1.11.0.0, Culture=neutral, PublicKeyToken=6583c7c814667745">
+      <HintPath>..\packages\DotNetZip.1.11.0\lib\net20\DotNetZip.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
@@ -51,8 +53,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="JetBrains.Annotations, Version=10.4.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\JetBrains.Annotations.10.4.0\lib\net\JetBrains.Annotations.dll</HintPath>
+    <Reference Include="JetBrains.Annotations, Version=11.1.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
+      <HintPath>..\packages\JetBrains.Annotations.11.1.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -63,24 +66,52 @@
     <Reference Include="MarkdownDeep.Core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MarkdownDeep.NET.Core.1.5.0.4\lib\netstandard2.0\MarkdownDeep.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.2\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.2.8.2\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.2.8.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.2.8.2\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.VisualBasic.2.8.2\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic.Workspaces, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.VisualBasic.Workspaces.2.8.2\lib\netstandard1.3\Microsoft.CodeAnalysis.VisualBasic.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=2.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Workspaces.Common.2.8.2\lib\net46\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
+      <HintPath>..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.AppContext, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\System.AppContext.4.3.0\lib\net463\System.AppContext.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Immutable, Version=1.2.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Collections.Immutable.1.4.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -137,6 +168,10 @@
     <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\System.Runtime.Extensions.4.3.0\lib\net462\System.Runtime.Extensions.dll</HintPath>
     </Reference>
@@ -155,14 +190,16 @@
     <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
     </Reference>
-    <Reference Include="System.Text.Encoding.CodePages, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Text.Encoding.CodePages.4.3.0\lib\net46\System.Text.Encoding.CodePages.dll</HintPath>
+    <Reference Include="System.Text.Encoding.CodePages, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Text.Encoding.CodePages.4.5.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Threading.Thread, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
     </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -182,6 +219,10 @@
     <Reference Include="System.Xml.XPath.XDocument, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
     </Reference>
+    <Reference Include="Z.EntityFramework.Plus.EF6, Version=1.7.19.0, Culture=neutral, PublicKeyToken=59b66d028979105b">
+      <HintPath>..\packages\Z.EntityFramework.Plus.EF6.1.7.19\lib\net45\Z.EntityFramework.Plus.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataContexts\AdditionalScoresRepo.cs" />
@@ -195,12 +236,12 @@
     <Compile Include="DataContexts\GroupsRepo.cs" />
     <Compile Include="DataContexts\LtiRequestsRepo.cs" />
     <Compile Include="DataContexts\NotificationsRepo.cs" />
-    <Compile Include="DataContexts\QuizzesRepo.cs" />
     <Compile Include="DataContexts\RestoreRequestRepo.cs" />
     <Compile Include="DataContexts\SlideCheckingsRepo.cs" />
     <Compile Include="DataContexts\SlideHintRepo.cs" />
     <Compile Include="DataContexts\SlideRateRepo.cs" />
     <Compile Include="DataContexts\StepikRepo.cs" />
+    <Compile Include="DataContexts\StyleErrorsRepo.cs" />
     <Compile Include="DataContexts\SystemAccessesRepo.cs" />
     <Compile Include="DataContexts\TextsRepo.cs" />
     <Compile Include="DataContexts\ULearnDb.cs" />
@@ -215,7 +256,7 @@
     <Compile Include="DataContexts\XQueueRepo.cs" />
     <Compile Include="Extensions\EfDbExtensions.cs" />
     <Compile Include="Extensions\IQueryableExtensions.cs" />
-    <Compile Include="Extensions\UserExtentions.cs" />
+    <Compile Include="Extensions\UserExtensions.cs" />
     <Compile Include="FilterOptions.cs" />
     <Compile Include="Migrations\201407111234255_InitialCreate.cs" />
     <Compile Include="Migrations\201407111234255_InitialCreate.Designer.cs">
@@ -597,20 +638,160 @@
     <Compile Include="Migrations\201802121225237_AddAntiPlagiarismSubmissionId.Designer.cs">
       <DependentUpon>201802121225237_AddAntiPlagiarismSubmissionId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802261841382_AddExerciseCodeReviewComments.cs" />
+    <Compile Include="Migrations\201802261841382_AddExerciseCodeReviewComments.Designer.cs">
+      <DependentUpon>201802261841382_AddExerciseCodeReviewComments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803051837207_AddSubmissionReferenceToExerciseCodeReview.cs" />
+    <Compile Include="Migrations\201803051837207_AddSubmissionReferenceToExerciseCodeReview.Designer.cs">
+      <DependentUpon>201803051837207_AddSubmissionReferenceToExerciseCodeReview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803151326386_AddMassGroupOperationNotifications.cs" />
+    <Compile Include="Migrations\201803151326386_AddMassGroupOperationNotifications.Designer.cs">
+      <DependentUpon>201803151326386_AddMassGroupOperationNotifications.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803160501457_AddCommentsForInstructorsOnly.cs" />
+    <Compile Include="Migrations\201803160501457_AddCommentsForInstructorsOnly.Designer.cs">
+      <DependentUpon>201803160501457_AddCommentsForInstructorsOnly.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803300553347_AddStyleErrorSettings.cs" />
+    <Compile Include="Migrations\201803300553347_AddStyleErrorSettings.Designer.cs">
+      <DependentUpon>201803300553347_AddStyleErrorSettings.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804130337227_AddSubmissionsLanguageAndAgentName.cs" />
+    <Compile Include="Migrations\201804130337227_AddSubmissionsLanguageAndAgentName.Designer.cs">
+      <DependentUpon>201804130337227_AddSubmissionsLanguageAndAgentName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804240540418_RemoveDeleteRestrictionForUser.cs" />
+    <Compile Include="Migrations\201804240540418_RemoveDeleteRestrictionForUser.Designer.cs">
+      <DependentUpon>201804240540418_RemoveDeleteRestrictionForUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804260747460_CancelCascadeDeletionForGroupAccesses.cs" />
+    <Compile Include="Migrations\201804260747460_CancelCascadeDeletionForGroupAccesses.Designer.cs">
+      <DependentUpon>201804260747460_CancelCascadeDeletionForGroupAccesses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804260950525_ApplicationUserIsDeleted.cs" />
+    <Compile Include="Migrations\201804260950525_ApplicationUserIsDeleted.Designer.cs">
+      <DependentUpon>201804260950525_ApplicationUserIsDeleted.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804270135420_RemoveRequiredAutomaticChecking.cs" />
+    <Compile Include="Migrations\201804270135420_RemoveRequiredAutomaticChecking.Designer.cs">
+      <DependentUpon>201804270135420_RemoveRequiredAutomaticChecking.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805242057533_AddIpAddressToVisit.cs" />
+    <Compile Include="Migrations\201805242057533_AddIpAddressToVisit.Designer.cs">
+      <DependentUpon>201805242057533_AddIpAddressToVisit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805310442437_AddRecheckToPassedManualCheckingNotification.cs" />
+    <Compile Include="Migrations\201805310442437_AddRecheckToPassedManualCheckingNotification.Designer.cs">
+      <DependentUpon>201805310442437_AddRecheckToPassedManualCheckingNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806041803400_AddIndiciesToUserQuizzes.cs" />
+    <Compile Include="Migrations\201806041803400_AddIndiciesToUserQuizzes.Designer.cs">
+      <DependentUpon>201806041803400_AddIndiciesToUserQuizzes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806150221500_RenameColumnsForEfCoreCompatibility.cs" />
+    <Compile Include="Migrations\201806150221500_RenameColumnsForEfCoreCompatibility.Designer.cs">
+      <DependentUpon>201806150221500_RenameColumnsForEfCoreCompatibility.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807161240491_AddIndexToVisitsWithIncludeUser.cs" />
+    <Compile Include="Migrations\201807161240491_AddIndexToVisitsWithIncludeUser.Designer.cs">
+      <DependentUpon>201807161240491_AddIndexToVisitsWithIncludeUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807242023469_AddCourseIdToLtiRequests.cs" />
+    <Compile Include="Migrations\201807242023469_AddCourseIdToLtiRequests.Designer.cs">
+      <DependentUpon>201807242023469_AddCourseIdToLtiRequests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807242045133_AddCourseIdToSlideHintIndex.cs" />
+    <Compile Include="Migrations\201807242045133_AddCourseIdToSlideHintIndex.Designer.cs">
+      <DependentUpon>201807242045133_AddCourseIdToSlideHintIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807242056303_AddCourseIdToUserQuzzesIndex.cs" />
+    <Compile Include="Migrations\201807242056303_AddCourseIdToUserQuzzesIndex.Designer.cs">
+      <DependentUpon>201807242056303_AddCourseIdToUserQuzzesIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201809211948326_IncreaseQuizAnswerSize.cs" />
+    <Compile Include="Migrations\201809211948326_IncreaseQuizAnswerSize.Designer.cs">
+      <DependentUpon>201809211948326_IncreaseQuizAnswerSize.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201810111816271_RemoveUserExerciseSubmissionsApplicationUserField.cs" />
+    <Compile Include="Migrations\201810111816271_RemoveUserExerciseSubmissionsApplicationUserField.Designer.cs">
+      <DependentUpon>201810111816271_RemoveUserExerciseSubmissionsApplicationUserField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812061808280_RemoveQuizVersions.cs" />
+    <Compile Include="Migrations\201812061808280_RemoveQuizVersions.Designer.cs">
+      <DependentUpon>201812061808280_RemoveQuizVersions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901212054036_AddUserQuizSubmissions.cs" />
+    <Compile Include="Migrations\201901212054036_AddUserQuizSubmissions.Designer.cs">
+      <DependentUpon>201901212054036_AddUserQuizSubmissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901212242411_RemoveIdentityFromQuizCheckingsIds.cs" />
+    <Compile Include="Migrations\201901212242411_RemoveIdentityFromQuizCheckingsIds.Designer.cs">
+      <DependentUpon>201901212242411_RemoveIdentityFromQuizCheckingsIds.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901220511203_RenameUserQuizs.cs" />
+    <Compile Include="Migrations\201901220511203_RenameUserQuizs.Designer.cs">
+      <DependentUpon>201901220511203_RenameUserQuizs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901242025259_RemoveQuizSubmissionIsDropped.cs" />
+    <Compile Include="Migrations\201901242025259_RemoveQuizSubmissionIsDropped.Designer.cs">
+      <DependentUpon>201901242025259_RemoveQuizSubmissionIsDropped.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903061415434_DeleteNotificationDeliveryOnDeleteNotification.cs" />
+    <Compile Include="Migrations\201903061415434_DeleteNotificationDeliveryOnDeleteNotification.Designer.cs">
+      <DependentUpon>201903061415434_DeleteNotificationDeliveryOnDeleteNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903111115321_AddCourseFiles.cs" />
+    <Compile Include="Migrations\201903111115321_AddCourseFiles.Designer.cs">
+      <DependentUpon>201903111115321_AddCourseFiles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903291321473_AddCertificateTemplateArchive.cs" />
+    <Compile Include="Migrations\201903291321473_AddCertificateTemplateArchive.Designer.cs">
+      <DependentUpon>201903291321473_AddCertificateTemplateArchive.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904250906053_CourseVersionGit.cs" />
+    <Compile Include="Migrations\201904250906053_CourseVersionGit.Designer.cs">
+      <DependentUpon>201904250906053_CourseVersionGit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904260821479_CourseVersion_PathToCourseXml.cs" />
+    <Compile Include="Migrations\201904260821479_CourseVersion_PathToCourseXml.Designer.cs">
+      <DependentUpon>201904260821479_CourseVersion_PathToCourseXml.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905140908335_AddNotUploadedPackageNotification.cs" />
+    <Compile Include="Migrations\201905140908335_AddNotUploadedPackageNotification.Designer.cs">
+      <DependentUpon>201905140908335_AddNotUploadedPackageNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905160845235_AddRepoUrl2NotUploadedPackageNotification.cs" />
+    <Compile Include="Migrations\201905160845235_AddRepoUrl2NotUploadedPackageNotification.Designer.cs">
+      <DependentUpon>201905160845235_AddRepoUrl2NotUploadedPackageNotification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905221027183_AddCourseGitRepos.cs" />
+    <Compile Include="Migrations\201905221027183_AddCourseGitRepos.Designer.cs">
+      <DependentUpon>201905221027183_AddCourseGitRepos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905241421585_AddCourseGitBranchField.cs" />
+    <Compile Include="Migrations\201905241421585_AddCourseGitBranchField.Designer.cs">
+      <DependentUpon>201905241421585_AddCourseGitBranchField.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AdditionalScore.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\Certificate.cs" />
     <Compile Include="Models\CertificateTemplate.cs" />
+    <Compile Include="Models\CertificateTemplateArchive.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\CommentLike.cs" />
     <Compile Include="Models\CommentPolicy.cs" />
     <Compile Include="Models\CourseAccess.cs" />
+    <Compile Include="Models\CourseGit.cs" />
     <Compile Include="Models\CourseVersion.cs" />
     <Compile Include="Models\EnabledAdditionalScoringGroup.cs" />
     <Compile Include="Models\ExerciseCodeReview.cs" />
+    <Compile Include="Models\ExerciseCodeReviewComment.cs" />
     <Compile Include="Models\ExerciseSolutionByGrader.cs" />
     <Compile Include="Models\FeedUpdateTimestamp.cs" />
+    <Compile Include="Models\CourseFile.cs" />
     <Compile Include="Models\GraderClient.cs" />
     <Compile Include="Models\Group.cs" />
     <Compile Include="Models\GroupAccess.cs" />
@@ -630,12 +811,14 @@
     <Compile Include="Models\StepikAccessToken.cs" />
     <Compile Include="Models\StepikExportProcess.cs" />
     <Compile Include="Models\StepikExportSlideAndStepMap.cs" />
+    <Compile Include="Models\StyleErrorSettings.cs" />
     <Compile Include="Models\SystemAccess.cs" />
     <Compile Include="Models\TextBlob.cs" />
     <Compile Include="Models\UnitAppearance.cs" />
     <Compile Include="Models\UserExerciseSubmission.cs" />
     <Compile Include="Models\UserQuestion.cs" />
-    <Compile Include="Models\UserQuiz.cs" />
+    <Compile Include="Models\UserQuizAnswer.cs" />
+    <Compile Include="Models\UserQuizSubmission.cs" />
     <Compile Include="Models\UserRole.cs" />
     <Compile Include="Models\XQueueExerciseSubmission.cs" />
     <Compile Include="Models\XQueueWatcher.cs" />
@@ -931,6 +1114,108 @@
     <EmbeddedResource Include="Migrations\201802121225237_AddAntiPlagiarismSubmissionId.resx">
       <DependentUpon>201802121225237_AddAntiPlagiarismSubmissionId.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802261841382_AddExerciseCodeReviewComments.resx">
+      <DependentUpon>201802261841382_AddExerciseCodeReviewComments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803051837207_AddSubmissionReferenceToExerciseCodeReview.resx">
+      <DependentUpon>201803051837207_AddSubmissionReferenceToExerciseCodeReview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803151326386_AddMassGroupOperationNotifications.resx">
+      <DependentUpon>201803151326386_AddMassGroupOperationNotifications.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803160501457_AddCommentsForInstructorsOnly.resx">
+      <DependentUpon>201803160501457_AddCommentsForInstructorsOnly.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803300553347_AddStyleErrorSettings.resx">
+      <DependentUpon>201803300553347_AddStyleErrorSettings.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804130337227_AddSubmissionsLanguageAndAgentName.resx">
+      <DependentUpon>201804130337227_AddSubmissionsLanguageAndAgentName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804240540418_RemoveDeleteRestrictionForUser.resx">
+      <DependentUpon>201804240540418_RemoveDeleteRestrictionForUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804260747460_CancelCascadeDeletionForGroupAccesses.resx">
+      <DependentUpon>201804260747460_CancelCascadeDeletionForGroupAccesses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804260950525_ApplicationUserIsDeleted.resx">
+      <DependentUpon>201804260950525_ApplicationUserIsDeleted.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804270135420_RemoveRequiredAutomaticChecking.resx">
+      <DependentUpon>201804270135420_RemoveRequiredAutomaticChecking.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805242057533_AddIpAddressToVisit.resx">
+      <DependentUpon>201805242057533_AddIpAddressToVisit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805310442437_AddRecheckToPassedManualCheckingNotification.resx">
+      <DependentUpon>201805310442437_AddRecheckToPassedManualCheckingNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806041803400_AddIndiciesToUserQuizzes.resx">
+      <DependentUpon>201806041803400_AddIndiciesToUserQuizzes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806150221500_RenameColumnsForEfCoreCompatibility.resx">
+      <DependentUpon>201806150221500_RenameColumnsForEfCoreCompatibility.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807161240491_AddIndexToVisitsWithIncludeUser.resx">
+      <DependentUpon>201807161240491_AddIndexToVisitsWithIncludeUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807242023469_AddCourseIdToLtiRequests.resx">
+      <DependentUpon>201807242023469_AddCourseIdToLtiRequests.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807242045133_AddCourseIdToSlideHintIndex.resx">
+      <DependentUpon>201807242045133_AddCourseIdToSlideHintIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807242056303_AddCourseIdToUserQuzzesIndex.resx">
+      <DependentUpon>201807242056303_AddCourseIdToUserQuzzesIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809211948326_IncreaseQuizAnswerSize.resx">
+      <DependentUpon>201809211948326_IncreaseQuizAnswerSize.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810111816271_RemoveUserExerciseSubmissionsApplicationUserField.resx">
+      <DependentUpon>201810111816271_RemoveUserExerciseSubmissionsApplicationUserField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812061808280_RemoveQuizVersions.resx">
+      <DependentUpon>201812061808280_RemoveQuizVersions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901212054036_AddUserQuizSubmissions.resx">
+      <DependentUpon>201901212054036_AddUserQuizSubmissions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901212242411_RemoveIdentityFromQuizCheckingsIds.resx">
+      <DependentUpon>201901212242411_RemoveIdentityFromQuizCheckingsIds.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901220511203_RenameUserQuizs.resx">
+      <DependentUpon>201901220511203_RenameUserQuizs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901242025259_RemoveQuizSubmissionIsDropped.resx">
+      <DependentUpon>201901242025259_RemoveQuizSubmissionIsDropped.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903061415434_DeleteNotificationDeliveryOnDeleteNotification.resx">
+      <DependentUpon>201903061415434_DeleteNotificationDeliveryOnDeleteNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903111115321_AddCourseFiles.resx">
+      <DependentUpon>201903111115321_AddCourseFiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903291321473_AddCertificateTemplateArchive.resx">
+      <DependentUpon>201903291321473_AddCertificateTemplateArchive.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904250906053_CourseVersionGit.resx">
+      <DependentUpon>201904250906053_CourseVersionGit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904260821479_CourseVersion_PathToCourseXml.resx">
+      <DependentUpon>201904260821479_CourseVersion_PathToCourseXml.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905140908335_AddNotUploadedPackageNotification.resx">
+      <DependentUpon>201905140908335_AddNotUploadedPackageNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905160845235_AddRepoUrl2NotUploadedPackageNotification.resx">
+      <DependentUpon>201905160845235_AddRepoUrl2NotUploadedPackageNotification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905221027183_AddCourseGitRepos.resx">
+      <DependentUpon>201905221027183_AddCourseGitRepos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905241421585_AddCourseGitBranchField.resx">
+      <DependentUpon>201905241421585_AddCourseGitBranchField.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -944,6 +1229,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{803c067a-5553-467d-9470-116fe2430255}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Metrics\Metrics.csproj">
+      <Project>{b6b60d19-c6bd-4d66-95da-14480a18770c}</Project>
+      <Name>Metrics</Name>
     </ProjectReference>
     <ProjectReference Include="..\RunCsJob.Api\RunCsJob.Api.csproj">
       <Project>{26580595-f4dc-41ee-ba66-0ef4692243af}</Project>

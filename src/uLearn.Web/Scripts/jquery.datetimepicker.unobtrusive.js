@@ -1,4 +1,6 @@
-﻿$(document).ready(function() {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function() {
 	$('.datetimepicker').each(function() {
 		var $self = $(this);
 		var format = $self.data('date-format') || 'd.m.Y';

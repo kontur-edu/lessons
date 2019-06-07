@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<unit xmlns="https://ulearn.me/schema/v2" id="DA1D4D67-8B5D-47B4-92E6-7F31E3950FC2" title="Simple unit" url="Simple_unit_2">
+	<scoring>
+		<group id="ScoringGroup1" abbr="Бл 1" maxAdditionalScore="10">Баллы 1</group>
+	</scoring>
+	<defaultIncludeCodeFile>default include code file</defaultIncludeCodeFile>
+	<slides>
+		<add>SimpleSlide*.xml</add>
+	</slides>
+</unit>

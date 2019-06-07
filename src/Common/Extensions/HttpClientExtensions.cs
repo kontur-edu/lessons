@@ -15,12 +15,7 @@ namespace Ulearn.Common.Extensions
 			return await client.PostAsync(
 				uri,
 				new StringContent(serializedPayload, Encoding.UTF8, "application/json"),
-				CancellationToken.None);
-		}
-
-		public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient client, Uri uri, T payload)
-		{
-			return client.PostAsJsonAsync(uri.ToString(), payload);
+				CancellationToken.None).ConfigureAwait(false);
 		}
 
 		public static async Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient client, string uri, T payload)
@@ -29,12 +24,7 @@ namespace Ulearn.Common.Extensions
 			return await client.PutAsync(
 				uri,
 				new StringContent(serializedPayload, Encoding.UTF8, "application/json"),
-				CancellationToken.None);
-		}
-		
-		public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient client, Uri uri, T payload)
-		{
-			return client.PutAsJsonAsync(uri.ToString(), payload);
+				CancellationToken.None).ConfigureAwait(false);
 		}
 	}
 }

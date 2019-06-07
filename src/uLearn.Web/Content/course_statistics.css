@@ -1,0 +1,231 @@
+.legacy-page .course-statistics__wrapper {
+	width: 100%;
+	max-width: 100%;
+}
+
+.legacy-page .course-statistics:not(.sticky-column):not(.sticky-header) {
+	margin-top: 15px;
+}
+
+.legacy-page .course-statistics thead th {
+	font-weight: 400;
+	font-size: 12px;
+	background-color: #ebf4f9;
+}
+
+.legacy-page .course-statistics thead th.sorted {
+	background-color: #8dbdd8;
+}
+
+.legacy-page .course-statistics thead th.sorted:not(.slide-title) {
+	padding-left: 2px;
+}
+
+.legacy-page .course-statistics thead th.slide-title.sorted:after {
+	position: absolute;
+	bottom: 0;
+}
+
+.legacy-page .course-statistics thead th.slide-title.sorted .slide-title__content {
+	top: 18px;
+}
+
+.legacy-page .course-statistics thead th.sorted.sorted-desc:after {
+	content: " ↑";
+}
+
+.legacy-page .course-statistics thead th.sorted.sorted-asc:after {
+	content: " ↓";
+}
+
+.legacy-page .course-statistics .unit-title {
+	max-height: 18px;
+	line-height: 12px;
+	-moz-text-overflow: ellipsis;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	font-weight: 700;
+	padding: 3px 2px;
+}
+
+.legacy-page .course-statistics .scoring-group-title,
+.legacy-page .course-statistics .scoring-group-max-score,
+.legacy-page .course-statistics .slide-title,
+.legacy-page .course-statistics .slide-max-score {
+	font-size: 10px;
+	padding: 3px 7px;
+	text-align: center;
+}
+
+.legacy-page .course-statistics .scoring-group-title {
+	height: 60px;
+}
+
+.legacy-page .course-statistics .scoring-group-title,
+.legacy-page .course-statistics .slide-title {
+	white-space: nowrap;
+	cursor: pointer;
+	font-weight: 400;
+}
+
+.legacy-page .course-statistics thead .student-name {
+	cursor: pointer;
+}
+
+.legacy-page .course-statistics .slide-title {
+	height: 60px;
+	min-height: 60px;
+	position: relative;
+}
+
+.legacy-page .course-statistics .slide-title__content {
+	text-align: left;
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+	white-space: nowrap;
+	position: relative;
+	top: 25px;
+	letter-spacing: 0px;
+	font-weight: 500;
+}
+
+.legacy-page .course-statistics .slide-title,
+.legacy-page .course-statistics .slide-max-score,
+.legacy-page .course-statistics .slide-score {
+	display: none;
+}
+
+.legacy-page .course-statistics .slide-max-score,
+.legacy-page .course-statistics .slide-score {
+	position: relative;
+}
+
+.legacy-page .course-statistics .slide-max-score:before,
+.legacy-page .course-statistics .slide-score:before {
+	content: "=";
+	position: absolute;
+	left: -5px;
+}
+
+.legacy-page .course-statistics .slide-max-score:before {
+	left: -4px;
+}
+
+.legacy-page .course-statistics .slide-max-score + .slide-max-score:before,
+.legacy-page .course-statistics .slide-score + .slide-score:before {
+	content: "+";
+}
+
+.legacy-page .course-statistics th,
+.legacy-page .course-statistics td {
+	border-right: 1px solid rgb(220, 220, 240);
+	border-bottom: 1px solid rgb(220, 220, 240);
+	padding: 0 3px;
+}
+
+.legacy-page .course-statistics.with-expanded-scoring-group td:not(.in-expanded-scoring-group):not(.student-name):not(.scoring-group-sum-score):not(:first-child):not(:nth-child(2)),
+.legacy-page .course-statistics.with-expanded-scoring-group th:not(.in-expanded-scoring-group):not([data-unit-id="sum"]):not(:first-child):not(:nth-child(2)) {
+	color: rgba(0, 0, 0, 0.4);
+}
+
+.legacy-page .course-statistics.with-expanded-scoring-group td:not(.in-expanded-scoring-group):not(.student-name):not(.scoring-group-sum-score):not(:first-child):not(:nth-child(2)) {
+	opacity: 0.4;
+}
+
+.legacy-page .course-statistics.with-expanded-scoring-group th:not(.in-expanded-scoring-group):not([data-unit-id="sum"]):not(:first-child):not(:nth-child(2)) {
+	background-color: white;
+}
+
+.legacy-page .course-statistics.with-expanded-scoring-group td:not(.in-expanded-scoring-group):not(.student-name):not(.scoring-group-sum-score):not(:first-child):not(:nth-child(2)) a,
+.legacy-page .course-statistics.with-expanded-scoring-group th:not(.in-expanded-scoring-group):not([data-unit-id="sum"]):not(:first-child):not(:nth-child(2)) a {
+	color: rgba(66, 139, 202, 0.4);
+}
+
+.legacy-page .course-statistics.with-expanded-scoring-group .in-expanded-scoring-group.scoring-group-score,
+.legacy-page .course-statistics.with-expanded-scoring-group .in-expanded-scoring-group.scoring-group-max-score,
+.legacy-page .course-statistics.with-expanded-scoring-group .in-expanded-scoring-group.scoring-group-title {
+	font-weight: 700;
+	color: #333;
+	border-right-width: 0;
+}
+
+.legacy-page .course-statistics.with-expanded-scoring-group .in-expanded-scoring-group {
+	border-right-width: 0;
+}
+
+.legacy-page .course-statistics.with-expanded-scoring-group .in-expanded-scoring-group + .scoring-group-score,
+.legacy-page .course-statistics.with-expanded-scoring-group .in-expanded-scoring-group + .scoring-group-max-score,
+.legacy-page .course-statistics.with-expanded-scoring-group .in-expanded-scoring-group + .scoring-group-title {
+	border-left: 1px solid rgba(100, 100, 100, 0.2);
+}
+
+.legacy-page .course-statistics td.score {
+	text-align: center;
+	color: #666;
+}
+
+.legacy-page .course-statistics td.scoring-group-sum-score,
+.legacy-page .course-statistics th.scoring-group-max-score[data-unit-id="sum"],
+.legacy-page .course-statistics th.scoring-group-title[data-unit-id="sum"] {
+	color: #333;
+	font-weight: 700;
+}
+
+.legacy-page .course-statistics .expand-scoring-group__link .expand-icon {
+	font-size: 8px;
+}
+
+.legacy-page .course-statistics .group-header {
+	background-color: #fec;
+	font-size: 12px;
+	padding-top: 3px;
+}
+
+.legacy-page .course-statistics .score.grade-1 { background-color: #FFC0C0; }
+.legacy-page .course-statistics .score.grade-2 { background-color: #FFC8C0; }
+.legacy-page .course-statistics .score.grade-3 { background-color: #FFD0C0; }
+.legacy-page .course-statistics .score.grade-4 { background-color: #FFD8C0; }
+.legacy-page .course-statistics .score.grade-5 { background-color: #FFE0C0; }
+.legacy-page .course-statistics .score.grade-6 { background-color: #FFE8C0; }
+.legacy-page .course-statistics .score.grade-7 { background-color: #FFF0C0; }
+.legacy-page .course-statistics .score.grade-8 { background-color: #FFF8C0; }
+.legacy-page .course-statistics .score.grade-9 { background-color: #F0FFC0; }
+.legacy-page .course-statistics .score.grade-10 { background-color: #E8FFC0; }
+.legacy-page .course-statistics .score.grade-11 { background-color: #E0FFC0; }
+.legacy-page .course-statistics .score.grade-12 { background-color: #D8FFC0; }
+.legacy-page .course-statistics .score.grade-13 { background-color: #D0FFC0; }
+.legacy-page .course-statistics .score.grade-14 { background-color: #C8FFC0; }
+.legacy-page .course-statistics .score.grade-15 { background-color: #C0FFC0; }
+
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-0 { background-color: white !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-1 { background-color: #FFC0C0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-2 { background-color: #FFC8C0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-3 { background-color: #FFD0C0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-4 { background-color: #FFD8C0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-5 { background-color: #FFE0C0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-6 { background-color: #FFE8C0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-7 { background-color: #FFF0C0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-8 { background-color: #FFF8C0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-9 { background-color: #F0FFC0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-10 { background-color: #E8FFC0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-11 { background-color: #E0FFC0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-12 { background-color: #D8FFC0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-13 { background-color: #D0FFC0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-14 { background-color: #C8FFC0 !important; }
+.legacy-page .course-statistics.only-full-scores .score.only-full__grade-15 { background-color: #C0FFC0 !important; }
+
+
+.legacy-page .student-group,
+.legacy-page .student-group-title {
+
+}
+
+.legacy-page .course-statistics.sticky-column td.student-name {
+	background-color: white;
+	display: block;
+}
+/* End of course statistics*/

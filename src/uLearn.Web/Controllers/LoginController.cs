@@ -28,21 +28,40 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ValidateInput(false)]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> Index(LoginViewModel model, string returnUrl)
 		{
 			if (ModelState.IsValid)
 			{
-				var user = await userManager.FindAsync(model.UserName, model.Password);
+				var user = await userManager.FindAsync(model.UserName, model.Password).ConfigureAwait(false);
+
+				if (user == null)
+				{
+					/* If user with this username is not exists then try to find user with this email.
+					   It allows to login not only with username/password, but with email/password */
+					var usersWithEmail = usersRepo.FindUsersByEmail(model.UserName);
+					
+					/* For signing in via email/password we need to be sure that email is confirmed */
+					user = usersWithEmail.FirstOrDefault(u => u.EmailConfirmed);
+
+					if (user != null)
+					{
+						if (!await userManager.CheckPasswordAsync(user, model.Password).ConfigureAwait(false))
+							user = null;
+					}
+				}
+				
 				if (user != null)
 				{
-					await AuthenticationManager.LoginAsync(HttpContext, user, model.RememberMe);
-					await SendConfirmationEmailAfterLogin(user);
+					await AuthenticationManager.LoginAsync(HttpContext, user, model.RememberMe).ConfigureAwait(false);
+					await SendConfirmationEmailAfterLogin(user).ConfigureAwait(false);
 					return Redirect(this.FixRedirectUrl(returnUrl));
 				}
 				ModelState.AddModelError("", @"Неверное имя пользователя или пароль");
 			}
 
-			// If we got this far, something failed, redisplay form
+			/* If we got this far, something failed, redisplay form */
+			ViewBag.ReturnUrl = returnUrl;
 			return View(model);
 		}
 
@@ -60,6 +79,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public ActionResult ExternalLogin(string provider, string returnUrl)
 		{
 			// Request a redirect to the external login provider
@@ -97,12 +117,13 @@ namespace uLearn.Web.Controllers
 			Gender? loginGender = null;
 			loginInfo.ExternalIdentity.FindFirstValue(ClaimTypes.Gender)?.TryParseToNullableEnum(out loginGender);
 			return View("ExternalLoginConfirmation",
-				new ExternalLoginConfirmationViewModel { UserName = loginInfo.DefaultUserName, Email = loginInfo.Email, Gender = loginGender });
+				new ExternalLoginConfirmationViewModel { UserName = null, Email = loginInfo.Email, Gender = loginGender });
 		}
 
 		[HttpPost]
 		[ValidateInput(false)]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationViewModel model, string returnUrl)
 		{
 			if (User.Identity.IsAuthenticated)
@@ -114,12 +135,24 @@ namespace uLearn.Web.Controllers
 			{
 				return View("ExternalLoginFailure");
 			}
+			
 			ViewBag.LoginProvider = info.Login.LoginProvider;
+			ViewBag.ReturnUrl = returnUrl;
+			
 			if (ModelState.IsValid)
 			{
 				var userAvatarUrl = info.ExternalIdentity.FindFirstValue("AvatarUrl");
 				var firstName = info.ExternalIdentity.FindFirstValue(ClaimTypes.GivenName);
 				var lastName = info.ExternalIdentity.FindFirstValue(ClaimTypes.Surname);
+				
+				/* Some users enter email with trailing whitespaces. Remove them (not users, but spaces!) */
+				model.Email = (model.Email ?? "").Trim();
+				
+				if (!CanNewUserSetThisEmail(model.Email))
+				{
+					ModelState.AddModelError("Email", AccountController.ManageMessageId.EmailAlreadyTaken.GetDisplayName());
+					return View(model);
+				}
 
 				var user = new ApplicationUser
 				{
@@ -155,8 +188,7 @@ namespace uLearn.Web.Controllers
 				}
 				this.AddErrors(result);
 			}
-
-			ViewBag.ReturnUrl = returnUrl;
+			
 			return View(model);
 		}
 
@@ -179,6 +211,7 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ULearnAuthorize]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public ActionResult DoLinkLogin(string provider, string returnUrl="")
 		{
 			// Request a redirect to the external login provider to link a login for the current user
@@ -212,6 +245,8 @@ namespace uLearn.Web.Controllers
 		private async Task UpdateUserFieldsFromExternalLoginInfo(string userId, ExternalLoginInfo loginInfo)
 		{
 			var user = await userManager.FindByIdAsync(userId);
+			if (user == null)
+				return;
 			
 			var avatarUrl = loginInfo.ExternalIdentity.FindFirstValue("AvatarUrl");
 			var konturLogin = loginInfo.ExternalIdentity.FindFirstValue("KonturLogin");
@@ -232,6 +267,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public ActionResult LogOff()
 		{
 			AuthenticationManager.Logout(HttpContext);

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Web;
 
-namespace uLearn
+namespace Ulearn.Core
 {
 	public class TexReplacer
 	{
@@ -47,8 +48,7 @@ namespace uLearn
 		private string PrepareTexInsert(Match match)
 		{
 			var insertId = match.Value;
-			Tuple<string, InsertionType> tex;
-			if (!texInserts.TryGetValue(insertId, out tex))
+			if (!texInserts.TryGetValue(insertId, out var tex))
 				return insertId;
 			if (tex.Item2 == InsertionType.Div)
 				return FormatTexDiv(tex.Item1);
@@ -59,12 +59,12 @@ namespace uLearn
 
 		protected virtual string FormatTexSpan(string tex)
 		{
-			return "<span class='tex'>" + HttpUtility.HtmlEncode(tex) + "</span>";
+			return "<span class='tex'>" + WebUtility.HtmlEncode(tex) + "</span>";
 		}
 
 		protected virtual string FormatTexDiv(string tex)
 		{
-			return "</p><div class='tex'>\\displaystyle " + HttpUtility.HtmlEncode(tex) + "</div><p>";
+			return "</p><div class='tex'>\\displaystyle " + WebUtility.HtmlEncode(tex) + "</div><p>";
 		}
 
 		private string MakeInsertId(Match match, InsertionType insertionType)
@@ -91,12 +91,12 @@ namespace uLearn
 
 		protected override string FormatTexSpan(string tex)
 		{
-			return "`" + HttpUtility.HtmlEncode(tex) + "`";
+			return "`" + WebUtility.HtmlEncode(tex) + "`";
 		}
 
 		protected override string FormatTexDiv(string tex)
 		{
-			return "[mathjax]" + HttpUtility.HtmlEncode(tex) + "[/mathjax]";
+			return "[mathjax]" + WebUtility.HtmlEncode(tex) + "[/mathjax]";
 		}
 	}
 }

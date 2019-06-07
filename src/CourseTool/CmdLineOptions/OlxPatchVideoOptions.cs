@@ -3,8 +3,9 @@ using System.Linq;
 using CommandLine;
 using Newtonsoft.Json;
 using uLearn.CourseTool.Json;
-using uLearn.Model.Edx;
-using uLearn.Model.Edx.EdxComponents;
+using Ulearn.Core;
+using Ulearn.Core.Model.Edx;
+using Ulearn.Core.Model.Edx.EdxComponents;
 
 namespace uLearn.CourseTool.CmdLineOptions
 {

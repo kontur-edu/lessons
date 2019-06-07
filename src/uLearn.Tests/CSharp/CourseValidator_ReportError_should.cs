@@ -7,10 +7,14 @@ using log4net.Config;
 using Microsoft.VisualBasic.FileIO;
 using NUnit.Framework;
 using test;
-using uLearn.Helpers;
-using uLearn.Model;
-using uLearn.Model.Blocks;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Courses.Units;
+using Ulearn.Core.Helpers;
 
 namespace uLearn.CSharp
 {
@@ -22,7 +26,7 @@ namespace uLearn.CSharp
 
 		private static readonly DirectoryInfo tempSlideFolder = new DirectoryInfo(tempSlideFolderPath);
 
-		private static ProjectExerciseBlock exBlock;
+		private static CsProjectExerciseBlock exerciseBlock;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
@@ -34,7 +38,7 @@ namespace uLearn.CSharp
 		[SetUp]
 		public void SetUp()
 		{
-			exBlock = new ProjectExerciseBlock
+			exerciseBlock = new CsProjectExerciseBlock
 			{
 				StartupObject = "test.Program",
 				UserCodeFilePath = TestsHelper.UserCodeFileName,
@@ -47,8 +51,9 @@ namespace uLearn.CSharp
 			if (File.Exists(studentZipFilepath))
 				File.Delete(studentZipFilepath);
 
-			var ctx = new BuildUpContext(new Unit(null, exBlock.SlideFolderPath), CourseSettings.DefaultSettings, null, "Test", string.Empty);
-			exBlock.BuildUp(ctx, ImmutableHashSet<string>.Empty).ToList();
+			var context = new SlideBuildingContext("Test", new Unit(null, exerciseBlock.SlideFolderPath), CourseSettings.DefaultSettings, null);
+			// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+			exerciseBlock.BuildUp(context, ImmutableHashSet<string>.Empty).ToList();
 		}
 
 		[Test]
@@ -57,16 +62,16 @@ namespace uLearn.CSharp
 		{
 			FileSystem.CopyDirectory(tempSlideFolder.GetSubdirectory("projDir").FullName,
 				tempSlideFolder.GetSubdirectory("FullProjDir").FullName);
-			exBlock.CsProjFilePath = Path.Combine("FullProjDir", TestsHelper.CsProjFilename);
+			exerciseBlock.CsProjFilePath = Path.Combine("FullProjDir", TestsHelper.CsProjFilename);
 			SaveTempZipFileWithFullProject();
 
-			var validatorOutput = TestsHelper.ValidateBlock(exBlock);
+			var validatorOutput = TestsHelper.ValidateBlock(exerciseBlock);
 
 			validatorOutput
 				.Should().Contain(
 					$"Student zip exercise directory has 'wrong answer' and/or solution files ({TestsHelper.OrderedWrongAnswersAndSolutionNames})");
 			validatorOutput
-				.Should().Contain($"Student's csproj has user code item ({exBlock.UserCodeFilePath}) of not compile type");
+				.Should().Contain($"Student's csproj has user code item ({exerciseBlock.UserCodeFilePath}) of not compile type");
 			validatorOutput
 				.Should().Contain(
 					$"Student's csproj has 'wrong answer' and/or solution items ({TestsHelper.OrderedWrongAnswersAndSolutionNames})");
@@ -85,70 +90,72 @@ namespace uLearn.CSharp
 					noExcludedDirs,
 					noExcludedFiles,
 					ResolveCsprojLink,
-					ExerciseStudentZipBuilder.ResolveCsprojLinks(csProjFile, ProjectExerciseBlock.BuildingToolsVersion), 
+					ExerciseStudentZipBuilder.ResolveCsprojLinks(csProjFile, CsProjectExerciseBlock.BuildingToolsVersion), 
 					zipWithFullProj)
 				.UpdateZip();
 
 			byte[] ResolveCsprojLink(FileInfo file)
 			{
-				return file.Name.Equals(exBlock.CsprojFileName) ? ProjModifier.ModifyCsproj(file, ProjModifier.ReplaceLinksWithItems) : null;
+				return file.Name.Equals(exerciseBlock.CsprojFileName) ? ProjModifier.ModifyCsproj(file, ProjModifier.ReplaceLinksWithItems) : null;
 			}
 		}
 
 		[Test]
 		public void ReportError_If_ExerciseFolder_HasErrors()
 		{
-			File.Delete(exBlock.UserCodeFile.FullName);
-			File.Delete(Path.Combine(tempSlideFolderPath, exBlock.CsProjFilePath));
+			File.Delete(exerciseBlock.UserCodeFile.FullName);
+			File.Delete(Path.Combine(tempSlideFolderPath, exerciseBlock.CsProjFilePath));
 
-			var validatorOutput = TestsHelper.ValidateBlock(exBlock);
+			var validatorOutput = TestsHelper.ValidateBlock(exerciseBlock);
 
 			validatorOutput
-				.Should().Contain($"Exercise folder ({exBlock.ExerciseFolder.Name}) doesn't contain ({exBlock.CsprojFileName})");
+				.Should().Contain($"Exercise folder ({exerciseBlock.ExerciseFolder.Name}) doesn't contain ({exerciseBlock.CsprojFileName})");
 			validatorOutput
-				.Should().Contain($"Exercise folder ({exBlock.ExerciseFolder.Name}) doesn't contain ({exBlock.UserCodeFilePath})");
+				.Should().Contain($"Exercise folder ({exerciseBlock.ExerciseFolder.Name}) doesn't contain ({exerciseBlock.UserCodeFilePath})");
 		}
 
 		[Test]
 		public void ReportError_If_CorrectSolution_Not_Building()
 		{
-			File.WriteAllText(exBlock.CorrectSolutionFile.FullName, "");
+			File.WriteAllText(exerciseBlock.CorrectSolutionFile.FullName, "");
 
-			var validatorOutput = TestsHelper.ValidateBlock(exBlock);
+			var validatorOutput = TestsHelper.ValidateBlock(exerciseBlock);
 
 			validatorOutput
 				.Should().Contain(
-					$"Correct solution file {exBlock.CorrectSolutionFileName} verdict is not OK. RunResult = Id: test.csproj, Verdict: CompilationError");
+					$"Correct solution file {exerciseBlock.CorrectSolutionFileName} verdict is not OK. RunResult = Id: test.csproj, Verdict: CompilationError");
 		}
 
 		[Test]
 		public void ReportError_If_NUnitTestRunner_Tries_To_Run_NonExisting_Test_Class()
 		{
-			exBlock.NUnitTestClasses = new[] { "non_existing.test_class", };
-			exBlock.ReplaceStartupObjectForNUnitExercises();
+			exerciseBlock.NUnitTestClasses = new[] { "non_existing.test_class", };
+			exerciseBlock.ReplaceStartupObjectForNUnitExercises();
 
-			var validatorOutput = TestsHelper.ValidateBlock(exBlock);
+			var validatorOutput = TestsHelper.ValidateBlock(exerciseBlock);
 
 			validatorOutput
 				.Should()
 				.Contain(
-					$"Correct solution file {exBlock.CorrectSolutionFileName} verdict is not OK. RunResult = Id: test.csproj, Verdict: RuntimeError: System.ArgumentException: Error in checking system: test class non_existing.test_class does not exist");
+					$"Correct solution file {exerciseBlock.CorrectSolutionFileName} verdict is not OK. RunResult = Id: test.csproj, Verdict: RuntimeError: System.ArgumentException: Error in checking system: test class non_existing.test_class does not exist");
 		}
 
 		[Test]
 		public void ReportError_If_Solution_For_ProjectExerciseBlock_Is_Not_Solution()
 		{
-			exBlock.NUnitTestClasses = new[] { $"test.{nameof(OneFailingTest)}" };
-			exBlock.ReplaceStartupObjectForNUnitExercises();
+			exerciseBlock.NUnitTestClasses = new[] { $"test.{nameof(OneFailingTest)}" };
+			exerciseBlock.ReplaceStartupObjectForNUnitExercises();
 
-			var validatorOutput = TestsHelper.ValidateBlock(exBlock);
+			var validatorOutput = TestsHelper.ValidateBlock(exerciseBlock);
 
 			validatorOutput
 				.Should()
 				.Contain(
-					$"Correct solution file {exBlock.CorrectSolutionFileName} is not solution. RunResult = Id: test.csproj, Verdict: Ok")
+					$"Correct solution file {exerciseBlock.CorrectSolutionFileName} is not solution. RunResult = Id: test.csproj, Verdict: Ok")
 				.And
-				.Contain("Error on NUnit test: I_am_a_failure");
+				.Contain("Как минимум один из тестов не пройден")
+				.And
+				.Contain("I_am_a_failure");
 		}
 	}
 }

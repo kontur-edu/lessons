@@ -5,9 +5,12 @@
 
 @{
 	var reviews = Model
+		.Where(r => r.ExerciseCheckingId.HasValue)
 		.GroupBy(r => r.Comment)
 		.OrderByDescending(g => g.Count())
-		.ThenByDescending(g => g.Max(r => r.ExerciseChecking.Timestamp));
+		.ThenByDescending(g => g.Max(r => r.ExerciseChecking.Timestamp))
+		.Take(50)
+		.ToList();
 }
 
 @if (reviews.Any())

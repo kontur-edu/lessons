@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using uLearn.Model.Blocks;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Courses.Slides.Blocks;
 
-namespace uLearn.Model
+namespace Ulearn.Core.Model
 {
 	public class CommonRegionRemover : IRegionRemover
 	{

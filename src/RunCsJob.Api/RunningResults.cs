@@ -50,7 +50,7 @@
 				case Verdict.Ok:
 					return output;
 				case Verdict.TimeLimit:
-					return output + "\n Time limit exceeded";
+					return output + "\n Ваше решение не успело пройти все тесты за 10 секунд";
 				default:
 					return output + "\n" + Verdict;
 			}

@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Ulearn.Common.Extensions;
 
-namespace uLearn
+namespace Ulearn.Core
 {
 	public class ResourceFile
 	{

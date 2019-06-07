@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Составление словаря" id="acb110b3-c2f0-4e1a-9645-76df88a75a7f">
+  <scoring passedTestsScore="5"/>
+  <markdown>
+Текст задан массивом строк. 
+Вам нужно составить лексикографически упорядоченный список всех встречающихся в этом тексте слов.
+
+Слова нужно сравнивать регистронезависимо, а выводить в нижнем регистре.</markdown>
+  <includeCode>
+    <display onlyBody="false">Main</display>
+  </includeCode>
+  <exercise.file file="_SortExercise.cs" type="check-output" language="csharp">
+    <initialCode>public static string[] GetSortedWords(params string[] textLines)
+{
+	// ваше решение
+}</initialCode>
+    <hint>`Regex.Split` — позволяет задать регулярное выражение для разделителей слов и получить список слов.</hint>
+    <hint>`Regex.Split(s, @"\W+")` разбивает текст на слова</hint>
+    <hint>Подумайте, как скомбинировать SelectMany со вложенным `Regex.Split`</hint>
+    <hint>Пустая строка не является корректным словом</hint>
+    <hint>У класса `string` есть метод `ToLower` для приведения строки к нижнему регистру</hint>
+    <hint>`list.Distinct()` — возвращает список `list` без дубликатов</hint>
+    <expected>a
+albino
+an
+and
+are
+contagious
+dangerous
+entertain
+feel
+hello
+here
+hey
+how
+i
+it
+less
+libido
+lights
+low
+mosquito
+mulatto
+my
+now
+out
+s
+stupid
+the
+us
+we
+with
+yeah</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs SingleStatementMethod</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">GetSortedWords</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_SortExercise.cs</defaultIncludeCodeFile>
+</slide.exercise>

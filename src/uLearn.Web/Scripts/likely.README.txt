@@ -1,0 +1,1 @@
+likely.js has been modified to be compatible with our react application. Be careful on updating. 

@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using log4net;
 using Ulearn.Common;
 
@@ -49,7 +49,7 @@ namespace Stepik.Api
 			var fmtStreams = await GetFmtStreams(youtubeUrl);
 			foreach (var fmtStream in fmtStreams)
 			{
-				var decodedFmtStream = HttpUtility.UrlDecode(fmtStream);
+				var decodedFmtStream = WebUtility.UrlDecode(fmtStream);
 				if (string.IsNullOrEmpty(decodedFmtStream))
 					continue;
 

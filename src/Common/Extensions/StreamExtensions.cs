@@ -7,9 +7,14 @@ namespace Ulearn.Common.Extensions
 	{
 		public static string GetString(this Stream inputStream)
 		{
+			return Encoding.UTF8.GetString(inputStream.ToArray());
+		}
+		
+		public static byte[] ToArray(this Stream inputStream)
+		{
 			var codeBytes = new MemoryStream();
 			inputStream.CopyTo(codeBytes);
-			return Encoding.UTF8.GetString(codeBytes.ToArray());
+			return codeBytes.ToArray();
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿@model uLearn.Web.Controllers.LinkLoginViewModel
+﻿@using FormMethod = System.Web.Mvc.FormMethod
+@model uLearn.Web.Controllers.LinkLoginViewModel
 
 @using (Html.BeginForm("DoLinkLogin", "Login", new { provider = Model.Provider, returnUrl = Model.ReturnUrl }, FormMethod.Post, new { id = "link-login-form" }))
 {

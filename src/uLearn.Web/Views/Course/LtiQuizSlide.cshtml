@@ -9,7 +9,6 @@
 <html>
 <head>
 	<title>Quiz</title>
-	@Styles.Render("~/ulearn.bundle.css")
 	@Styles.Render("~/katex/katex.min.css")
 </head>
 <body class="lti-component">
@@ -24,9 +23,6 @@
 			isGuest = false,
 			manualQuizCheckQueueItem = (ManualQuizChecking)null,
 		})
-		@Scripts.Render("~/scripts.bundle.js")
 	}
-
-	@Html.Partial("_YandexMetrika")
 </body>
 </html>

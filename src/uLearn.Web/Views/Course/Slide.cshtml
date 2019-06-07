@@ -1,14 +1,18 @@
 ﻿@using Database.Models
-@using uLearn
-@using uLearn.Quizes
 @using uLearn.Web.Extensions
 @using uLearn.Web.Views.Course
+@using Ulearn.Common.Extensions
+@using Ulearn.Core.Courses.Slides
+@using Ulearn.Core.Courses.Slides.Exercises
+@using Ulearn.Core.Courses.Slides.Quizzes
 @model CoursePageModel
 
 @{
 	ViewBag.Title = string.Format("{0}: {1}", Model.CourseTitle, Model.Slide.Title);
 	ViewBag.Slide = Model.Slide;
 	ViewBag.CourseId = Model.CourseId;
+
+	ViewBag.Meta = Model.Slide.Meta;
 
 	var mainDivClass = "";
 }
@@ -23,18 +27,23 @@
 <div class="@mainDivClass">
 	<div class="container body-content">
 		<div class="row">
-			<div class='slide'>
-				<h1>
-					@if (Model.ManualChecking != null)
-					{
-						@Html.RouteLink(Model.Slide.Title, "Course.SlideById", new { courseId = Model.CourseId, slideId = Model.Slide.Url }, new { title = "Перейти к слайду" })
-					}
-					else
-					{
-						@Model.Slide.Title
-					}
-					<span class="score">@GetScore(Model.Score)</span>
-				</h1>
+			<div class="slide">
+                <h1>
+					<span class="slide__title">
+						@if (Model.ManualChecking != null)
+						{
+							@Html.RouteLink(Model.Slide.Title, "Course.SlideById", new { courseId = Model.CourseId, slideId = Model.Slide.Url }, new { title = "Перейти к слайду" })
+						}
+						else
+						{
+							@Model.Slide.Title
+						}
+						@if(Model.SlideEditUrl != null) {
+							<small><a href="@Model.SlideEditUrl" target="_blank" style="margin-right: 5px"><span class="glyphicon glyphicon-pencil"></span></a></small>
+						}
+					</span>
+                    <span class="score">@ShowScore(Model.Score)</span>
+                </h1>
 				@if (!string.IsNullOrEmpty(Model.Error))
 				{
 					<p class="alert alert-danger">@Model.Error</p>
@@ -55,15 +64,31 @@
 					if (Model.ManualChecking != null)
 					{
 						<p class="exercise-status">
-							@Model.ManualChecking.User.VisibleName@*												 
-							*@@if (!string.IsNullOrEmpty(Model.ContextManualCheckingUserGroups))
-							  {
-								  <span>(@Model.ContextManualCheckingUserGroups),</span>
-							  }
-							  else
-							  {
-								  <span>,</span>
-							  }
+                            @Model.ManualChecking.User.VisibleName
+                            @if (Model.ContextManualCheckingUserGroups + Model.ContextManualCheckingUserArchivedGroups != "")
+                            {
+	                            @* These comments are dirty hack for removing spaces between words *@
+	                            <span>
+                                (@*												 
+							      *@@if (Model.ContextManualCheckingUserGroups != "")
+                                    {
+	                                    @Model.ContextManualCheckingUserGroups@*												 
+							      *@}@*												 
+							      *@@if (Model.ContextManualCheckingUserGroups != "" && Model.ContextManualCheckingUserArchivedGroups != "")
+                                    {@*												 
+							           *@<text>;</text>
+                                    }@*												 
+                                  *@@if (Model.ContextManualCheckingUserArchivedGroups != "")
+                                    {
+	                                    <text>архивные группы: @Model.ContextManualCheckingUserArchivedGroups</text>@*												 
+							      *@}@*												 
+							   *@),
+                                </span>
+                            }
+                            else
+							{
+							    <span>,</span>
+							}
 							@Model.ManualChecking.Timestamp.ToPrettyString()
 						</p>
 					}
@@ -81,6 +106,11 @@
 				@Html.Action("PrevNextButtons", "SlideNavigation", new { courseId = Model.CourseId, slideId = Model.Slide.Id, onSolutionsSlide = false })
 
 				@Html.Action("SlideComments", "Comments", new { courseId = Model.CourseId, slideId = Model.Slide.Id })
+			}
+			else
+			{
+				@* On code review show instructors-only comments *@
+				@Html.Action("SlideComments", "Comments", new { courseId = Model.CourseId, slideId = Model.Slide.Id, showOnlyInstructorsOnlyComments = true})
 			}
 			
 			@Html.Partial("~/Views/Shared/_Footer.cshtml")
@@ -120,5 +150,5 @@
 	<script src="~/Scripts/jquery.color-2.1.0.min.js"></script>
 }
 
-@helper GetScore(Tuple<int, int> score)
-{ @( score.Item2 == 0 ? "" : string.Format("{0}/{1}", score.Item1, score.Item2)) }
+@helper ShowScore(Tuple<int, int> score)
+{ @(score.Item2 == 0 ? "" : string.Format("{0} из {1}", score.Item1.PluralizeInRussian(RussianPluralizationOptions.Score), score.Item2)) }

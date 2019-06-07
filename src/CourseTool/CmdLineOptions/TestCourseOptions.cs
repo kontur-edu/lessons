@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using CommandLine;
 using RunCsJob;
+using uLearn.CourseTool.Validating;
+using Ulearn.Core.Courses;
 
 namespace uLearn.CourseTool.CmdLineOptions
 {
@@ -20,7 +22,7 @@ namespace uLearn.CourseTool.CmdLineOptions
 			var ulearnDir = new DirectoryInfo($"{Dir}/{Config.ULearnCourseId}");
 			Console.Write("Loading Ulearn course from {0} ... ", ulearnDir.Name);
 			var sw = Stopwatch.StartNew();
-			var course = new CourseLoader().LoadCourse(ulearnDir);
+			var course = new CourseLoader().Load(ulearnDir);
 			Console.WriteLine(sw.ElapsedMilliseconds + " ms");
 			var slides = course.Slides;
 			if (SlideId != null)
@@ -69,7 +71,7 @@ namespace uLearn.CourseTool.CmdLineOptions
 			html.AppendLine("<html>");
 			html.AppendLine("	<head>");
 			html.AppendLine("		<meta charset='utf-8'>");
-			html.AppendLine($"		<title>Валидация курса {course.Id}</title>");
+			html.AppendLine($"		<title>Р’Р°Р»РёРґР°С†РёСЏ РєСѓСЂСЃР° {course.Id}</title>");
 			html.AppendLine("	</head>");
 			html.AppendLine("	<body>");
 			html.AppendLine($"		<h1>{course.Id}</h1>");

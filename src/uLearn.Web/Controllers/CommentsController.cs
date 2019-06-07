@@ -14,6 +14,10 @@ using Microsoft.AspNet.Identity;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Quizzes;
 
 namespace uLearn.Web.Controllers
 {
@@ -40,7 +44,7 @@ namespace uLearn.Web.Controllers
 		{
 		}
 
-		public ActionResult SlideComments(string courseId, Guid slideId)
+		public ActionResult SlideComments(string courseId, Guid slideId, bool showOnlyInstructorsOnlyComments=false)
 		{
 			var slide = courseManager.GetCourse(courseId).GetSlideById(slideId);
 			var comments = commentsRepo.GetSlideComments(courseId, slideId).ToList();
@@ -68,8 +72,11 @@ namespace uLearn.Web.Controllers
 			var canSeeNotApprovedComments = canModerateComments;
 
 			var canViewAuthorSubmissions = coursesRepo.HasCourseAccess(userId, courseId, CourseAccessType.ViewAllStudentsSubmissions) || User.HasAccessFor(courseId, CourseRole.CourseAdmin);
-			var canViewProfiles = systemAccessesRepo.HasSystemAccess(userId, SystemAccessType.ViewAllProfiles) || User.IsSystemAdministrator();			
-
+			var canViewProfiles = systemAccessesRepo.HasSystemAccess(userId, SystemAccessType.ViewAllProfiles) || User.IsSystemAdministrator();
+			var systemAccesses = systemAccessesRepo.GetSystemAccesses(userId);
+			var courseAccesses = coursesRepo.GetCourseAccesses(courseId, userId);
+			var slideType = GetSlideType(slide);
+			
 			var model = new SlideCommentsModel
 			{
 				CourseId = courseId,
@@ -86,8 +93,26 @@ namespace uLearn.Web.Controllers
 				CurrentUser = User.Identity.IsAuthenticated ? userManager.FindById(userId) : null,
 				CommentsPolicy = commentsPolicy,
 				CanViewAuthorProfiles = canViewProfiles,
+				CanViewAndAddCommentsForInstructorsOnly = CanViewAndAddCommentsForInstructorsOnly(User, courseId),
+				ShowOnlyInstructorsOnlyComments = showOnlyInstructorsOnlyComments,
+				CourseAccesses = courseAccesses,
+				SystemAccesses = systemAccesses,
+				SlideType = slideType
 			};
 			return PartialView(model);
+		}
+		
+		private static SlideType GetSlideType(Slide slide)
+		{
+			switch (slide)
+			{
+				case ExerciseSlide _:
+					return SlideType.Exercise;
+				case QuizSlide _:
+					return SlideType.Quiz;
+				default:
+					return SlideType.Lesson;
+			}
 		}
 
 		private bool CanModerateComments(IPrincipal user, string courseId)
@@ -116,6 +141,11 @@ namespace uLearn.Web.Controllers
 			return true;
 		}
 
+		private bool CanViewAndAddCommentsForInstructorsOnly(IPrincipal user, string courseId)
+		{
+			return user.HasAccessFor(courseId, CourseRole.Instructor);
+		}
+
 		private bool CanAddCommentNow(IPrincipal user, string courseId)
 		{
 			// Instructors have unlimited comments
@@ -132,7 +162,8 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ValidateInput(false)]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> AddComment(string courseId, Guid slideId, string commentText, string parentCommentId)
+		[HandleHttpAntiForgeryException]
+		public async Task<ActionResult> AddComment(string courseId, Guid slideId, bool forInstructorsOnly, string commentText, string parentCommentId)
 		{
 			var parentCommentIdInt = -1;
 			if (parentCommentId != null)
@@ -159,10 +190,19 @@ namespace uLearn.Web.Controllers
 				});
 			}
 
-			var comment = await commentsRepo.AddComment(User, courseId, slideId, parentCommentIdInt, commentText);
+			if (forInstructorsOnly && !CanViewAndAddCommentsForInstructorsOnly(User, courseId))
+			{
+				forInstructorsOnly = false;
+			}
+
+			var comment = await commentsRepo.AddComment(User, courseId, slideId, parentCommentIdInt, forInstructorsOnly, commentText);
 			if (comment.IsApproved)
 				await NotifyAboutNewComment(comment);
 			var canReply = CanAddCommentHere(User, courseId, isReply: true);
+
+			var userId = User.Identity.GetUserId();
+			var canViewAuthorSubmissions = coursesRepo.HasCourseAccess(userId, courseId, CourseAccessType.ViewAllStudentsSubmissions) || User.HasAccessFor(courseId, CourseRole.CourseAdmin);
+			var canViewProfiles = systemAccessesRepo.HasSystemAccess(userId, SystemAccessType.ViewAllProfiles) || User.IsSystemAdministrator();
 
 			return PartialView("_Comment", new CommentViewModel
 			{
@@ -175,6 +215,8 @@ namespace uLearn.Web.Controllers
 				CanModerateComment = User.HasAccessFor(courseId, CourseRole.Instructor),
 				CanReply = canReply,
 				CurrentUser = userManager.FindById(User.Identity.GetUserId()),
+				CanViewAuthorProfile = canViewProfiles,
+				CanViewAuthorSubmissions = canViewAuthorSubmissions,
 			});
 		}
 
@@ -195,19 +237,24 @@ namespace uLearn.Web.Controllers
 					await notificationsRepo.AddNotification(courseId, replyNotification, comment.AuthorId);
 				}
 			}
-
-			/* Create NewCommentNotification later than RepliedToYourCommentNotification, because the last one is blocker for the first one.
+			
+			/* Create NewCommentFromStudentFormYourGroupNotification later than RepliedToYourCommentNotification, because the last one is blocker for the first one.
 			 * We don't send NewCommentNotification if there is a RepliedToYouCommentNotification */
-			var notification = new NewCommentNotification
-			{
-				Comment = comment,
-			};
+			var commentFromYourGroupStudentNotification = new NewCommentFromYourGroupStudentNotification { Comment = comment };
+			await notificationsRepo.AddNotification(courseId, commentFromYourGroupStudentNotification, comment.AuthorId);
+
+			/* Create NewCommentNotification later than RepliedToYourCommentNotification and NewCommentFromYourGroupStudentNotification, because the last one is blocker for the first one.
+			 * We don't send NewCommentNotification if there is a RepliedToYouCommentNotification or NewCommentFromYourGroupStudentNotification */
+			var notification = comment.IsForInstructorsOnly
+				? (Notification) new NewCommentForInstructorsOnlyNotification { Comment = comment } 
+				: new NewCommentNotification { Comment = comment };
 			await notificationsRepo.AddNotification(courseId, notification, comment.AuthorId);
 		}
 
 		[ULearnAuthorize]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> LikeComment(int commentId)
 		{
 			var userId = User.Identity.GetUserId();
@@ -235,6 +282,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> ApproveComment(int commentId, bool isApproved = true)
 		{
 			var comment = commentsRepo.FindCommentById(commentId);
@@ -252,6 +300,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> PinComment(int commentId, bool isPinned)
 		{
 			var comment = commentsRepo.FindCommentById(commentId);
@@ -275,6 +324,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> DeleteComment(int commentId)
 		{
 			var comment = commentsRepo.FindCommentById(commentId);
@@ -287,6 +337,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> RestoreComment(int commentId)
 		{
 			var comment = commentsRepo.FindCommentById(commentId);
@@ -300,6 +351,7 @@ namespace uLearn.Web.Controllers
 		[ValidateInput(false)]
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> EditCommentText(int commentId, string newText)
 		{
 			var comment = commentsRepo.FindCommentById(commentId);
@@ -312,6 +364,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> MarkAsCorrectAnswer(int commentId, bool isCorrect = true)
 		{
 			var comment = commentsRepo.FindCommentById(commentId);
@@ -339,5 +392,10 @@ namespace uLearn.Web.Controllers
 		public ImmutableHashSet<int> CommentsLikedByUser { get; set; }
 		public ApplicationUser CurrentUser { get; set; }
 		public CommentsPolicy CommentsPolicy { get; set; }
+		public bool CanViewAndAddCommentsForInstructorsOnly { get; set; }
+		public bool ShowOnlyInstructorsOnlyComments { get; set; }
+		public List<CourseAccess> CourseAccesses { get; set; }
+		public List<SystemAccess> SystemAccesses { get; set; }
+		public SlideType SlideType { get; set; }
 	}
 }

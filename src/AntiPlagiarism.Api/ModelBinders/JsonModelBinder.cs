@@ -30,7 +30,7 @@ namespace AntiPlagiarism.Api.ModelBinders
 			}
 
 			var reader = new StreamReader(request.Body);
-			var incomingData = await reader.ReadToEndAsync();
+			var incomingData = await reader.ReadToEndAsync().ConfigureAwait(false);
 			if (string.IsNullOrEmpty(incomingData))
 			{
 				/* If no JSON data */
@@ -43,7 +43,7 @@ namespace AntiPlagiarism.Api.ModelBinders
 			{
 				model = JsonConvert.DeserializeObject(incomingData, bindingContext.ModelType);
 			}
-			catch (JsonSerializationException e)
+			catch (Exception e) when (e is JsonSerializationException || e is JsonReaderException)
 			{
 				logger.Warning($"Can't deserialize json request: {e.Message}");
 				bindingContext.ModelState.TryAddModelError(bindingContext.ModelName, e.Message);

@@ -1,56 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Lesson xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://ulearn.azurewebsites.net/lesson">
-	<title>Код</title>
-	<id>C1DA3BA7256142D58F245CCEF2B176A0</id>
-	<default-include-code-file>_Code.cs</default-include-code-file>
-	
-	<md>###Весь файл</md>
-	<include-code />
-	
-	<md>###Класс Code</md>
-	<include-code>
-		<display>Code</display>
-	</include-code>
-	
-	<md>###Метод A</md>
-	<include-code>
-		<display>A</display>
-	</include-code>
-	
-	<md>###Методы B и A</md>
-	<include-code>
-		<display>B</display>
-		<display>A</display>
-	</include-code>
-	
-	<md>###Класс Code. Только тело</md>
-	<include-code>
-		<display only-body="true">Code</display>
-	</include-code>
-	
-	<md>###Метод A. Только тело</md>
-	<include-code>
-		<display only-body="true">A</display>
-	</include-code>
-
-	<md>###Enum</md>
-	<include-code>
-		<display>Enum</display>
-	</include-code>
-	
-	<md>###Регион</md>
-	<include-code>
-		<display>CSharpStyleRegion</display>
-	</include-code>
-	<include-code>
-		<display>CommentRegion</display>
-	</include-code>
-
-	<md>###Питон весь файл</md>
-	<include-code file="HelloWorld.py" lang-ver="3" />
-
-	<md>###Питон регион main</md>
-	<include-code file="HelloWorld.py" lang-ver="3">
-		<display>main</display>
-	</include-code>
-</Lesson>
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="Код" id="C1DA3BA7256142D58F245CCEF2B176A0">
+  <defaultIncludeCodeFile>_Code.cs</defaultIncludeCodeFile>
+  <markdown>###Весь файл</markdown>
+  <includeCode/>
+  <markdown>###Класс Code</markdown>
+  <includeCode>
+    <display>Code</display>
+  </includeCode>
+  <markdown>###Метод A</markdown>
+  <includeCode>
+    <display>A</display>
+  </includeCode>
+  <markdown>###Методы B и A</markdown>
+  <includeCode>
+    <display>B</display>
+    <display>A</display>
+  </includeCode>
+  <markdown>###Класс Code. Только тело</markdown>
+  <includeCode>
+    <display onlyBody="true">Code</display>
+  </includeCode>
+  <markdown>###Метод A. Только тело</markdown>
+  <includeCode>
+    <display onlyBody="true">A</display>
+  </includeCode>
+  <markdown>###Enum</markdown>
+  <includeCode>
+    <display>Enum</display>
+  </includeCode>
+  <markdown>###Регион</markdown>
+  <includeCode>
+    <display>CSharpStyleRegion</display>
+  </includeCode>
+  <includeCode>
+    <display>CommentRegion</display>
+  </includeCode>
+  <markdown>###Питон весь файл</markdown>
+  <includeCode file="HelloWorld.py"/>
+  <markdown>###Питон регион main</markdown>
+  <includeCode file="HelloWorld.py">
+    <display>main</display>
+  </includeCode>
+</slide>

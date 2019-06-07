@@ -1,55 +1,36 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-
-<Lesson
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="https://ulearn.azurewebsites.net/lesson">
-	<title>OrderBy и Distinct</title>
-	<id>{CA6CAD1F-8352-4041-9233-DFF70ED3AB05}</id>
-	<default-include-code-file>Sort.cs</default-include-code-file>
-	<md>
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="OrderBy и Distinct" id="{CA6CAD1F-8352-4041-9233-DFF70ED3AB05}">
+  <defaultIncludeCodeFile>Sort.cs</defaultIncludeCodeFile>
+  <markdown>
 		Для сортировки последовательности в `LINQ` имеется четыре метода:
-	</md>
-
-	<code>
-		<![CDATA[
-		IOrderedEnumerable<T> OrderBy<T>(this IEnumerable<T> items, Func<T, K> keySelector)
-		IOrderedEnumerable<T> OrderByDescending<T>(this IEnumerable<T> items, Func<T, K> keySelector)
-		IOrderedEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> items, Func<T, K> keySelector)
-		IOrderedEnumerable<T> ThenByDescending<T>(this IOrderedEnumerable<T> items, Func<T, K> keySelector)
-	]]>
+	</markdown>
+  <code>
+		IOrderedEnumerable&lt;T&gt; OrderBy&lt;T&gt;(this IEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
+		IOrderedEnumerable&lt;T&gt; OrderByDescending&lt;T&gt;(this IEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
+		IOrderedEnumerable&lt;T&gt; ThenBy&lt;T&gt;(this IOrderedEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
+		IOrderedEnumerable&lt;T&gt; ThenByDescending&lt;T&gt;(this IOrderedEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)
 	</code>
-	
-	<md>
+  <markdown>
 		Первые два дают на выходе последовательность, упорядоченную по возрастанию/убыванию ключей.
 		А `keySelector` — это как раз функция, которая каждому элементу последовательности ставит
 		в соответствие некоторый ключ, по которому его будут сравнивать при сортировке.
-	</md>
-
-	<include-code>
-		<display only-body="true">Test1</display>
-	</include-code>
-
-	<md>
-		<![CDATA[
+	</markdown>
+  <includeCode>
+    <display onlyBody="true">Test1</display>
+  </includeCode>
+  <markdown>
 		Если при равенстве ключей вы хотите отсортировать элементы по другому критерию, 
 		на помощь приходит метод ThenBy.
 
 		Например, в следующем примере все имена сортируются по убыванию длин, а при равных длинах — лексикографически.
-		]]>
-	</md>
-
-	<include-code>
-		<display only-body="true">Test2</display>
-	</include-code>
-
-	<md>
-		<![CDATA[
+		</markdown>
+  <includeCode>
+    <display onlyBody="true">Test2</display>
+  </includeCode>
+  <markdown>
 		Чтобы убрать из последовательности все повторяющиеся элементы, можно воспользоваться функцией `Distinct`.
-		]]>
-	</md>
-
-	<include-code>
-		<display only-body="true">TestDistinct</display>
-	</include-code>
-
-</Lesson>
+		</markdown>
+  <includeCode>
+    <display onlyBody="true">TestDistinct</display>
+  </includeCode>
+</slide>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<slide xmlns="https://ulearn.me/schema/v2" id="F9E51373-CDD6-4741-A789-615CACD583A3" title="Slide With HTML Blocks">
+	<html>
+		Abracadabra
+		<br />
+		Second text
+	</html>
+	<html>		
+		Test 1
+		<div>Test 2</div>
+		<iframe width="560" height="315" src="https://www.youtube.com/embed/9NcPvmk4vfo" frameborder="0"
+				allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+				allowfullscreen="allowfullscreen"
+		/>
+	</html>
+</slide>

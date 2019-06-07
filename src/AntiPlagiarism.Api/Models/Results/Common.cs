@@ -38,8 +38,15 @@ namespace AntiPlagiarism.Api.Models.Results
 		[DataMember(Name = "author_id")]
 		public Guid AuthorId { get; set; }
 
-		[DataMember(Name = "additional_info")]
+		[DataMember(Name = "additional_info")] // Должно включать данные класса AdditionalInfo
 		public string AdditionalInfo { get; set; }
+	}
+
+	[DataContract]
+	public class AdditionalInfo
+	{
+		[DataMember(Name = "SubmissionId")]
+		public int SubmissionId { get; set; }
 	}
 
 	[DataContract]

@@ -1,4 +1,7 @@
-﻿namespace GiftsGranter
+﻿using System;
+using System.Collections.Generic;
+
+namespace GiftsGranter
 {
 	public class CourseSettings
 	{
@@ -10,5 +13,6 @@
 		public string message;
 		public string giftImagePath;
 		public string subtitle;
+		public List<Guid> requiredSlides;
 	}
 }

@@ -5,7 +5,8 @@ using Database.Models;
 
 namespace Database.Repos
 {
-	public class RestoreRequestRepo
+	/* TODO (andgein): This repo is not fully migrated to .NET Core and EF Core */
+	public class RestoreRequestRepo : IRestoreRequestRepo
 	{
 		private readonly UlearnDb db;
 

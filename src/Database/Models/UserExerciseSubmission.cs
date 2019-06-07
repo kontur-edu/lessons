@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using Ulearn.Core;
 
 namespace Database.Models
 {
@@ -50,21 +52,35 @@ namespace Database.Models
 
 		public virtual IList<Like> Likes { get; set; }
 
-		public int AutomaticCheckingId { get; set; }
-
-		[Required]
+		public int? AutomaticCheckingId { get; set; }
+		
 		public virtual AutomaticExerciseChecking AutomaticChecking { get; set; }
-
+		
 		[Index("IDX_UserExerciseSubmissions_ByCourseAndIsRightAnswer", 2)]
 		[Index("IDX_UserExerciseSubmissions_BySlideAndIsRightAnswer", 3)]
 		[Index("IDX_UserExerciseSubmissions_ByIsRightAnswer")]
 		public bool AutomaticCheckingIsRightAnswer { get; set; }
 
+		[Index("IDX_UserExerciseSubmissions_ByLanguage")]
+		public Language Language { get; set; }
+
 		public virtual IList<ManualExerciseChecking> ManualCheckings { get; set; }
 		
+		[Obsolete] // YT: ULEARN-217
 		[Index("IDX_UserExerciseSubmission_ByAntiPlagiarismSubmissionId")]
 		public int? AntiPlagiarismSubmissionId { get; set; }
 
+		public virtual IList<ExerciseCodeReview> Reviews { get; set; }
+
+		[NotMapped]
+		public List<ExerciseCodeReview> NotDeletedReviews => Reviews.Where(r => !r.IsDeleted).ToList();
+		
 		public bool IsWebSubmission => string.Equals(CourseId, "web", StringComparison.OrdinalIgnoreCase) && SlideId == Guid.Empty;
+
+		public List<ExerciseCodeReview> GetAllReviews()
+		{
+			var manualCheckingReviews = ManualCheckings.SelectMany(c => c.NotDeletedReviews);
+			return manualCheckingReviews.Concat(NotDeletedReviews).ToList();
+		}
 	}
 }

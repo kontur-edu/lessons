@@ -27,9 +27,10 @@ namespace Ulearn.Common
 		{
 			DefaultSelector = defaultSelector;
 		}
-
+		
 		public new TValue this[TKey key]
 		{
+			[CollectionAccess(CollectionAccessType.UpdatedContent)]
 			get
 			{
 				if (TryGetValue(key, out var value))
@@ -39,6 +40,7 @@ namespace Ulearn.Common
 				Add(key, value);
 				return value;
 			}
+			[CollectionAccess(CollectionAccessType.ModifyExistingContent)]
 			set { base[key] = value; }
 		}
 

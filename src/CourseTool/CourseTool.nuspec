@@ -9,7 +9,7 @@
     <licenseUrl>https://ulearn.me/Home/Terms</licenseUrl>
     <projectUrl>https://ulearn.me</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Course.exe tool for developing and testing courses for ulearn.me</description>
+    <description>Course.exe tool for developing, testing and debugging courses for ulearn.me</description>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2014–2018 SKB Kontur</copyright>
     <tags>ulearn education mooc</tags>

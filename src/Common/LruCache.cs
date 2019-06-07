@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Ulearn.Common
@@ -6,12 +7,20 @@ namespace Ulearn.Common
 	public class LruCache<TKey, TValue>
 	{
 		private readonly int capacity;
+		private readonly TimeSpan maxLifeTime;
+		
 		private readonly Dictionary<TKey, LinkedListNode<LruCacheItem<TKey, TValue>>> cache = new Dictionary<TKey, LinkedListNode<LruCacheItem<TKey, TValue>>>();
 		private readonly LinkedList<LruCacheItem<TKey, TValue>> lastUsedItems = new LinkedList<LruCacheItem<TKey, TValue>>();
 
-		public LruCache(int capacity)
+		public LruCache(int capacity, TimeSpan maxLifeTime)
 		{
 			this.capacity = capacity;
+			this.maxLifeTime = maxLifeTime;
+		}
+
+		public LruCache(int capacity)
+			:this(capacity, TimeSpan.MaxValue)
+		{
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
@@ -19,14 +28,26 @@ namespace Ulearn.Common
 		{
 			value = default(TValue);
 
-			LinkedListNode<LruCacheItem<TKey, TValue>> node;
-			if (!cache.TryGetValue(key, out node))
+			if (!cache.TryGetValue(key, out var node))
 				return false;
 
+			if (IsItemTooOld(node.Value))
+			{
+				lastUsedItems.Remove(node);
+				cache.Remove(key);
+				return false;
+			}
+			
 			value = node.Value.Value;
 			lastUsedItems.Remove(node);
 			lastUsedItems.AddLast(node);
 			return true;
+		}
+
+		private bool IsItemTooOld(LruCacheItem<TKey, TValue> cacheItem)
+		{
+			var now = DateTime.Now;
+			return now - cacheItem.AddingTime > maxLifeTime;
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
@@ -39,6 +60,13 @@ namespace Ulearn.Common
 			var node = new LinkedListNode<LruCacheItem<TKey, TValue>>(cacheItem);
 			lastUsedItems.AddLast(node);
 			cache.Add(key, node);
+		}
+		
+		[MethodImpl(MethodImplOptions.Synchronized)]
+		public void Clear()
+		{
+			cache.Clear();
+			lastUsedItems.Clear();
 		}
 
 		private void RemoveFirst()
@@ -55,11 +83,13 @@ namespace Ulearn.Common
 	{
 		public readonly TKey Key;
 		public readonly TValue Value;
+		public readonly DateTime AddingTime;
 
 		public LruCacheItem(TKey k, TValue v)
 		{
 			Key = k;
 			Value = v;
+			AddingTime = DateTime.Now;
 		}
 	}
 }

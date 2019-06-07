@@ -13,6 +13,10 @@ namespace Database.Models
 		public int RequestId { get; set; }
 
 		[Required]
+		[StringLength(100)]
+		public string CourseId { get; set; }
+		
+		[Required]
 		public Guid SlideId { get; set; }
 
 		[Required]

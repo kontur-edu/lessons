@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
-using uLearn;
 using Ulearn.Common;
 
 namespace Database.Models
@@ -16,7 +15,7 @@ namespace Database.Models
 			Registered = DateTime.Now;
 		}
 		
-		/* Navigation properties which has been removed from Identity 2.0.
+		/* Navigation properties which have been removed from Identity 2.0.
 		   See https://docs.microsoft.com/en-us/aspnet/core/migration/1x-to-2x/identity-2x#add-identityuser-poco-navigation-properties
 		   for details */
 		
@@ -34,9 +33,6 @@ namespace Database.Models
 		/// Navigation property for this users login accounts.
 		/// </summary>
 		public virtual ICollection<IdentityUserLogin<string>> Logins { get; } = new List<IdentityUserLogin<string>>();
-
-		public virtual ICollection<UserExerciseSubmission> Solutions { get; set; }
-		public virtual ICollection<UserQuestion> Questions { get; set; }
 
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
@@ -62,7 +58,9 @@ namespace Database.Models
 		public DateTime? LastConfirmationEmailTime { get; set; }
 
 		public Gender? Gender { get; set; }
-
+		
+		public bool IsDeleted { get; set; }
+		
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
 		public string Names
 		{

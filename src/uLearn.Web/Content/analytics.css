@@ -1,0 +1,228 @@
+.legacy-page .form-control-date {
+	width: 100px;
+}
+
+.legacy-page .analytics__dashboard .slide-visits-count,
+.legacy-page .analytics__dashboard .quiz-average,
+.legacy-page .analytics__dashboard .exercise-tries,
+.legacy-page .analytics__dashboard .lesson-slide-no-stat,
+.legacy-page .analytics__dashboard .stat-title,
+.legacy-page .analytics__dashboard .small-table__right-cell
+{
+	width: 50px;
+	display: inline-block;
+	text-align: right;
+}
+
+.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__right-cell {
+	display: table-cell;
+	max-width: 50px;
+	min-width: 50px;
+	width: 50px;
+	padding-right: 3px;
+}
+
+.legacy-page .analytics__dashboard #unit-statistics-students-table {
+	width: 100%;
+	display: table;
+}
+
+.legacy-page .analytics__dashboard #unit-statistics-students-table .glyphicon {
+	top: 0;
+}
+
+.legacy-page .analytics__dashboard .small-table__title {
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	padding: 0 0 2px;
+	margin-bottom: 3px;
+}
+
+.legacy-page .analytics__dashboard .small-table__title__cell
+{
+	display: inline-block;
+	color: #ccc;
+	font-size: 8pt;
+	text-align: right;
+	width: 50px;
+}
+
+.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__title__cell
+{
+	display: table-cell;
+	width: 50px;
+	min-width: 50px;
+	max-width: 50px;
+	height: 23px;
+}
+
+.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__title__cell:first-child  {
+	text-align: left;
+	width: 100%;
+	
+}
+
+.legacy-page .analytics__dashboard .additional-scores__edit-mode__save-button {
+	display: none;
+}
+
+.legacy-page .analytics__dashboard .student {
+	height: 30px;
+}
+
+.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__student-progress-cell {
+	display: table-cell;
+	width: 150px;
+	min-width: 150px;
+	max-width: 150px;
+}
+
+.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__student-name-cell {
+	white-space: nowrap;
+	padding-right: 10px;
+	width: 100%;
+}
+
+.legacy-page .analytics__dashboard .student-progress {
+	display: inline-block;
+	width: 150px;
+	height: 10px;
+	border-radius: 0;
+	box-shadow: none;
+	margin-bottom: 0;
+}
+
+.legacy-page .analytics__dashboard .score.full-score a {
+	color: green;
+	font-weight: 700;
+}
+
+.legacy-page .analytics__dashboard .score.zero-score a {
+	color: rgb(246, 127, 127);
+}
+
+.legacy-page .analytics__dashboard .score:not(.full-score):not(.zero-score) a {
+	color: #b9b90e;
+}
+
+.legacy-page .analytics__dashboard .additional-score-link {
+	font-size: 12px;
+}
+
+.legacy-page .analytics__dashboard .additional-score-input {
+	display: none;
+	height: 25px;
+	width: 45px;
+	font-size: 12px;
+	text-align: right;
+}
+
+@media (max-width:768px) {
+	.legacy-page .analytics__dashboard .student-progress {
+		width: 90px;
+	}
+	.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__student-progress-cell {
+		width: 90px;
+		min-width: 90px;
+		max-width: 90px;
+	}
+
+	.legacy-page .analytics__dashboard #students .student {
+		margin-bottom: 10px;
+	}
+
+	.legacy-page .analytics__dashboard .small-table__title__cell,
+	.legacy-page .analytics__dashboard .small-table__right-cell
+	{
+		width: 40px;
+	}
+
+	.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__right-cell,
+	.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__title__cell {
+		max-width: 40px;
+		min-width: 40px;
+		width: 40px;
+	}
+
+	.legacy-page .analytics__dashboard .score.zero-score {
+		background-color: #ffd4d4;
+	}
+
+	.legacy-page .analytics__dashboard .score.zero-score a {
+		color: white;
+	}
+}
+
+@media (max-width: 600px) {
+	.legacy-page .analytics__dashboard .small-table__title__cell,
+	.legacy-page .analytics__dashboard .small-table__right-cell {
+		width: 35px;
+	}
+	
+	.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__right-cell,
+	.legacy-page .analytics__dashboard #unit-statistics-students-table .small-table__title__cell {
+		max-width: 35px;
+		min-width: 35px;
+		width: 35px;
+	}
+}
+
+.legacy-page .analytics__dashboard .large-number {
+	text-align: center;
+	font-size: 40pt;
+}
+
+.legacy-page .analytics__dashboard .large-number__text {
+	text-align: center;
+}
+
+.legacy-page .analytics__chart__toggles {
+	font-size: 10pt;
+}
+
+.legacy-page .analytics__chart__toggles .analytics__chart__toggle {
+	margin-right: 10px;
+}
+
+.legacy-page .analytics__chart__toggles .analytics__chart__toggle.active {
+	pointer-events: none;
+	color: black;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.legacy-page .analytics__chart__toggles .analytics__chart__toggle.active:hover,
+.legacy-page .analytics__chart__toggles .analytics__chart__toggle.active:focus,
+.legacy-page .analytics__chart__toggles .analytics__chart__toggle.active:active {
+	text-decoration: none;
+}
+
+.legacy-page .analytics__other-units-link {
+	font-size: 16px;
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 12px;
+}
+
+@media (min-width: 720px) {
+	.legacy-page .analytics__other-units-link {
+		margin-bottom: 20px;
+		font-size: 20px;
+		margin-left: -23px;
+		margin-right: -23px;
+	}
+}
+
+.legacy-page .analytics__other-units-link > div:first-child {
+	text-align: left;
+}
+
+.legacy-page .analytics__other-units-link > div:last-child {
+	text-align: right;
+}
+
+.legacy-page .hidden-xs-table-cell{ display: table-cell !important; }
+
+@media (max-width: 767px) {
+	.legacy-page .hidden-xs-table-cell { display: none !important; }
+}

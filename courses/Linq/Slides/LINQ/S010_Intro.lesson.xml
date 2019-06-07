@@ -1,33 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Lesson 
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://ulearn.azurewebsites.net/lesson">
-	<title>Введение</title>
-	<id>{3446FAB2-15DF-4045-AB40-ABC1F3DC87C8}</id>
-	<default-include-code-file>Intro.cs</default-include-code-file>
-	<md>
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="Введение" id="{3446FAB2-15DF-4045-AB40-ABC1F3DC87C8}">
+  <defaultIncludeCodeFile>Intro.cs</defaultIncludeCodeFile>
+  <markdown>
 		`LINQ` — это встроенный в C# механизм для удобной работы с коллекциями.
 
 		Большинство алгоритмов, которые на менее развитых языках принято писать с помощью циклов и условных операторов,
 		более компактно и красиво выражаются с помощью примитивов `LINQ`.
 
 		Посмотрите на код поиска всех новых писем в классическом стиле:
-	</md>
-
-	<include-code>
-		<display>GetNewLettersIds_ClassicWay</display>
-	</include-code>
-
-	<md>
+	</markdown>
+  <includeCode>
+    <display>GetNewLetterIds_ClassicWay</display>
+  </includeCode>
+  <markdown>
 		Похожий код каждому программисту приходилось писать не один раз.
 
 		А вот версия решения той же задачи с помощью `LINQ`:
-	</md>
-
-	<include-code>
-		<display>GetNewLettersIds_LinqWay</display>
-	</include-code>
-
-	<md>
+	</markdown>
+  <includeCode>
+    <display>GetNewLetterIds_LinqWay</display>
+  </includeCode>
+  <markdown>
 		Всего одна строчка! Короткая и после некоторого привыкания понятная.
 
 		Лекционные слайды познакомят вас с основными возможностями `LINQ`.
@@ -36,5 +29,5 @@
 
 		Если вы уже имеете представление о `LINQ`, можете пропускать лекционные слайды, и только прорешать упражнения.
 		Некоторые из них могут открыть вам новый взгляд на давно знакомые задачи.
-	</md>
-</Lesson>
+	</markdown>
+</slide>

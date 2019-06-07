@@ -1,4 +1,6 @@
-﻿namespace uLearn
+﻿using System.Linq;
+
+namespace Ulearn.Core.Extensions
 {
 	internal static class ValidatorExtension
 	{
@@ -9,22 +11,23 @@
 			if ((message = validator.FindSyntaxError(fullCodeFile)) != null ||
 				(message = validator.FindStrictValidatorErrors(userWrittenCode, fullCodeFile)) != null)
 			{
-				return SolutionBuildResult.Error(message, fullCodeFile);
+				return new SolutionBuildResult(fullCodeFile, message);
 			}
 
-			if ((message = validator.FindValidatorErrors(userWrittenCode, fullCodeFile)) != null)
+			var styleErrors = validator.FindValidatorErrors(userWrittenCode, fullCodeFile);
+			if (styleErrors.Any())
 			{
-				return SolutionBuildResult.StyleIssue(message, fullCodeFile);
+				return new SolutionBuildResult(fullCodeFile, styleErrors: styleErrors);
 			}
 
-			return SolutionBuildResult.Success(fullCodeFile);
+			return new SolutionBuildResult(fullCodeFile);
 		}
 
 		public static SolutionBuildResult ValidateSingleFileSolution(this ISolutionValidator validator, string userWrittenCode, string fullCodeFile)
 		{
 			string message;
 			if ((message = validator.FindFullSourceError(userWrittenCode)) != null)
-				return SolutionBuildResult.Error(message, fullCodeFile);
+				return new SolutionBuildResult(fullCodeFile, message);
 			return validator.ValidateSolution(userWrittenCode, fullCodeFile);
 		}
 	}

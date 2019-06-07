@@ -5,6 +5,7 @@ using log4net;
 using LtiLibrary.Core.Outcomes.v1;
 using uLearn.Web.Controllers;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Courses.Slides;
 
 namespace uLearn.Web.LTI
 {
@@ -12,20 +13,20 @@ namespace uLearn.Web.LTI
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(LtiUtils));
 
-		public static void SubmitScore(Slide slide, string userId, Visit visit = null)
+		public static void SubmitScore(string courseId, Slide slide, string userId, Visit visit = null)
 		{
 			var db = new ULearnDb();
 			var ltiRequestsRepo = new LtiRequestsRepo(db);
 			var consumersRepo = new ConsumersRepo(db);
 			var visitsRepo = new VisitsRepo(db);
 
-			var ltiRequest = ltiRequestsRepo.Find(userId, slide.Id);
+			var ltiRequest = ltiRequestsRepo.Find(courseId, userId, slide.Id);
 			if (ltiRequest == null)
 				throw new Exception("LtiRequest for user '" + userId + "' not found");
 
 			var consumerSecret = consumersRepo.Find(ltiRequest.ConsumerKey).Secret;
 
-			var score = visit?.Score ?? visitsRepo.GetScore(slide.Id, userId);
+			var score = visit?.Score ?? visitsRepo.GetScore(courseId, slide.Id, userId);
 
 			log.Info($"Надо отправить результаты слайда {slide.Id} пользователя {userId} по LTI. Нашёл LtiRequest: {ltiRequest.JsonSerialize()}");
 			UriBuilder uri;

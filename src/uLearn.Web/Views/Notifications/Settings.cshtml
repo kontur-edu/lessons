@@ -1,7 +1,7 @@
 ﻿@using Database.Extensions
 @using Database.Models
-@using uLearn.Web.Extensions
 @using Ulearn.Common.Extensions
+@using Ulearn.Core.Extensions
 
 @model uLearn.Web.Controllers.NotificationSettingsViewModel
 
@@ -173,11 +173,11 @@ else
 </div>
 
 <script>
-	var notificationTypesByCourse = @Html.Raw(
+	window.notificationTypesByCourse = @Html.Raw(
 		                                Model.NotificationTypesByCourse.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Select(t => (int)t)).JsonSerialize()
 		                                );
 
-	var notificationTransportsSettings = @Html.Raw(Model.NotificationTransportsSettings.Select(
+	window.notificationTransportsSettings = @Html.Raw(Model.NotificationTransportsSettings.Select(
 		                                     kvp => new
 		                                     {
 			                                     courseId = kvp.Key.Item1,

@@ -1,0 +1,77 @@
+@import "./../../../../variables.less";
+@import "./../../commonStyles.less";
+
+.mark {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 14px;
+  margin-left: 10px;
+  border-radius: 3px;
+  cursor: default;
+}
+
+.correctAnswer,
+.pinnedToTop {
+  padding: 2px 6px 2px;
+  color: #fff;
+}
+
+.correctAnswer {
+  background: @green;
+}
+
+.pinnedToTop {
+  background: @blue;
+}
+
+.approvedComment {
+  padding: 1px 6px 1px;
+  background-color: @lightGrey;
+  border: 1px solid @disabledColor;
+  color: @dimgray;
+}
+
+.groupList {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  max-width: 600px;
+  white-space: nowrap;
+  }
+
+.group {
+  display: block;
+  min-width: 0;
+  max-width: 170px;
+  padding: 1px 6px;
+  border: 1px solid @accentColor;
+  color: @accentColor;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0.2px;
+}
+
+.archiveGroup {
+  border: 1px solid @disabledColor;
+  color: @disabledColor;
+}
+
+.groupName,
+.groupName:hover {
+  color: @accentColor;
+}
+
+.groupMarkOnPhone {
+  background-color: @accentColor;
+  color: #fff;
+  padding: 2px 6px;
+  margin-left: 10px;
+  border-radius: 3px;
+}
+
+.text {
+  margin-left: 4px;
+  letter-spacing: 0.2px;
+}

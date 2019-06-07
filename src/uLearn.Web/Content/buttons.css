@@ -1,5 +1,5 @@
 ﻿/* Author: Pixcils® */
-.ph-btn {
+.legacy-page .ph-btn {
 	border-style: solid;
 	border-width: 0px 0px 3px;
 	box-shadow: 0 -1px 0 #ffffff inset;
@@ -21,39 +21,39 @@
 	font-size: 18px;
 }
 
-.ph-btn-green {
+.legacy-page .ph-btn-green {
 	border-color: #3AC162;
 	background-color: #5FCF80;
 }
-.ph-btn-green:hover, .ph-btn-green:focus, .ph-btn-green:active {
+.legacy-page .ph-btn-green:hover, .ph-btn-green:focus, .ph-btn-green:active {
 	background-color: #4BC970;
 	border-color: #3AC162;	
 }
 
-.ph-btn-blue {
+.legacy-page .ph-btn-blue {
 	border-color: #326E99;
 	background-color: #3F8ABF;
 }
 
-.ph-btn-blue:hover, .ph-btn-blue:focus, .ph-btn-blue:active {
+.legacy-page .ph-btn-blue:hover, .ph-btn-blue:focus, .ph-btn-blue:active {
 	background-color: #397CAC;
 	border-color: #326E99;   
 }
 
-.ph-btn-grey {
+.legacy-page .ph-btn-grey {
 	 background-color: #C6CCD2;
 	 border-color: #AAB3BB;
 }
-.ph-btn-grey:hover, .ph-btn-grey:focus, .ph-btn-grey:active {
+.legacy-page .ph-btn-grey:hover, .ph-btn-grey:focus, .ph-btn-grey:active {
 	background-color: #B8BFC7;
 	border-color: #AAB3BB; 
 }
 
-.ph-btn-red {
+.legacy-page .ph-btn-red {
 	background-color: #ED5A5A !important;
 	border-color: #EA4343 !important;
 }
-.ph-btn-red:hover, .ph-btn-red:focus, .ph-btn-red:active {
+.legacy-page .ph-btn-red:hover, .ph-btn-red:focus, .ph-btn-red:active {
 	background: none repeat scroll 0 0 #EB4848 !important;
 	border-color: #E83131 !important;	
 }

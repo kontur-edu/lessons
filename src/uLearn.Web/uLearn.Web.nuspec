@@ -14,4 +14,9 @@
     <copyright>Copyright 2014–2017 SKB Kontur</copyright>
     <tags>ulearn education mooc</tags>
   </metadata>
+  <files>
+    <file src="static\**\*.*" target="static\" />
+    <file src="index.html" target="" />
+<!--    <file src="service-worker.js" target="" />-->
+  </files>
 </package>

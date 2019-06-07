@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Xml.Serialization;
-using Component = uLearn.Model.Edx.EdxComponents.Component;
+using Component = Ulearn.Core.Model.Edx.EdxComponents.Component;
 
-namespace uLearn.Model.Edx
+namespace Ulearn.Core.Model.Edx
 {
 	[XmlRoot("vertical")]
 	public class Vertical : EdxItem

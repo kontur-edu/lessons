@@ -1,0 +1,37 @@
+@import "./../../../../variables.less";
+
+.wrapper {
+  display: flex;
+  align-items: baseline;
+  padding: 2px 5px 3px 4px;
+  color: @disabledColor;
+  cursor: default;
+}
+
+.hover {
+    cursor: pointer;
+    border-radius: 3px;
+
+  &:hover {
+    background-color: rgba(0,0,0,.04);
+  }
+}
+
+.isLiked {
+  color: @likeColor;
+}
+
+.action {
+  display: flex;
+  align-items: baseline;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  outline: none;
+  cursor: inherit;
+}
+
+.count {
+  font-size: 14px;
+  margin-left: 3px;
+}

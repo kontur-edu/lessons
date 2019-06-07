@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using CommandLine;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
 
 namespace uLearn.CourseTool.CmdLineOptions
 {
@@ -36,6 +37,8 @@ namespace uLearn.CourseTool.CmdLineOptions
 
 		public Config Config => config.Value;
 		private readonly Lazy<Config> config;
+
+		public DirectoryInfo CoursePackageRoot => new DirectoryInfo(Path.Combine(Dir, Config.ULearnCoursePackageRoot));
 
 		public void InitializeDirectoryIfNotYet()
 		{

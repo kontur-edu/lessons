@@ -1,13 +1,10 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<Unit
-		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns="https://ulearn.azurewebsites.net/unit:https://ulearn.azurewebsites.net/types">
-		<id>d4492182-fe1c-4531-900c-3a509c9e6c16</id>
-		<url>Features</url>
-		<title>Возможности ulearn</title>
-		<scoring defaultExercise="homework">
-			<group id="laboratory" set_by_instructor="false" />
-			<group id="homework" max_additional_score="20" />
-		</scoring>
-</Unit>
+<?xml version='1.0' encoding='UTF-8'?>
+<unit xmlns="https://ulearn.me/schema/v2" title="Возможности ulearn" id="d4492182-fe1c-4531-900c-3a509c9e6c16" url="Features">
+  <scoring defaultExercise="homework">
+    <group id="laboratory" maxAdditionalScore="0"/>
+    <group id="homework" maxAdditionalScore="20"/>
+  </scoring>
+  <slides>
+    <add>S*.xml</add>
+  </slides>
+</unit>

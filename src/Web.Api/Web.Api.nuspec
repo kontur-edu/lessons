@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Kontur.Ulearn.Web.Api</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>SKB Kontur</authors>
+    <owners>SKB Kontur</owners>
+    <licenseUrl>https://ulearn.me/Home/Terms</licenseUrl>
+    <projectUrl>https://ulearn.me</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>HTTP API for ulearn mooc platform</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>ulearn education mooc api</tags>
+  </metadata>
+  <files>
+    <file src="deploy\*" target="deploy\"/>
+  </files>
+</package>

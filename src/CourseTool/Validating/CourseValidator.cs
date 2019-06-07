@@ -4,11 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using RunCsJob;
-using uLearn.Extensions;
-using uLearn.Model.Blocks;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Extensions;
 
-namespace uLearn
+namespace uLearn.CourseTool.Validating
 {
 	public class CourseValidator : BaseValidator
 	{
@@ -27,7 +32,7 @@ namespace uLearn
 			{
 				LogSlideProcessing("Validate exercise", slide);
 
-				if (slide.Exercise is ProjectExerciseBlock exercise)
+				if (slide.Exercise is CsProjectExerciseBlock exercise)
 				{
 					new ProjectExerciseValidator(this, settings, slide, exercise).ValidateExercises();
 				}
@@ -80,14 +85,13 @@ namespace uLearn
 				FailOnError(slide, solution, ethalon);
 				return;
 			}
-			if (solution.HasStyleIssues)
+			if (solution.HasStyleErrors)
 			{
-				ReportSlideWarning(slide, "Style issue: " + solution.StyleMessage);
+				var errorMessages = string.Join("\n", solution.StyleErrors.Select(e => e.GetMessageWithPositions()));
+				ReportSlideWarning(slide, "Style issue(s): " + errorMessages);
 			}
 
-			var result = SandboxRunner.Run(exercise.CreateSubmission(
-				slide.Id.ToString(),
-				ethalon), settings);
+			var result = SandboxRunner.Run(exercise.CreateSubmission(slide.Id.ToString(), ethalon), settings);
 
 			var output = result.GetOutput().NormalizeEoln();
 

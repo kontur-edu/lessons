@@ -40,7 +40,10 @@
 			}).done(function (ans) {
 				$("#quiz-status").text("Отправляем...");
 				window.scrollTo(0, 0);
-				window.location.reload();
+				if (ans.url) 
+					window.location = ans.url;
+				else
+					window.location.reload();	
 			})
 			.fail(function (req) {
 				console.log(req.responseText);
@@ -79,14 +82,16 @@ function areAllAnswered(needingCount) {
 }
 
 
-function QuizAnswer(type, quizId, itemId, text) {
-	this.QuizType = type;
-	this.QuizId = quizId;
+function QuizAnswer(type, blockId, itemId, text) {
+	this.BlockType = type;
+	this.BlockId = blockId;
 	this.ItemId = itemId;
 	this.Text = text;
 }
 
-$(document).ready(function() {
+window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function() {
 	$.fn.moveUp = function() {
 		$.each(this, function() {
 			$(this).after($(this).prev());
@@ -185,7 +190,7 @@ $(document).ready(function() {
         }
     });
 
-	/* Auto-height by maximum hieght in matching block */
+	/* Auto-height by maximum height in matching block */
 	$('.quiz-block-matching').each(function(idx, block) {
 		var $block = $(block);
 		var $allItems = $block.find('.quiz-block-matching__fixed-item').
@@ -197,4 +202,11 @@ $(document).ready(function() {
 
 		$allItems.outerHeight(maxHeight);
 	});
+	
+	/* Remove ?send=1 from query-string */
+	if ($('.quiz__blocks').length > 0) {
+        var urlObject = new URL(window.location.href);
+        urlObject.searchParams.delete('send');
+        window.history.replaceState({}, '', urlObject.href);
+    }
 });

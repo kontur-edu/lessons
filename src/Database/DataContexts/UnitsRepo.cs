@@ -4,7 +4,8 @@ using System.Linq;
 using System.Security.Principal;
 using Database.Extensions;
 using Database.Models;
-using uLearn;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Units;
 
 namespace Database.DataContexts
 {
@@ -27,6 +28,11 @@ namespace Database.DataContexts
 				.Where(u => u.CourseId == course.Id && u.PublishTime <= DateTime.Now)
 				.Select(u => u.UnitId));
 			return course.Units.Where(u => visibleUnitsIds.Contains(u.Id)).ToList();
+		}
+		
+		public bool IsUnitVisibleForStudents(Course course, Guid unitId)
+		{
+			return db.UnitAppearances.Any(u => u.UnitId == unitId && u.CourseId == course.Id && u.PublishTime <= DateTime.Now);
 		}
 
 		public DateTime GetNextUnitPublishTime(string courseId)

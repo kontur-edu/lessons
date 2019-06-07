@@ -1,4 +1,4 @@
-﻿namespace uLearn
+﻿namespace Ulearn.Core
 {
 	public class AnalyticsTableInfo
 	{

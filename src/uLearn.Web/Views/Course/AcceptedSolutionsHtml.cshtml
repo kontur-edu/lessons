@@ -2,18 +2,19 @@
 @using Database.Extensions
 @using Database.Models
 @using uLearn
-@using uLearn.Model.Blocks
 @using uLearn.Web.Views.Course
+@using Ulearn.Core
+@using Ulearn.Core.Courses.Slides.Blocks
 
 @helper AcceptedSolutions(AcceptedSolutionsPageModel model)
 {
 	<div id="LikeSolutionUrl" data-url="@( model.LikeSolutionUrl)"></div>
-	<p>@MvcHtmlString.Create(model.Slide.Exercise.CommentAfterExerciseIsSolved.RenderMd(model.Slide.Info.SlideFile))</p>
+	<p>@MvcHtmlString.Create(model.Slide.Exercise.CommentAfterExerciseIsSolved.RenderMarkdown(model.Slide.Info.SlideFile))</p>
 	<p>Изучите решения ваших коллег. Проголосуйте за решения, в которых вы нашли что-то новое для себя.</p>
 	foreach (var solution in model.AcceptedSolutions)
 	{
 		var id = "solution_" + solution.Id;
-		var code = new CodeBlock(solution.Code, model.Slide.Exercise.LangId);
+		var code = new CodeBlock(solution.Code, model.Slide.Exercise.Language);
 		<div id="@id">
 			<button class="like-left-location btn @( solution.LikedAlready ? "btn-primary" : "btn-default") like-button" onclick="likeSolution(@solution.Id)">
 				<i class="glyphicon glyphicon-heart"></i>

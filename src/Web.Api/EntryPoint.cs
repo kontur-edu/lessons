@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
@@ -5,7 +7,7 @@ using Vostok.Hosting;
 using Vostok.Logging;
 using Vostok.Logging.Serilog;
 
-namespace Web.Api
+namespace Ulearn.Web.Api
 {
     public static class EntryPoint
     {
@@ -26,7 +28,7 @@ namespace Web.Api
                 })
                 .ConfigureHost((context, hostConfigurator) =>
                 {
-                    var loggerConfiguration = new LoggerConfiguration().MinimumLevel.Debug();
+                    var loggerConfiguration = new LoggerConfiguration().MinimumLevel.Information();
                     if (context.Configuration.GetSection("hostLog").GetValue<bool>("console"))
                     {
                         loggerConfiguration = loggerConfiguration
@@ -35,15 +37,29 @@ namespace Web.Api
                     var pathFormat = context.Configuration.GetSection("hostLog")["pathFormat"];
                     if (!string.IsNullOrEmpty(pathFormat))
                     {
-                        loggerConfiguration = loggerConfiguration
-                            .WriteTo.RollingFile(pathFormat, outputTemplate: "{Timestamp:HH:mm:ss.fff} {Level:u3} [{Thread}] {Message:l}{NewLine}{Exception}");
+						var minimumLevelString = context.Configuration.GetSection("hostLog").GetValue<string>("minimumLevel", "debug");
+						if (!Enum.TryParse(minimumLevelString, true, out LogEventLevel minimumLevel) || !Enum.IsDefined(typeof(LogEventLevel), minimumLevel))
+							minimumLevel = LogEventLevel.Debug;
+						if (Path.IsPathRooted(pathFormat))
+						{
+							var directory = Path.GetDirectoryName(pathFormat);
+							var fileName = Path.GetFileName(pathFormat);
+							pathFormat = Path.Combine(directory, context.Configuration["graphiteServiceName"], fileName);
+						}
+						loggerConfiguration = loggerConfiguration
+							.WriteTo.RollingFile(
+								pathFormat,
+								outputTemplate: "{Timestamp:HH:mm:ss.fff} {Level:u3} [{Thread}] {Message:l}{NewLine}{Exception}",
+								restrictedToMinimumLevel: minimumLevel,
+								fileSizeLimitBytes: 4 * 1073741824L
+							);
                     }
                     var hostLog = new SerilogLog(loggerConfiguration.CreateLogger());
                     hostConfigurator.SetHostLog(hostLog);
                 })
                 .ConfigureAirlock((context, configurator) =>
                 {
-                    configurator.SetLog(context.HostingEnvironment.Log.FilterByLevel(LogLevel.Error));
+                    configurator.SetLog(context.HostingEnvironment.Log.FilterByLevel(LogLevel.Warn));
                 })
                 .Build();
         }

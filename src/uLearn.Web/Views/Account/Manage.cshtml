@@ -4,32 +4,46 @@
 
 <div class="container">
 	<div class="row">
-		<div class="col-md-offset-3 col-md-6">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <h2>Профиль @User.Identity.Name</h2>
+
+                    <hr class="without-top-margin"/>
+
+                    @if (!string.IsNullOrEmpty(ViewBag.StatusMessage) && ! ViewBag.IsStatusMessageAboutSocialLogins)
+                    {
+	                    <div class="alert @(ViewBag.IsStatusError ? "alert-danger" : "alert-success")">@ViewBag.StatusMessage</div>
+                    }
+                </div>
+            </div>
+
+            @Html.Action("ChangeDetailsPartial", new UserViewModel { Render = true })
+            @if (ViewBag.HasLocalPassword)
+            {
+	            @Html.Partial("_ChangePasswordPartial")
+            }
+        </div>
+        
+        <div class="col-md-6">
 			<div class="row">
-				<div class="col-sm-10 col-sm-offset-2">
-					<h2>Профиль @User.Identity.Name</h2>
-
-					<hr class="without-top-margin"/>
-
-					@if (!string.IsNullOrEmpty(ViewBag.StatusMessage))
-					{
-						<div class="alert @(ViewBag.IsStatusError ? "alert-danger" : "alert-success")">@ViewBag.StatusMessage</div>
-					}
-				</div>
-			</div>
-
-			@Html.Action("ChangeDetailsPartial")
-			@if (ViewBag.HasLocalPassword)
-			{
-				@Html.Partial("_ChangePasswordPartial")
-			}
-
-			<div class="row">
-				<section id="externalLogins" class="col-sm-10 col-sm-offset-2">
-					@Html.Action("RemoveAccountList")
-					@Html.Action("ExternalLoginsListPartial", "Login", new ExternalLoginsListModel { Action = "DoLinkLogin", ReturnUrl = ViewBag.ReturnUrl, Type = ExternalLoginListType.Link })
-				</section>
-			</div>
+                <section id="externalLogins" class="col-sm-10 col-sm-offset-2">
+                    <h2>Социальные сети</h2>
+                    <hr class="without-top-margin"/>
+                    
+                    @if (!string.IsNullOrEmpty(ViewBag.StatusMessage) && ViewBag.IsStatusMessageAboutSocialLogins)
+                    {
+	                    <div class="alert @(ViewBag.IsStatusError ? "alert-danger" : "alert-success")">@ViewBag.StatusMessage</div>
+                    }                    
+                    
+                    @Html.Action("RemoveAccountList")
+                    @Html.Action("ExternalLoginsListPartial", "Login", new ExternalLoginsListModel { Action = "DoLinkLogin", ReturnUrl = ViewBag.ReturnUrl, Type = ExternalLoginListType.Link })
+                </section>
+                
+                <section class="col-sm-10 col-sm-offset-2">
+                    @Html.Action("Partial", "Certificates")
+                </section>
+            </div>
 		</div>
 	</div>
 </div>

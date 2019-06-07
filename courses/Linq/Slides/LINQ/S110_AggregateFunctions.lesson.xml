@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="Функции агрегирования" id="a6baca4c-d211-428b-ae49-1f6882fd67f1">
+  <markdown>В `LINQ` есть удобные методы для вычисления минимума, максимума, среднего и количества элементов в последовательности.
+
+Вот все они в действии:</markdown>
+  <includeCode>
+    <display onlyBody="true">MinMaxAvg</display>
+  </includeCode>
+  <markdown>Все эти методы при вызове полностью обходят коллекцию.
+Исключение составляет только метод `Count` — если последовательность на самом деле реализует интерфейс `ICollection`
+(в котором есть свойство `Count`), то `LINQ`-метод `Count()` не станет перебирать всю коллекцию, а сразу вернет значение свойства `Count`.
+
+Благодаря этой оптимизации, временная сложность работы `LINQ`-метода `Count()` 
+на массивах, списках, хеш-таблицах и многих других структурах данных — `O(1)`.</markdown>
+  <markdown>Есть еще две полезные функции: `All` и `Any`, которые проверяют, выполняется ли заданный предикат для всех элементов
+последовательности или хотя бы для одного элемента соответственно.</markdown>
+  <includeCode>
+    <display onlyBody="true">Test2</display>
+  </includeCode>
+  <defaultIncludeCodeFile>_AggregateFunctions.cs</defaultIncludeCodeFile>
+</slide>

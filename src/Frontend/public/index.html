@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="theme-color" content="#000000">
+        <!--
+          manifest.json provides metadata used when your web app is added to the
+          homescreen on Android. See https://developers.google.com/web/fundamentals/engage-and-retain/web-app-manifest/
+        -->
+        <!--<link rel="manifest" href="%PUBLIC_URL%/manifest.json">-->
+        <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
+        <!--
+          Notice the use of %PUBLIC_URL% in the tags above.
+          It will be replaced with the URL of the `public` folder during the build.
+          Only files inside the `public` folder can be referenced from the HTML.
+
+          Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+          work correctly both with client-side routing and a non-root public URL.
+          Learn how to configure a non-root public URL by running `npm run build`.
+        -->
+
+        <link rel="stylesheet" href="/ulearn.bundle.css?v=20181221" />
+        <link rel="stylesheet" href="/katex/katex.min.css" />
+
+        <!-- Add Sentry (https://sentry.io) script for error logging -->
+        <script src="https://cdn.ravenjs.com/3.23.2/raven.min.js" crossorigin="anonymous"></script>
+        <script>
+            Raven.config('https://992e1a5327ad4e48af004ae709b51aba@sentry.io/181214').install()
+        </script>
+    </head>
+    <body>
+        <noscript>
+            You need to enable JavaScript to view this site.
+        </noscript>
+        <div id="outdated"></div>
+        <div id="root"></div>
+
+        <script>
+            /* Don't change next line. Backend inserts configuration to this line looking for pattern */
+            window.config = {};
+        </script>
+
+        <script src="/scripts.bundle.js?v=20190118"></script>
+        <script src="/modernizr.bundle.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/data.js"></script>
+    </body>
+</html>

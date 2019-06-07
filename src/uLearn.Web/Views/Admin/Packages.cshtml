@@ -1,20 +1,23 @@
 ﻿@using uLearn.Web.Extensions
+@using Ulearn.Common.Extensions
+@using Ulearn.Core
+@using FormMethod = System.Web.Mvc.FormMethod
 @model uLearn.Web.Controllers.PackagesViewModel
 
 @{
-	ViewBag.Title = "Пакеты";
+	ViewBag.Title = "Экспорт и импорт курса";
 }
 
 <div class="container">
-	<h1>Пакеты</h1>
+	<h1>Экспорт и импорт курса</h1>
 
 	@if (Model.HasPackage)
 	{
 		<div style="margin-bottom: 10px">
 			Текущая версия загружена <b title="@Model.LastUpdate.ToPrettyString()">@Model.LastUpdate.ToAgoPrettyString()</b>
 
-			@Html.ActionLink("Скачать опубликованный пакет", "DownloadPackage", new { Model.CourseId }, new { @class = "btn btn-xs btn-primary", style = "margin-left: 10px" })
-			@Html.ActionLink("Скопировать на Степик", "ExportCourse", "Stepik", new { courseId = Model.CourseId }, new { @class = "btn btn-xs btn-warning" })
+			@Html.ActionLink("Скачать опубликованную версию", "DownloadPackage", new { courseId = Model.Course.Id }, new { @class = "btn btn-xs btn-primary", style = "margin-left: 10px" })
+			@Html.ActionLink("Скопировать курс на Степик", "ExportCourse", "Stepik", new { courseId = Model.Course.Id }, new { @class = "btn btn-xs btn-warning" })
 		</div>
 	}
 
@@ -22,27 +25,100 @@
     {
 	    <div class="course-loading-error">
             <p class="text-danger">
-                <b>Ошибка в&nbsp;архиве:</b> @Model.Error
+                <b>Ошибка:</b> @Html.Raw(Model.Error.EscapeHtml().LineEndingsToBrTags())
             </p>
             <p class="text-muted">
-                Если вы не&nbsp;понимаете, почему произошла эта ошибка, напишите нам на&nbsp;<a href="mailto:support@ulearn.me">support@ulearn.me</a>.
+                Непонятно, что произошло? Напишите нам на&nbsp;<a href="mailto:support@ulearn.me">support@ulearn.me</a>.
             </p>
         </div>
     }
-    @using (Html.BeginForm("UploadCourse", "Admin", new { Model.CourseId }, FormMethod.Post, new { enctype = "multipart/form-data", style = "margin-bottom: 10px" }))
+    @using (Html.BeginForm("UploadCourse", "Admin", new { courseId = Model.Course.Id }, FormMethod.Post, new { enctype = "multipart/form-data", style = "margin-bottom: 8px" }))
 	{
-		<input type="file" data-filename-placement="inside" class="btn" name="file"/>
-		<input type="submit" class="btn btn-success" value="Загрузить пакет"/>
+		<input type="file" data-filename-placement="inside" class="btn" name="file" title="Выбрать архив с курсом" />
+		<input type="submit" class="btn btn-success" value="Загрузить"/>
 	}
+	@if (Model.CourseGit?.RepoUrl != null && Model.CourseGit?.PublicKey != null)
+	{
+		<p style="margin: 8px 0">или</p>
+		using (Html.BeginForm("UploadCourseWithGit", "Admin", new { courseId = Model.Course.Id }, FormMethod.Post, new { @class = "form-inline", style = "margin-bottom: 20px" }))
+		{
+			@Html.AntiForgeryToken()
+			<input type="submit" class="btn btn-success" style="width: 180px" value="Загрузить из git"/>
+			<a href="" class="spoiler_links" style="vertical-align: middle; margin-left: 5px;">Настроить</a>
+			<a target="_blank" style="vertical-align: middle; margin-left: 5px;" href="@Model.HelpUrl">Справка</a>
+			<div><small>Будет загружен курс из репоз. @(Model.CourseGit?.RepoUrl) из ветки @(Model.CourseGit.Branch ?? "master")</small></div>
+		}
+	}
+	else
+	{
+		<div class="spoiler_links btn btn-xs btn-primary" style="margin-bottom: 10px">Настроить интеграцию с git</div>
+		<a target="_blank" href="@Model.HelpUrl" class="btn btn-link" style="vertical-align:4px">Cправка</a>
+	}
+	<div class="spoiler_body @(Model.OpenStep1 ? "" : "collapse")">
+		@using (Html.BeginForm("SaveCourseRepoSettings", "Admin", new { courseId = Model.Course.Id }, FormMethod.Post))
+		{
+			@Html.AntiForgeryToken()
+			<div class="panel panel-default">
+				<div class="panel-heading">Шаг 1 из 2</div>
+				<div class="panel-body">
+					<div class="form-group">
+						<label for="repoUrl">Git url (github, gitlab)</label>
+						<input type="text" class="form-control" id="repoUrl" name="repoUrl" value="@(Model.CourseGit?.RepoUrl)" placeholder="@("git@*.git")"/>
+					</div>
+					<div class="form-group">
+						<label for="branch">Ветка</label>
+						<input type="text" class="form-control" id="branch" name="branch" value="master"/>
+					</div>
+					<div class="form-group">
+						<label for="pathToCourseXml">Путь до директории с course.xml</label>
+						<input type="text" class="form-control" id="pathToCourseXml" name="pathToCourseXml" value="@(Model.CourseGit?.PathToCourseXml)"/>
+					</div>
+					<div class="form-group">
+						<div class="checkbox checkbox-default">
+							@Html.CheckBox("isWebhookEnabled", (Model.CourseGit?.IsWebhookEnabled ?? false))
+							<label for="isWebhookEnabled">Загружать новые версии автоматически
+								<div class="form-text text-muted"><small>Включите webhook в настройках репозитория, укажите url https://dev.ulearn.me/CoursesWebhook, сontent type json и secret @Model.GitSecret</small></div></label>
+						</div>
+					</div>
+					<button type="submit" name="submitButton" class="btn btn-success" value="Save">Сохранить</button>
+					<button type="submit" name="submitButton" class="btn btn-link" value="Remove">Удалить интеграцию</button>
+				</div>
+			</div>
+		}
+		@if (Model.OpenStep2) {
+			using (Html.BeginForm("GenerateCourseRepoKey", "Admin", new { courseId = Model.Course.Id, repoUrl = Model.CourseGit?.RepoUrl }, FormMethod.Post))
+			{
+				@Html.AntiForgeryToken()
+				<div class="panel panel-default">
+					<div class="panel-heading">Шаг 2 из 2</div>
+					<div class="panel-body">
+						<label for="public-key">Добавьте этот deploy key в настройки репозитория, даже если ваш репозиторий публичный.</label> <a target="_blank" href="@Model.HelpUrl">(справка)</a>
+						<textarea id="public-key" class="form-control" readonly style="height: 96px">@(Model.CourseGit?.PublicKey)</textarea>
+						<input type="submit" class="btn btn-xs btn-link" style="max-width: none; padding-left: 0" value="Перегенерировать ключ (старый перестанет работать)"/>
+					</div>
+				</div>
+			}
+		}
+		<script type="text/javascript">
+			$(document).ready(function(e){
+				$('.spoiler_links').click(function(){
+					$('.spoiler_body').toggle('normal');
+					return false;
+				});
+				e.preventDefault();
+			});
+		</script>
+	</div>
 
 	@if (Model.Versions.Count > 0)
 	{
 		<h1>Загруженные версии</h1>
 		<div class="courses-versions">
+			@Html.AntiForgeryToken()
 			@foreach (var version in Model.Versions)
 			{
 				var isCurrentVersion = Model.PublishedVersion != null && version.Id == Model.PublishedVersion.Id;
-				<a href="@Url.Action("Diagnostics", new { Model.CourseId, versionId = version.Id })" class="no-underline @(isCurrentVersion ? "current" : "")">
+				<a href="@Url.Action("Diagnostics", new { courseId = Model.Course.Id, versionId = version.Id })" class="no-underline @(isCurrentVersion ? "current" : "")">
 					<div class="courses-versions__version @(isCurrentVersion ? "current" : "")">
 						@if (isCurrentVersion)
 						{
@@ -57,14 +133,19 @@
 						</div>
 
 						<div class="courses-versions__actions">
-							<a href="@Url.Action("DownloadVersion", new { Model.CourseId, versionId = version.Id })">
+							@if (version.RepoUrl != null && version.CommitHash != null) {
+								<a href="@GitUtils.RepoUrlToCommitLink(version.RepoUrl, version.CommitHash)" target="_blank">
+									<span class="glyphicon glyphicon-list-alt"></span>
+								</a>
+							}
+							<a href="@Url.Action("DownloadVersion", new { courseId = Model.Course.Id, versionId = version.Id })">
 								<span class="glyphicon glyphicon-download-alt"></span>
 							</a>
 							@if (!isCurrentVersion)
 							{
-								using (Html.BeginForm("DeleteVersion", "Admin", new { Model.CourseId, versionId = version.Id }, FormMethod.Post))
+								using (Html.BeginForm("DeleteVersion", "Admin", new { courseId = Model.Course.Id, versionId = version.Id }, FormMethod.Post))
 								{
-									@Html.AntiForgeryToken()
+									@Html.Hidden("__RequestVerificationToken")
 									<input type="submit" class="btn btn-xs btn-danger" value="&times;" title="Удалить"/>
 								}
 							}

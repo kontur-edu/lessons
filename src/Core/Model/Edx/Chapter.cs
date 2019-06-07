@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Xml.Serialization;
 
-namespace uLearn.Model.Edx
+namespace Ulearn.Core.Model.Edx
 {
 	[XmlRoot("chapter")]
 	public class Chapter : EdxItem

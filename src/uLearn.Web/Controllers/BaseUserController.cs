@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Configuration;
-using System.Web.Mvc;
 using Database.DataContexts;
 using Database.Models;
 using Kontur.Spam.Client;
@@ -10,6 +10,7 @@ using log4net;
 using Metrics;
 using Microsoft.AspNet.Identity;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Configuration;
 
 namespace uLearn.Web.Controllers
 {
@@ -21,20 +22,20 @@ namespace uLearn.Web.Controllers
 		protected UserManager<ApplicationUser> userManager;
 		protected readonly UsersRepo usersRepo;
 
-		protected readonly GraphiteMetricSender metricSender;
+		protected readonly MetricSender metricSender;
 
 		protected readonly string secretForHashes;
 
-		protected string spamChannelId;
-		protected SpamClient spamClient;
-		protected string spamTemplateId;
+		protected readonly string spamChannelId;
+		protected readonly SpamClient spamClient;
+		protected readonly string spamTemplateId;
 
 		protected BaseUserController(ULearnDb db)
 		{
 			this.db = db;
 			userManager = new ULearnUserManager(db);
 			usersRepo = new UsersRepo(db);
-			metricSender = new GraphiteMetricSender("web");
+			metricSender = new MetricSender(ApplicationConfiguration.Read<UlearnConfiguration>().GraphiteServiceName);
 
 			secretForHashes = WebConfigurationManager.AppSettings["ulearn.secretForHashes"] ?? "";
 
@@ -68,7 +69,7 @@ namespace uLearn.Web.Controllers
 		protected async Task<bool> SendConfirmationEmail(ApplicationUser user)
 		{
 			metricSender.SendCount("email_confirmation.send_confirmation_email.try");
-			var confirmationUrl = Url.Action("ConfirmEmail", "Account", new { email = user.Email, signature = GetEmailConfirmationSignature(user.Email) }, "https");
+			var confirmationUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, email = user.Email, signature = GetEmailConfirmationSignature(user.Email) }, "https");
 			var subject = "Подтверждение адреса";
 
 			var messageInfo = new MessageSentInfo
@@ -80,7 +81,7 @@ namespace uLearn.Web.Controllers
 				Variables = new Dictionary<string, object>
 				{
 					{ "title", subject },
-					{ "content", $"<h2>Привет, {user.VisibleName}!</h2><p>Подтверди адрес электронной почты, нажав на кнопку:</p>" },
+					{ "content", $"<h2>Привет, {user.VisibleName.EscapeHtml()}!</h2><p>Подтверди адрес электронной почты, нажав на кнопку:</p>" },
 					{ "text_content", $"Привет, {user.VisibleName}!\nПодтверди адрес электронной почты, нажав на кнопку:" },
 					{ "button", true },
 					{ "button_link", confirmationUrl },
@@ -99,7 +100,7 @@ namespace uLearn.Web.Controllers
 
 			try
 			{
-				await spamClient.SentMessageAsync(spamChannelId, messageInfo);
+				await spamClient.SentMessageAsync(spamChannelId, messageInfo).ConfigureAwait(false);
 			}
 			catch (Exception e)
 			{
@@ -108,8 +109,21 @@ namespace uLearn.Web.Controllers
 			}
 			metricSender.SendCount("email_confirmation.send_confirmation_email.success");
 
-			await usersRepo.UpdateLastConfirmationEmailTime(user);
+			await usersRepo.UpdateLastConfirmationEmailTime(user).ConfigureAwait(false);
 			return true;
+		}
+
+		/* User can not set email which are used (and confirmed) by other user already */
+		protected bool CanUserSetThisEmail(ApplicationUser user, string email)
+		{
+			var users = usersRepo.FindUsersByConfirmedEmail(email);
+			return users.All(u => u.Id == user.Id);
+		}
+		
+		protected bool CanNewUserSetThisEmail(string email)
+		{
+			var users = usersRepo.FindUsersByConfirmedEmail(email);
+			return !users.Any();
 		}
 	}
 }

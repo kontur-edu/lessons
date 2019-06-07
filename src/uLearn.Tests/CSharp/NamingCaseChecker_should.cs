@@ -1,4 +1,8 @@
-﻿using NUnit.Framework;
+﻿using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
+using Ulearn.Core.CSharp;
+using Ulearn.Core.CSharp.Validators;
 
 namespace uLearn.CSharp
 {
@@ -67,14 +71,29 @@ namespace uLearn.CSharp
 		}
 
 		[Test]
+		public void inspect_staticFieldName()
+		{
+			CheckCorrect("class A{ static int a; }");
+			CheckCorrect("class A{ private static int abc; }");
+			CheckCorrect("class A{ private static readonly int Abc; }");
+			CheckCorrect("class A{ private static readonly int abc; }");
+			CheckCorrect("class A{ public static readonly int AbcDef; }");
+			CheckCorrect("class A{ public static readonly int abcDef; }");
+			CheckCorrect("class A{ public static int AbcDef; }");
+			CheckIncorrect("class A{ private static int Abc; }");
+			CheckIncorrect("class A{ public static int abcDef; }");
+			CheckIncorrect("class A{ static int A; }");
+		}
+
+		[Test]
 		public void inspect_fieldName()
 		{
-			CheckCorrect("class A{ int A; }");
-			CheckCorrect("class A{ int a; }");
 			CheckCorrect("class A{ public int A; }");
 			CheckIncorrect("class A{ public int a; }");
 			CheckCorrect("class A{ private int a; }");
 			CheckIncorrect("class A{ private int A; }");
+			CheckCorrect("class A{ int a; }");
+			CheckIncorrect("class A{ int A; }");
 			CheckCorrect("class A{ internal int a; }");
 			CheckCorrect("class A{ internal int A; }");
 			CheckCorrect("class A{ public int A, B, C; }");
@@ -95,19 +114,25 @@ namespace uLearn.CSharp
 			CheckCorrect("class C{ int M(){ Action a => { int a, b;} } }");
 		}
 
+		[Test]
+		public void inspect_discards()
+		{
+			//CheckCorrect("class C{ void M() {var (_, b) = (1, 2);} }");
+			CheckCorrect("class C{ void M(Action<int, int> a) {a(1, 1);} void M2() {M((_, b) => { });}}");
+		}
 		private void CheckCorrect(string correctCode)
 		{
-			Assert.That(FindErrors(correctCode), Is.Null, correctCode);
+			Assert.That(FindErrors(correctCode), Is.Empty, correctCode);
 		}
 
 		private void CheckIncorrect(string incorrectCode)
 		{
-			Assert.That(FindErrors(incorrectCode), Does.Contain("Строка 1"), incorrectCode);
+			Assert.That(FindErrors(incorrectCode).Select(e => e.Span.StartLinePosition.Line), Does.Contain(0), incorrectCode);
 		}
 
-		private static string FindErrors(string code)
+		private static List<SolutionStyleError> FindErrors(string code)
 		{
-			return new NamingCaseStyleValidator().FindError(code);
+			return new NamingCaseStyleValidator().FindErrors(code);
 		}
 	}
 }

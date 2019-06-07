@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Database.Models;
@@ -24,7 +25,7 @@ namespace Database.DataContexts
 			return db.UserRoles
 				.Where(role => role.UserId == userId)
 				.GroupBy(role => role.CourseId)
-				.ToDictionary(g => g.Key, g => g.Select(role => role.Role).Min());
+				.ToDictionary(g => g.Key, g => g.Select(role => role.Role).Min(), StringComparer.OrdinalIgnoreCase);
 		}
 
 		public async Task<bool> ToggleRole(string courseId, string userId, CourseRole role)

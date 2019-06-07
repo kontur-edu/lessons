@@ -1,5 +1,6 @@
-﻿@using uLearn
-@using uLearn.Web.Extensions
+﻿@using uLearn.Web.Extensions
+@using Ulearn.Core.Courses.Slides.Exercises
+@using Ulearn.Core.Extensions
 @model uLearn.Web.Controllers.UserUnitStatisticsPageModel
 
 @{
@@ -8,6 +9,26 @@
 
 <div class="container">
 	<h2>@Model.User.VisibleName, «@Model.Unit.Title»</h2>
+	
+	@if (Model.PreviousUnit != null || Model.NextUnit != null)
+	{
+		<div class="analytics__other-units-link">
+			@if (Model.PreviousUnit != null)
+			{
+				<div>
+					@Html.ActionLink("← " + Model.PreviousUnit.Title, "UserUnitStatistics", new { courseId = Model.Course.Id, userId = Model.User.Id, unitId = Model.PreviousUnit.Id})
+				</div>
+			}
+			&nbsp;
+			@if (Model.NextUnit != null)
+			{
+				<div class="pull-right">
+					@Html.ActionLink(Model.NextUnit.Title + " →", "UserUnitStatistics", new { courseId = Model.Course.Id, userId = Model.User.Id, unitId = Model.NextUnit.Id})
+				</div>
+			}
+		</div>
+	}
+	
 	<div class="user-submissions">
 		@{
 			var shownAnySubmission = false;
@@ -15,9 +36,8 @@
 		@foreach (var submission in Model.Submissions)
 		{
 			var slide = (ExerciseSlide)Model.Slides[submission.SlideId];
-			var block = slide.Exercise;
 			var manualScore = -1;
-			if (!block.RequireReview)
+			if (!slide.Scoring.RequireReview)
 			{
 				continue;
 			}
@@ -25,11 +45,11 @@
 			<div class="user-submission">
 				<div class="user-submission__info">
 					<h3 class="title">
-						@slide.Title.TruncateWithEllipsis(30) (<span class="total-score">@Model.Scores[slide.Id]</span> из @block.MaxScore)
+						@slide.Title.TruncateWithEllipsis(30) (<span class="total-score">@Model.Scores[slide.Id]</span> из @slide.MaxScore)
 					</h3>
 					<div class="date">
 						Сдана <span title="@submission.Timestamp.ToPrettyString(true)">@submission.Timestamp.ToAgoPrettyString(true)</span>,
-						<a href="@Url.Action("UserSolutions", "Analytics", new { courseId = submission.CourseId, slideId = slide.Id, userId = submission.UserId })" target="_blank">
+						<a href="@Url.Action("UserSolutions", "Analytics", new { courseId = submission.CourseId, slideId = slide.Id, userId = submission.UserId, version = submission.Id })" target="_blank">
 							<span class="hidden-xs-inline">смотреть</span> код
 						</a>
 					</div>
@@ -44,11 +64,11 @@
 						@if (submission.ManualCheckings.Any(c => c.IsChecked))
 						{
 							manualScore = submission.ManualCheckings.Max(c => c.Score);
-							<span>(текущая оценка: @manualScore из @block.MaxReviewScore):</span>
+							<span>(текущая оценка: @manualScore из @slide.Scoring.CodeReviewScore):</span>
 						}
 						else
 						{
-							<span> (максимальный балл @block.MaxReviewScore):</span>
+							<span> (максимальный балл @slide.Scoring.CodeReviewScore):</span>
 						}
 					</p>
 					<div class="exercise__score">
@@ -56,8 +76,8 @@
 						<div class="btn-group" role="group">
 							@foreach (var scorePercent in new[] { 0, 25, 50, 75, 100 })
 							{
-								var score = block.MaxReviewScore * scorePercent / 100;
-								var isActive = block.MaxReviewScore > 4 && score == manualScore ? "active" : "";
+								var score = slide.Scoring.CodeReviewScore * scorePercent / 100;
+								var isActive = slide.Scoring.CodeReviewScore > 4 && score == manualScore ? "active" : "";
 								var isDisabled = score < manualScore ? "disabled" : "";
 								<button type="button"
 										class="btn btn-default @isActive @isDisabled"
@@ -71,20 +91,21 @@
 				</form>
 
 				@{
-					var lastManualChecking = submission.ManualCheckings.LastOrDefault(c => c.IsChecked);
-					var solution = submission.SolutionCode.Text;
+					var reviewedSubmission = Model.ReviewedSubmissions.FirstOrDefault(s => s.SlideId == submission.SlideId);
+					var lastManualChecking = reviewedSubmission == null ? null : reviewedSubmission.ManualCheckings.LastOrDefault(c => c.IsChecked);
+					var solution = reviewedSubmission == null ? null : reviewedSubmission.SolutionCode.Text;
 				}
 				@if (lastManualChecking != null && lastManualChecking.NotDeletedReviews.Any())
 				{
 					<div class="last-review-comments">
 						<div>
-							<strong>Комментари@(lastManualChecking.NotDeletedReviews.Count > 1 ? "и" : "й") последнего код-ревью:</strong>
+							<strong>Комментари@(lastManualChecking.NotDeletedReviews.Count > 1 ? "и" : "й") <a href="@Url.Action("UserSolutions", "Analytics", new { courseId = reviewedSubmission.CourseId, slideId = slide.Id, userId = reviewedSubmission.UserId, version = reviewedSubmission.Id })" target="_blank">последнего код-ревью</a>:</strong>
 						</div>
 
 						@foreach (var review in lastManualChecking.NotDeletedReviews)
 						{
-							var startPosition = solution.FindPositionByLineAndCharacted(review.StartLine, review.StartPosition);
-							var finishPosition = solution.FindPositionByLineAndCharacted(review.FinishLine, review.FinishPosition);
+							var startPosition = solution.FindPositionByLineAndCharacter(review.StartLine, review.StartPosition);
+							var finishPosition = solution.FindPositionByLineAndCharacter(review.FinishLine, review.FinishPosition);
 							<div>
 								<span class="commented-code">@solution.Substring(startPosition, finishPosition - startPosition).TruncateWithEllipsis(30)</span>
 								@review.Comment

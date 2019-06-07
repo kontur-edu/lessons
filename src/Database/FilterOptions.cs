@@ -10,7 +10,7 @@ namespace Database
 		/* If true, search only users which ids IS NOT in UsersIds*/
 		public bool IsUserIdsSupplement { get; set; }
 
-		public List<string> UsersIds { get; set; }
+		public List<string> UserIds { get; set; }
 	}
 
 	public class ManualCheckingQueueFilterOptions : AbstractFilterOptionByCourseAndUsers
@@ -51,5 +51,10 @@ namespace Database
 			copy.SlidesIds = newSlidesIds;
 			return copy;
 		}
+	}
+
+	public class SubmissionsFilterOptions : AbstractFilterOptionByCourseAndUsers
+	{
+		public IEnumerable<Guid> SlideIds { get; set; }
 	}
 }

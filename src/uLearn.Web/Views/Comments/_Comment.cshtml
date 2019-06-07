@@ -1,9 +1,11 @@
 ﻿@using Database.Models
 @using uLearn.Web.Extensions
 @using uLearn.Web.Views.Shared
+@using Ulearn.Core.Extensions
+@using FormMethod = System.Web.Mvc.FormMethod
 @model CommentViewModel
 
-@helper ReplyForm(Comment comment, bool isFormHidden)
+@helper ReplyForm(Comment comment, bool isFormHidden, bool forInstructorsOnly)
 {
 	<div class="reply-form is-reply media @( isFormHidden ? "collapse" : "")">
 		@using (Html.BeginForm("AddComment", "Comments", FormMethod.Post))
@@ -11,11 +13,12 @@
 			@Html.Hidden("courseId", comment.CourseId)
 			@Html.Hidden("slideId", comment.SlideId)
 			@Html.Hidden("parentCommentId", comment.Id)
+			@Html.Hidden("forInstructorsOnly", forInstructorsOnly)
 			<div class="pull-left">
 				@UserAvatar.SmallAvatar(Model.CurrentUser)
 			</div>
 			<div class="media-body">
-				@Html.TextBox("commentText", "", new { placeholder = "Ответить.." })
+				@Html.TextBox("commentText", "", new { placeholder = "Ответить..." })
 			</div>
 		}
 	</div>
@@ -217,6 +220,6 @@
 
 	if (Model.Comment.IsTopLevel() && Model.CanReply)
 	{
-		@ReplyForm(Model.Comment, !Model.Replies.Any())
+		@ReplyForm(Model.Comment, !Model.Replies.Any(), forInstructorsOnly: Model.IsCommentForInstructorsOnly)
 	}
 }

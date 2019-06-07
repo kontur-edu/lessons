@@ -1,4 +1,7 @@
-namespace uLearn
+using System.Collections.Generic;
+using Ulearn.Core.CSharp;
+
+namespace Ulearn.Core
 {
 	public class NullValidator : ISolutionValidator
 	{
@@ -12,9 +15,9 @@ namespace uLearn
 			return null;
 		}
 
-		public string FindValidatorErrors(string userCode, string solution)
+		public List<SolutionStyleError> FindValidatorErrors(string userCode, string solution)
 		{
-			return null;
+			return new List<SolutionStyleError>();
 		}
 
 		public string FindStrictValidatorErrors(string userCode, string solution)

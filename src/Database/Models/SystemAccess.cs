@@ -38,8 +38,10 @@ namespace Database.Models
 	
 	public enum SystemAccessType : short
 	{
-		/* Видеть профили всех пользователей */
 		[Display(Name = "Видеть профили всех пользователей")]
 		ViewAllProfiles = 1,
+		
+		[Display(Name = "Видеть, в каких группах состоят все студенты")]
+		ViewAllGroupMembers = 2,		
 	}
 }

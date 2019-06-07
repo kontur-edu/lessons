@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function () {
 	var $modal = $('.grader-submissions__details__modal');
 
 	$('.grader-submissions__details__link').click(function () {

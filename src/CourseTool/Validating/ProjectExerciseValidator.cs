@@ -6,21 +6,26 @@ using Microsoft.Build.Evaluation;
 using Microsoft.VisualBasic.FileIO;
 using RunCsJob;
 using RunCsJob.Api;
-using uLearn.Helpers;
-using uLearn.Model.Blocks;
+using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Helpers;
 using SearchOption = Microsoft.VisualBasic.FileIO.SearchOption;
 
-namespace uLearn
+namespace uLearn.CourseTool.Validating
 {
 	public class ProjectExerciseValidator : BaseValidator
 	{
-		private readonly ProjectExerciseBlock ex;
+		private readonly CsProjectExerciseBlock ex;
 		private readonly ExerciseSlide slide;
 		private readonly SandboxRunnerSettings settings;
 		private readonly ExerciseStudentZipBuilder exerciseStudentZipBuilder = new ExerciseStudentZipBuilder();
 
-		public ProjectExerciseValidator(BaseValidator baseValidator, SandboxRunnerSettings settings, ExerciseSlide slide, ProjectExerciseBlock exercise)
+		public ProjectExerciseValidator(BaseValidator baseValidator, SandboxRunnerSettings settings, ExerciseSlide slide, CsProjectExerciseBlock exercise)
 			: base(baseValidator)
 		{
 			this.settings = settings;
@@ -80,15 +85,20 @@ namespace uLearn
 			var submission = ex.CreateSubmission(ex.CsprojFileName, solutionCode);
 			var result = SandboxRunner.Run(submission, new SandboxRunnerSettings());
 
-			if (VerdictIsNotOk(result))
+			if (!IsCompiledAndExecuted(result))
 				ReportSlideError(slide, $"Correct solution file {ex.CorrectSolutionFileName} verdict is not OK. RunResult = {result}");
 
-			if (!IsSolution(result))
-				ReportSlideError(slide, $"Correct solution file {ex.CorrectSolutionFileName} is not solution. RunResult = {result}");
+			if (!ex.IsCorrectRunResult(result))
+				ReportSlideError(slide, $"Correct solution file {ex.CorrectSolutionFileName} is not solution. RunResult = {result}. " +
+										$"ExpectedOutput = {ex.ExpectedOutput.NormalizeEoln()} " +
+										$"RealOutput = {result.GetOutput().NormalizeEoln()}");
 			var buildResult = ex.BuildSolution(solutionCode);
 
-			if (buildResult.HasStyleIssues)
-				ReportSlideWarning(slide, $"Correct solution file {ex.CorrectSolutionFileName} has style issues. {buildResult.StyleMessage}");
+			if (buildResult.HasStyleErrors)
+			{
+				var errorMessage = string.Join("\n", buildResult.StyleErrors.Select(e => e.GetMessageWithPositions()));
+				ReportSlideWarning(slide, $"Correct solution file {ex.CorrectSolutionFileName} has style issues. {errorMessage}");
+			}
 		}
 
 		private void ReportWarningIfWrongAnswersAreSolutionsOrNotOk()
@@ -108,13 +118,13 @@ namespace uLearn
 
 		private void ReportWarningIfWrongAnswerVerdictIsNotOk(string waFileName, RunningResults waResult)
 		{
-			if (VerdictIsNotOk(waResult))
+			if (!IsCompiledAndExecuted(waResult))
 				ReportSlideWarning(slide, $"Code verdict of file with wrong answer ({waFileName}) is not OK. RunResult = " + waResult);
 		}
 
 		private void ReportWarningIfWrongAnswerIsSolution(string waFileName, RunningResults waResult)
 		{
-			if (IsSolution(waResult))
+			if (ex.IsCorrectRunResult(waResult))
 				ReportSlideWarning(slide, $"Code of file with wrong answer ({waFileName}) is solution!");
 		}
 
@@ -124,7 +134,7 @@ namespace uLearn
 			var submission = ex.CreateSubmission(ex.CsprojFileName, initialCode);
 			var result = SandboxRunner.Run(submission);
 
-			if (ex.StudentZipIsBuildable)
+			if (ex.StudentZipIsCompilable)
 				ReportErrorIfInitialCodeVerdictIsNotOk(result);
 
 			ReportErrorIfInitialCodeIsSolution(result);
@@ -132,13 +142,13 @@ namespace uLearn
 
 		private void ReportErrorIfInitialCodeVerdictIsNotOk(RunningResults result)
 		{
-			if (VerdictIsNotOk(result))
+			if (!IsCompiledAndExecuted(result))
 				ReportSlideError(slide, "Exercise initial code verdict is not OK. RunResult = " + result);
 		}
 
 		private void ReportErrorIfInitialCodeIsSolution(RunningResults result)
 		{
-			if (IsSolution(result))
+			if (ex.IsCorrectRunResult(result))
 				ReportSlideError(slide, "Exercise initial code (available to students) is solution!");
 		}
 
@@ -148,17 +158,23 @@ namespace uLearn
 			var tempExFolder = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExerciseFolder_From_StudentZip"));
 			
 			exerciseStudentZipBuilder.BuildStudentZip(slide, tempExZipFilePath);
-			Utils.UnpackZip(tempExZipFilePath.Content(), tempExFolder.FullName);
+			Utils.UnpackZip(tempExZipFilePath.ReadAllContent(), tempExFolder.FullName);
 			try
 			{
 				ReportErrorIfStudentsZipHasWrongAnswerOrSolutionFiles(tempExFolder);
 
 				var csprojFile = tempExFolder.GetFile(ex.CsprojFileName);
-				var csproj = new Project(csprojFile.FullName, null, null, new ProjectCollection());
-				ReportErrorIfCsprojHasUserCodeOfNotCompileType(tempExFolder, csproj);
-				ReportErrorIfCsprojHasWrongAnswerOrSolutionItems(tempExFolder, csproj);
+				FuncUtils.Using(
+					new ProjectCollection(),
+					projectCollection =>
+					{
+						var csproj = new Project(csprojFile.FullName, null, null, projectCollection);
+						ReportErrorIfCsprojHasUserCodeOfNotCompileType(tempExFolder, csproj);
+						ReportErrorIfCsprojHasWrongAnswerOrSolutionItems(tempExFolder, csproj);
+					}, 
+					projectCollection => projectCollection.UnloadAllProjects());
 
-				if (!ex.StudentZipIsBuildable)
+				if (!ex.StudentZipIsCompilable)
 					return;
 
 				var buildResult = MsBuildRunner.BuildProject(settings.MsBuildSettings, ex.CsprojFile.Name, tempExFolder);

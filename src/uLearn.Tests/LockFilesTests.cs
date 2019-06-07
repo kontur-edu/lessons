@@ -9,6 +9,7 @@ namespace uLearn
 	class LockFilesTests
 	{
 		[Test]
+		[Explicit]
 		public void CreateLockFile()
 		{
 			var current = new DirectoryInfo(".");

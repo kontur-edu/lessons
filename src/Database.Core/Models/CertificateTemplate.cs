@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database.Models
 {
@@ -24,6 +23,7 @@ namespace Database.Models
 		public bool IsDeleted { get; set; }
 
 		[Required]
+		[StringLength(128)]
 		public string ArchiveName { get; set; }
 
 		public virtual ICollection<Certificate> Certificates { get; set; }

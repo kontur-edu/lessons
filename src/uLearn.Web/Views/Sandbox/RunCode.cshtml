@@ -6,12 +6,12 @@
 	ViewBag.Title = "Run code";
 }
 
-<div class="container">
+<div class="container exercise__submission">
 	@if (User.HasAccess(CourseRole.Instructor))
 	{
 		@SlideHtml.CodeTextArea(@"using System;
 
-namespace uLearn {
+namespace Ulearn {
 	class Program {
 		public static void Main(string[] args) {
 			Console.Out.WriteLine(""Hello, World!"");

@@ -1,4 +1,6 @@
-﻿$(document).ready(function() {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function() {
 	$(document).on('click', 'button[data-replace-action],a[data-replace-action]', function (e) {
 		var $self = $(this);
 

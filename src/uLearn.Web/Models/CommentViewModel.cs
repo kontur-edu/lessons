@@ -16,6 +16,7 @@ namespace uLearn.Web.Models
 		public bool CanEditAndDeleteComment;
 		public bool CanViewAuthorSubmissions;
 		public bool CanViewAuthorProfile;
+		public bool IsCommentForInstructorsOnly;
 
 		public ApplicationUser CurrentUser;
 

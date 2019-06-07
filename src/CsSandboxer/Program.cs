@@ -72,23 +72,49 @@ namespace CsSandboxer
 			Environment.Exit(3);
 		}
 
+		private static void HandleException(object sender, UnhandledExceptionEventArgs e)
+		{
+			HandleException(e.ExceptionObject as Exception);
+		}
+
 		private static AppDomain CreateDomain(string id, string assemblyPath)
 		{
 			var permSet = new PermissionSet(PermissionState.None);
-			//permSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.Read, Path.GetDirectoryName(assemblyPath)));
-			//permSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, Path.GetDirectoryName(assemblyPath)));
+			permSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.Read, assemblyPath));
+			permSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, assemblyPath));
+			permSet.AddPermission(new FileIOPermission(FileIOPermissionAccess.PathDiscovery, Environment.CurrentDirectory));
 			permSet.AddPermission(new EnvironmentPermission(EnvironmentPermissionAccess.Read, "InsideSandbox"));
-			permSet.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));
+			
+			/*
+			 * Permissions for NUnit: see https://github.com/nunit/nunit/blob/master/src/NUnitFramework/tests/Assertions/LowTrustFixture.cs#L166
+			 * and https://github.com/nunit/nunit/issues/2792 for details
+			 */
+			permSet.AddPermission(new ReflectionPermission(
+				ReflectionPermissionFlag.MemberAccess));            // Required to instantiate classes that contain test code and to get cross-appdomain communication to work.
+			permSet.AddPermission(new SecurityPermission(
+				SecurityPermissionFlag.Execution |                  // Required to execute test code
+				SecurityPermissionFlag.SerializationFormatter       // Required to support cross-appdomain test result formatting by NUnit TestContext
+			));
+			/* In .NET <= 3.5 add following EnvironmentPermission:
+			permSet.AddPermission(new EnvironmentPermission(PermissionState.Unrestricted)); // Required for NUnit.Framework.Assert.GetStackTrace()
+			*/ 
+
 			var evidence = new Evidence();
 			evidence.AddHostEvidence(new Zone(SecurityZone.Untrusted));
-			var fullTrustAssembly = typeof(Sandboxer).Assembly.Evidence.GetHostEvidence<StrongName>();
+			var fullyTrustAssemblies = typeof(Sandboxer).Assembly.Evidence.GetHostEvidence<StrongName>();
 
+			var applicationBase = Path.GetDirectoryName(assemblyPath);
 			var adSetup = new AppDomainSetup
 			{
-				ApplicationBase = Path.GetDirectoryName(assemblyPath),
+				ApplicationBase = applicationBase,
 			};
 
-			var domain = AppDomain.CreateDomain(id, evidence, adSetup, permSet, fullTrustAssembly);
+			/* Copy CsSandboxer.exe to destination folder, because it's needed them to set domain.UnhandledException handler below. */
+			var sandboxAssembly = typeof(Sandboxer).Assembly.Location;
+			File.Copy(sandboxAssembly, Path.Combine(applicationBase, Path.GetFileName(sandboxAssembly)), overwrite: true);
+
+			var domain = AppDomain.CreateDomain(id, evidence, adSetup, permSet, fullyTrustAssemblies);
+			domain.UnhandledException += HandleException;
 			return domain;
 		}
 

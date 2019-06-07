@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -8,9 +7,9 @@ using System.Threading.Tasks;
 using System.Web;
 using log4net;
 using RunCsJob.Api;
-using uLearn;
-using uLearn.Extensions;
+using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
 
 namespace RunCsJob
 {
@@ -21,8 +20,9 @@ namespace RunCsJob
 		private const string instanceIdEnvironmentVariableName = "WEBSITE_INSTANCE_ID";
 		private const string arrAffinityCookieName = "ARRAffinity";
 		private static readonly ILog log = LogManager.GetLogger(typeof(Client));
+		private readonly string agentName;
 
-		public Client(string address, string token)
+		public Client(string address, string token, string agentName)
 		{
 			this.token = token;
 
@@ -38,19 +38,23 @@ namespace RunCsJob
 			var instanceId = Environment.GetEnvironmentVariable(instanceIdEnvironmentVariableName);
 			if (!string.IsNullOrEmpty(instanceId))
 				cookieContainer.Add(baseAddress, new Cookie(arrAffinityCookieName, instanceId));
+
+			this.agentName = agentName;
 		}
 
-		public async Task<List<RunnerSubmission>> TryGetSubmissions(int threadsCount)
+		public async Task<List<RunnerSubmission>> TryGetSubmission()
 		{
-			var uri = GetUri("GetSubmissions", new[] { "count", threadsCount.ToString(CultureInfo.InvariantCulture) });
+			var uri = GetUri("GetSubmissions", new [] {"language", Language.CSharp.GetName()});
 			try
 			{
-				var response = await httpClient.GetAsync(uri);
+				log.Info($"Отправляю запрос на {uri}");
+				var response = await httpClient.GetAsync(uri).ConfigureAwait(false);
+				log.Info($"Получил ответ, код {(int) response.StatusCode} {response.StatusCode}, читаю содержимое");
 				if (response.IsSuccessStatusCode)
-					return await response.Content.ReadAsJsonAsync<List<RunnerSubmission>>(JsonConfig.GetSettings());
+					return await response.Content.ReadAsJsonAsync<List<RunnerSubmission>>(JsonConfig.GetSettings()).ConfigureAwait(false);
 				else
 				{
-					var text = await response.Content.ReadAsStringAsync();
+					var text = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 					log.Error($"StatusCode {response.StatusCode}\n{text}");
 				}
 			}
@@ -66,22 +70,36 @@ namespace RunCsJob
 		public async void SendResults(List<RunningResults> results)
 		{
 			var uri = GetUri("PostResults");
-			var response = await httpClient.PostAsJsonAsync(uri, results);
+			try
+			{
+				var response = await TrySendResults(results, uri).ConfigureAwait(false);
 
-			if (response.IsSuccessStatusCode)
-				return;
+				if (response.IsSuccessStatusCode)
+					return;
 
-			log.Error($"Не могу отправить результаты проверки (они ниже) на сервер: {response}\n{response.Content.ReadAsStringAsync().Result}");
+				log.Error($"Не могу отправить результаты проверки (они ниже) на сервер: {response}\n{await response.Content.ReadAsStringAsync().ConfigureAwait(false)}");
+			}
+			catch (Exception e)
+			{
+				log.Error($"Не могу отправить результаты проверки (они ниже) на сервер. Произошла ошибка {e.Message}");
+			}
+			
 			foreach (var result in results)
 			{
 				log.Info($"Результат: {result}");
 			}
 		}
 
+		private Task<HttpResponseMessage> TrySendResults(List<RunningResults> results, string uri)
+		{
+			return FuncUtils.TrySeveralTimesAsync(async () => await httpClient.PostAsJsonAsync(uri, results).ConfigureAwait(false), 3);
+		}
+
 		private string GetUri(string path, params string[][] parameters)
 		{
 			var query = HttpUtility.ParseQueryString(string.Empty);
 			query["token"] = token;
+			query["agent"] = agentName;
 			foreach (var parameter in parameters)
 			{
 				query[parameter[0]] = parameter[1];

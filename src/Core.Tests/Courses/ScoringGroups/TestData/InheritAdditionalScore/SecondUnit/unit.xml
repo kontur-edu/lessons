@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<unit xmlns="https://ulearn.me/schema/v2" id="A9283D26-32D6-4703-BF5E-13D272C41CEB" title="Simple unit 2">
+	<scoring>
+		<group id="ScoringGroup1" abbr="Бл 1" maxAdditionalScore="20">Баллы 1</group>
+	</scoring>
+	<defaultIncludeCodeFile>default include code file</defaultIncludeCodeFile>
+</unit>

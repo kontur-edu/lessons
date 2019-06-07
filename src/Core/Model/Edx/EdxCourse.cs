@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using uLearn.Model.Edx.EdxComponents;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Model.Edx.EdxComponents;
 
-namespace uLearn.Model.Edx
+namespace Ulearn.Core.Model.Edx
 {
 	public delegate void NonExistentItemHandler(string type, string urlName);
 

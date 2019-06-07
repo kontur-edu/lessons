@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<course xmlns="https://ulearn.me/schema/v2" title="Simple Course">
+	<preludes>
+		<prelude language="html">Prelude.html</prelude>
+	</preludes>
+	<scoring>
+		<group id="ScoringGroup1" abbr="Бл 1">Баллы 1</group>
+	</scoring>
+	<defaultLanguage>csharp</defaultLanguage>
+	<units>
+		<add>*/unit.xml</add>
+	</units>
+</course>

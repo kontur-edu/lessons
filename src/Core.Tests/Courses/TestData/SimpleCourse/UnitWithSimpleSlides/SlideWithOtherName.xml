@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<slide xmlns="https://ulearn.me/schema/v2" id="DA155479-91C2-4AEC-B21D-81072ABE41CF" title="Simple slide">
+	<markdown hide="true">
+		Этот слайд не должен попасть в модуль, потому что не попадает под маску «SimpleSlide*.xml»
+	</markdown>
+</slide>

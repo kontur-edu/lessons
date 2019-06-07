@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -17,6 +16,10 @@ using uLearn.Web.Extensions;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Configuration;
+using Ulearn.Core.Courses;
+using Web.Api.Configuration;
 
 namespace uLearn.Web.Controllers
 {
@@ -34,14 +37,21 @@ namespace uLearn.Web.Controllers
 		private readonly SystemAccessesRepo systemAccessesRepo;
 
 		private readonly string telegramSecret;
+		private static readonly WebApiConfiguration configuration;		
 
-		private static readonly List<string> hijackCookies = new List<string> { ".AspNet.ApplicationCookie" };
+		private static readonly List<string> hijackCookies = new List<string>();
+
+		static AccountController()
+		{
+			configuration = ApplicationConfiguration.Read<WebApiConfiguration>();
+			hijackCookies.Add(configuration.Web.CookieName);
+		}
 
 		public AccountController()
 		{
 			userRolesRepo = new UserRolesRepo(db);
 			groupsRepo = new GroupsRepo(db, courseManager);
-			certificatesRepo = new CertificatesRepo(db, courseManager);
+			certificatesRepo = new CertificatesRepo(db);
 			visitsRepo = new VisitsRepo(db);
 			notificationsRepo = new NotificationsRepo(db);
 			coursesRepo = new CoursesRepo(db);
@@ -91,12 +101,14 @@ namespace uLearn.Web.Controllers
 			var usersList = users.ToList();
 
 			var currentUserId = User.Identity.GetUserId();
+			var userIds = usersList.Select(u => u.UserId).ToList();
 			var model = new UserListModel
 			{
 				CanToggleRoles = User.HasAccess(CourseRole.CourseAdmin),
 				ShowDangerEntities = User.IsSystemAdministrator(),
 				Users = usersList.Select(user => GetUserModel(user, coursesForUsers, courses)).ToList(),
-				UsersGroups = groupsRepo.GetUsersGroupsNamesAsStrings(courses, usersList.Select(u => u.UserId), User),
+				UsersGroups = groupsRepo.GetUsersGroupsNamesAsStrings(courses, userIds, User),
+				UsersArchivedGroups = groupsRepo.GetUsersGroupsNamesAsStrings(courses, userIds, User, onlyArchived: true),
 				CanViewAndToggleCourseAccesses = false,
 				CanViewAndToogleSystemAccesses = User.IsSystemAdministrator(),
 				CanViewProfiles = systemAccessesRepo.HasSystemAccess(currentUserId, SystemAccessType.ViewAllProfiles) || User.IsSystemAdministrator(),
@@ -157,7 +169,7 @@ namespace uLearn.Web.Controllers
 			return user;
 		}
 
-		private async Task NotifyAbountUserJoinedToGroup(Group group, string userId)
+		private async Task NotifyAboutUserJoinedToGroup(Group group, string userId)
 		{
 			var notification = new JoinedToYourGroupNotification
 			{
@@ -175,10 +187,13 @@ namespace uLearn.Web.Controllers
 
 			if (Request.HttpMethod == "POST")
 			{
-				await groupsRepo.AddUserToGroup(group.Id, User.Identity.GetUserId());
-				await NotifyAbountUserJoinedToGroup(group, User.Identity.GetUserId());
+				var alreadyInGroup = await groupsRepo.AddUserToGroup(group.Id, User.Identity.GetUserId()) == null;
+				if (! alreadyInGroup)
+					await NotifyAboutUserJoinedToGroup(group, User.Identity.GetUserId());
 
-				return Redirect("/");
+				var courseId = group.CourseId;
+
+				return View("JoinedToGroup", group);
 			}
 
 			return View(group);
@@ -186,6 +201,7 @@ namespace uLearn.Web.Controllers
 
 		[ULearnAuthorize(ShouldBeSysAdmin = true)]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public ActionResult ToggleSystemRole(string userId, string role)
 		{
 			if (userId == User.Identity.GetUserId())
@@ -208,13 +224,14 @@ namespace uLearn.Web.Controllers
 
 		[ULearnAuthorize(MinAccessLevel = CourseRole.Instructor)]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> ToggleRole(string courseId, string userId, CourseRole role)
 		{
 			var currentUserId = User.Identity.GetUserId();
-			if (userManager.FindById(userId) == null || userId == currentUserId)
-				return Json(new { status = "error", message = "Вы не можете назначать администратором, преподавателем или тестером сами себя." });
-
 			var isCourseAdmin = User.HasAccessFor(courseId, CourseRole.CourseAdmin);
+			if ((userManager.FindById(userId) == null || userId == currentUserId) && (!isCourseAdmin || role == CourseRole.CourseAdmin) && !User.IsSystemAdministrator())
+				return Json(new { status = "error", message = "Вы не можете изменить эту роль у самих себя." });
+
 			var canAddInstructors = coursesRepo.HasCourseAccess(currentUserId, courseId, CourseAccessType.AddAndRemoveInstructors);
 			if (!isCourseAdmin && !canAddInstructors)
 				return Json(new { status = "error", message = "У вас нет прав назначать преподавателей или тестеров. Это могут делать только администраторы курса и преподаватели со специальными правами." });
@@ -233,13 +250,16 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ULearnAuthorize(ShouldBeSysAdmin = true)]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> DeleteUser(string userId)
 		{
-			var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userId);
+			var user = usersRepo.FindUserById(userId);
 			if (user != null)
 			{
-				db.Users.Remove(user);
-				await db.SaveChangesAsync();
+				/* Log out user everywhere: https://msdn.microsoft.com/en-us/library/dn497579%28v=vs.108%29.aspx?f=255&MSPPError=-2147217396 */
+				await userManager.UpdateSecurityStampAsync(userId);
+				
+				await usersRepo.DeleteUserAsync(user);
 			}
 			return RedirectToAction("List");
 		}
@@ -248,7 +268,7 @@ namespace uLearn.Web.Controllers
 		/* Now we use AccountController.Profile and don't use AccountController.Info, but this method exists for back compatibility */
 		public ActionResult Info(string userName)
 		{
-			var user = db.Users.FirstOrDefault(u => u.Id == userName || u.UserName == userName);
+			var user = db.Users.FirstOrDefault(u => (u.Id == userName || u.UserName == userName) && ! u.IsDeleted);
 			if (user == null)
 				return HttpNotFound();
 
@@ -284,6 +304,7 @@ namespace uLearn.Web.Controllers
 			var certificates = certificatesRepo.GetUserCertificates(user.Id).OrderBy(c => allCourses.GetOrDefault(c.Template.CourseId)?.Title ?? "<курс удалён>").ToList();
 
 			var courseGroups = userCourses.ToDictionary(c => c.Id, c => groupsRepo.GetUserGroupsNamesAsString(c.Id, userId, User, maxCount: 10));
+			var courseArchivedGroups = userCourses.ToDictionary(c => c.Id, c => groupsRepo.GetUserGroupsNamesAsString(c.Id, userId, User, maxCount: 10, onlyArchived: true));
 
 			return View(new ProfileModel
 			{
@@ -291,6 +312,7 @@ namespace uLearn.Web.Controllers
 				Logins = logins,
 				UserCourses = userCourses,
 				CourseGroups = courseGroups,
+				CourseArchivedGroups = courseArchivedGroups,
 				Certificates = certificates,
 				AllCourses = allCourses,
 			});
@@ -299,22 +321,32 @@ namespace uLearn.Web.Controllers
 		[AllowAnonymous]
 		public ActionResult Register(string returnUrl = null)
 		{
-			return View(new RegisterViewModel { ReturnUrl = returnUrl });
+			return View(new RegistrationViewModel { ReturnUrl = returnUrl });
 		}
 
 		[HttpPost]
 		[AllowAnonymous]
 		[ValidateInput(false)]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Register(RegisterViewModel model)
+		[HandleHttpAntiForgeryException]
+		public async Task<ActionResult> Register(RegistrationViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
+				/* Some users enter email with trailing whitespaces. Remove them (not users, but spaces!) */
+				model.Email = (model.Email ?? "").Trim();
+
+				if (!CanNewUserSetThisEmail(model.Email))
+				{
+					ModelState.AddModelError("Email", ManageMessageId.EmailAlreadyTaken.GetDisplayName());
+					return View(model);
+				}
+					
 				var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, Gender = model.Gender };
 				var result = await userManager.CreateAsync(user, model.Password);
 				if (result.Succeeded)
 				{
-					await AuthenticationManager.LoginAsync(HttpContext, user, isPersistent: false);
+					await AuthenticationManager.LoginAsync(HttpContext, user, isPersistent: true);
 
 					if (!await SendConfirmationEmail(user))
 					{
@@ -339,6 +371,7 @@ namespace uLearn.Web.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> Disassociate(string loginProvider, string providerKey)
 		{
 			var result = await userManager.RemoveLoginAsync(User.Identity.GetUserId(), new UserLoginInfo(loginProvider, providerKey));
@@ -349,7 +382,8 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> Manage(ManageMessageId? message, string provider="", string otherUserId="")
 		{
 			ViewBag.StatusMessage = message?.GetAttribute<DisplayAttribute>().GetName();
-			if (message == ManageMessageId.AlreadyLinkedToOtherUser )
+			ViewBag.IsStatusMessageAboutSocialLogins = message == ManageMessageId.LoginAdded || message == ManageMessageId.LoginRemoved;
+			if (message == ManageMessageId.AlreadyLinkedToOtherUser)
 			{
 				var otherUser = await userManager.FindByIdAsync(otherUserId);
 				ViewBag.StatusMessage += $" {provider ?? ""}. Аккаунт уже привязан к пользователю {otherUser?.UserName ?? ""}.";
@@ -363,6 +397,7 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ValidateInput(false)]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> Manage(ManageUserViewModel model)
 		{
 			var hasPassword = ControllerUtils.HasPassword(userManager, User);
@@ -379,15 +414,16 @@ namespace uLearn.Web.Controllers
 					}
 					this.AddErrors(result);
 				}
+				else
+				{
+					ModelState.AddModelError("", "Есть ошибки, давай поправим");
+				}
 			}
 			else
 			{
 				// User does not have a password so remove any validation errors caused by a missing OldPassword field
 				var state = ModelState["OldPassword"];
-				if (state != null)
-				{
-					state.Errors.Clear();
-				}
+				state?.Errors.Clear();
 
 				if (ModelState.IsValid)
 				{
@@ -397,6 +433,10 @@ namespace uLearn.Web.Controllers
 						return RedirectToAction("Manage", new { Message = ManageMessageId.PasswordSet });
 					}
 					this.AddErrors(result);
+				}
+				else
+				{
+					ModelState.AddModelError("", "Есть ошибки, давай поправим");
 				}
 			}
 
@@ -419,13 +459,14 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ValidateInput(false)]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> StudentInfo(LtiUserViewModel userInfo)
 		{
 			var userId = User.Identity.GetUserId();
 			var user = await userManager.FindByIdAsync(userId);
 			user.FirstName = userInfo.FirstName;
 			user.LastName = userInfo.LastName;
-			user.Email = userInfo.Email;
+			user.Email = (userInfo.Email ?? "").Trim();
 			user.LastEdit = DateTime.Now;
 			await userManager.UpdateAsync(user);
 			return RedirectToAction("StudentInfo");
@@ -455,7 +496,7 @@ namespace uLearn.Web.Controllers
 
 		public enum ManageMessageId
 		{
-			[Display(Name = "Пароль был изменен")]
+			[Display(Name = "Пароль изменён")]
 			PasswordChanged,
 
 			[Display(Name = "Пароль установлен")]
@@ -494,6 +535,10 @@ namespace uLearn.Web.Controllers
 			[Display(Name = "Это имя уже занято, выберите другое")]
 			[IsError(true)]
 			NameAlreadyTaken,
+			
+			[Display(Name = "Этот адрес электронной почты уже используется другим пользователем")]
+			[IsError(true)]
+			EmailAlreadyTaken,
 
 			[Display(Name = "Не все поля заполнены верны. Проверьте, пожалуйста, и попробуйте ещё раз")]
 			[IsError(true)]
@@ -520,8 +565,16 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ValidateInput(false)]
 		[ValidateAntiForgeryToken]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> ChangeDetailsPartial(UserViewModel userModel)
 		{
+			if (userModel.Render)
+			{
+				ModelState.Clear();
+				
+				return ChangeDetailsPartial();
+			}
+			
 			if (string.IsNullOrEmpty(userModel.Name))
 			{
 				return RedirectToAction("Manage", new { Message = ManageMessageId.NotAllFieldsFilled });
@@ -536,10 +589,22 @@ namespace uLearn.Web.Controllers
 			var nameChanged = user.UserName != userModel.Name;
 			if (nameChanged && await userManager.FindByNameAsync(userModel.Name) != null)
 			{
-				log.Warn("ChangeDetailsPartial(): this name is already taken");
+				log.Warn($"ChangeDetailsPartial(): name {userModel.Name} is already taken");
 				return RedirectToAction("Manage", new { Message = ManageMessageId.NameAlreadyTaken });
 			}
+
+			/* Some users enter email with trailing whitespaces. Remove them (not users, but spaces!) */
+			userModel.Email = (userModel.Email ?? "").Trim();
 			var emailChanged = string.Compare(user.Email, userModel.Email, StringComparison.OrdinalIgnoreCase) != 0;
+
+			if (emailChanged)
+			{
+				if (!CanUserSetThisEmail(user, userModel.Email))
+				{
+					log.Warn($"ChangeDetailsPartial(): email {userModel.Email} is already taken");
+					return RedirectToAction("Manage", new { Message = ManageMessageId.EmailAlreadyTaken });
+				}
+			}
 
 			user.UserName = userModel.Name;
 			user.FirstName = userModel.FirstName;
@@ -555,7 +620,8 @@ namespace uLearn.Web.Controllers
 			await userManager.UpdateAsync(user);
 
 			if (emailChanged)
-				await ChangeEmail(user, user.Email);
+				await ChangeEmail(user, user.Email).ConfigureAwait(false);
+			
 			if (nameChanged)
 			{
 				AuthenticationManager.Logout(HttpContext);
@@ -567,6 +633,8 @@ namespace uLearn.Web.Controllers
 		[HttpPost]
 		[ULearnAuthorize(ShouldBeSysAdmin = true)]
 		[ValidateAntiForgeryToken]
+		[ValidateInput(false)]
+		[HandleHttpAntiForgeryException]
 		public async Task<ActionResult> ResetPassword(string newPassword, string userId)
 		{
 			var user = await userManager.FindByIdAsync(userId);
@@ -598,23 +666,32 @@ namespace uLearn.Web.Controllers
 				return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
 			var userId = User.Identity.GetUserId();
-			await usersRepo.ChangeTelegram(userId, chatId, chatTitle);
+			await usersRepo.ChangeTelegram(userId, chatId, chatTitle).ConfigureAwait(false);
 			metricSender.SendCount("connect_telegram.success");
 			await notificationsRepo.AddNotificationTransport(new TelegramNotificationTransport
 			{
 				UserId = userId,
 				IsEnabled = true,
-			});
+			}).ConfigureAwait(false);
 
 			return RedirectToAction("Manage", new { Message = ManageMessageId.TelegramAdded });
 		}
 
-		public async Task<ActionResult> ConfirmEmail(string email, string signature)
+		[AllowAnonymous]
+		public async Task<ActionResult> ConfirmEmail(string email, string signature, string userId="")
 		{
 			metricSender.SendCount("email_confirmation.go_by_link_from_email");
 
-			var userId = User.Identity.GetUserId();
-			var user = await userManager.FindByIdAsync(userId);
+			var realUserId = string.IsNullOrEmpty(userId) ? User.Identity.GetUserId() : userId;
+			if (string.IsNullOrEmpty(realUserId))
+				return HttpNotFound();
+
+			var user = await userManager.FindByIdAsync(realUserId).ConfigureAwait(false);
+			if (!User.Identity.IsAuthenticated || User.Identity.GetUserId() != realUserId)
+			{
+				await AuthenticationManager.LoginAsync(HttpContext, user, isPersistent: false).ConfigureAwait(false);
+			}
+			
 			if (user.Email != email || user.EmailConfirmed)
 				return RedirectToAction("Manage", new { Message = ManageMessageId.EmailAlreadyConfirmed });
 
@@ -624,20 +701,26 @@ namespace uLearn.Web.Controllers
 				log.Warn($"Invalid signature in confirmation email link, expected \"{correctSignature}\", actual \"{signature}\". Email is \"{email}\",");
 				return RedirectToAction("Manage", new { Message = ManageMessageId.ErrorOccured });
 			}
+			
+			/* Is there are exist other users with same confirmed email, then un-confirm their emails */
+			var usersWithSameEmail = usersRepo.FindUsersByEmail(email);
+			foreach (var otherUser in usersWithSameEmail)
+				if (otherUser.EmailConfirmed)
+					await usersRepo.ConfirmEmail(otherUser.Id, false).ConfigureAwait(false);
 
-			await usersRepo.ConfirmEmail(userId);
+			await usersRepo.ConfirmEmail(realUserId).ConfigureAwait(false);
 			metricSender.SendCount("email_confirmation.confirmed");
 
 			/* Enable notification transport if it exists or create auto-enabled mail notification transport */
-			var mailNotificationTransport = notificationsRepo.FindUsersNotificationTransport<MailNotificationTransport>(userId, includeDisabled: true);
+			var mailNotificationTransport = notificationsRepo.FindUsersNotificationTransport<MailNotificationTransport>(realUserId, includeDisabled: true);
 			if (mailNotificationTransport != null)
-				await notificationsRepo.EnableNotificationTransport(mailNotificationTransport.Id);
+				await notificationsRepo.EnableNotificationTransport(mailNotificationTransport.Id).ConfigureAwait(false);
 			else
 				await notificationsRepo.AddNotificationTransport(new MailNotificationTransport
 				{
 					User = user,
 					IsEnabled = true,
-				});
+				}).ConfigureAwait(false);
 
 			return RedirectToAction("Manage", new { Message = ManageMessageId.EmailConfirmed });
 		}
@@ -645,14 +728,14 @@ namespace uLearn.Web.Controllers
 		public async Task<ActionResult> SendConfirmationEmail()
 		{
 			var userId = User.Identity.GetUserId();
-			var user = await userManager.FindByIdAsync(userId);
+			var user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
 			if (string.IsNullOrEmpty(user.Email))
 				return RedirectToAction("Manage", new { Message = ManageMessageId.UserHasNoEmail });
 
 			if (user.EmailConfirmed)
 				return RedirectToAction("Manage", new { Message = ManageMessageId.EmailAlreadyConfirmed });
 
-			if (!await SendConfirmationEmail(user))
+			if (!await SendConfirmationEmail(user).ConfigureAwait(false))
 			{
 				log.Warn($"SendConfirmationEmail(): can't send confirmation email to user {user}");
 				return RedirectToAction("Manage", new { Message = ManageMessageId.ErrorOccured });
@@ -663,15 +746,15 @@ namespace uLearn.Web.Controllers
 
 		public async Task ChangeEmail(ApplicationUser user, string email)
 		{
-			await usersRepo.ChangeEmail(user, email);
+			await usersRepo.ChangeEmail(user, email).ConfigureAwait(false);
 
 			/* Disable mail notification transport if exists */
 			var mailNotificationTransport = notificationsRepo.FindUsersNotificationTransport<MailNotificationTransport>(user.Id);
 			if (mailNotificationTransport != null)
-				await notificationsRepo.EnableNotificationTransport(mailNotificationTransport.Id, isEnabled: false);
+				await notificationsRepo.EnableNotificationTransport(mailNotificationTransport.Id, isEnabled: false).ConfigureAwait(false);
 
 			/* Send confirmation email to the new address */
-			await SendConfirmationEmail(user);
+			await SendConfirmationEmail(user).ConfigureAwait(false);
 		}
 
 		[AllowAnonymous]
@@ -682,6 +765,9 @@ namespace uLearn.Web.Controllers
 
 			var userId = User.Identity.GetUserId();
 			var user = usersRepo.FindUserById(userId);
+			if (user == null)
+				return new HttpNotFoundResult();
+			
 			if (user.EmailConfirmed || !user.LastConfirmationEmailTime.HasValue)
 				return new HttpStatusCodeResult(HttpStatusCode.OK);
 
@@ -724,8 +810,9 @@ namespace uLearn.Web.Controllers
 		[AllowAnonymous]
 		public ActionResult ReturnHijack()
 		{
+			var hijackedUserId = User.Identity.GetUserId();
 			CopyHijackedCookies(HttpContext.Request, HttpContext.Response, s => s + ".hijack", s => s, removeOld: true);
-			return Redirect("/");
+			return RedirectToAction("Profile", "Account", new { userId = hijackedUserId });
 		}
 
 		private void CopyHijackedCookies(HttpRequestBase request, HttpResponseBase response, Func<string, string> actualCookie, Func<string, string> newCookie, bool removeOld)
@@ -736,10 +823,21 @@ namespace uLearn.Web.Controllers
 				if (cookie == null)
 					continue;
 
-				response.Cookies.Add(new HttpCookie(newCookie(cookieName), cookie.Value) { HttpOnly = true });
+				response.Cookies.Add(new HttpCookie(newCookie(cookieName), cookie.Value)
+				{
+					HttpOnly = true,
+					Domain = configuration.Web.CookieDomain,
+					Secure = configuration.Web.CookieSecure 
+				});
 				
 				if (removeOld)
-					response.Cookies.Add(new HttpCookie(actualCookie(cookieName), "") { HttpOnly = true, Expires = DateTime.Now.AddDays(-1)});
+					response.Cookies.Add(new HttpCookie(actualCookie(cookieName), "")
+					{
+						HttpOnly = true,
+						Expires = DateTime.Now.AddDays(-1),
+						Domain = configuration.Web.CookieDomain,
+						Secure = configuration.Web.CookieSecure
+					});
 			}
 		}
 
@@ -762,6 +860,7 @@ namespace uLearn.Web.Controllers
 		public List<Certificate> Certificates { get; set; }
 		public Dictionary<string, Course> AllCourses { get; set; }
 		public Dictionary<string, string> CourseGroups { get; set; }
+		public Dictionary<string, string> CourseArchivedGroups { get; set; }
 	}
 
 	public class IsErrorAttribute : Attribute

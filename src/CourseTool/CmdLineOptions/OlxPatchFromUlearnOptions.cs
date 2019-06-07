@@ -1,11 +1,13 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using CommandLine;
 using Newtonsoft.Json;
 using uLearn.CourseTool.Json;
-using uLearn.Model.Blocks;
-using uLearn.Model.Edx;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Model.Edx;
 
 namespace uLearn.CourseTool.CmdLineOptions
 {
@@ -16,7 +18,7 @@ namespace uLearn.CourseTool.CmdLineOptions
 		{
 			var ulearnDir = new DirectoryInfo(string.Format("{0}/{1}", Dir, config.ULearnCourseId));
 			Console.WriteLine("Loading Ulearn course from {0}", ulearnDir.Name);
-			var ulearnCourse = new CourseLoader().LoadCourse(ulearnDir);
+			var ulearnCourse = new CourseLoader().Load(ulearnDir);
 			Console.WriteLine("Patching");
 			var videoJson = string.Format("{0}/{1}", Dir, config.Video);
 			var video = File.Exists(videoJson)
@@ -36,10 +38,10 @@ namespace uLearn.CourseTool.CmdLineOptions
 					.Where(s => guids == null || guids.Contains(s.NormalizedGuid))
 					.Select(s => s.ToVerticals(
 						ulearnCourse.Id,
-						profile.UlearnUrl + SlideUrlFormat,
-						profile.UlearnUrl + SolutionsUrlFormat,
+						profile.UlearnUrl,
 						videoGuids,
-						config.LtiId
+						config.LtiId,
+						CoursePackageRoot
 					).ToArray()),
 				guids != null || !SkipExistingGuids
 			);
@@ -65,7 +67,7 @@ namespace uLearn.CourseTool.CmdLineOptions
 				var sequentialNote = new Sequential(sequentialId, displayName,
 					new[]
 					{
-						new Vertical(verticalId, displayName, new[] { new MdBlock(chapterNote.Markdown).ToEdxComponent(mdBlockId, displayName, chapterUnit.Directory.FullName) })
+						new Vertical(verticalId, displayName, new[] { new MarkdownBlock(chapterNote.Markdown).ToEdxComponent(mdBlockId, displayName, chapterUnit.Directory.FullName) })
 					}) { VisibleToStaffOnly = true };
 				if (!File.Exists($"{olxPath}/sequential/{sequentialNote.UrlName}.xml"))
 				{
@@ -73,6 +75,7 @@ namespace uLearn.CourseTool.CmdLineOptions
 					sequentials.Add(sequentialNote);
 					new Chapter(chapter.UrlName, chapter.DisplayName, chapter.Start, sequentials.ToArray()).Save(olxPath);
 				}
+
 				sequentialNote.Save(olxPath);
 			}
 		}

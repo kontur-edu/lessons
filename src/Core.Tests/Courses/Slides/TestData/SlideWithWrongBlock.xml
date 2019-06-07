@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<slide xmlns="https://ulearn.me/schema/v2" id="441D73C6-3B42-41E0-8083-914B5334C6C4" title="Slide with wrong block">
+	<markdown>
+		Это нормальный блок
+	</markdown>
+	<question.text>
+		<text>Этого блока здесь не может быть, потому что это вопрос, а в &lt;slide&gt; не указан тип type="quiz"</text>
+	</question.text>
+</slide>

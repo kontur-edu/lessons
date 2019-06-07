@@ -7,7 +7,7 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing
 	public class StatisticsParametersFinder_should
 	{
 		[Test]
-		public void TestGetTauCoefficient()
+		public void ReturnCorrectTauCoefficient()
 		{
 			Assert.AreEqual(1.7984, StatisticsParametersFinder.GetTauCoefficient(10), 1e-6);
 			Assert.AreEqual(1.928, StatisticsParametersFinder.GetTauCoefficient(45), 1e-3);

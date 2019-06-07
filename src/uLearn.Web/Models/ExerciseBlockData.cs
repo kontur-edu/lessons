@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using Database.Models;
-using uLearn.Model.Blocks;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Blocks;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Exercises.Blocks;
 
 namespace uLearn.Web.Models
 {
@@ -21,7 +24,9 @@ namespace uLearn.Web.Models
 
 		public string CourseId { get; set; }
 		public ExerciseSlide Slide { get; set; }
-		public ExerciseBlock Block => Slide.Exercise;
+		public AbstractExerciseBlock Block => Slide.Exercise;
+		
+		public ApplicationUser CurrentUser { get; set; }
 
 		public bool IsLti { get; set; }
 		public bool IsGuest { get; set; }
@@ -44,7 +49,7 @@ namespace uLearn.Web.Models
 			{
 				if (!string.IsNullOrEmpty(runSolutionUrl) || Url == null)
 					return runSolutionUrl ?? "";
-				return Url.Action("RunSolution", "Exercise", new { CourseId, slideId = Slide.Id, IsLti });
+				return Url.Action("RunSolution", "Exercise", new { courseId = CourseId, slideId = Slide.Id, IsLti });
 			}
 			set { runSolutionUrl = value; }
 		}
@@ -55,6 +60,7 @@ namespace uLearn.Web.Models
 		public List<UserExerciseSubmission> Submissions { get; set; }
 		public ManualExerciseChecking ManualChecking { get; set; }
 		public List<string> TopUserReviewComments { get; set; }
+		public List<string> TopOtherUsersReviewComments { get; set; }
 	}
 
 	public enum ExerciseReviewState

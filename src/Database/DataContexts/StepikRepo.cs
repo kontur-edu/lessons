@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Database.Models;
 using JetBrains.Annotations;
 using log4net;
-using uLearn;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Courses.Slides;
 
 namespace Database.DataContexts
 {
@@ -107,8 +107,7 @@ namespace Database.DataContexts
 
 		public string GetSlideXmlIndicatedChanges(Slide slide)
 		{
-			var exportedSlide = new ExportedSlide(slide);
-			return exportedSlide.XmlSerialize(removeWhitespaces: true);
+			return slide.XmlSerialize(removeWhitespaces: true);
 		}
 
 		[CanBeNull]

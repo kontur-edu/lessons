@@ -4,6 +4,10 @@ using System.Linq;
 using Database.Models;
 using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Units;
 
 namespace uLearn.Web.Models
 {
@@ -74,14 +78,20 @@ namespace uLearn.Web.Models
 			foreach (var slide in shouldBeSolvedSlides)
 			{
 				var slideScore = ScoreByUserAndSlide[Tuple.Create(userId, slide.Id)];
-				onlyFullScore += GetOnlyFullScore(slideScore, slide.MaxScore);
+				onlyFullScore += GetOnlyFullScore(slideScore, slide);
 			}
 			return onlyFullScore + AdditionalScores[Tuple.Create(userId, unit.Id, scoringGroup.Id)];
 		}
 
-		public int GetOnlyFullScore(int score, int maxScore)
+		/* Option "only full scores" acts only on exercise slides.
+		   If user scores 4 out of 5 points for quiz, it's okay to be scored in course statistics with enabled "only full scores" option.
+		   Potentially bug: if user is not a member of group with enabled code-review, his slide's max score may vary from slide.MaxScore */
+		public int GetOnlyFullScore(int score, Slide slide)
 		{
-			return score == maxScore ? score : 0;
+			var isExercise = slide is ExerciseSlide;
+			if (! isExercise)
+				return score;
+			return score == slide.MaxScore ? score : 0;
 		}
 	}
 

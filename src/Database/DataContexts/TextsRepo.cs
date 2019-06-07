@@ -15,7 +15,7 @@ namespace Database.DataContexts
 	public class TextsRepo
 	{
 		private readonly ULearnDb db;
-		public const int MaxTextSize = 20000;
+		public const int MaxTextSize = 50000;
 
 		public TextsRepo()
 			: this(new ULearnDb())
@@ -53,13 +53,7 @@ namespace Database.DataContexts
 
 			try
 			{
-				await db.SaveChangesAsync();
-			}
-			catch (DbEntityValidationException e)
-			{
-				throw new Exception(
-					string.Join("\r\n",
-						e.EntityValidationErrors.SelectMany(v => v.ValidationErrors).Select(err => err.PropertyName + " " + err.ErrorMessage)));
+				await db.SaveChangesAsync().ConfigureAwait(false);
 			}
 			catch (DbUpdateException)
 			{

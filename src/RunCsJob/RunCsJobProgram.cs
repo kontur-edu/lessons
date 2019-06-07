@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
 using System.Threading;
 using log4net;
 using log4net.Config;
+using Metrics;
 using RunCsJob.Api;
-using uLearn;
+using Ulearn.Core;
 
 namespace RunCsJob
 {
@@ -17,7 +18,7 @@ namespace RunCsJob
 		private readonly string address;
 		private readonly string token;
 		private readonly TimeSpan sleep;
-		private readonly int jobsToRequest;
+		private readonly string agentName; 
 
 		private readonly ManualResetEvent shutdownEvent = new ManualResetEvent(false);
 		private readonly List<Thread> threads = new List<Thread>();
@@ -35,7 +36,6 @@ namespace RunCsJob
 				address = ConfigurationManager.AppSettings["submissionsUrl"];
 				token = ConfigurationManager.AppSettings["runnerToken"];
 				sleep = TimeSpan.FromSeconds(int.Parse(ConfigurationManager.AppSettings["sleepSeconds"] ?? "1"));
-				jobsToRequest = int.Parse(ConfigurationManager.AppSettings["jobsToRequest"] ?? "5");
 				var deleteSubmissions = bool.Parse(ConfigurationManager.AppSettings["ulearn.runcsjob.deleteSubmissions"] ?? "true");
 				Settings = new SandboxRunnerSettings
 				{
@@ -44,6 +44,13 @@ namespace RunCsJob
 				var workingDirectory = ConfigurationManager.AppSettings["ulearn.runcsjob.submissionsWorkingDirectory"];
 				if (!string.IsNullOrWhiteSpace(workingDirectory))
 					Settings.WorkingDirectory = new DirectoryInfo(workingDirectory);
+
+				agentName = ConfigurationManager.AppSettings["ulearn.runcsjob.agentName"];
+				if (string.IsNullOrEmpty(agentName))
+				{
+					agentName = Environment.MachineName;
+					log.Info($"Автоопределённое имя клиента: {agentName}. Его можно переопределить в настройках (appSettings/ulearn.runcsjob.agentName)");					
+				}
 			}
 			catch (Exception e)
 			{
@@ -93,7 +100,7 @@ namespace RunCsJob
 			{
 				threads.Add(new Thread(WorkerThread)
 				{
-					Name = $"RunCsJob Worker Thread #{i}",
+					Name = $"RunCsJob Worker #{i}",
 					IsBackground = true
 				});
 			}
@@ -127,10 +134,11 @@ namespace RunCsJob
 
 		private void RunOneThread()
 		{
+			var fullAgentName = $"{agentName}:Process={Process.GetCurrentProcess().Id}:ThreadId={Thread.CurrentThread.ManagedThreadId}:Thread={Thread.CurrentThread.Name}";
 			Client client;
 			try
 			{
-				client = new Client(address, token);
+				client = new Client(address, token, fullAgentName);
 			}
 			catch (Exception e)
 			{
@@ -142,12 +150,16 @@ namespace RunCsJob
 
 		private void MainLoop(Client client)
 		{
+			var serviceKeepAliver = new ServiceKeepAliver("runcsjob");
+			if (!int.TryParse(ConfigurationManager.AppSettings["ulearn.runcsjob.keepAlive.interval"], out var keepAliveIntervalSeconds))
+				keepAliveIntervalSeconds = 30;
+			var keepAliveInterval = TimeSpan.FromSeconds(keepAliveIntervalSeconds);
 			while (!shutdownEvent.WaitOne(0))
 			{
 				List<RunnerSubmission> newUnhandled;
 				try
 				{
-					newUnhandled = client.TryGetSubmissions(jobsToRequest).Result;
+					newUnhandled = client.TryGetSubmission().Result;
 				}
 				catch (Exception e)
 				{
@@ -171,6 +183,7 @@ namespace RunCsJob
 						log.Error("Не могу отправить результаты проверки на ulearn", e);
 					}
 				}
+				serviceKeepAliver.Ping(keepAliveInterval);
 				Thread.Sleep(sleep);
 			}
 		}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace Ulearn.Common.Extensions
 {
@@ -41,6 +42,12 @@ namespace Ulearn.Common.Extensions
 			if (dictionary.TryGetValue(key, out v))
 				return v;
 			return defaultValue;
+		}
+		
+		[CanBeNull]
+		public static List<T> NullIfEmpty<T>(this List<T> items)
+		{
+			return items?.Count == 0 ? null : items;
 		}
 	}
 }

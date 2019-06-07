@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Создание обратного индекса" id="52caf978-4bb7-4cc1-92fb-607153da0a1e">
+  <scoring passedTestsScore="5"/>
+  <markdown>
+Обратный индекс — это структура данных, часто использующаяся в задачах 
+полнотекстового поиска нужного документа в большой базе документов.
+
+По своей сути обратный индекс напоминает индекс в конце бумажных энциклопедий, 
+где для каждого ключевого слова указан список страниц, где оно встречается.
+
+Вам требуется по списку документов построить обратный индекс.
+
+Документ определен так:</markdown>
+  <includeCode>
+    <display onlyBody="false">Document</display>
+  </includeCode>
+  <markdown>Обратный индекс в нашем случае — это словарь `ILookup&lt;string, int&gt;`, 
+ключом в котором является слово, а значениями — идентификаторы
+всех документов, содержащих это слово.</markdown>
+  <includeCode>
+    <display onlyBody="false">Main</display>
+  </includeCode>
+  <exercise.file file="_LookupExercise.cs" type="check-output" language="csharp">
+    <initialCode>public static ILookup&lt;string, int&gt; BuildInvertedIndex(Document[] documents)
+{
+	// ваш код
+}</initialCode>
+    <hint>Сегодня никаких подсказок!</hint>
+    <hint>Да, задача сложная, но тем не менее подсказок не будет!</hint>
+    <hint>Ну правда, пора научиться решать подобные задачи без подсказок!</hint>
+    <expected>
+SearchQuery('world') found documents: 1, 2
+SearchQuery('words') found documents: 2, 3
+SearchQuery('power') found documents: 3
+SearchQuery('cthulhu') found documents: 
+SearchQuery('') found documents: 
+</expected>
+    <hideExpectedOutput>false</hideExpectedOutput>
+    <validator>cs SingleStatementMethod</validator>
+    <texts/>
+    <checkForPlagiarism>true</checkForPlagiarism>
+    <hideSolutions>false</hideSolutions>
+    <solution onlyBody="false">BuildInvertedIndex</solution>
+  </exercise.file>
+  <defaultIncludeCodeFile>_LookupExercise.cs</defaultIncludeCodeFile>
+</slide.exercise>

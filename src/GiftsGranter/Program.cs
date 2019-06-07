@@ -106,7 +106,8 @@ namespace GiftsGranter
 		{
 			var courseSettings = settings[courseId].ToObject<CourseSettings>();
 			var passScore = courseSettings.passScore;
-			var rating = repo.GetCourseRating(courseId, passScore);
+			var requiredSlides = courseSettings.requiredSlides;
+			var rating = repo.GetCourseRating(courseId, passScore, requiredSlides);
 			var konturRating = rating
 				.Where(e => e.User.Logins.Any(login => login.LoginProvider == "Контур.Паспорт"))
 				.ToList();

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<sender>
+    <email>andgein@yandex.ru</email>
+    <email>andgein+2@yandex.ru</email>
+    <subject>Test email</subject>
+    <text>
+        Hello everybody!
+    </text>
+    <html>
+        <![CDATA[
+        <h1>Hello everybody</h1>
+        ]]>
+    </html>
+    <button>
+        <link>http://ya.ru</link>
+        <text>К Яндексу!</text>
+    </button>
+</sender>

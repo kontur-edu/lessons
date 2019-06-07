@@ -1,138 +1,60 @@
-﻿@using Database
-@using Database.Extensions
-@using Database.Models
-@using uLearn
-@using uLearn.Web.Controllers
-@using uLearn.Web.Extensions
+﻿@using uLearn.Web.Controllers
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>@ViewBag.Title &bull; ulearn</title>
-	<meta name="title" content="@ViewBag.Title на ulearn.me"/>
-	<meta name="og:title" content="@ViewBag.Title на ulearn.me"/>
-	<meta name="og:image" content="~/Content/logo.png"/>
-	<meta name="description" content="Интерактивные учебные онлайн-курсы по программированию"/>
-	<link rel="image_src" href="~/Content/logo.png">
-	<link rel="shortcut icon" href="~/favicon.ico?v=4"/>
-	@Styles.Render("~/ulearn.bundle.css")
-	@Styles.Render("~/katex/katex.min.css")
-	@Scripts.Render("~/modernizr.bundle.js")
+    @Scripts.Render("~/modernizr.bundle.js")
+    @Html.Partial("_Retargeting")
 </head>
 <body>
-<div id="header" class="navbar navbar-inverse navbar-fixed-top">
-	<button type="button" class="navbar-toggle hide-side-bar-button" data-toggle="collapse" data-target=".side-bar">
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-	</button>
-	<div class="container">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".greeting-collapse-class">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			@Html.ActionLink("Ulearn", "Index", "Home", null, new { @class = "navbar-brand" })
-			<ul class="notifications__mobile-nav nav navbar-nav pull-right visible-xs">
-				@if (User.Identity.IsAuthenticated)
-				{
-					<li class="dropdown">
-						@Html.Action("NotificationsTopbarPartial", "Feed", new { isMobile = true })
-					</li>
-				}
-			</ul>
-		</div>
-		<ul class="notifications__mobile-dropdown notifications__dropdown navbar-collapse collapse visible-xs">
 
-		</ul>
-		<div class="greeting-collapse-class navbar-collapse collapse">
-			<ul class="top-navigation nav navbar-nav">
-				@{
-					var courseManager = WebCourseManager.Instance;
-					var coursesIds = new HashSet<string>(User.GetControllableCoursesId().Select(c => c.ToLower()));
-					var courses = courseManager.GetCourses().Where(course => coursesIds.Contains(course.Id.ToLower())).OrderBy(c => c.Title).ToList();
-				}
-				@if (User.IsSystemAdministrator())
-				{
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Администрирование <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li>@Html.ActionLink("Пользователи", "List", "Account", new { role = LmsRoles.SysAdmin }, null)</li>
-							<li>@Html.ActionLink("Статистика", "SystemStatistics", "Analytics")</li>
-							<li>@Html.ActionLink("Песочница C#", "Index", "Sandbox")</li>
-							<li class="divider"></li>
-							<li class="dropdown-header">Курсы <a href="@Url.Action("CourseList", "Admin")">создать<span class="glyphicon glyphicon-plus"></span></a></li>
-							@CoursesDropdown(courses)
-						</ul>
-					</li>
-				}
-				else if (User.HasAccess(CourseRole.Instructor))
-				{
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Мои курсы <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							@CoursesDropdown(courses)
-						</ul>
-					</li>
-				}
+@{
+	var metaImageUrl = "/Content/logo.png";
+	var metaTitle = ViewBag.Title + " на ulearn.me";
+	var metaDescription = "Интерактивные учебные онлайн-курсы по программированию";
+	var metaKeywords = "";
 
-				@if (User.HasAccess(CourseRole.Instructor))
-				{
-					string courseId = null;
-					try
-					{
-						courseId = Html.ViewContext.RouteData.Values["courseId"].ToString();
-					}
-					catch (Exception)
-					{
-						/* RouteData has no attribute 'courseId' */
-						var controller = Html.ViewContext.RouteData.Values["controller"].ToString();
-						if ((controller == "Admin" || controller == "Analytics" || controller == "Grader" || controller == "Notifications" || controller == "Stepik") &&
-							Request.Params["courseId"] != null)
-						{
-							courseId = Request.Params["courseId"];
-						}
-					}
-					@Html.Action("CourseInstructorNavbar", "Course", new { courseId })
-				}
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				@if (User.Identity.IsAuthenticated)
-				{
-					<li class="dropdown hidden-xs">
-						@Html.Action("NotificationsTopbarPartial", "Feed")
-					</li>
-				}
-				@Html.Action("UserMenuPartial", "Account")
-			</ul>
-		</div>
-	</div>
-</div>
+	if (ViewBag.Meta != null)
+	{
+		if (!string.IsNullOrEmpty(ViewBag.Meta.AbsoluteImageUrl)) { metaImageUrl = ViewBag.Meta.AbsoluteImageUrl; }
+		if (!string.IsNullOrEmpty(ViewBag.Meta.Description)) { metaDescription = ViewBag.Meta.Description; }
+		if (!string.IsNullOrEmpty(ViewBag.Meta.Keywords)) { metaKeywords = ViewBag.Meta.Keywords; }
+	}
+}
+    
+<script>
+	window.meta = {
+		title: "@(metaTitle)",
+		description: "@(metaDescription)",
+		keywords: "@(metaKeywords)",
+		imageUrl: "@(metaImageUrl)"
+	}
+</script>
+
 @RenderBody()
 
-@Html.Partial("_UlearnUpdatesInvitation")
-@Html.Action("SuggestMailTransport", "Notifications")
 @Html.Action("CheckIsEmailConfirmed", "Account")
 
-@Scripts.Render("~/scripts.bundle.js")
-@* Add Sentry (https://sentry.io) script for error logging *@
-<script src="https://cdn.ravenjs.com/3.16.0/raven.min.js" crossorigin="anonymous"></script>
-<script>
-	Raven.config('https://992e1a5327ad4e48af004ae709b51aba@sentry.io/181214').install()
-</script>
 @RenderSection("scripts", required: false)
 
 <script>
-	$(function() {
-		$(".load-content").each(function() {
-			$(this).load($(this).data("url"));
-		});
-	});
-</script>
+	/* Temporary bug workaround: unregister all service workers */
+	function unregisterServiceWorker() {
+		if (window.navigator && navigator.serviceWorker) {
+			navigator.serviceWorker.getRegistrations()
+				.then(function (registrations) {
+					for (var registrationId in registrations) {
+						if (registrations.hasOwnProperty(registrationId)) {
+							var registration = registrations[registrationId];
+							registration.unregister();
+							window.location.reload();
+						}
+					}
+				});
+		}
+	}
 
-@Html.Partial("_YandexMetrika")
+	unregisterServiceWorker();
+</script>
 
 @if (AccountController.IsHijacked(HttpContext.Current.Request))
 {
@@ -141,31 +63,3 @@
 
 </body>
 </html>
-
-@helper CoursesDropdown(List<Course> courses)
-{
-	foreach (var course in courses.Take(10))
-	{
-		<li>@Html.ActionLink(course.Title.TruncateWithEllipsis(40), "UnitStatistics", "Analytics", new { courseId = course.Id }, new { title = course.Title })</li>
-	}
-	if (courses.Count > 10)
-	{
-		<li>
-			<a href="@Url.Action("CourseList", "Admin")">
-				<b>Все курсы</b>
-			</a>
-		</li>
-	}
-	if (courses.Count == 0)
-	{
-		<li>
-			<a>
-				<b>Нет курсов</b>
-			</a>
-			@if (User.IsSystemAdministrator())
-			{
-				@Html.ActionLink("Создать", "CourseList", "Admin")
-			}
-		</li>
-	}
-}

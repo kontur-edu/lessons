@@ -1,10 +1,13 @@
 ﻿@* Generator: MvcHelper GeneratePrettyNames: true DisableLinePragmas: true *@
 @using Database.Models
-@using uLearn
-@using uLearn.Model.Blocks
-@using uLearn.Quizes
 @using uLearn.Web.Views.Course
 @using uLearn.Web.Views.SlideNavigation
+@using Ulearn.Core.Courses
+@using Ulearn.Core.Courses.Slides
+@using Ulearn.Core.Courses.Slides.Exercises
+@using Ulearn.Core.Courses.Slides.Exercises.Blocks
+@using Ulearn.Core.Courses.Slides.Quizzes
+@using Ulearn.Core.Courses.Slides.Quizzes.Blocks
 
 @helper Page(Course course, Slide slide, TocModel toc, IEnumerable<string> cssFiles, IEnumerable<string> jsFiles)
 {
@@ -18,7 +21,7 @@
 			<link href='@cssFile' rel='stylesheet'/>
 		}
 	</head>
-	<body>
+	<body class="without-topbar legacy-page">
 		<div class='side-bar navbar-collapse collapse navbar-nav container'>
 			@TableOfContents.Toc(toc)
 		</div>
@@ -26,30 +29,29 @@
 		<div class="slide-container">
 			<div class="container body-content">
 				<div class="row">
-				@SlideHtml.Slide(new BlockRenderContext(course, slide, "/static/",
-						slide.Blocks.Select(
-						(b, i) => b is ExerciseBlock
-							? new ExerciseBlockData(course.Id, (ExerciseSlide)slide) { RunSolutionUrl = "/" + slide.Index.ToString("000") + ".html?query=submit", DebugView = true, IsGuest = false }
-							: b is AbstractQuestionBlock
+					@{
+						var blockData = slide.Blocks.Select(
+							(b, i) => b is AbstractExerciseBlock
+								? new ExerciseBlockData(course.Id, (ExerciseSlide)slide) { RunSolutionUrl = "/" + slide.Index.ToString("000") + ".html?query=submit", DebugView = true, IsGuest = false }
+								: b is AbstractQuestionBlock
 									? new QuizBlockData(new QuizModel
 									{
-										AnswersToQuizes = slide.Blocks.OfType<AbstractQuestionBlock>().ToDictionary(x => x.Id, x => new List<UserQuiz>()),
-                                        Slide = (QuizSlide)slide
-                                    }, i, QuizState.Total)
+										AnswersToQuizzes = slide.Blocks.OfType<AbstractQuestionBlock>().ToDictionary(x => x.Id, x => new List<UserQuizAnswer>()),
+										Slide = (QuizSlide)slide
+									}, i, new QuizState(QuizStatus.ReadyToSend, 0, 0, slide.MaxScore), debugView: true)
 									: (dynamic)null
-							).ToArray(),
-						false,
-						true
+							).ToArray();
+					}
+					@SlideHtml.Slide(new BlockRenderContext(course, slide, "/static/",
+						blockData,
+						isGuest: false,
+						revealHidden: true
 						),
 						null)
-					<ul>
-						<li>
-							<a href="/@(slide.Index.ToString("000")).html?query=addLesson">Добавить слайд</a>
-						</li>
-						<li>
-							<a href="/@(slide.Index.ToString("000")).html?query=addQuiz">Добавить quiz</a>
-						</li>
-					</ul>
+					<div style="margin-bottom: 40px;">
+						<a href="/@(slide.Index.ToString("000")).html?query=addLesson" class="btn btn-default">Добавить слайд</a>
+						<a href="/@(slide.Index.ToString("000")).html?query=addQuiz" class="btn btn-default">Добавить тест</a>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -59,6 +61,12 @@
 		{
 			<script src='@jsFile'></script>
 		}
+        <script>
+            for (var i = 0; i < window.documentReadyFunctions.length; i++) {
+                var f = window.documentReadyFunctions[i];
+                f();
+            }
+        </script>
 	</body>
 	</html>
 }

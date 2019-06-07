@@ -1,0 +1,42 @@
+@import "./../../variables.less";
+
+/*classes for react-transition-group*/
+.enter {
+  background-color: rgba(40,153,234, 0.3);
+}
+
+.enterActive  {
+  background-color: transparent;
+  transition: background-color 1000ms ease-in-out;
+}
+
+.exit {
+  opacity: 1;
+}
+
+.exitActive {
+  opacity: 0.01;
+  transition: opacity 400ms ease;
+}
+
+/*classes with media queries */
+.visibleOnDesktopAndTablet {
+  display: none;
+
+  @media (min-width: @maxPhoneWidth) {
+    & {
+      display: initial;
+    }
+  }
+}
+
+.visibleOnPhone {
+  display: none;
+
+  @media (max-width: @maxPhoneWidth) {
+    & {
+      display: initial;
+      width: initial;
+    }
+  }
+}

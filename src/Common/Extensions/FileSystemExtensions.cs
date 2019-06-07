@@ -51,6 +51,11 @@ namespace Ulearn.Common.Extensions
 			return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
 		}
 
+		public static string GetRelativePath(this FileSystemInfo file, DirectoryInfo folder)
+		{
+			return file.GetRelativePath(folder.FullName);
+		}
+
 		public static IEnumerable<string> GetRelativePathsOfFiles(this DirectoryInfo dir)
 		{
 			return Directory.EnumerateFiles(dir.FullName, "*", SearchOption.AllDirectories)
@@ -63,7 +68,7 @@ namespace Ulearn.Common.Extensions
 			var dir = di.GetSubdirectory(dirPath);
 			if (!dir.Exists)
 				throw new Exception("No " + dirPath + " in " + di.Name);
-			return dir.GetFiles().Select(f => Path.Combine(dirPath, f.Name)).ToArray();
+			return dir.GetFiles().Select(f => Path.Combine(dirPath, f.Name)).OrderBy(f => f).ToArray();
 		}
 	}
 }

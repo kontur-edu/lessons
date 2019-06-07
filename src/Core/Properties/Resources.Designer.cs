@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace uLearn.Properties {
+namespace Ulearn.Core.Properties {
     using System;
     
     
@@ -19,7 +19,7 @@ namespace uLearn.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -39,7 +39,7 @@ namespace uLearn.Properties {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("uLearn.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Ulearn.Core.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -76,6 +76,8 @@ namespace uLearn.Properties {
         ///Макконнелл
         ///Мартин
         ///Накамото
+        ///Поттера
+        ///Поттере
         ///Сатоши
         ///Симан:Риман
         ///Спольски
@@ -90,6 +92,7 @@ namespace uLearn.Properties {
         ///Эванс
         ///Эванса
         ///Эвансом
+        ///Эйлерова
         ///Эратосфена
         ///антипаттерн
         ///апкаст:пласт
@@ -100,9 +103,7 @@ namespace uLearn.Properties {
         ///биграммной
         ///биграммные
         ///биграммный:полный
-        ///биграммных
-        ///биндинг:чайник
-        ///бинпоиск:по [rest of string was truncated]&quot;;.
+        ///биграммных        /// [rest of string was truncated]&quot;;.
         /// </summary>
         public static string customDictionary {
             get {
@@ -220,11 +221,10 @@ namespace uLearn.Properties {
         ///
         ///[assembly: InternalsVisibleTo(&quot;NUnit.Framework&quot;)]
         ///
-        ///namespace uLearn.NUnitTestRunning
+        ///namespace Ulearn.Core.NUnitTestRunning
         ///{
         ///	/// &lt;summary&gt;
-        ///	/// Этот файл включен в ресурсы и добавляется в пришедший на проверку проект с задачей, если у нее в качестве способа проверки 
-        ///	/ [rest of string was truncated]&quot;;.
+        ///	/// Этот файл включен в ресурсы и добавляется в пришедший на проверку проект с задачей, если у нее в качестве способа проверки [rest of string was truncated]&quot;;.
         /// </summary>
         public static string NUnitTestRunner {
             get {
@@ -233,22 +233,64 @@ namespace uLearn.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to SET UTF-8
+        ///TRY оаитенрсвйлпкьыяудмзшбчгщюжцёхфэъАВСМКГПТЕИЛФНДОЭРЗЮЯБХЖШЦУЧЬЫЪЩЙЁ
+        ///
+        ///FLAG long
+        ///
+        ///SFX II Y 61
+        ///SFX II а и [гкхжчшщ]а #сорока --&gt; сороки (е.ч.р.п. и мн.ч.и.п.+в.п.)
+        ///SFX II а ы [^гкхжчшщ]а #шуба --&gt; шубы (е.ч.р.п. и мн.ч.и.п.+в.п.)
+        ///SFX II а е а #сорока --&gt; сороке (е.ч.д.п.+п.п.)
+        ///SFX II а у а #сорока --&gt; сороку (е.ч.в.п.)
+        ///SFX II а ам а #сорока --&gt; сорокам (мн.ч.д.п.)
+        ///SFX II а ами а #сорока --&gt; сороками (мн.ч.т.п.)
+        ///SFX II а ах а #сорока --&gt; сороках (мн.ч.п.п.)
+        ///SFX II я и я #баня --&gt; бани  [rest of string was truncated]&quot;;.
         /// </summary>
-        public static byte[] ru_RU_aff {
+        public static string ru_RU_aff {
             get {
-                object obj = ResourceManager.GetObject("ru_RU_aff", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("ru_RU_aff", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to 173975
+        ///а
+        ///аба/IIIhIw
+        ///абажур/IIIiIhIk
+        ///абажурный/CCCDCO
+        ///абажурчик/IIIiIhIk
+        ///абаз/IIIiIhIk
+        ///абазин/IIIiIh
+        ///абазинец/IKIw
+        ///абазинка/IIIhIe
+        ///абазинский/CCZZ
+        ///абазия/IIIw
+        ///абак/IIIiIhIk
+        ///абака/IIIhIw
+        ///Абакан/IIIiIhIk
+        ///абаканский/CCZZ
+        ///аббат/IIIiIhIk
+        ///аббатиса/IIIhIe
+        ///аббатский/CCZZ
+        ///аббатство/IIIw
+        ///аббревиатура/IIIhIw
+        ///аббревиатурный/CCCDCO
+        ///аббревиация/IIIw
+        ///абвер/IIIiIhIk
+        ///абверовский/CCZZ
+        ///абдикация/IIIw
+        ///абдомен/IIIiIhIk
+        ///абдоминальный/CCCDCO
+        ///абдуктор/IIIiIhIk
+        ///абдукторный/CCCDCO
+        ///абдукция/IIIw
+        ///Абдул/II [rest of string was truncated]&quot;;.
         /// </summary>
-        public static byte[] ru_RU_dic {
+        public static string ru_RU_dic {
             get {
-                object obj = ResourceManager.GetObject("ru_RU_dic", resourceCulture);
-                return ((byte[])(obj));
+                return ResourceManager.GetString("ru_RU_dic", resourceCulture);
             }
         }
     }

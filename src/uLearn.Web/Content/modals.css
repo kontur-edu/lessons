@@ -25,10 +25,9 @@
 }
 
 /* Modal header tabs*/
-.modal-header__tabs {
-	margin: 0;
-	margin-top: -14px;
-	margin-bottom: -15px;
+.modal-header__tabs,
+ul.modal-header__tabs {
+	margin: -14px 0 -15px;
 	padding-left: 0;
 	font-size: 16px;
 }

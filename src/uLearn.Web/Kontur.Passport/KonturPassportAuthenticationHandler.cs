@@ -59,8 +59,8 @@ namespace uLearn.Web.Kontur.Passport
 
 				var userClaims = authenticationResult.UserClaims.ToList();
 				log.Info($"Received follow user claims from Kontur.Passport server: {string.Join(", ", userClaims.Select(c => c.Type + ": " + c.Value))}");
-				var name = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-				var sid = userClaims.FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;
+				var login = userClaims.FirstOrDefault(c => c.Type == KonturPassportConstants.LoginClaimType)?.Value;
+				var sid = userClaims.FirstOrDefault(c => c.Type == KonturPassportConstants.SidClaimType)?.Value;
 				var email = userClaims.FirstOrDefault(c => c.Type == KonturPassportConstants.EmailClaimType)?.Value;
 				var avatarUrl = userClaims.FirstOrDefault(c => c.Type == KonturPassportConstants.AvatarUrlClaimType)?.Value;
 				var realNameParts = userClaims.FirstOrDefault(c => c.Type == KonturPassportConstants.NameClaimType)?.Value.Split(' ');
@@ -69,18 +69,18 @@ namespace uLearn.Web.Kontur.Passport
 				identity.AddClaim(new Claim("AvatarUrl", avatarUrl, xmlSchemaForStringType, Options.AuthenticationType));
 				if (realNameParts != null && realNameParts.Length > 0)
 				{
-					/* Suppose that Гейн Андрей Александрович is Surname (Гейн), GiveName (Андрей) and other. So we splitted name from Kontur.Passport into parts */
+					/* Suppose that Гейн Андрей Александрович is Surname (Гейн), GivenName (Андрей) and other. So we splitted name from Kontur.Passport into parts */
 					identity.AddClaim(new Claim(ClaimTypes.Surname, realNameParts[0], xmlSchemaForStringType, Options.AuthenticationType));
 					if (realNameParts.Length > 1)
 						identity.AddClaim(new Claim(ClaimTypes.GivenName, realNameParts[1], xmlSchemaForStringType, Options.AuthenticationType));
 				}
 
 				/* Replace name from Kontur\andgein to andgein */
-				if (name != null && name.Contains(@"\"))
-					name = name.Substring(name.IndexOf('\\') + 1);
+				if (login != null && login.Contains(@"\"))
+					login = login.Substring(login.IndexOf('\\') + 1);
 				
-				identity.AddClaim(new Claim(ClaimTypes.Name, name, xmlSchemaForStringType, Options.AuthenticationType));
-				identity.AddClaim(new Claim("KonturLogin", name, xmlSchemaForStringType, Options.AuthenticationType));				
+				identity.AddClaim(new Claim(ClaimTypes.Name, login, xmlSchemaForStringType, Options.AuthenticationType));
+				identity.AddClaim(new Claim("KonturLogin", login, xmlSchemaForStringType, Options.AuthenticationType));				
 
 				var properties = Options.StateDataFormat.Unprotect(state);
 				return new AuthenticationTicket(identity, properties);
@@ -153,6 +153,7 @@ namespace uLearn.Web.Kontur.Passport
 				string.Equals(Options.ReturnEndpointPath, Request.Path.Value, StringComparison.OrdinalIgnoreCase))
 			{
 				var ticket = await AuthenticateAsync();
+				ticket.Properties.IsPersistent = true;
 
 				var context = new KonturPassportReturnEndpointContext(Context, ticket)
 				{

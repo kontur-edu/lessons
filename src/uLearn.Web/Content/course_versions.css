@@ -1,0 +1,55 @@
+.legacy-page .courses-versions {
+
+}
+
+.legacy-page .courses-versions > a {
+	display: block;
+}
+
+.legacy-page .courses-versions .courses-versions__version {
+	margin-bottom: 20px;
+	width: 500px;
+	padding: 5px 5px;
+}
+
+.legacy-page .courses-versions .courses-versions__version:not(.current) {
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+.legacy-page .courses-versions .courses-versions__version:not(.current):hover {
+	cursor: pointer;
+	background-color: #eef;
+}
+
+.legacy-page .courses-versions .courses-versions__version > div,
+.legacy-page .courses-versions .courses-versions__version > a > div  {
+	display: inline-block;
+}
+
+.legacy-page .courses-versions a.current {
+	pointer-events: none;
+	cursor: text;
+}
+
+.legacy-page .courses-versions .courses-versions__version .glyphicon.glyphicon-ok {
+	margin-right: 10px;
+	color: green;
+}
+
+.legacy-page .courses-versions .courses-versions__version .courses-versions__actions {
+	float: right;
+}
+
+.legacy-page .courses-versions .courses-versions__version .courses-versions__actions a {
+	margin-right: 10px;
+}
+
+.legacy-page .courses-versions .courses-versions__version .courses-versions__actions form {
+	display: inline-block;
+}
+
+.legacy-page .course-loading-error {
+	margin-bottom: 20px;
+	max-width: 800px;
+}

@@ -11,7 +11,7 @@ namespace uLearn.Web.Extensions
 		public static string ToPrettyString(this DateTime dateTime, bool withoutYearIfItsCurrent = false)
 		{
 			var utcTime = dateTime.ToUniversalTime();
-			return $"{utcTime.ToDatePrettyString(withoutYearIfItsCurrent)} в {utcTime.ToShortTimeString()} (UTC)";
+			return $"{utcTime.ToDatePrettyString(withoutYearIfItsCurrent)} в {utcTime.ToShortTimeString()} (UTC)";
 		}
 
 		public static string ToDatePrettyString(this DateTime dateTime, bool withoutYearIfItsCurrent = false)

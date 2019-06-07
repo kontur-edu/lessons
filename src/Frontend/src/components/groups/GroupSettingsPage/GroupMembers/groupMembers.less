@@ -1,0 +1,62 @@
+@import "../../../../variables.less";
+
+.wrapper {
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.teachers {
+  margin-bottom: 20px;
+}
+
+.teachers-header,
+.students-header {
+  font-weight: 500;
+  font-size: 18px;
+  margin: 0 0 7px 0;
+}
+
+.teachers-info {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.teacher-block {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin: 10px 0;
+  align-items: flex-start;
+}
+
+.teacher-name {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-left: 15px;
+}
+
+.teacher-status {
+  color: @additionalColor;
+
+  @media (max-width: @maxPhoneWidth) {
+    display: none;
+  }
+}
+
+.teacher-search {
+  width: 100%;
+  margin-bottom: 20px;
+
+  label {
+    margin-bottom: 0;
+  }
+
+  p {
+    margin-top: 0;
+  }
+}
+
+.teacher-action {
+  margin-left: auto;
+}

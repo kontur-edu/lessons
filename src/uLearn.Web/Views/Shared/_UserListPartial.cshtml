@@ -1,5 +1,6 @@
 ﻿@using Database.Models
 @using Ulearn.Common.Extensions
+@using FormMethod = System.Web.Mvc.FormMethod
 @model UserListModel
 
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "AntiForgeryTokenContainer" }))
@@ -43,7 +44,13 @@
 	                <span title="@user.UserName">@user.UserVisibleName</span>
                 }
             </td>
-			<td>@Model.UsersGroups.GetOrDefault(user.UserId, "")</td>
+            <td>
+                @Model.UsersGroups.GetOrDefault(user.UserId, "")
+                @if (Model.UsersArchivedGroups.ContainsKey(user.UserId) && !string.IsNullOrEmpty(Model.UsersArchivedGroups[user.UserId]))
+                {
+	                <div class="text-muted">Архив: @Model.UsersArchivedGroups[user.UserId]</div>
+                }
+             </td>
 			@if (Model.CanToggleRoles)
 			{
 				<td>

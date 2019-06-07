@@ -11,8 +11,11 @@ using Database.Extensions;
 using Database.Models;
 using log4net;
 using Microsoft.AspNet.Identity;
-using uLearn.Quizes;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Quizzes;
 
 namespace uLearn.Web.Controllers
 {
@@ -72,19 +75,19 @@ namespace uLearn.Web.Controllers
 		{
 			var result = new T { CourseId = courseId };
 
-			/* if groupsIds contains "all" (it should be exclusive), get all users. Available only for instructors  */
-			if (groupsIds.Contains("all") && User.HasAccessFor(courseId, CourseRole.Instructor))
+			/* if groupsIds contains "all" (it should be exclusive), get all users. Available only for course admins */
+			if (groupsIds.Contains("all") && User.HasAccessFor(courseId, CourseRole.CourseAdmin))
 				return result;
 			/* if groupsIds contains "not-group" (it should be exclusive), get all users not in any groups, available only for course admins */
 			if (groupsIds.Contains("not-in-group") && User.HasAccessFor(courseId, CourseRole.CourseAdmin))
 			{
 				var usersInGroups = groupsRepo.GetUsersIdsForAllGroups(courseId);
-				result.UsersIds = usersInGroups.ToList();
+				result.UserIds = usersInGroups.ToList();
 				result.IsUserIdsSupplement = true;
 				return result;
 			}
 
-			result.UsersIds = new List<string>();
+			result.UserIds = new List<string>();
 			var usersIds = new HashSet<string>();
 
 			/* if groupsIds is empty, get members of all groups user has access to. Available for instructors */
@@ -96,7 +99,7 @@ namespace uLearn.Web.Controllers
 					var groupUsersIds = groupsRepo.GetGroupMembersAsUsers(accessableGroupId).Select(u => u.Id);
 					usersIds.AddAll(groupUsersIds);
 				}
-				result.UsersIds = usersIds.ToList();
+				result.UserIds = usersIds.ToList();
 				return result;
 			}
 
@@ -117,7 +120,7 @@ namespace uLearn.Web.Controllers
 						usersIds.AddAll(groupMembersIds);
 				}
 			}
-			result.UsersIds = usersIds.ToList();
+			result.UserIds = usersIds.ToList();
 			return result;
 		}
 
@@ -150,7 +153,7 @@ namespace uLearn.Web.Controllers
 		public static HashSet<Guid> GetSolvedSlides(UserSolutionsRepo solutionsRepo, UserQuizzesRepo userQuizzesRepo, Course course, string userId)
 		{
 			var solvedSlides = solutionsRepo.GetIdOfPassedSlides(course.Id, userId);
-			solvedSlides.UnionWith(userQuizzesRepo.GetIdOfQuizPassedSlides(course.Id, userId));
+			solvedSlides.UnionWith(userQuizzesRepo.GetPassedSlideIds(course.Id, userId));
 			return solvedSlides;
 		}
 
@@ -170,10 +173,25 @@ namespace uLearn.Web.Controllers
 		private static int GetMaxScoreWithoutManualChecking(Slide slide)
 		{
 			if (slide is ExerciseSlide)
-				return (slide as ExerciseSlide).Exercise.CorrectnessScore;
+				return (slide as ExerciseSlide).Scoring.PassedTestsScore;
 			if (slide is QuizSlide)
 				return (slide as QuizSlide).ManualChecking ? 0 : slide.MaxScore;
 			return slide.MaxScore;
+		}
+		
+		public static int GetManualCheckingsCountInQueue(SlideCheckingsRepo slideCheckingsRepo, GroupsRepo groupsRepo, IPrincipal user, string courseId, Slide slide, List<string> groupsIds)
+		{
+			var filterOptions = GetFilterOptionsByGroup<ManualCheckingQueueFilterOptions>(groupsRepo, user, courseId, groupsIds);
+			if (filterOptions.UserIds == null)
+				groupsIds = new List<string> { "all" };
+			filterOptions.SlidesIds = new List<Guid> { slide.Id };
+			
+			if (slide is ExerciseSlide)
+				return slideCheckingsRepo.GetManualCheckingQueue<ManualExerciseChecking>(filterOptions).Count();
+			if (slide is QuizSlide)
+				return slideCheckingsRepo.GetManualCheckingQueue<ManualQuizChecking>(filterOptions).Count();
+			
+			throw new ArgumentException("Slide should be quiz or exercise", nameof(slide));
 		}
 	}
 }

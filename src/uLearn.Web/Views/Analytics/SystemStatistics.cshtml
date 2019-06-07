@@ -3,14 +3,8 @@
 }
 
 <body>
-<div class="wide-container">
-	<h2 id="timeline">Общая динамика прогресса</h2>
-	<div class="load-content" data-url="@Url.Action("DailyStatistics")"></div>
-</div>
+	<div class="wide-container">
+		<h2 id="timeline">Общая динамика прогресса</h2>
+		<div class="load-content" data-url="@Url.Action("DailyStatistics")"></div>
+	</div>
 </body>
-
-@section scripts{
-	<script src="//code.highcharts.com/highcharts.js"></script>
-	<script src="//code.highcharts.com/modules/data.js"></script>
-	<script src="~/Scripts/user-group-name-change.js"></script>
-}

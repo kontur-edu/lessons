@@ -2,15 +2,20 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Threading;
 using log4net;
+using Metrics;
 using Newtonsoft.Json;
 using RunCsJob.Api;
-using uLearn;
+using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Configuration;
 
 namespace RunCsJob
 {
@@ -22,7 +27,8 @@ namespace RunCsJob
 			WorkingDirectory = new DirectoryInfo(Path.Combine(baseDirectory, "submissions"));
 		}
 
-		private const int timeLimitInSeconds = 10;
+		public TimeSpan CompilationTimeLimit = TimeSpan.FromSeconds(10);
+		private const int timeLimitInSeconds = 10;		
 		public TimeSpan TimeLimit = TimeSpan.FromSeconds(timeLimitInSeconds);
 		public TimeSpan IdleTimeLimit = TimeSpan.FromSeconds(2 * timeLimitInSeconds);
 		public int MemoryLimit = 64 * 1024 * 1024;
@@ -36,6 +42,7 @@ namespace RunCsJob
 	public class SandboxRunner
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(SandboxRunner));
+		private readonly MetricSender metricSender = new MetricSender("runcsjob");
 
 		private readonly RunnerSubmission submission;
 		private readonly SandboxRunnerSettings settings;
@@ -81,13 +88,13 @@ namespace RunCsJob
 				if (submission is ProjRunnerSubmission)
 					result = instance.RunMsBuild(submissionCompilationDirectory.FullName);
 				else
-					result = instance.RunCsc60(submissionCompilationDirectory.FullName);
+					result = instance.RunCsc(submissionCompilationDirectory.FullName);
 				result.Id = submission.Id;
 				return result;
 			}
 			catch (Exception ex)
 			{
-				log.Error(ex);
+				log.Error(ex.Message, ex);
 				return new RunningResults(submission.Id, Verdict.SandboxError, error: ex.ToString());
 			}
 			finally
@@ -135,16 +142,18 @@ namespace RunCsJob
 			return RunSandbox($"\"{builderResult.PathToExe}\" {submission.Id}");
 		}
 
-		public RunningResults RunCsc60(string submissionCompilationDirectory)
+		public RunningResults RunCsc(string submissionCompilationDirectory)
 		{
 			log.Info($"Запускаю проверку C#-решения {submission.Id}, компилирую с помощью Roslyn");
 
-			var res = AssemblyCreator.CreateAssemblyWithRoslyn((FileRunnerSubmission)submission, submissionCompilationDirectory);
-			var diagnostics = res.EmitResult.Diagnostics;
-			var compilationOutput = diagnostics.DumpCompilationOutput();
+			var res = AssemblyCreator.CreateAssemblyWithRoslyn((FileRunnerSubmission)submission, submissionCompilationDirectory, settings.CompilationTimeLimit);
 
 			try
 			{
+				metricSender.SendTiming("exercise.compilation.csc.elapsed", (int) res.Elapsed.TotalMilliseconds);
+				var diagnostics = res.EmitResult.Diagnostics;
+				var compilationOutput = diagnostics.DumpCompilationOutput();
+
 				if (diagnostics.HasErrors())
 				{
 					log.Error($"Ошибка компиляции:\n{compilationOutput}");
@@ -179,7 +188,12 @@ namespace RunCsJob
 		{
 			try
 			{
-				Directory.Delete(path, true);
+				/* Sometimes we can't remove directory after Time Limit Exceeded, because process is alive yet. Just wait some seconds before directory removing */ 
+				FuncUtils.TrySeveralTimes(() =>
+				{
+					Directory.Delete(path, true);
+					return true;
+				}, 3, () => Thread.Sleep(TimeSpan.FromSeconds(1)));
 			}
 			catch (Exception e)
 			{
@@ -301,7 +315,9 @@ namespace RunCsJob
 			{
 				log.Warn($"Песочница не ответила «Ready», а вышла с кодом {sandbox.ExitCode}");
 				var stderrReader = new AsyncReader(sandbox.StandardError, settings.OutputLimit + 1);
-				var result = GetResultForNonZeroExitCode(stderrReader.GetData(), sandbox.ExitCode);
+				var stderrData = stderrReader.GetData();
+				log.Warn($"Вывод песочницы в stderr:\n{stderrData}");
+				var result = GetResultForNonZeroExitCode(stderrData, sandbox.ExitCode);
 				throw new SandboxErrorException(result.Error);
 			}
 
@@ -346,6 +362,10 @@ namespace RunCsJob
 			var obj = ParseSerializedException(error);
 			if (obj != null)
 				return GetResultFromException(obj);
+
+			var exception = ParseNotSerializedException(error);
+			if (exception != null)
+				return new RunningResults(Verdict.RuntimeError, error: error);
 
 			log.Warn($"Не вытащил информацию об исключении из строчки \"{error}\", проверяю код выхода: {exitCode}");
 			return GetResultFromNtStatus(exitCode, error);
@@ -413,6 +433,80 @@ namespace RunCsJob
 			{
 				return null;
 			}
+		}
+
+		/* Sometimes we've received something like this:
+		   Unhandled Exception: System.ArgumentException: Value does not fall within the expected range.
+			   at Memory.API.MagicAPI.Free(Int32 id)
+			   at Memory.API.APIObject.Finalize()
+			
+		   It's possible, i.e., for exceptions thrown from destructors. Let's try to parse them! */
+		private static Exception ParseNotSerializedException(string stderr)
+		{
+			stderr = stderr.Trim();
+			
+			const string unhandledException = "Unhandled Exception: ";
+			if (!stderr.StartsWith(unhandledException))
+				return null;
+			
+			log.Info($"Try to parse not-serialized and not-standard exception from following message: {stderr}");
+
+			var lines = stderr.SplitToLines();
+			var exceptionLine = lines[0].Substring(unhandledException.Length);
+			var exceptionLineColonIndex = exceptionLine.IndexOf(':');
+			if (exceptionLineColonIndex >= 0)
+			{
+				var exceptionTypeName = exceptionLine.Substring(0, exceptionLineColonIndex);
+				var exceptionMessage = exceptionLine.Length > exceptionLineColonIndex + 2 ? exceptionLine.Substring(exceptionLineColonIndex + 2) : "";
+				
+				var exceptionType = typeof(Exception).Assembly.GetTypes().FirstOrDefault(t => t.FullName == exceptionTypeName);
+				if (exceptionType == null)
+					return new Exception(exceptionMessage);
+
+				log.Info($"Defined exception type: {exceptionType.FullName}");
+
+				var exception = TryToCreateExceptionByTypeAndMessage(exceptionType, exceptionMessage);
+				if (exception == null)
+					return new Exception(exceptionMessage);
+
+				return exception;
+			}
+
+			return null;
+		}
+
+		private static Exception TryToCreateExceptionByTypeAndMessage(Type exceptionType, string exceptionMessage)
+		{
+			Exception exceptionObject = null;
+			try
+			{
+				exceptionObject = Activator.CreateInstance(exceptionType, exceptionMessage) as Exception;
+			}
+			catch (Exception e)
+			{
+				log.Warn($"Can't create exception object of type {exceptionType}: {e.Message}");
+			}
+
+			if (exceptionObject == null)
+			{
+				try
+				{
+					exceptionObject = Activator.CreateInstance(exceptionType) as Exception;
+				}
+				catch (Exception e)
+				{
+					log.Warn($"Can't create exception object of type {exceptionType}: {e.Message}");
+					return null;
+				}
+
+				if (exceptionObject == null)
+				{
+					log.Warn($"Can't create exception object of type {exceptionType}, returned null");
+					return null;
+				}
+			}
+
+			return exceptionObject;
 		}
 
 		private static RunningResults GetResultFromException(Exception ex)

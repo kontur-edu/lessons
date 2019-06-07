@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using CommandLine;
-using uLearn.Model.Edx;
+using Ulearn.Core.Model.Edx;
 
 namespace uLearn.CourseTool.CmdLineOptions
 {

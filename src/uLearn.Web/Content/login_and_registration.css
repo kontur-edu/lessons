@@ -1,0 +1,87 @@
+.legacy-page .login-and-registration-form input {
+	max-width: initial;
+}
+
+.legacy-page .login-and-registration-form input[type=text],
+.legacy-page .login-and-registration-form input[type=password] {
+	border-width: 2px;
+	padding: 10px 16px;
+	height: 45px;
+	font-size: 16px;
+}
+
+.legacy-page .login-and-registration-form:not(.profile-form) > form > .form-group {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.legacy-page .login-and-registration-form .control-label {
+	font-size: 16px;
+	padding-top: 10px;
+}
+
+.legacy-page .login-and-registration-form .control-label.for-non-text-fields {
+	padding-top: 6px;
+}
+
+.legacy-page .login-and-registration-form .radio {
+	margin-right: 15px;
+}
+
+.legacy-page .login-and-registration-form .pull-right .radio {
+	margin-right: 0;
+	margin-left: 15px;
+}
+
+.legacy-page .login-and-registration-form .radio-form-group {
+	padding-bottom: 5px;
+}
+
+@media (max-width: 767px) {
+	.legacy-page .login-and-registration-form .control-label {
+		display: none;
+	}
+}
+
+.legacy-page .login-and-registration-form .field-validation-error {
+	display: inline-block;
+	padding: 4px 16px 4px;
+	color: #E46463;
+}
+
+.legacy-page .login-and-registration-form .checkbox .field-validation-error {
+	padding-left: 0;
+	margin-left: -20px;
+}
+
+.legacy-page .login-and-registration-form .input-validation-error {
+	border-color: #EA8180;
+}
+
+.legacy-page .login-and-registration-form .validation-summary-errors {
+	color: #FFFCFC;
+	border: 2px solid #EA8180;
+	border-radius: 6px;
+	background-color: #EA8180;
+	text-align: left;
+	padding: 10px 16px 0;
+	font-size: 16px;
+	margin-bottom: 15px;
+}
+
+.legacy-page .login-and-registration-form .col-sm-10 > .validation-summary-errors {
+	margin-bottom: 0;
+}
+
+.legacy-page .login-and-registration-form .checkbox label::before,
+.legacy-page .login-and-registration-form .radio label::before {
+	border-width: 2px;
+}
+
+.legacy-page .login-and-registration-form .notifications__transport-settings__panel .checkbox label::before {
+	border-width: 1px;
+}
+
+hr.without-top-margin {
+	margin-top: 5px;
+}

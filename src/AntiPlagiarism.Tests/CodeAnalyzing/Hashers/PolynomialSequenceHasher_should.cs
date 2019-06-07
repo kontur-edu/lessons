@@ -1,4 +1,5 @@
-﻿using AntiPlagiarism.Web.CodeAnalyzing.Hashers;
+﻿using System;
+using AntiPlagiarism.Web.CodeAnalyzing.Hashers;
 using NUnit.Framework;
 
 namespace AntiPlagiarism.Tests.CodeAnalyzing.Hashers
@@ -9,7 +10,7 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.Hashers
 		/* TODO (andgein): use DefaultObjectHasher instead of GetHashCode in tests. Add tests for StableStringHasher */
 		
 		[Test]
-		public void TestWithPolynomBase1()
+		public void WorkWithPolynomBase1()
 		{
 			var hasher = new PolynomialSequenceHasher(1);
 			hasher.Enqueue("first");
@@ -23,7 +24,7 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.Hashers
 		[TestCase(2)]
 		[TestCase(5)]
 		[TestCase(137)]
-		public void TestWithPolynomBase(int polynomBase)
+		public void WorkWithPolynomBase(int polynomBase)
 		{
 			var hasher = new PolynomialSequenceHasher(polynomBase);
 			hasher.Enqueue("first");
@@ -35,7 +36,7 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.Hashers
 		}
 
 		[Test]
-		public void TestDequeue()
+		public void DequeueElements()
 		{
 			const int count = 100;
 			var hasher = new PolynomialSequenceHasher(137);
@@ -49,7 +50,7 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.Hashers
 		[TestCase(1000, 2)]
 		[TestCase(2000, 5)]
 		[TestCase(3000, 137)]
-		public void TestWithManyAdds(int count, int polynomBase)
+		public void WorkWithManyAdds(int count, int polynomBase)
 		{
 			var hasher = new PolynomialSequenceHasher(polynomBase);
 			var currentHash = 0;
@@ -62,7 +63,7 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.Hashers
 		}
 
 		[TestCase(100)]
-		public void TestReset(int count)
+		public void Reset(int count)
 		{
 			var hasher = new PolynomialSequenceHasher(137);
 			for (var i = 0; i < count; i++)
@@ -71,6 +72,15 @@ namespace AntiPlagiarism.Tests.CodeAnalyzing.Hashers
 				Assert.AreEqual("some_string".GetHashCode(), hasher.GetCurrentHash());
 				hasher.Reset();
 			}
+		}
+
+		[Test]
+		public void NotDequeFromEmptyQueue()
+		{
+			var hasher = new PolynomialSequenceHasher(137);
+			hasher.Enqueue("some_string");
+			hasher.Dequeue();
+			Assert.Throws<InvalidOperationException>(() => hasher.Dequeue());
 		}
 
 		[Test]

@@ -1,11 +1,13 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using CommandLine;
 using Newtonsoft.Json;
 using uLearn.CourseTool.Json;
-using uLearn.Model.Edx;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Model.Edx;
 
 namespace uLearn.CourseTool.CmdLineOptions
 {
@@ -46,16 +48,14 @@ namespace uLearn.CourseTool.CmdLineOptions
 			VideoHistory.UpdateHistory(Dir, video);
 
 			Console.WriteLine($"Loading ulearn course from {Config.ULearnCourseId}");
-			var course = new CourseLoader().LoadCourse(new DirectoryInfo(Path.Combine(Dir, Config.ULearnCourseId)));
+			var course = new CourseLoader().Load(new DirectoryInfo(Path.Combine(Dir, Config.ULearnCourseId)));
 
 			Console.WriteLine($"Converting ulearn course \"{course.Id}\" to edx course");
 			Converter.ToEdxCourse(
 				course,
 				Config,
-				profile.UlearnUrl + SlideUrlFormat,
-				profile.UlearnUrl + SolutionsUrlFormat,
-				video.Records.ToDictionary(x => x.Data.Id, x => x.Guid.GetNormalizedGuid())
-			).Save(Dir + "/olx");
+				profile.UlearnUrl,
+				video.Records.ToDictionary(x => x.Data.Id, x => x.Guid.GetNormalizedGuid()), CoursePackageRoot).Save(Dir + "/olx");
 
 			EdxInteraction.CreateEdxCourseArchive(Dir, course.Id);
 

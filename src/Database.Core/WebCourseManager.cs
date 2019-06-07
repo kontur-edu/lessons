@@ -1,55 +1,84 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
+using System.Threading.Tasks;
+using Database.Models;
 using Database.Repos;
-using log4net;
+using JetBrains.Annotations;
+using Serilog;
 using uLearn;
+using Ulearn.Core;
+using Ulearn.Core.Courses;
 
 namespace Database
 {
-	public class WebCourseManager : CourseManager
+	public class WebCourseManager : CourseManager, IWebCourseManager
 	{
-		private readonly CoursesRepo coursesRepo;
-		private static readonly ILog log = LogManager.GetLogger(typeof(WebCourseManager));
+		private readonly ILogger logger;
 
 		private readonly Dictionary<string, Guid> loadedCourseVersions = new Dictionary<string, Guid>();
 		private readonly ConcurrentDictionary<string, DateTime> courseVersionFetchTime = new ConcurrentDictionary<string, DateTime>();
-		private readonly TimeSpan fetchCourseVersionEvery = TimeSpan.FromMinutes(1);
+		private DateTime lastCoursesListFetchTime = DateTime.MinValue;
+		private readonly TimeSpan fetchCourseVersionEvery = TimeSpan.FromSeconds(10);
 
-		private WebCourseManager(CoursesRepo coursesRepo)
+		public WebCourseManager(ILogger logger)
 			: base(GetCoursesDirectory())
 		{
-			this.coursesRepo = coursesRepo;
+			this.logger = logger;
 		}
 
 		private readonly object @lock = new object();
 
-		public override Course GetCourse(string courseId)
+		[NotNull]
+		public async Task<Course> GetCourseAsync(CoursesRepo coursesRepo, string courseId)
 		{
-			var course = base.GetCourse(courseId);
+			Course course;
+			try
+			{
+				course = base.GetCourse(courseId);
+			}
+			catch (KeyNotFoundException)
+			{
+				course = null;
+			}
+
 			if (IsCourseVersionWasUpdatedRecent(courseId))
-				return course;
+				return course ?? throw new CourseNotFoundException(courseId);
 
 			courseVersionFetchTime[courseId] = DateTime.Now;
-			
-			var publishedVersion = coursesRepo.GetPublishedCourseVersion(courseId);
+
+			var publishedVersion = await coursesRepo.GetPublishedCourseVersionAsync(courseId).ConfigureAwait(false);
 
 			if (publishedVersion == null)
-				return course;
+				return course ?? throw new CourseNotFoundException(courseId);
 
-			lock (@lock)
+			ReloadCourseIfLoadedAndPublishedVersionsAreDifferent(courseId, publishedVersion);
+			return base.GetCourse(courseId);
+		}
+
+		public async Task<IEnumerable<Course>> GetCoursesAsync(ICoursesRepo coursesRepo)
+		{
+			if (lastCoursesListFetchTime > DateTime.Now.Subtract(fetchCourseVersionEvery))
+				return base.GetCourses();
+
+			var publishedCourseVersions = await coursesRepo.GetPublishedCourseVersionsAsync().ConfigureAwait(false);
+
+			lastCoursesListFetchTime = DateTime.Now;
+			foreach (var courseVersion in publishedCourseVersions)
 			{
-				if (loadedCourseVersions.TryGetValue(courseId, out var loadedVersionId)
-					&& loadedVersionId != publishedVersion.Id)
+				try
 				{
-					log.Info($"Загруженная версия курса {courseId} отличается от актуальной. Обновляю курс.");
-					course = ReloadCourse(courseId);
+					ReloadCourseIfLoadedAndPublishedVersionsAreDifferent(courseVersion.CourseId, courseVersion);
 				}
-				loadedCourseVersions[courseId] = publishedVersion.Id;
+				catch (FileNotFoundException)
+				{
+					/* Sometimes zip-archive with course has been deleted already. It's strange but ok */
+					logger.Warning("Это странно, что я не смог загрузить с диска курс, который, если верить базе данных, был опубликован. Но ничего, просто проигнорирую");
+				}
 			}
-			return course;
+
+			return base.GetCourses();
 		}
 
 		private bool IsCourseVersionWasUpdatedRecent(string courseId)
@@ -63,10 +92,23 @@ namespace Database
 		{
 			lock (@lock)
 			{
-				loadedCourseVersions[courseId] = versionId;
+				loadedCourseVersions[courseId.ToLower()] = versionId;
 			}
 		}
+		
+		private void ReloadCourseIfLoadedAndPublishedVersionsAreDifferent(string courseId, CourseVersion publishedVersion)
+		{
+			lock (@lock)
+			{
+				var isCourseLoaded = loadedCourseVersions.TryGetValue(courseId.ToLower(), out var loadedVersionId);
+				if ((isCourseLoaded && loadedVersionId != publishedVersion.Id) || !isCourseLoaded)
+				{
+					logger.Information($"Загруженная версия курса {courseId} отличается от актуальной ({loadedVersionId.ToString() ?? "<none>"} != {publishedVersion.Id}). Обновляю курс.");
+					ReloadCourse(courseId);
+				}
 
-		// public static readonly WebCourseManager Instance = new WebCourseManager(TODO);
+				loadedCourseVersions[courseId.ToLower()] = publishedVersion.Id;
+			}
+		}
 	}
 }

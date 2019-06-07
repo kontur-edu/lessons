@@ -1,6 +1,7 @@
 ﻿@using Database.Models
 @using RunCsJob.Api
 @using uLearn.Web.Extensions
+@using Ulearn.Core
 
 @model SubmissionsListModel
 
@@ -9,30 +10,43 @@
 	Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<a href="@Url.Action("RunCode", "Sandbox")" class="btn btn-primary btn-large">Run code &raquo;</a>
+<a href="@Url.Action("RunCode", "Sandbox")" class="btn btn-primary btn-large">Run C# code &raquo;</a>
 
 <table class="table table-hover table-striped">
 	<thead>
 	<tr>
 		<th></th>
-		<th>Timestamp</th>
+        <th>Timestamp</th>
+        <th>Language</th>
 		<th>Elapsed</th>
-		<th>ID</th>
-		<th>State</th>
+		<th>Description</th>
+		<th>Status</th>
 		<th>Verdict</th>
 	</tr>
 	</thead>
 	@foreach (var submission in Model.Submissions)
 	{
-		var automaticChecking = submission.AutomaticChecking ?? new AutomaticExerciseChecking();
-		var name = automaticChecking.DisplayName ?? submission.Id.ToString();
-		<tr class="@SubmissionClass(automaticChecking.GetVerdict()) submitions-item" data-id="@submission.Id">
+		var automaticChecking = submission.AutomaticChecking;
+		var defaultDescription = "Submission #" + submission.Id;
+		var description = automaticChecking != null ? (automaticChecking.DisplayName ?? defaultDescription) : defaultDescription;
+		<tr class="@SubmissionClass(automaticChecking != null ? automaticChecking.GetVerdict() : "") submitions-item" data-id="@submission.Id">
 			<td>@submission.Id</td>
-			<td title="@submission.Timestamp">@submission.Timestamp.ToPrettyString(true)</td>
-			<td>@automaticChecking.Elapsed</td>
-			<td>@name</td>
-			<td>@automaticChecking.Status</td>
-			<td>@automaticChecking.GetVerdict()</td>
+            <td title="@submission.Timestamp">@submission.Timestamp.ToPrettyString(true)</td>
+            <td>@submission.Language.GetName()</td>
+            @if (automaticChecking != null)
+            {
+	            <td>@automaticChecking.Elapsed</td>
+	            <td>@description</td>
+	            <td>@automaticChecking.Status</td>
+	            <td>@automaticChecking.GetVerdict()</td>
+            }
+            else
+            {
+	            <td>—</td>
+	            <td>@description</td>
+	            <td>Done</td>
+	            <td><i>Не&nbsp;проверяется автоматически</i></td>
+            }
 		</tr>
 	}
 </table>

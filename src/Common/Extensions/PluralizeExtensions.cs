@@ -106,5 +106,45 @@
 			hideNumberOne = false,
 			smallNumbersAreWords = false,
 		};
+
+		public static readonly RussianPluralizationOptions Students = new RussianPluralizationOptions
+		{
+			One = "студент",
+			Two = "студента",
+			Five = "студентов",
+			Gender = Gender.Male,
+			hideNumberOne = false,
+			smallNumbersAreWords = false
+		};
+		
+		public static readonly RussianPluralizationOptions StudentsDative = new RussianPluralizationOptions
+		{
+			One = "студента",
+			Two = "студентов",
+			Five = "студентов",
+			Gender = Gender.Male,
+			hideNumberOne = true,
+			smallNumbersAreWords = false
+		};
+
+		public static readonly RussianPluralizationOptions Checkings = new RussianPluralizationOptions
+		{
+			One = "работа",
+			Two = "работы",
+			Five = "работ",
+			Gender = Gender.Female,
+			hideNumberOne = false,
+			smallNumbersAreWords = false,
+		};
+		
+		public static readonly RussianPluralizationOptions Tasks = new RussianPluralizationOptions
+		{
+			One = "задача",
+			Two = "задачи",
+			Five = "задач",
+			Gender = Gender.Female,
+			hideNumberOne = false,
+			smallNumbersAreWords = false,
+		};
 	}
 }

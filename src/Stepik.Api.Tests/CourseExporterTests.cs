@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using log4net.Config;
 using NUnit.Framework;
-using uLearn;
+using Ulearn.Core.Courses;
 
 namespace Stepik.Api.Tests
 {
@@ -34,7 +34,7 @@ namespace Stepik.Api.Tests
 		public async Task TestExportCourseFromDirectory(string coursePath)
 		{
 			var courseLoader = new CourseLoader();
-			var stubCourse = courseLoader.LoadCourse(new DirectoryInfo(coursePath));
+			var stubCourse = courseLoader.Load(new DirectoryInfo(coursePath));
 			await courseExporter.InitialExportCourse(stubCourse, new CourseInitialExportOptions(stepikCourseId, stepikXQueueName, new List<Guid>()));
 		}
 	}

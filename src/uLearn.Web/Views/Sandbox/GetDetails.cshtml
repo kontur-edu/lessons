@@ -5,17 +5,24 @@
 	var texts = new[]
 	{
 		new { text = Model.SolutionCode.Text, type = "code", name = "Код" },
-		new { text = Model.AutomaticChecking.CompilationError.Text, type = "compilationInfo", name = "Сообщения компилятора" },
-		new { text = Model.AutomaticChecking.Output.Text, type = "output", name = "Вывод" },
+		new { text = Model.AutomaticChecking != null ? (Model.AutomaticChecking.CompilationError.Text ?? "") : "", type = "compilationInfo", name = "Сообщения компилятора" },
+		new { text = Model.AutomaticChecking != null ? (Model.AutomaticChecking.Output.Text ?? "") : "", type = "output", name = "Вывод" },
 	}
 		.Where(arg => !string.IsNullOrWhiteSpace(arg.text));
 }
 
 <div style="margin-bottom: 20px">
-	Id: @Html.Encode(Model.Id) <br/>
-	Время отправки: @Model.Timestamp.ToPrettyString() <br/>
-	Статус: @Model.AutomaticChecking.Status.ToString() <br/>
-	Результат: <b>@Model.AutomaticChecking.GetVerdict()</b>
+    Id: @Html.Encode(Model.Id) <br/>
+    Язык: @Model.Language.ToString("g") <br/>
+    Время отправки: @Model.Timestamp.ToPrettyString() <br/>
+    Статус: @(Model.AutomaticChecking != null ? Model.AutomaticChecking.Status.ToString() : "Не проверяется автоматичеки")<br/>
+    @if (Model.AutomaticChecking != null)
+    {
+	    <text>
+	        Проверяющий сервер: @(Model.AutomaticChecking.CheckingAgentName ?? "Неизвестно")<br/>	    
+            Результат: <b>@Model.AutomaticChecking.GetVerdict()</b> <br/>
+	    </text>
+    }
 </div>
 
 @foreach (var text in texts)

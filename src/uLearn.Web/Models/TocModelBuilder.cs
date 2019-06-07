@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using uLearn.Quizes;
+using Ulearn.Core.Courses;
+using Ulearn.Core.Courses.Slides;
+using Ulearn.Core.Courses.Slides.Exercises;
+using Ulearn.Core.Courses.Slides.Quizzes;
+using Ulearn.Core.Courses.Units;
 
 namespace uLearn.Web.Models
 {
@@ -53,7 +57,7 @@ namespace uLearn.Web.Models
 
 		private TocUnitModel CreateUnit(Unit unit)
 		{
-			var pages = unit.Slides.Select(CreatePage).ToList();
+			var pages = unit.Slides.Where(s => !IsSlideHidden(s)).Select(CreatePage).ToList();
 			if (IsInstructor)
 			{
 				if (unit.InstructorNote != null)

@@ -15,11 +15,17 @@ namespace Database.DataContexts
 			this.db = db;
 		}
 
-		public async Task<AdditionalScore> SetAdditionalScore(string courseId, Guid unitId, string userId, string scoringGroupId, int score, string instructorId)
+		/// <summary>
+		/// Returns new AdditionalScore and old score (or null if not exists)
+		/// </summary>
+		public async Task<(AdditionalScore, int?)> SetAdditionalScore(string courseId, Guid unitId, string userId, string scoringGroupId, int score, string instructorId)
 		{
+			int? oldScore = null;
 			using (var transaction = db.Database.BeginTransaction())
 			{
-				var scores = db.AdditionalScores.Where(s => s.CourseId == courseId && s.UnitId == unitId && s.UserId == userId && s.ScoringGroupId == scoringGroupId);
+				var scores = db.AdditionalScores.Where(s => s.CourseId == courseId && s.UnitId == unitId && s.UserId == userId && s.ScoringGroupId == scoringGroupId).ToList();
+				if (scores.Any())
+					oldScore = scores.First().Score;
 				db.AdditionalScores.RemoveRange(scores);
 
 				var additionalScore = new AdditionalScore
@@ -37,12 +43,11 @@ namespace Database.DataContexts
 				transaction.Commit();
 				await db.SaveChangesAsync();
 
-				return additionalScore;
+				return (additionalScore, oldScore);
 			}
 		}
 
 		/* Dictionary<(unitId, scoringGroupId), additionalScore> */
-
 		public Dictionary<Tuple<Guid, string>, int> GetAdditionalScoresForUser(string courseId, string userId)
 		{
 			return db.AdditionalScores

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Database.Models;
 using JetBrains.Annotations;
-using uLearn;
 using Ulearn.Common;
+using Ulearn.Core;
 
 namespace Database.DataContexts
 {
@@ -58,7 +58,8 @@ namespace Database.DataContexts
 		{
 			var submission = await userSolutionsRepo.AddUserExerciseSubmission(
 				courseId, slideId, code, null, null, watcher.UserId,
-				"uLearn", $"XQueue watcher {watcher.Name}"
+				"uLearn", $"XQueue watcher {watcher.Name}",
+				Language.CSharp
 			).ConfigureAwait(false);
 			db.XQueueExerciseSubmissions.Add(new XQueueExerciseSubmission
 			{

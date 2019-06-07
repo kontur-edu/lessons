@@ -1,3 +1,3 @@
 http://codemirror.net/index.html
 
-version 4.3
+version 5.38.0

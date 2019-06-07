@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
@@ -12,12 +13,14 @@ using Database.Models;
 using log4net;
 using Ulearn.Common;
 using Ulearn.Common.Extensions;
+using Z.EntityFramework.Plus;
 
 namespace Database.DataContexts
 {
 	public class NotificationsRepo
 	{
 		private const int maxNotificationsSendingFails = 15;
+		public static TimeSpan sendNotificationsDelayAfterCreating = TimeSpan.FromMinutes(1);
 
 		private readonly ILog log = LogManager.GetLogger(typeof(NotificationsRepo));
 
@@ -83,22 +86,12 @@ namespace Database.DataContexts
 
 		public async Task AddNotificationTransport(NotificationTransport transport)
 		{
-			using (var transaction = db.Database.BeginTransaction())
-			{
-				DeleteOldNotificationTransports(transport.GetType(), transport.UserId);
-				/*
-				if (transport is MailNotificationTransport)
-					DeleteOldNotificationTransports<MailNotificationTransport>(transport.UserId);
-				if (transport is TelegramNotificationTransport)
-					DeleteOldNotificationTransports<TelegramNotificationTransport>(transport.UserId);
-				*/
+			DeleteOldNotificationTransports(transport.GetType(), transport.UserId);
+			
+			transport.IsDeleted = false;
+			db.NotificationTransports.Add(transport);
 
-				transport.IsDeleted = false;
-				db.NotificationTransports.Add(transport);
-
-				await db.SaveChangesAsync().ConfigureAwait(false);
-				transaction.Commit();
-			}
+			await db.SaveChangesAsync();
 		}
 
 		public NotificationTransport FindNotificationTransport(int transportId)
@@ -169,10 +162,11 @@ namespace Database.DataContexts
 		}
 
 		// Dictionary<(notificationTransportId, NotificationType), NotificationTransportSettings>
-		public DefaultDictionary<Tuple<int, NotificationType>, NotificationTransportSettings> GetNotificationTransportsSettings(string courseId)
+		public DefaultDictionary<Tuple<int, NotificationType>, NotificationTransportSettings> GetNotificationTransportsSettings(string courseId, string userId)
 		{
 			return db.NotificationTransportSettings
-				.Where(s => s.CourseId == courseId)
+				.Include(s => s.NotificationTransport)
+				.Where(s => s.CourseId == courseId && s.NotificationTransport.UserId == userId)
 				.ToDictionary(s => Tuple.Create(s.NotificationTransportId, s.NotificationType), s => s)
 				.ToDefaultDictionary(() => null);
 		}
@@ -183,6 +177,20 @@ namespace Database.DataContexts
 			notification.InitiatedById = initiatedUserId;
 			notification.CourseId = courseId;
 			db.Notifications.Add(notification);
+
+			await db.SaveChangesAsync();
+		}
+		
+		public async Task RemoveNotifications(Guid courseVersionId)
+		{
+			// Cascade delete not work: multiple cascade paths
+			var forRemove = db.Notifications.OfType<UploadedPackageNotification>().Where(n => n.CourseVersionId == courseVersionId).Cast<AbstractPackageNotification>()
+				.Concat(db.Notifications.OfType<PublishedPackageNotification>().Where(n => n.CourseVersionId == courseVersionId)).ToList();
+
+			if (forRemove.Count == 0)
+				return;
+
+			db.Notifications.RemoveRange(forRemove);
 
 			await db.SaveChangesAsync();
 		}
@@ -231,7 +239,7 @@ namespace Database.DataContexts
 
 		public async Task CreateDeliveries()
 		{
-			var minuteAgo = DateTime.Now.Subtract(TimeSpan.FromMinutes(1));
+			var minuteAgo = DateTime.Now.Subtract(sendNotificationsDelayAfterCreating);
 			var notifications = db.Notifications.Where(
 				n => !n.AreDeliveriesCreated && n.CreateTime < minuteAgo
 			).OrderBy(n => n.Id).ToList();
@@ -276,12 +284,26 @@ namespace Database.DataContexts
 			if (recipientsIds.Count == 0)
 				return;
 
-			var transportsSettings = db.NotificationTransportSettings
-				.Include(s => s.NotificationTransport)
-				.Where(s => s.CourseId == notification.CourseId &&
-							s.NotificationType == notificationType &&
-							!s.NotificationTransport.IsDeleted &&
-							recipientsIds.Contains(s.NotificationTransport.UserId)).ToList();
+			if (recipientsIds.Count > 1000)
+			{
+				log.Warn($"Recipients list for notification is too big {notification.Id}: {recipientsIds.Count} user(s)");
+			}
+
+			var transportsSettings = recipientsIds.Count > 1000 ?
+				db.NotificationTransportSettings
+					.Include(s => s.NotificationTransport)
+					.Where(s => s.CourseId == notification.CourseId &&
+								s.NotificationType == notificationType &&
+								!s.NotificationTransport.IsDeleted)
+					.ToList()
+					.Where(s => recipientsIds.Contains(s.NotificationTransport.UserId))
+					.ToList()
+				: db.NotificationTransportSettings
+					.Include(s => s.NotificationTransport)
+					.Where(s => s.CourseId == notification.CourseId &&
+								s.NotificationType == notificationType &&
+								!s.NotificationTransport.IsDeleted &&
+								recipientsIds.Contains(s.NotificationTransport.UserId)).ToList();
 
 			var commonTransports = db.NotificationTransports.Where(t => t.UserId == null && t.IsEnabled).ToList();
 
@@ -311,7 +333,7 @@ namespace Database.DataContexts
 			else if (notification.IsNotificationForEveryone)
 			{
 				/* Add notification to all common transports */
-				/* It's used i.e. for new-commen- notification which should be sent to everyone in the course */
+				/* It's used i.e. for new-comment notification which should be sent to everyone in the course */
 				log.Info($"Notification #{notification.Id}. This notification type is sent to everyone, so add it to all common transports ({commonTransports.Count} transport(s)):");
 				foreach (var commonTransport in commonTransports)
 				{
@@ -430,9 +452,12 @@ namespace Database.DataContexts
 			return $"{secret}transport={transportId}&timestamp={timestamp}{secret}".CalculateMd5();
 		}
 
-		public List<T> FindNotifications<T>(Func<T, bool> func) where T : Notification
+		public List<T> FindNotifications<T>(Expression<Func<T, bool>> func, Expression<Func<T, object>> includePath=null) where T : Notification
 		{
-			return db.Notifications.OfType<T>().Where(func).ToList();
+			var query = db.Notifications.OfType<T>();
+			if (includePath != null)
+				query = query.Include(includePath);
+			return query.Where(func).ToList();
 		}
 
 		public IQueryable<NotificationDelivery> GetTransportDeliveries(NotificationTransport notificationTransport, DateTime from)

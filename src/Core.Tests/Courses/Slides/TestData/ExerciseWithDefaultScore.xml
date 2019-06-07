@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<slide.exercise xmlns="https://ulearn.me/schema/v2" title="Exercise With Default Score" id="14B7869B-44C8-4608-8D50-12CB3E9456E6">
+	<scoring codeReviewScore="10"/>
+	<exercise.file file="Main.cs">
+		<initialCode>Initial code</initialCode>
+		<solution>Solution</solution>
+	</exercise.file>
+</slide.exercise>

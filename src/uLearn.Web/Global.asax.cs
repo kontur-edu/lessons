@@ -12,10 +12,10 @@ namespace uLearn.Web
 		{
 			AreaRegistration.RegisterAllAreas();
 			GlobalConfiguration.Configure(WebApiConfig.Register);
+			UlearnLogger.ConfigureLogging();
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);
-			UlearnLogger.ConfigureLogging();
 
 			/* Disable identity checks for CSRF tokens.
 			 * See http://stackoverflow.com/questions/14970102/anti-forgery-token-is-meant-for-user-but-the-current-user-is-username for details

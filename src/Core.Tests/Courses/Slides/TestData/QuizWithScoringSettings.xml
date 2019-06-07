@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<slide.quiz xmlns="https://ulearn.me/schema/v2" id="792BAAC2-C82F-46B4-89DC-D8C37F7735E7" title="Quiz With Scoring Settings">
+	<scoring manualCheck="true" tries="10" group="ScoringGroup1" />
+</slide.quiz>

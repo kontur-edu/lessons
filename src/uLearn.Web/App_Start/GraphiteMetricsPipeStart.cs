@@ -10,18 +10,20 @@ namespace uLearn.Web
 {
 	public class GraphiteMetricsPipeStart
 	{
-		private static bool IsGraphiteSendingEnabled => !string.IsNullOrEmpty(WebConfigurationManager.ConnectionStrings["statsd"]?.ConnectionString);
-
 		public static void PreStart()
 		{
-			if (!IsGraphiteSendingEnabled)
+			var connectionString = WebConfigurationManager.ConnectionStrings["statsd"]?.ConnectionString;
+			var isGraphiteSendingEnabled = !string.IsNullOrEmpty(connectionString);
+			
+			if (!isGraphiteSendingEnabled)
 				return;
-
+			
 			// Make sure MetricsPipe handles BeginRequest and EndRequest
 			DynamicModuleUtility.RegisterModule(typeof(MetricsPipeStartupModule));
 
 			MetricsPipeStartupModule.Settings.ReportRequestTime = true;
-			MetricsPipeStartupModule.Settings.RequestTimePrefix = GraphiteMetricSender.BuildKey("web", "request.time");
+			// The prefix is added elsewhere. If you specify here, there will be duplication
+			MetricsPipeStartupModule.Settings.RequestTimePrefix = MetricSender.BuildKey(null, "web", "request.time");
 		}
 	}
 }

@@ -1,9 +1,0 @@
-﻿Slides[0] = Title: S010_TextBlocks, Id: 108c89d9-36f0-45e3-bbee-b93ac971063f, MaxScore: 0
-Slides[1] = Title: S011_GoodTeX, Id: 118c89d9-36f0-45e3-bbee-b93ac971063f, MaxScore: 0
-Slides[2] = Title: S012_WrongTeX, Id: 128c89d9-36f0-45e3-bbee-b93ac971063f, MaxScore: 0
-Slides[3] = Title: S013_VideoBlock, Id: 138c89d9-36f0-45e3-bbee-b93ac971063f, MaxScore: 0
-Slides[4] = Title: S014_CodeBlock, Id: 148c89d9-36f0-45e3-bbee-b93ac971063f, MaxScore: 0
-Slides[5] = ExerciseSlide: Exercise: public static void Print()
-{
-}, Hints: 
-Slides[6] = Title: Шаблонный тест, Id: 42e607b8-e7d8-4d96-b3b6-b0cded8ba8a8, MaxScore: 3

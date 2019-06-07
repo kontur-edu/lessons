@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Xml.Serialization;
 using Ulearn.Common.Extensions;
+using Ulearn.Core;
 
 namespace uLearn.CourseTool
 {

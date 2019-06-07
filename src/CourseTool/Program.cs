@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using CommandLine;
 using uLearn.CourseTool.CmdLineOptions;
 
@@ -9,7 +9,20 @@ namespace uLearn.CourseTool
 		public static int Main(string[] args)
 		{
 			return Parser.Default
-				.ParseArguments<OlxConvertFromUlearnOptions, OlxPatchFromUlearnOptions, OlxSquashChaptersOptions, OlxDesquashChaptersOptions, OlxGcOptions, OlxUnpackOptions, OlxPackOptions, OlxSetChapterStartDatesOptions, OlxPatchVideoOptions, MonitorOptions, ULearnOptions, TestCourseOptions>(args)
+				.ParseArguments<
+					OlxConvertFromUlearnOptions, 
+					OlxPatchFromUlearnOptions, 
+					OlxSquashChaptersOptions, OlxDesquashChaptersOptions, 
+					OlxGcOptions, 
+					OlxUnpackTarGzOptions, OlxUnpackTarOptions, 
+					OlxPackTarGzOptions, OlxPackTarOptions,
+					OlxSetChapterStartDatesOptions, 
+					OlxPatchVideoOptions, 
+					MonitorOptions, 
+					ULearnOptions, 
+					TestCourseOptions,
+					GenerateEmptyVideoAnnotations
+				>(args)
 				.MapResult(
 					(AbstractOptions options) => ExecuteOption(options),
 					_ => -1

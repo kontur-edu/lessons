@@ -6,7 +6,8 @@ using Database.Models;
 
 namespace Database.Repos
 {
-	public class AdditionalScoresRepo
+	/* TODO (andgein): This repo is not fully migrated to .NET Core and EF Core */
+	public class AdditionalScoresRepo : IAdditionalScoresRepo
 	{
 		private readonly UlearnDb db;
 

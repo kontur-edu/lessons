@@ -6,6 +6,7 @@ using Kontur.Spam.Client;
 using log4net;
 using Metrics;
 using Ulearn.Common.Extensions;
+using Ulearn.Core.Configuration;
 
 namespace Notifications
 {
@@ -13,7 +14,7 @@ namespace Notifications
 	{
 		private static readonly ILog log = LogManager.GetLogger(typeof(KonturSpamEmailSender));
 
-		private readonly GraphiteMetricSender metricSender;
+		private readonly MetricSender metricSender;
 
 		private readonly ISpamClient client;
 		private readonly string channelId;
@@ -27,7 +28,7 @@ namespace Notifications
 			channelId = ConfigurationManager.AppSettings["ulearn.spam.channels.notifications"] ?? "";
 			templateId = ConfigurationManager.AppSettings["ulearn.spam.templates.withButton"];
 
-			metricSender = new GraphiteMetricSender("notifications");
+			metricSender = new MetricSender(ApplicationConfiguration.Read<UlearnConfiguration>().GraphiteServiceName);
 
 			try
 			{
@@ -83,7 +84,7 @@ namespace Notifications
 			}
 			catch (Exception e)
 			{
-				log.Error($"Can\'t send message via Spam.API to {to} with subject {subject}", e);
+				log.Warn($"Can\'t send message via Spam.API to {to} with subject {subject}", e);
 				metricSender.SendCount("send_email.fail");
 				metricSender.SendCount($"send_email.fail.to.{recipientEmailMetricName}");
 				throw;

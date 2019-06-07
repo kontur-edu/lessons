@@ -9,6 +9,7 @@ namespace uLearn.Web.Models
 	{
 		public List<UserModel> Users { get; set; }
 		public Dictionary<string, string> UsersGroups { get; set; }
+		public Dictionary<string, string> UsersArchivedGroups { get; set; }
 		public bool CanToggleRoles { get; set; }
 		public bool ShowDangerEntities { get; set; }
 		public bool CanViewAndToggleCourseAccesses { get; set; }

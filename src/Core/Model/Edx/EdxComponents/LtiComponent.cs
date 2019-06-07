@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Xml.Serialization;
 
-namespace uLearn.Model.Edx.EdxComponents
+namespace Ulearn.Core.Model.Edx.EdxComponents
 {
 	[XmlRoot("lti")]
 	public class LtiComponent : Component

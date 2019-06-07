@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Database.Models
 {
@@ -31,5 +30,7 @@ namespace Database.Models
 		public int AttemptsCount { get; set; }
 		public bool IsSkipped { get; set; }
 		public bool IsPassed { get; set; }
+		
+		public string IpAddress { get; set; }
 	}
 }

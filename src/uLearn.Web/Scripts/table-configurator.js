@@ -1,4 +1,6 @@
-﻿$(document).ready(function() {
+﻿window.documentReadyFunctions = window.documentReadyFunctions || [];
+
+window.documentReadyFunctions.push(function() {
 	$('.tablesorter[data-autoload="true"]').each(function() {
 		var $self = $(this);
 		$self.tablesorter({
@@ -18,7 +20,7 @@
 
 			widgetOptions: {
 				columns: ["primary", "secondary", "tertiary"],
-				stickyHeaders_offset: "#header",
+				stickyHeaders_offset: ".header",
 			},
 
 			textAttribute: 'data-sort-value'

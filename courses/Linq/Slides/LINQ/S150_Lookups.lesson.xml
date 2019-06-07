@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<slide xmlns="https://ulearn.me/schema/v2" title="ToDictionary и ToLookup" id="1998bb06-8008-4f53-bed8-838fc20c6067">
+  <markdown>
+Нередко встречается необходимость, сгруппировав элементы, 
+преобразовать их в структуру данных для поиска группы по ключу группировки.
+
+Это можно было бы сделать с помощью такой комбинации:</markdown>
+  <includeCode>
+    <display onlyBody="true">Test</display>
+  </includeCode>
+  <markdown>Ровно того же эффекта можно добиться и без цикла при помощи `LINQ`-метода `ToDictionary`:
+
+`IDictionary&lt;K, V&gt; ToDictionary(this IEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector, Func&lt;T, V&gt; valueSelector)`</markdown>
+  <includeCode>
+    <display onlyBody="true">TestName</display>
+  </includeCode>
+  <markdown>Но еще проще воспользоваться специальным методом `ToLookup`:
+
+* `ILookup&lt;K, T&gt; ToLookup(this IEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector)`
+* `ILookup&lt;K, V&gt; ToLookup(this IEnumerable&lt;T&gt; items, Func&lt;T, K&gt; keySelector, Func&lt;T, V&gt; valueSelector)`</markdown>
+  <includeCode>
+    <display onlyBody="true">ToLookupSample</display>
+  </includeCode>
+  <defaultIncludeCodeFile>_Lookups.cs</defaultIncludeCodeFile>
+</slide>

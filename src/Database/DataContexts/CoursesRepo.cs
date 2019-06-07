@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Database.Extensions;
 using Database.Models;
+using JetBrains.Annotations;
 using Ulearn.Common;
 using Ulearn.Common.Extensions;
 
@@ -35,7 +36,8 @@ namespace Database.DataContexts
 			return db.CourseVersions.Where(v => v.CourseId == courseId).OrderByDescending(v => v.LoadingTime);
 		}
 
-		public async Task<CourseVersion> AddCourseVersion(string courseId, Guid versionId, string authorId)
+		public async Task<CourseVersion> AddCourseVersion(string courseId, Guid versionId, string authorId,
+			string pathToCourseXml, string repoUrl, string commitHash, string description)
 		{
 			var courseVersion = new CourseVersion
 			{
@@ -44,6 +46,10 @@ namespace Database.DataContexts
 				LoadingTime = DateTime.Now,
 				PublishTime = null,
 				AuthorId = authorId,
+				PathToCourseXml = pathToCourseXml,
+				CommitHash = commitHash,
+				Description = description,
+				RepoUrl = repoUrl
 			};
 			db.CourseVersions.Add(courseVersion);
 			await db.SaveChangesAsync();
@@ -134,6 +140,73 @@ namespace Database.DataContexts
 		public bool HasCourseAccess(string userId, string courseId, CourseAccessType accessType)
 		{
 			return db.CourseAccesses.Any(a => a.CourseId == courseId && a.UserId == userId && a.AccessType == accessType && a.IsEnabled);
+		}
+		
+		// Add new and remove old course file
+		public async Task AddCourseFile(string courseId, Guid versionId, byte[] content)
+		{
+			var file = new CourseFile
+			{
+				CourseId = courseId,
+				CourseVersionId = versionId,
+				File = content
+			};
+			db.CourseFiles.RemoveRange(db.CourseFiles.Where(f => f.CourseId.Equals(courseId, StringComparison.OrdinalIgnoreCase)));
+			db.CourseFiles.Add(file);
+			await db.SaveChangesAsync();
+		}
+
+		[CanBeNull]
+		public CourseFile GetCourseFile(string courseId)
+		{
+			return db.CourseFiles.FirstOrDefault(f => f.CourseId.Equals(courseId, StringComparison.OrdinalIgnoreCase));
+		}
+		
+		public List<CourseFile> GetCourseFiles(IEnumerable<string> existingOnDiskCourseIds)
+		{
+			return db.CourseFiles.Where(a => !existingOnDiskCourseIds.Contains(a.CourseId)).ToList();
+		}
+
+		[CanBeNull]
+		public CourseGit GetCourseRepoSettings(string courseId)
+		{
+			var data = db.CourseGitRepos.Where(v => v.CourseId == courseId).OrderByDescending(v => v.CreateTime).FirstOrDefault();
+			if (data?.RepoUrl == null)
+				return null;
+			return data;
+		}
+		
+		public async Task SetCourseRepoSettings(CourseGit courseGit)
+		{
+			courseGit.CreateTime = DateTime.Now;
+			db.CourseGitRepos.Add(courseGit);
+			await db.SaveChangesAsync();
+		}
+
+		public async Task RemoveCourseRepoSettings(string courseId)
+		{
+			var courseGit = new CourseGit { CourseId = courseId };
+			await SetCourseRepoSettings(courseGit).ConfigureAwait(false);
+		}
+
+		public List<CourseGit> FindCoursesByRepoUrl(string repoUrl)
+		{
+			return db.CourseGitRepos.GroupBy(r => r.CourseId).Select(g => g.OrderByDescending(r => r.CreateTime).FirstOrDefault()).Where(r => r.RepoUrl == repoUrl).ToList();
+		}
+
+		public async Task UpdateKeysByRepoUrl(string repoUrl, string publicKey, string privateKey)
+		{
+			using (var transaction = db.Database.BeginTransaction())
+			{
+				var repos = FindCoursesByRepoUrl(repoUrl);
+				foreach (var repo in repos)
+				{
+					repo.PublicKey = publicKey;
+					repo.PrivateKey = privateKey;
+					await SetCourseRepoSettings(repo).ConfigureAwait(false);
+				}
+				transaction.Commit();
+			}
 		}
 	}
 }

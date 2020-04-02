@@ -7,6 +7,7 @@ import Tooltip from "@skbkontur/react-ui/Tooltip"
 import Loader from "@skbkontur/react-ui/Loader"
 import DropdownMenu from "@skbkontur/react-ui/DropdownMenu"
 import DropdownContainer from "@skbkontur/react-ui/components/DropdownContainer/DropdownContainer"
+import HeaderComponentErrorBoundary from "./Error/HeaderComponentErrorBoundary";
 import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { findDOMNode } from "react-dom"
@@ -153,9 +154,13 @@ class Header extends Component {
 
 		return (
 			<div>
-				{ this.renderDefaultUserRoleMenu() }
-				{ this.renderPhoneUserRoleMenu() }
-				<Menu account={ account }/>
+				<HeaderComponentErrorBoundary>
+					{ this.renderDefaultUserRoleMenu() }
+					{ this.renderPhoneUserRoleMenu() }
+				</HeaderComponentErrorBoundary>
+				<HeaderComponentErrorBoundary className={ styles["header__menu"] }>
+					<Menu account={ account }/>
+				</HeaderComponentErrorBoundary>
 			</div>
 		)
 	}
@@ -287,6 +292,7 @@ class AbstractMyCoursesMenu extends Component {
 
 class SysAdminMenu extends AbstractMyCoursesMenu {
 	static menuItems(courseIds, courseById) {
+		throw new Error();
 		return [
 			<MenuItem href="/Account/List?role=SysAdmin" component={ LinkComponent } key="Users">
 				Пользователи
@@ -573,6 +579,7 @@ Menu = withRouter(Menu);
 
 class NotificationsMenu extends Component {
 	constructor(props) {
+		throw new Error();
 		super(props);
 		this.onClick = this.onClick.bind(this);
 

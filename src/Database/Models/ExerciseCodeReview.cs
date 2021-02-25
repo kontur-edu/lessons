@@ -13,12 +13,12 @@ namespace Database.Models
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
-		[Index("IDX_ExerciseCodeReview_ByManualExerciseChecking")]
+		[Index("ManualExerciseChecking")]
 		public int? ExerciseCheckingId { get; set; }
 
 		public virtual ManualExerciseChecking ExerciseChecking { get; set; }
 
-		[Index("IDX_ExerciseCodeReview_BySubmission")]
+		[Index("Submission")]
 		/* This field is used only for reviews not attached to specific ManualExerciseChecking */
 		public int? SubmissionId { get; set; }
 

@@ -32,6 +32,8 @@ namespace Database.DataContexts
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+			
+			modelBuilder.HasDefaultSchema("public");
 
 			/* See https://weblogs.asp.net/dixin/entityframework.functions
 			 * for detailed description about working with stored functions and procedures */

@@ -6,21 +6,23 @@ namespace Database.Models
 {
 	public class FeedViewTimestamp
 	{
+		private const string User_Transport = "User_Transport";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
 		[StringLength(64)]
-		[Index("IDX_FeedUpdateTimestamp_ByUser")]
-		[Index("IDX_FeedUpdateTimestamp_ByUserAndTransport", 1)]
+		[Index("User")]
+		[Index(User_Transport, 1)]
 		public string UserId { get; set; }
 
-		[Index("IDX_FeedUpdateTimestamp_ByUserAndTransport", 2)]
+		[Index(User_Transport, 2)]
 		public int? TransportId { get; set; }
 
 		public virtual NotificationTransport Transport { get; set; }
 
-		[Index("IDX_FeedUpdateTimestamp_ByTimestamp")]
+		[Index("Timestamp")]
 		public DateTime Timestamp { get; set; }
 	}
 }

@@ -104,9 +104,8 @@ namespace Database.DataContexts
 		}
 
 		private const string nameSpace = nameof(GradersRepo);
-		private const string dbo = nameof(dbo);
 
-		[TableValuedFunction(nameof(GetGraderSolutionByClientUserId), nameSpace, Schema = dbo)]
+		[TableValuedFunction(nameof(GetGraderSolutionByClientUserId), nameSpace)]
 		// ReSharper disable once MemberCanBePrivate.Global
 		public IQueryable<SubmissionIdWrapper> GetGraderSolutionByClientUserId(string clientUserId)
 		{

@@ -124,6 +124,10 @@
       <HintPath>..\packages\EntityFramework.6.4.4\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="EntityFramework6.Npgsql, Version=6.4.1.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7">
+      <HintPath>..\packages\EntityFramework6.Npgsql.6.4.1\lib\net461\EntityFramework6.Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EPPlus, Version=5.5.4.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1">
       <HintPath>..\packages\EPPlus.5.5.4\lib\net45\EPPlus.dll</HintPath>
       <Private>True</Private>
@@ -437,6 +441,10 @@
     <Reference Include="NHunspell, Version=1.2.5554.16953, Culture=neutral, PublicKeyToken=1ac793ea843b4366, processorArchitecture=MSIL">
       <HintPath>..\packages\NHunspell.1.2.5554.16953\lib\net\NHunspell.dll</HintPath>
     </Reference>
+    <Reference Include="Npgsql, Version=5.0.3.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7">
+      <HintPath>..\packages\Npgsql.5.0.3\lib\netstandard2.0\Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework, Version=3.10.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
       <HintPath>..\packages\NUnit.3.10.0\lib\net45\nunit.framework.dll</HintPath>
       <Private>True</Private>
@@ -582,6 +590,10 @@
     </Reference>
     <Reference Include="System.Text.Json, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
       <HintPath>..\packages\System.Text.Json.5.0.0\lib\net461\System.Text.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Threading.Channels, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Threading.Channels.4.7.0\lib\netstandard2.0\System.Threading.Channels.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Threading.Tasks" />

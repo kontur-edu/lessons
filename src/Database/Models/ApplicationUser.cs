@@ -28,7 +28,7 @@ namespace Database.Models
 		public bool HasAvatar => !string.IsNullOrEmpty(AvatarUrl);
 
 		// TelegramChatId is null if telegram is not connected to the profile
-		[Index("IDX_ApplicationUser_ByTelegramChatId")]
+		[Index("TelegramChat")]
 		public long? TelegramChatId { get; set; }
 
 		public bool HasTelegram => TelegramChatId != null;
@@ -43,7 +43,7 @@ namespace Database.Models
 
 		public Gender? Gender { get; set; }
 
-		[Index("IDX_ApplicationUser_ByIsDeleted")]
+		[Index("IsDeleted")]
 		public bool IsDeleted { get; set; }
 
 		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]

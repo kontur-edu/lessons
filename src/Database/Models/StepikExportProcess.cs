@@ -32,7 +32,7 @@ namespace Database.Models
 
 		[Required]
 		[StringLength(64)]
-		[Index("IDX_StepikExportProcess_ByOwner")]
+		[Index("Owner")]
 		public string OwnerId { get; set; }
 
 		public virtual ApplicationUser Owner { get; set; }

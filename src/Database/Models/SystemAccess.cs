@@ -6,14 +6,16 @@ namespace Database.Models
 {
 	public class SystemAccess
 	{
+		private const string User_IsEnabled = "User_IsEnabled";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
 		[Required]
 		[StringLength(64)]
-		[Index("IDX_SystemAccess_ByUser")]
-		[Index("IDX_SystemAccess_ByUserAndIsEnabled", 1)]
+		[Index("User")]
+		[Index(User_IsEnabled, 1)]
 		public string UserId { get; set; }
 
 		public virtual ApplicationUser User { get; set; }
@@ -27,12 +29,12 @@ namespace Database.Models
 		[Required]
 		public SystemAccessType AccessType { get; set; }
 
-		[Index("IDX_SystemAccess_ByGrantTime")]
+		[Index("GrantTime")]
 		public DateTime GrantTime { get; set; }
 
 		[Required]
-		[Index("IDX_SystemAccess_ByIsEnabled", 1)]
-		[Index("IDX_SystemAccess_ByUserAndIsEnabled", 2)]
+		[Index("IsEnabled", 1)]
+		[Index(User_IsEnabled, 2)]
 		public bool IsEnabled { get; set; }
 	}
 

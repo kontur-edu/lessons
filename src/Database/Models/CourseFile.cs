@@ -13,7 +13,7 @@ namespace Database.Models
 		[StringLength(100)]
 		public string CourseId { get; set; }
 
-		[Index("IX_CourseFiles_CourseVersionId", 1)]
+		[Index("CourseVersion", 1)]
 		public Guid CourseVersionId { get; set; }
 
 		public virtual CourseVersion CourseVersion { get; set; }

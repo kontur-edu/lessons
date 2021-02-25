@@ -6,23 +6,26 @@ namespace Database.Models
 {
 	public class StepikExportSlideAndStepMap
 	{
+		private const string UlearnCourse_StepikCourse = "UlearnCourse_StepikCourse";
+		private const string UlearnCourse_Slide = "UlearnCourse_Slide";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_StepikExportSlideAndStepMap_ByUlearnCourseId")]
-		[Index("IDX_StepikExportSlideAndStepMap_ByUlearnCourseIdAndStepikCourseId", 1)]
-		[Index("IDX_StepikExportSlideAndStepMap_ByUlearnCourseIdAndSlideId", 1)]
+		[Index("UlearnCourseId")]
+		[Index(UlearnCourse_StepikCourse, 1)]
+		[Index(UlearnCourse_Slide, 1)]
 		public string UlearnCourseId { get; set; }
 
 		[Required]
-		[Index("IDX_StepikExportSlideAndStepMap_ByUlearnCourseIdAndStepikCourseId", 2)]
+		[Index(UlearnCourse_StepikCourse, 2)]
 		public int StepikCourseId { get; set; }
 
 		[Required]
-		[Index("IDX_StepikExportSlideAndStepMap_ByUlearnCourseIdAndSlideId", 2)]
+		[Index(UlearnCourse_Slide, 2)]
 		public Guid SlideId { get; set; }
 
 		[Required]

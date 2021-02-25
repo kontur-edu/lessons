@@ -12,7 +12,7 @@ namespace Database.Models
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_CertificateTemplate_ByCourse")]
+		[Index("Course")]
 		public string CourseId { get; set; }
 
 		[Required]

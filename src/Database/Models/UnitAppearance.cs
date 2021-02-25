@@ -6,12 +6,14 @@ namespace Database.Models
 {
 	public class UnitAppearance
 	{
+		private const string Course_Time = "Course_Time";
+
 		[Key]
 		public int Id { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("CourseAndTime", 1)]
+		[Index(Course_Time, 1)]
 		public string CourseId { get; set; }
 
 		[Required]
@@ -21,7 +23,7 @@ namespace Database.Models
 		public string UserName { get; set; }
 
 		[Required]
-		[Index("CourseAndTime", 2)]
+		[Index(Course_Time, 2)]
 		public DateTime PublishTime { get; set; }
 	}
 }

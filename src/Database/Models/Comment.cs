@@ -7,6 +7,8 @@ namespace Database.Models
 {
 	public class Comment
 	{
+		private const string Author_PublishTime = "Author_PublishTime";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
@@ -16,18 +18,18 @@ namespace Database.Models
 		public string CourseId { get; set; }
 
 		[Required]
-		[Index("IDX_Comment_CommentBySlide")]
+		[Index("Slide")]
 		public Guid SlideId { get; set; }
 
 		[Required]
 		[StringLength(64)]
-		[Index("IDX_Comment_ByAuthorAndPublishTime", 1)]
+		[Index(Author_PublishTime, 1)]
 		public string AuthorId { get; set; }
 
 		public virtual ApplicationUser Author { get; set; }
 
 		[Required]
-		[Index("IDX_Comment_ByAuthorAndPublishTime", 2)]
+		[Index(Author_PublishTime, 2)]
 		public DateTime PublishTime { get; set; }
 
 		[Required(AllowEmptyStrings = false)]

@@ -6,20 +6,23 @@ namespace Database.Models
 {
 	public class CourseVersion
 	{
+		private const string Course_PublishTime = "Course_PublishTime";
+		private const string Course_LoadingTime = "Course_LoadingTime";
+
 		[Key]
 		public Guid Id { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_CourseVersion_ByCourseAndPublishTime", 1)]
-		[Index("IDX_CourseVersion_ByCourseAndLoadingTime", 1)]
+		[Index(Course_PublishTime, 1)]
+		[Index(Course_LoadingTime, 1)]
 		public string CourseId { get; set; }
 
 		[Required]
-		[Index("IDX_CourseVersion_ByCourseAndLoadingTime", 2)]
+		[Index(Course_LoadingTime, 2)]
 		public DateTime LoadingTime { get; set; }
 
-		[Index("IDX_CourseVersion_ByCourseAndPublishTime", 2)]
+		[Index(Course_PublishTime, 2)]
 		public DateTime? PublishTime { get; set; }
 
 		[Required]

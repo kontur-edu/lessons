@@ -12,7 +12,7 @@ namespace Database.Models
 		public string ArchiveName { get; set; }
 
 		[Required]
-		[Index("IDX_CertificateTemplateArchives_CertificateTemplateId")]
+		[Index("CertificateTemplate")]
 		public Guid CertificateTemplateId { get; set; }
 
 		[Required]

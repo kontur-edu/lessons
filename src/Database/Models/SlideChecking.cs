@@ -12,30 +12,35 @@ namespace Database.Models
 {
 	public class AbstractSlideChecking : ITimedSlideAction
 	{
+		private const string Course_Slide = "Course_Slide";
+		private const string Course_Slide_Time = "Course_Slide_Time";
+		protected const string Course_Slide_User = "Course_Slide_User";
+		private const string Course_User = "Course_User";
+
 		public virtual int Id { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlide", 1)]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlideAndTime", 1)]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlideAndUser", 1)]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingByCourseAndUser", 1)]
+		[Index(Course_Slide, 1)]
+		[Index(Course_Slide_Time, 1)]
+		[Index(Course_Slide_User, 1)]
+		[Index(Course_User, 1)]
 		public string CourseId { get; set; }
 
 		[Required]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlide", 2)]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlideAndTime", 2)]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlideAndUser", 2)]
+		[Index(Course_Slide, 2)]
+		[Index(Course_Slide_Time, 2)]
+		[Index(Course_Slide_User, 2)]
 		public Guid SlideId { get; set; }
 
 		[Required]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlideAndTime", 3)]
+		[Index(Course_Slide_Time, 3)]
 		public DateTime Timestamp { get; set; }
 
 		[Required]
 		[StringLength(64)]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlideAndUser", 3)]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingByCourseAndUser", 2)]
+		[Index(Course_Slide_User, 3)]
+		[Index(Course_User, 2)]
 		public string UserId { get; set; }
 
 		public virtual ApplicationUser User { get; set; }
@@ -97,7 +102,7 @@ namespace Database.Models
 		public string DisplayName { get; set; }
 
 		[Required]
-		[Index("IDX_AutomaticExerciseChecking_ByIsRightanswer")]
+		[Index("IsRightanswer")]
 		public bool IsRightAnswer { get; set; }
 
 		[Required]
@@ -149,7 +154,7 @@ namespace Database.Models
 		public virtual UserExerciseSubmission Submission { get; set; }
 
 		[Required]
-		[Index("IDX_AbstractSlideChecking_AbstractSlideCheckingBySlideAndUser", 4)]
+		[Index(Course_Slide_User, 4)]
 		// Действует, если стоит хотя бы у одной проверки. Если снимается у одной проверки, снимается у всех.
 		public bool ProhibitFurtherManualCheckings { get; set; }
 

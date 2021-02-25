@@ -14,7 +14,7 @@ namespace Database.Models
 
 		[Required]
 		[StringLength(64)]
-		[Index("IDX_LtiConsumer_Key")]
+		[Index("Key")]
 		public string Key { get; set; }
 
 		[Required]

@@ -9,6 +9,12 @@ namespace Database.Models
 {
 	public class UserExerciseSubmission : ITimedSlideAction
 	{
+		private const string Course_Slide_User = "Course_Slide_User";
+		private const string Course_Slide = "Course_Slide";
+		private const string Course_Slide_Time = "Course_Slide_Time";
+		private const string Course_IsRightAnswer = "Course_IsRightAnswer";
+		private const string Course_Slide_IsRightAnswer = "Course_Slide_IsRightAnswer";
+
 		[Required]
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -16,30 +22,30 @@ namespace Database.Models
 
 		[Required]
 		[StringLength(40)]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndUser", 3)]
+		[Index(Course_Slide_User, 3)]
 		public string UserId { get; set; }
 
 		public virtual ApplicationUser User { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndUser", 1)]
-		[Index("IDX_UserExerciseSubmissions_ByCourseAndSlide", 1)]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndTime", 1)]
-		[Index("IDX_UserExerciseSubmissions_ByCourseAndIsRightAnswer", 1)]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndIsRightAnswer", 1)]
+		[Index(Course_Slide_User, 1)]
+		[Index(Course_Slide, 1)]
+		[Index(Course_Slide_Time, 1)]
+		[Index(Course_IsRightAnswer, 1)]
+		[Index(Course_Slide_IsRightAnswer, 1)]
 		public string CourseId { get; set; }
 
 		[Required]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndUser", 2)]
-		[Index("IDX_UserExerciseSubmissions_ByCourseAndSlide", 2)]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndTime", 2)]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndIsRightAnswer", 2)]
+		[Index(Course_Slide_User, 2)]
+		[Index(Course_Slide, 2)]
+		[Index(Course_Slide_Time, 2)]
+		[Index(Course_Slide_IsRightAnswer, 2)]
 		public Guid SlideId { get; set; }
 
 		[Required]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndTime", 3)]
-		[Index("IDX_UserExerciseSubmissions_ByTime", 1)]
+		[Index(Course_Slide_Time, 3)]
+		[Index("Time")]
 		public DateTime Timestamp { get; set; }
 
 		[Required]
@@ -57,22 +63,22 @@ namespace Database.Models
 
 		public virtual AutomaticExerciseChecking AutomaticChecking { get; set; }
 
-		[Index("IDX_UserExerciseSubmissions_ByCourseAndIsRightAnswer", 2)]
-		[Index("IDX_UserExerciseSubmissions_BySlideAndIsRightAnswer", 3)]
-		[Index("IDX_UserExerciseSubmissions_ByIsRightAnswer")]
+		[Index(Course_IsRightAnswer, 2)]
+		[Index(Course_Slide_IsRightAnswer, 3)]
+		[Index("IsRightAnswer")]
 		public bool AutomaticCheckingIsRightAnswer { get; set; }
 
-		[Index("IDX_UserExerciseSubmissions_ByLanguage")]
+		[Index("Language")]
 		public Language Language { get; set; }
 
 		[StringLength(40)]
-		[Index("IDX_UserExerciseSubmissions_BySandbox")]
+		[Index("Sandbox")]
 		public string Sandbox { get; set; } // null if csharp sandbox
 
 		public virtual IList<ManualExerciseChecking> ManualCheckings { get; set; }
 
 		[Obsolete] // YT: ULEARN-217; Используй AntiPlagiarism.Web.Database.Models.Submission.ClientSubmissionId
-		[Index("IDX_UserExerciseSubmission_ByAntiPlagiarismSubmissionId")]
+		[Index("AntiPlagiarismSubmission")]
 		public int? AntiPlagiarismSubmissionId { get; set; }
 
 		public virtual IList<ExerciseCodeReview> Reviews { get; set; }

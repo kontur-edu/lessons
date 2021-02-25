@@ -5,21 +5,23 @@ namespace Database.Models
 {
 	public class UserQuizAnswer
 	{
+		private const string Submission_Block = "Submission_Block";
+
 		[Required]
 		[Key]
 		public int Id { get; set; }
 
-		[Index("IDX_UserQuizAnswer_BySubmissionAndBlock", 1)]
+		[Index(Submission_Block, 1)]
 		public int SubmissionId { get; set; }
 
 		public virtual UserQuizSubmission Submission { get; set; }
 
 		[StringLength(64)]
-		[Index("IDX_UserQuizAnswer_BySubmissionAndBlock", 2)]
+		[Index(Submission_Block, 2)]
 		public string BlockId { get; set; }
 
 		[StringLength(64)]
-		[Index("IDX_UserQuizAnswer_ByItem")]
+		[Index("Item")]
 		public string ItemId { get; set; }
 
 		[StringLength(8192)]

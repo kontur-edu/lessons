@@ -6,6 +6,10 @@ namespace Database.Models
 {
 	public class Visit : ITimedSlideAction
 	{
+		private const string Slide_User = "Slide_User";
+		private const string Course_Slide_User = "Course_Slide_User";
+		private const string Slide_Time = "Slide_Time";
+
 		[Key]
 		public int Id { get; set; }
 
@@ -13,24 +17,24 @@ namespace Database.Models
 
 		[StringLength(64)]
 		[Required]
-		[Index("IDX_Visits_BySlideAndUser", 1)]
-		[Index("IDX_Visits_ByCourseSlideAndUser", 3)]
+		[Index(Slide_User, 1)]
+		[Index(Course_Slide_User, 3)]
 		public string UserId { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_Visits_ByCourseSlideAndUser", 1)]
+		[Index(Course_Slide_User, 1)]
 		public string CourseId { get; set; }
 
 		[Required]
-		[Index("IDX_Visits_BySlideAndUser", 2)]
-		[Index("IDX_Visits_BySlideAndTime", 1)]
-		[Index("IDX_Visits_ByCourseSlideAndUser", 2)]
+		[Index(Slide_User, 2)]
+		[Index(Slide_Time, 1)]
+		[Index(Course_Slide_User, 2)]
 		public Guid SlideId { get; set; }
 
 		///<summary>Первый заход на слайд</summary>
 		[Required]
-		[Index("IDX_Visits_BySlideAndTime", 2)]
+		[Index(Slide_Time, 2)]
 		public DateTime Timestamp { get; set; }
 
 		public int Score { get; set; }

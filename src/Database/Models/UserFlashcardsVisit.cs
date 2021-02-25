@@ -6,27 +6,29 @@ namespace Database.Models
 {
 	public class UserFlashcardsVisit
 	{
+		private const string User_Course_Unit_Flashcard = "User_Course_Unit_Flashcard";
+
 		[Key]
 		public int Id { get; set; }
 
 		[Required]
-		[Index("IDX_UserFlashcardsVisits_ByUserIdAndCourseIdAndUnitIdAndFlashcardId", 1, IsUnique = false)]
+		[Index(User_Course_Unit_Flashcard, 1, IsUnique = false)]
 		public string UserId { get; set; }
 
 		public virtual ApplicationUser User { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_UserFlashcardsVisits_ByUserIdAndCourseIdAndUnitIdAndFlashcardId", 2, IsUnique = false)]
+		[Index(User_Course_Unit_Flashcard, 2, IsUnique = false)]
 		public string CourseId { get; set; }
 
 		[Required]
-		[Index("IDX_UserFlashcardsVisits_ByUserIdAndCourseIdAndUnitIdAndFlashcardId", 3, IsUnique = false)]
+		[Index(User_Course_Unit_Flashcard, 3, IsUnique = false)]
 		public Guid UnitId { get; set; }
 
 		[Required]
 		[StringLength(64)]
-		[Index("IDX_UserFlashcardsVisits_ByUserIdAndCourseIdAndUnitIdAndFlashcardId", 4, IsUnique = false)]
+		[Index(User_Course_Unit_Flashcard, 4, IsUnique = false)]
 		public string FlashcardId { get; set; }
 
 		[Required]

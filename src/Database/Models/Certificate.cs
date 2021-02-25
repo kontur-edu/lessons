@@ -10,13 +10,13 @@ namespace Database.Models
 		public Guid Id { get; set; }
 
 		[Required]
-		[Index("IDX_Certificate_ByTemplate")]
+		[Index("Template")]
 		public Guid TemplateId { get; set; }
 
 		public virtual CertificateTemplate Template { get; set; }
 
 		[Required]
-		[Index("IDX_Certificate_ByUser")]
+		[Index("User")]
 		[StringLength(64)]
 		public string UserId { get; set; }
 

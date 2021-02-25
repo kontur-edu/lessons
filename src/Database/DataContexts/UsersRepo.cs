@@ -124,9 +124,8 @@ namespace Database.DataContexts
 		}
 
 		private const string nameSpace = nameof(UsersRepo);
-		private const string dbo = nameof(dbo);
 
-		[TableValuedFunction(nameof(GetUsersByNamePrefix), nameSpace, Schema = dbo)]
+		[TableValuedFunction(nameof(GetUsersByNamePrefix), nameSpace)]
 		// ReSharper disable once MemberCanBePrivate.Global
 		public IQueryable<UserIdWrapper> GetUsersByNamePrefix(string name)
 		{

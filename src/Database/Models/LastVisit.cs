@@ -6,6 +6,8 @@ namespace Database.Models
 {
 	public class LastVisit : ITimedSlideAction
 	{
+		private const string Course_User = "Course_User";
+
 		[Key]
 		public int Id { get; set; }
 
@@ -13,12 +15,12 @@ namespace Database.Models
 
 		[Required]
 		[StringLength(128)]
-		[Index("IDX_LastVisits_ByCourseAndUser", 2)]
+		[Index(Course_User, 2)]
 		public string UserId { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_LastVisits_ByCourseAndUser", 1)]
+		[Index(Course_User, 1)]
 		public string CourseId { get; set; }
 
 		///<summary>Слайд, на который пользователь заходил последний раз</summary>

@@ -5,14 +5,16 @@ namespace Database.Models
 {
 	public class GroupLabel
 	{
+		private const string Owner_IsDeleted = "Owner_IsDeleted";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
 		[Required]
 		[StringLength(64)]
-		[Index("IDX_GroupLabel_ByOwner")]
-		[Index("IDX_GroupLabel_ByOwnerAndIsDeleted", 1)]
+		[Index("Owner")]
+		[Index(Owner_IsDeleted, 1)]
 		public string OwnerId { get; set; }
 
 		public virtual ApplicationUser Owner { get; set; }
@@ -24,26 +26,28 @@ namespace Database.Models
 		public string ColorHex { get; set; }
 
 		[Required]
-		[Index("IDX_GroupLabel_ByOwnerAndIsDeleted", 2)]
+		[Index(Owner_IsDeleted, 2)]
 		public bool IsDeleted { get; set; }
 	}
 
 	public class LabelOnGroup
 	{
+		private const string Group_Label = "Group_Label";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
 		[Required]
-		[Index("IDX_LabelOnGroup_ByGroup")]
-		[Index("IDX_LabelOnGroup_ByGroupAndLabel", 1, IsUnique = true)]
+		[Index("Group")]
+		[Index(Group_Label, 1, IsUnique = true)]
 		public int GroupId { get; set; }
 
 		public virtual Group Group { get; set; }
 
 		[Required]
-		[Index("IDX_LabelOnGroup_ByLabel")]
-		[Index("IDX_LabelOnGroup_ByGroupAndLabel", 2, IsUnique = true)]
+		[Index("Label")]
+		[Index(Group_Label, 2, IsUnique = true)]
 		public int LabelId { get; set; }
 
 		public virtual GroupLabel Label { get; set; }

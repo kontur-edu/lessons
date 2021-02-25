@@ -6,19 +6,21 @@ namespace Database.Models
 {
 	public class Like
 	{
+		private const string User_Submission = "User_Submission";
+
 		[Key]
 		public int Id { get; set; }
 
 		public virtual UserExerciseSubmission Submission { get; set; }
 
 		[Required]
-		[Index("IDX_Like_ByUserAndSubmission", 2)]
-		[Index("IDX_Like_BySubmission")]
+		[Index(User_Submission, 2)]
+		[Index("Submission")]
 		public int SubmissionId { get; set; }
 
 		[Required]
 		[StringLength(64)]
-		[Index("IDX_Like_ByUserAndSubmission", 1)]
+		[Index(User_Submission, 1)]
 		public string UserId { get; set; }
 
 		public virtual ApplicationUser User { get; set; }

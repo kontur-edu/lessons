@@ -18,20 +18,22 @@ namespace Database.Models
 {
 	public abstract class NotificationTransport
 	{
+		private const string User_IsDeleted = "User_IsDeleted";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
 		[StringLength(64)]
-		[Index("IDX_NotificationTransport_ByUser")]
-		[Index("IDX_NotificationTransport_ByUserAndDeleted", 1)]
+		[Index("User")]
+		[Index(User_IsDeleted, 1)]
 		public string UserId { get; set; }
 
 		public virtual ApplicationUser User { get; set; }
 
 		public bool IsEnabled { get; set; }
 
-		[Index("IDX_NotificationTransport_ByUserAndDeleted", 2)]
+		[Index(User_IsDeleted, 2)]
 		public bool IsDeleted { get; set; }
 	}
 
@@ -61,22 +63,24 @@ namespace Database.Models
 
 	public class NotificationTransportSettings
 	{
+		private const string Course_NotificationType = "Course_NotificationType";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
-		[Index("IDX_NotificationTransportSettings_ByNotificationTransport")]
+		[Index("NotificationTransport")]
 		public int NotificationTransportId { get; set; }
 
 		public virtual NotificationTransport NotificationTransport { get; set; }
 
 		[StringLength(100)]
-		[Index("IDX_NotificationTransportSettings_ByCourse")]
-		[Index("IDX_NotificationTransportSettings_ByCourseAndNofiticationType", 1)]
+		[Index("Course")]
+		[Index(Course_NotificationType, 1)]
 		public string CourseId { get; set; }
 
-		[Index("IDX_NotificationTransportSettings_ByNotificationType")]
-		[Index("IDX_NotificationTransportSettings_ByCourseAndNofiticationType", 2)]
+		[Index("NotificationType")]
+		[Index(Course_NotificationType, 2)]
 		public NotificationType NotificationType { get; set; }
 
 		public bool IsEnabled { get; set; }
@@ -84,26 +88,28 @@ namespace Database.Models
 
 	public class NotificationDelivery
 	{
+		private const string Notification_Transport = "Notification_Transport";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
-		[Index("IDX_NotificationDelivery_ByNotificationAndTransport", 1)]
+		[Index(Notification_Transport, 1)]
 		public int NotificationId { get; set; }
 
 		public virtual Notification Notification { get; set; }
 
-		[Index("IDX_NotificationDelivery_ByNotificationAndTransport", 2)]
+		[Index(Notification_Transport, 2)]
 		public int NotificationTransportId { get; set; }
 
 		public virtual NotificationTransport NotificationTransport { get; set; }
 
 		public NotificationDeliveryStatus Status { get; set; }
 
-		[Index("IDX_NotificatoinDelivery_ByCreateTime")]
+		[Index("CreateTime")]
 		public DateTime CreateTime { get; set; }
 
-		[Index("IDX_NotificationDelivery_ByNextTryTime")]
+		[Index("NextTryTime")]
 		public DateTime? NextTryTime { get; set; }
 
 		public int FailsCount { get; set; }
@@ -320,7 +326,7 @@ namespace Database.Models
 
 		[StringLength(100)]
 		[Required(AllowEmptyStrings = true)]
-		[Index("IDX_Notification_ByCourse")]
+		[Index("Course")]
 		public string CourseId { get; set; }
 
 		[StringLength(60)]
@@ -330,11 +336,11 @@ namespace Database.Models
 		public virtual ApplicationUser InitiatedBy { get; set; }
 
 		[Required]
-		[Index("IDX_Notification_ByCreateTime")]
+		[Index("CreateTime")]
 		public DateTime CreateTime { get; set; }
 
 		[Required]
-		[Index("IDX_Notification_ByAreDeliveriesCreated")]
+		[Index("AreDeliveriesCreated")]
 		public bool AreDeliveriesCreated { get; set; }
 
 		public virtual ICollection<NotificationDelivery> Deliveries { get; set; }

@@ -7,20 +7,23 @@ namespace Database.Models
 {
 	public class CourseAccess
 	{
+		private const string Course_IsEnabled = "Course_IsEnabled";
+		private const string Course_User_IsEnabled = "Course_User_IsEnabled";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
 		[Required]
 		[StringLength(100)]
-		[Index("IDX_CourseAccess_ByCourse")]
-		[Index("IDX_CourseAccess_ByCourseAndIsEnabled", 1)]
-		[Index("IDX_CourseAccess_ByCourseUserAndIsEnabled", 1)]
+		[Index("Course")]
+		[Index(Course_IsEnabled, 1)]
+		[Index(Course_User_IsEnabled, 1)]
 		public string CourseId { get; set; }
 
 		[StringLength(64)]
-		[Index("IDX_CourseAccess_ByUser")]
-		[Index("IDX_CourseAccess_ByCourseUserAndIsEnabled", 2)]
+		[Index("User")]
+		[Index(Course_User_IsEnabled, 2)]
 		public string UserId { get; set; }
 
 		public virtual ApplicationUser User { get; set; }
@@ -33,12 +36,12 @@ namespace Database.Models
 		[Required]
 		public CourseAccessType AccessType { get; set; }
 
-		[Index("IDX_CourseAccess_ByGrantTime")]
+		[Index("GrantTime")]
 		public DateTime GrantTime { get; set; }
 
 		[Required]
-		[Index("IDX_CourseAccess_ByCourseAndIsEnabled", 2)]
-		[Index("IDX_CourseAccess_ByCourseUserAndIsEnabled", 3)]
+		[Index(Course_IsEnabled, 2)]
+		[Index(Course_User_IsEnabled, 3)]
 
 		public bool IsEnabled { get; set; }
 

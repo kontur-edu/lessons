@@ -6,7 +6,7 @@ namespace Database.Models
 {
 	public class LtiSlideRequest
 	{
-		private const string SlideUserIndexName = "IDX_LtiSlideRequest_SlideAndUser";
+		private const string SlideUserIndexName = "Slide_User";
 
 		[Key]
 		public int RequestId { get; set; }

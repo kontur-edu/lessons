@@ -6,11 +6,13 @@ namespace Database.Models
 {
 	public class ExerciseCodeReviewComment
 	{
+		private const string Review_IsDeleted = "Review_IsDeleted";
+
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public int Id { get; set; }
 
-		[Index("IDX_ExerciseCodeReviewComment_ByReviewAndIsDeleted", 1)]
+		[Index(Review_IsDeleted, 1)]
 		public int ReviewId { get; set; }
 
 		public virtual ExerciseCodeReview Review { get; set; }
@@ -25,11 +27,11 @@ namespace Database.Models
 		public virtual ApplicationUser Author { get; set; }
 
 		[Required]
-		[Index("IDX_ExerciseCodeReviewComment_ByReviewAndIsDeleted", 2)]
+		[Index(Review_IsDeleted, 2)]
 		public bool IsDeleted { get; set; }
 
 		[Required]
-		[Index("IDX_ExerciseCodeReview_ByAddingTime")]
+		[Index("AddingTime")]
 		public DateTime AddingTime { get; set; }
 	}
 }

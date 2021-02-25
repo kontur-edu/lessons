@@ -67,12 +67,12 @@ namespace Database.Migrations
 		{
 			Sql("CREATE TABLE [dbo].[UserQuizsTemp](" +
 				"[Id] [int] NOT NULL, " +
-				"[CourseId] [nvarchar](64) NOT NULL, " +
-				"[SlideId] [uniqueidentifier] NOT NULL, " +
-				"[UserId] [nvarchar](128) NOT NULL, " +
-				"[QuizId] [nvarchar](64) NULL, " +
-				"[ItemId] [nvarchar](64) NULL, " +
-				"[Text] [nvarchar](max) NULL, " +
+				"[CourseId] [varchar](64) NOT NULL, " +
+				"[SlideId] [UUID] NOT NULL, " +
+				"[UserId] [varchar](128) NOT NULL, " +
+				"[QuizId] [varchar](64) NULL, " +
+				"[ItemId] [varchar](64) NULL, " +
+				"[Text] [varchar](max) NULL, " +
 				"[Timestamp] [datetime] NOT NULL, " +
 				"[IsRightAnswer] [bit] NOT NULL, " +
 				"[isDropped] [bit] NOT NULL, " +
@@ -107,10 +107,10 @@ namespace Database.Migrations
 		{
 			Sql("CREATE TABLE [dbo].[AutomaticQuizCheckingsTemp](" +
 				"[Id] [int]  NOT NULL," +
-				"[CourseId] [nvarchar](64) NOT NULL," +
-				"[SlideId] [uniqueidentifier] NOT NULL," +
+				"[CourseId] [varchar](64) NOT NULL," +
+				"[SlideId] [UUID] NOT NULL," +
 				"[Timestamp] [datetime] NOT NULL," +
-				"[UserId] [nvarchar](128) NOT NULL," +
+				"[UserId] [varchar](128) NOT NULL," +
 				"[Score] [int] NOT NULL," +
 				"CONSTRAINT [PK_dbo.AutomaticQuizCheckingsTemp] PRIMARY KEY CLUSTERED ([Id] ASC)" +
 				")");
@@ -149,12 +149,12 @@ namespace Database.Migrations
 		{
 			Sql("CREATE TABLE [dbo].[ManualQuizCheckingsTemp](" +
 				"[Id] [int] NOT NULL," +
-				"[CourseId] [nvarchar](64) NOT NULL," +
-				"[SlideId] [uniqueidentifier] NOT NULL," +
+				"[CourseId] [varchar](64) NOT NULL," +
+				"[SlideId] [UUID] NOT NULL," +
 				"[Timestamp] [datetime] NOT NULL," +
-				"[UserId] [nvarchar](128) NOT NULL," +
+				"[UserId] [varchar](128) NOT NULL," +
 				"[LockedUntil] [datetime] NULL," +
-				"[LockedById] [nvarchar](128) NULL," +
+				"[LockedById] [varchar](128) NULL," +
 				"[IsChecked] [bit] NOT NULL," +
 				"[Score] [int] NOT NULL," +
 				" CONSTRAINT [PK_dbo.ManualQuizCheckingsTemp] PRIMARY KEY CLUSTERED ([Id] ASC)" +

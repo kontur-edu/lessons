@@ -32,11 +32,11 @@ namespace AntiPlagiarism.Web.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("varchar(200)")
                         .HasMaxLength(200);
 
                     b.Property<Guid>("Token")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.HasKey("Id");
 
@@ -56,7 +56,7 @@ namespace AntiPlagiarism.Web.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -66,7 +66,7 @@ namespace AntiPlagiarism.Web.Migrations
             modelBuilder.Entity("AntiPlagiarism.Web.Database.Models.ManualSuspicionLevels", b =>
                 {
                     b.Property<Guid>("TaskId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<double?>("FaintSuspicion")
                         .HasColumnType("float");
@@ -75,7 +75,7 @@ namespace AntiPlagiarism.Web.Migrations
                         .HasColumnType("float");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("TaskId");
 
@@ -91,7 +91,7 @@ namespace AntiPlagiarism.Web.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<double>("Weight")
                         .HasColumnType("float");
@@ -113,7 +113,7 @@ namespace AntiPlagiarism.Web.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime?>("Date")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("Id");
 
@@ -188,7 +188,7 @@ namespace AntiPlagiarism.Web.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid>("TaskId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.HasKey("Id");
 
@@ -208,20 +208,20 @@ namespace AntiPlagiarism.Web.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("AddingTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("AdditionalInfo")
-                        .HasColumnType("nvarchar(500)")
+                        .HasColumnType("varchar(500)")
                         .HasMaxLength(500);
 
                     b.Property<Guid>("AuthorId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<int>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<string>("ClientSubmissionId")
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("varchar(50)")
                         .HasMaxLength(50);
 
                     b.Property<short>("Language")
@@ -231,7 +231,7 @@ namespace AntiPlagiarism.Web.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid>("TaskId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<int>("TokensCount")
                         .HasColumnType("int");
@@ -261,7 +261,7 @@ namespace AntiPlagiarism.Web.Migrations
                 {
                     b.Property<Guid>("TaskId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<double>("Deviation")
                         .HasColumnType("float");
@@ -273,7 +273,7 @@ namespace AntiPlagiarism.Web.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("TaskId");
 
@@ -314,13 +314,13 @@ namespace AntiPlagiarism.Web.Migrations
 
                     b.Property<string>("ItemId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("QueueId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("TakeAfterTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("Id");
 

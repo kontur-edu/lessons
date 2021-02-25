@@ -21,9 +21,9 @@ namespace Database.Migrations
 				.Index(t => t.UserId);
 
 			Sql(@"
-					declare @adminId nvarchar(max);
+					declare @adminId varchar(max);
 					set @adminId = (select id from AspNetRoles where Name = 'admin');
-					declare @instructorId nvarchar(max);
+					declare @instructorId varchar(max);
 					set @instructorId = (select id from AspNetRoles where Name = 'instructor');
 					insert 
 						into AspNetUserRoles(UserId, RoleId)

@@ -30,18 +30,18 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("varchar(128)")
                         .HasMaxLength(128);
 
                     b.HasKey("Id");
@@ -62,12 +62,12 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("InstructorId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<int>("Score")
@@ -75,18 +75,18 @@ namespace Database.Migrations
 
                     b.Property<string>("ScoringGroupId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<Guid>("UnitId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -108,28 +108,28 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
                     b.Property<string>("AvatarUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("varchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<short?>("Gender")
                         .HasColumnType("smallint");
@@ -138,17 +138,17 @@ namespace Database.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("KonturLogin")
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("varchar(200)")
                         .HasMaxLength(200);
 
                     b.Property<DateTime?>("LastConfirmationEmailTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<DateTime?>("LastEdit")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -158,43 +158,43 @@ namespace Database.Migrations
 
                     b.Property<string>("Names")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("varchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("varchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
                     b.Property<DateTime>("Registered")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<long?>("TelegramChatId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("TelegramChatTitle")
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("varchar(200)")
                         .HasMaxLength(200);
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("varchar(256)")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -222,26 +222,26 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CheckingAgentName")
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("varchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("CompilationErrorHash")
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("DisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<TimeSpan?>("Elapsed")
                         .HasColumnType("time");
 
                     b.Property<string>("ExecutionServiceName")
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<bool>("IsCompilationError")
@@ -251,7 +251,7 @@ namespace Database.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("OutputHash")
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<float?>("Points")
@@ -261,17 +261,17 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -302,21 +302,21 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<int>("Score")
                         .HasColumnType("int");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -338,11 +338,11 @@ namespace Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("InstructorId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsDeleted")
@@ -353,17 +353,17 @@ namespace Database.Migrations
 
                     b.Property<string>("Parameters")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<Guid>("TemplateId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -381,16 +381,16 @@ namespace Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("ArchiveName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("varchar(128)")
                         .HasMaxLength(128);
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<bool>("IsDeleted")
@@ -398,10 +398,10 @@ namespace Database.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.HasKey("Id");
 
@@ -413,11 +413,11 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Models.CertificateTemplateArchive", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(128)")
+                        .HasColumnType("varchar(128)")
                         .HasMaxLength(128);
 
                     b.Property<Guid>("CertificateTemplateId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<byte[]>("Content")
                         .IsRequired()
@@ -439,12 +439,12 @@ namespace Database.Migrations
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsApproved")
@@ -466,14 +466,14 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("PublishTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -495,11 +495,11 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -515,7 +515,7 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Models.Comments.CommentsPolicy", b =>
                 {
                     b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsCommentsEnabled")
@@ -543,25 +543,25 @@ namespace Database.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<DateTime>("GrantTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("GrantedById")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -590,11 +590,11 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<Guid>("CourseVersionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<byte[]>("File")
                         .IsRequired()
@@ -615,29 +615,29 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Branch")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<DateTime>("CreateTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<bool>("IsWebhookEnabled")
                         .HasColumnType("bit");
 
                     b.Property<string>("PathToCourseXml")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("PrivateKey")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("PublicKey")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("RepoUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -652,17 +652,17 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<DateTime?>("GrantTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("GrantedById")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<bool?>("IsEnabled")
                         .HasColumnType("bit");
@@ -671,7 +671,7 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -685,36 +685,36 @@ namespace Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("CommitHash")
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<DateTime>("LoadingTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("PathToCourseXml")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<DateTime?>("PublishTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("RepoUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -739,7 +739,7 @@ namespace Database.Migrations
 
                     b.Property<string>("ScoringGroupId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -756,16 +756,16 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("AddingTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("Comment")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int?>("ExerciseCheckingId")
                         .HasColumnType("int");
@@ -810,11 +810,11 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("AddingTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("AuthorId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsDeleted")
@@ -825,7 +825,7 @@ namespace Database.Migrations
 
                     b.Property<string>("Text")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -846,11 +846,11 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("ClientUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("SubmissionId")
                         .HasColumnType("int");
@@ -872,13 +872,13 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<int?>("TransportId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -898,21 +898,21 @@ namespace Database.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -934,17 +934,17 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<DateTime?>("CreateTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<bool>("DefaultProhibitFutherReview")
                         .HasColumnType("bit");
 
                     b.Property<Guid>("InviteHash")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
@@ -963,12 +963,12 @@ namespace Database.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(300)")
+                        .HasColumnType("varchar(300)")
                         .HasMaxLength(300);
 
                     b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -993,10 +993,10 @@ namespace Database.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("GrantTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("GrantedById")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<int>("GroupId")
@@ -1006,7 +1006,7 @@ namespace Database.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1034,19 +1034,19 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ColorHex")
-                        .HasColumnType("nvarchar(6)")
+                        .HasColumnType("varchar(6)")
                         .HasMaxLength(6);
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1066,14 +1066,14 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime?>("AddingTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<int>("GroupId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1121,11 +1121,11 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1146,17 +1146,17 @@ namespace Database.Migrations
 
                     b.Property<string>("Key")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("Secret")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("ConsumerId");
@@ -1175,19 +1175,19 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("Request")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("RequestId");
@@ -1206,18 +1206,18 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsChecked")
                         .HasColumnType("bit");
 
                     b.Property<string>("LockedById")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<DateTime?>("LockedUntil")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<bool>("ProhibitFurtherManualCheckings")
                         .HasColumnType("bit");
@@ -1226,17 +1226,17 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<int>("SubmissionId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1265,31 +1265,31 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsChecked")
                         .HasColumnType("bit");
 
                     b.Property<string>("LockedById")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<DateTime?>("LockedUntil")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<int>("Score")
                         .HasColumnType("int");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1321,19 +1321,19 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.Property<DateTime>("CreateTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("InitiatedById")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1359,13 +1359,13 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("CreateTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<int>("FailsCount")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("NextTryTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<int>("NotificationId")
                         .HasColumnType("int");
@@ -1398,7 +1398,7 @@ namespace Database.Migrations
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -1407,7 +1407,7 @@ namespace Database.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1429,7 +1429,7 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.Property<bool>("IsEnabled")
@@ -1462,14 +1462,14 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("BlockId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsRightAnswer")
                         .HasColumnType("bit");
 
                     b.Property<string>("ItemId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<int>("QuizBlockMaxScore")
@@ -1482,7 +1482,7 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("varchar(max)")
                         .HasMaxLength(8192);
 
                     b.HasKey("Id");
@@ -1503,18 +1503,18 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.HasKey("Id");
@@ -1533,14 +1533,14 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Models.RestoreRequest", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(450)");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1559,7 +1559,7 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<int>("HintId")
@@ -1569,11 +1569,11 @@ namespace Database.Migrations
                         .HasColumnType("bit");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1594,18 +1594,18 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<int>("Rate")
                         .HasColumnType("int");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1626,15 +1626,15 @@ namespace Database.Migrations
 
                     b.Property<string>("AccessToken")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.Property<DateTime>("AddedTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1654,7 +1654,7 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime?>("FinishTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<bool>("IsFinished")
                         .HasColumnType("bit");
@@ -1666,26 +1666,26 @@ namespace Database.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Log")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("OwnerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<int>("StepikCourseId")
                         .HasColumnType("int");
 
                     b.Property<string>("StepikCourseTitle")
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.Property<string>("UlearnCourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
@@ -1703,11 +1703,11 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("SlideXml")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<int>("StepId")
                         .HasColumnType("int");
@@ -1717,7 +1717,7 @@ namespace Database.Migrations
 
                     b.Property<string>("UlearnCourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
@@ -1742,11 +1742,11 @@ namespace Database.Migrations
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("GrantTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("GrantedById")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("IsEnabled")
@@ -1754,7 +1754,7 @@ namespace Database.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1775,11 +1775,11 @@ namespace Database.Migrations
             modelBuilder.Entity("Database.Models.TextBlob", b =>
                 {
                     b.Property<string>("Hash")
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Hash");
 
@@ -1795,18 +1795,18 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<DateTime>("PublishTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<Guid>("UnitId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -1836,30 +1836,30 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("varchar(100)")
                         .HasMaxLength(100);
 
                     b.Property<short>("Language")
                         .HasColumnType("smallint");
 
                     b.Property<string>("Sandbox")
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("SolutionCodeHash")
                         .IsRequired()
-                        .HasColumnType("nvarchar(40)")
+                        .HasColumnType("varchar(40)")
                         .HasMaxLength(40);
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -1902,15 +1902,15 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<Guid>("UnitId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.HasKey("Id");
 
@@ -1928,26 +1928,26 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("FlashcardId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<int>("Rate")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<Guid>("UnitId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.HasKey("Id");
 
@@ -1964,35 +1964,35 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CourseId")
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("Question")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<string>("SlideTitle")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<DateTime>("Time")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UnitName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("QuestionId");
@@ -2014,14 +2014,14 @@ namespace Database.Migrations
 
                     b.Property<string>("CourseId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<bool>("HasManualChecking")
                         .HasColumnType("bit");
 
                     b.Property<string>("IpAddress")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<bool>("IsPassed")
                         .HasColumnType("bit");
@@ -2033,14 +2033,14 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid>("SlideId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasKey("Id");
@@ -2074,7 +2074,7 @@ namespace Database.Migrations
 
                     b.Property<string>("XQueueHeader")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -2094,31 +2094,31 @@ namespace Database.Migrations
 
                     b.Property<string>("BaseUrl")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<bool>("IsEnabled")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("QueueName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("Id");
 
@@ -2130,18 +2130,18 @@ namespace Database.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(450)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("varchar(256)")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
-                        .HasColumnType("nvarchar(256)")
+                        .HasColumnType("varchar(256)")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -2162,14 +2162,14 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(450)");
 
                     b.HasKey("Id");
 
@@ -2186,14 +2186,14 @@ namespace Database.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("ClaimType")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("ClaimValue")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.HasKey("Id");
 
@@ -2205,17 +2205,17 @@ namespace Database.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -2227,10 +2227,10 @@ namespace Database.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(450)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -2242,16 +2242,16 @@ namespace Database.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(450)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("varchar(450)");
 
                     b.Property<string>("Value")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -2277,7 +2277,7 @@ namespace Database.Migrations
 
                     b.Property<string>("AddedUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasIndex("AddedUserId");
@@ -2331,7 +2331,7 @@ namespace Database.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("varchar(64)");
 
                     b.HasIndex("GroupId");
 
@@ -2350,11 +2350,11 @@ namespace Database.Migrations
 
                     b.Property<string>("UserDescriptions")
                         .HasColumnName("UserDescriptions")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("UserIds")
                         .HasColumnName("UserIds")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasIndex("GroupId")
                         .HasName("IX_Notifications_GroupId1");
@@ -2372,11 +2372,11 @@ namespace Database.Migrations
 
                     b.Property<string>("UserDescriptions")
                         .HasColumnName("UserDescriptions")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("UserIds")
                         .HasColumnName("UserIds")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasIndex("GroupId")
                         .HasName("IX_Notifications_GroupId2");
@@ -2391,7 +2391,7 @@ namespace Database.Migrations
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnName("Text")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasDiscriminator().HasValue("InstructorMessageNotification");
                 });
@@ -2406,7 +2406,7 @@ namespace Database.Migrations
 
                     b.Property<string>("JoinedUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasIndex("GroupId");
@@ -2423,12 +2423,12 @@ namespace Database.Migrations
                     b.Property<string>("CommitHash")
                         .IsRequired()
                         .HasColumnName("NotUploadedPackageNotification_CommitHash")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.Property<string>("RepoUrl")
                         .IsRequired()
                         .HasColumnName("NotUploadedPackageNotification_RepoUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasDiscriminator().HasValue("NotUploadedPackageNotification");
                 });
@@ -2466,7 +2466,7 @@ namespace Database.Migrations
                     b.HasBaseType("Database.Models.Notification");
 
                     b.Property<Guid>("CourseVersionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.HasIndex("CourseVersionId");
 
@@ -2490,7 +2490,7 @@ namespace Database.Migrations
                     b.HasBaseType("Database.Models.Notification");
 
                     b.Property<Guid>("CertificateId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.HasIndex("CertificateId");
 
@@ -2530,7 +2530,7 @@ namespace Database.Migrations
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnName("Text")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("varchar(max)");
 
                     b.HasDiscriminator().HasValue("SystemMessageNotification");
                 });
@@ -2541,7 +2541,7 @@ namespace Database.Migrations
 
                     b.Property<Guid>("CourseVersionId")
                         .HasColumnName("UploadedPackageNotification_CourseVersionId")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("UUID");
 
                     b.HasIndex("CourseVersionId");
 
@@ -2575,7 +2575,7 @@ namespace Database.Migrations
 
                     b.Property<string>("LikedUserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(64)")
+                        .HasColumnType("varchar(64)")
                         .HasMaxLength(64);
 
                     b.HasIndex("LikedUserId");

@@ -12,7 +12,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -21,7 +21,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(40)",
+                oldType: "varchar(40)",
                 oldMaxLength: 40);
 
             migrationBuilder.AlterColumn<string>(
@@ -30,7 +30,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64,
                 oldNullable: true);
 
@@ -40,7 +40,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -49,7 +49,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -58,7 +58,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -67,7 +67,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -76,7 +76,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -85,7 +85,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -94,7 +94,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -103,7 +103,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -112,7 +112,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -121,7 +121,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -130,7 +130,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -139,7 +139,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -148,7 +148,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: true,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64,
                 oldNullable: true);
 
@@ -158,7 +158,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -167,7 +167,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -176,7 +176,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -185,7 +185,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -194,7 +194,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(40)",
+                oldType: "varchar(40)",
                 oldMaxLength: 40);
 
             migrationBuilder.AlterColumn<string>(
@@ -203,7 +203,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -212,7 +212,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
 
             migrationBuilder.AlterColumn<string>(
@@ -221,7 +221,7 @@ namespace Database.Migrations
                 maxLength: 100,
                 nullable: false,
                 oldClrType: typeof(string),
-                oldType: "nvarchar(64)",
+                oldType: "varchar(64)",
                 oldMaxLength: 64);
         }
 
@@ -230,7 +230,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "Visits",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -239,7 +239,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "UserQuizSubmissions",
-                type: "nvarchar(40)",
+                type: "varchar(40)",
                 maxLength: 40,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -248,7 +248,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "UserQuestions",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: true,
                 oldClrType: typeof(string),
@@ -258,7 +258,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "UserFlashcardsVisits",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -267,7 +267,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "UserFlashcardsUnlocking",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -276,7 +276,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "UnitAppearances",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -285,7 +285,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "TempCourses",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -294,7 +294,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "TempCourseErrors",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -303,7 +303,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "SlideRates",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -312,7 +312,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "SlideHints",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -321,7 +321,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "ManualQuizCheckings",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -330,7 +330,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "ManualExerciseCheckings",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -339,7 +339,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "Groups",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -348,7 +348,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "GraderClients",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -357,7 +357,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "CourseVersions",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -366,7 +366,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "CourseGitRepos",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: true,
                 oldClrType: typeof(string),
@@ -376,7 +376,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "CourseFiles",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -385,7 +385,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "CourseAccesses",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -394,7 +394,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "CommentsPolicies",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -403,7 +403,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "Comments",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -412,7 +412,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "CertificateTemplates",
-                type: "nvarchar(40)",
+                type: "varchar(40)",
                 maxLength: 40,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -421,7 +421,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "AutomaticQuizCheckings",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -430,7 +430,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "AutomaticExerciseCheckings",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),
@@ -439,7 +439,7 @@ namespace Database.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "CourseId",
                 table: "AdditionalScores",
-                type: "nvarchar(64)",
+                type: "varchar(64)",
                 maxLength: 64,
                 nullable: false,
                 oldClrType: typeof(string),

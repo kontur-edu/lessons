@@ -37,7 +37,7 @@ namespace Database.Migrations
 			// Full text index workaround: comment next three lines
 			Sql("CREATE FULLTEXT CATALOG ExerciseSolutionByGradersFullTextCatalog WITH ACCENT_SENSITIVITY = OFF", true);
 			Sql("CREATE FULLTEXT INDEX ON dbo.ExerciseSolutionByGraders ([ClientUserId] LANGUAGE [Russian]) KEY INDEX [PK_dbo.ExerciseSolutionByGraders] ON (ExerciseSolutionByGradersFullTextCatalog, FILEGROUP[PRIMARY]) WITH (CHANGE_TRACKING = AUTO, STOPLIST = SYSTEM)", true);
-			Sql("CREATE FUNCTION dbo.GetGraderSolutionByClientUserId (@userId NVARCHAR(4000)) RETURNS TABLE RETURN SELECT [Id] FROM dbo.ExerciseSolutionByGraders WHERE CONTAINS([ClientUserId], @userId)");
+			Sql("CREATE FUNCTION dbo.GetGraderSolutionByClientUserId (@userId varchar(4000)) RETURNS TABLE RETURN SELECT [Id] FROM dbo.ExerciseSolutionByGraders WHERE CONTAINS([ClientUserId], @userId)");
 		}
 
 		public override void Down()

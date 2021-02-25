@@ -10,7 +10,7 @@ namespace AntiPlagiarism.Web.Database
 		{
 			var configuration = ApplicationConfiguration.GetConfiguration();
 			var optionsBuilder = new DbContextOptionsBuilder<AntiPlagiarismDb>();
-			optionsBuilder.UseSqlServer(configuration["database"]);
+			optionsBuilder.UseNpgsql(configuration["database"]);
 
 			return new AntiPlagiarismDb(optionsBuilder.Options);
 		}

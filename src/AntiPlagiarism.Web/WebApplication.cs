@@ -34,7 +34,7 @@ namespace AntiPlagiarism.Web
 			var configuration = hostingEnvironment.SecretConfigurationProvider.Get<UlearnConfiguration>(hostingEnvironment.SecretConfigurationSource);
 
 			services.AddDbContext<AntiPlagiarismDb>(
-				options => options.UseSqlServer(configuration.Database)
+				options => options.UseNpgsql(configuration.Database)
 			);
 
 			services.Configure<AntiPlagiarismConfiguration>(options =>

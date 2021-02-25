@@ -16,7 +16,7 @@ namespace Database
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<UlearnDb>();
 			optionsBuilder.UseLazyLoadingProxies();
-			optionsBuilder.UseSqlServer(ApplicationConfiguration.Read<UlearnConfiguration>().Database);
+			optionsBuilder.UseNpgsql(ApplicationConfiguration.Read<UlearnConfiguration>().Database);
 			if (loggerFactory != null)
 				optionsBuilder.UseLoggerFactory(loggerFactory);
 

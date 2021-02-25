@@ -73,7 +73,7 @@ namespace AntiPlagiarism.UpdateDb
 		private AntiPlagiarismDb GetDatabase(AntiPlagiarismUpdateDbConfiguration configuration)
 		{
 			var optionsBuilder = new DbContextOptionsBuilder<AntiPlagiarismDb>();
-			optionsBuilder.UseSqlServer(configuration.Database);
+			optionsBuilder.UseNpgsql(configuration.Database);
 			if (configuration.HostLog.EnableEntityFrameworkLogging)
 				optionsBuilder.UseLoggerFactory(new LoggerFactory().AddVostok(LogProvider.Get()));
 

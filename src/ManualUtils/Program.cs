@@ -27,11 +27,11 @@ namespace ManualUtils
 			LoggerSetup.Setup(configuration.HostLog, configuration.GraphiteServiceName);
 			var optionsBuilder = new DbContextOptionsBuilder<UlearnDb>()
 				.UseLazyLoadingProxies()
-				.UseSqlServer(configuration.Database);
+				.UseNpgsql(configuration.Database);
 			var db = new UlearnDb(optionsBuilder.Options);
 			var aOptionsBuilder = new DbContextOptionsBuilder<AntiPlagiarismDb>()
 				.UseLazyLoadingProxies()
-				.UseSqlServer(configuration.Database);
+				.UseNpgsql(configuration.Database);
 			var adb = new AntiPlagiarismDb(aOptionsBuilder.Options);
 
 			//await ResendLti(db);

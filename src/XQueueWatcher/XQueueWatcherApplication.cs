@@ -42,7 +42,7 @@ namespace XQueueWatcher
 			services.AddDbContextPool<UlearnDb>(
 				options => options
 					.UseLazyLoadingProxies()
-					.UseNpgsql(configuration.Database)
+					.UseNpgsql(configuration.Database, o => o.SetPostgresVersion(13, 2))
 			);
 		}
 

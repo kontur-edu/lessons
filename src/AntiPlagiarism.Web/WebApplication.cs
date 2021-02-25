@@ -34,7 +34,7 @@ namespace AntiPlagiarism.Web
 			var configuration = hostingEnvironment.SecretConfigurationProvider.Get<UlearnConfiguration>(hostingEnvironment.SecretConfigurationSource);
 
 			services.AddDbContext<AntiPlagiarismDb>(
-				options => options.UseNpgsql(configuration.Database)
+				options => options.UseNpgsql(configuration.Database, o => o.SetPostgresVersion(13, 2))
 			);
 
 			services.Configure<AntiPlagiarismConfiguration>(options =>

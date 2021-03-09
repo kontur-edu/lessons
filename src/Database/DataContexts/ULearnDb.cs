@@ -32,8 +32,9 @@ namespace Database.DataContexts
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
-			
 			modelBuilder.HasDefaultSchema("public");
+
+			modelBuilder.Entity<UserFlashcardsUnlocking>().ToTable("UserFlashcardsUnlocking"); // Так не будет добавлено s в конец, в отличие от объявления поля.
 
 			/* See https://weblogs.asp.net/dixin/entityframework.functions
 			 * for detailed description about working with stored functions and procedures */
@@ -250,7 +251,7 @@ namespace Database.DataContexts
 		public DbSet<StyleErrorSettings> StyleErrorSettings { get; set; }
 
 		public DbSet<UserFlashcardsVisit> UserFlashcardsVisits { get; set; }
-		
+
 		public DbSet<TempCourse> TempCourses { get; set; }
 
 		public DbSet<TempCourseError> TempCourseErrors { get; set; }

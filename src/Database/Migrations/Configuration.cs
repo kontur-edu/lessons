@@ -39,6 +39,9 @@ namespace Database.Migrations
 			var usersRepo = new UsersRepo(db);
 			usersRepo.CreateUlearnBotUserIfNotExists();
 
+			var feedRepo = new FeedRepo(db);
+			feedRepo.AddFeedNotificationTransportIfNeeded(null).GetAwaiter().GetResult(); // Feed for comments
+
 			db.SaveChanges();
 		}
 	}

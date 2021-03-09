@@ -1,10 +1,11 @@
 ﻿using System;
-using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using AntiPlagiarism.Web.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using static AntiPlagiarism.Web.Database.Models.WorkQueueItem;
 using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace AntiPlagiarism.Web.Database.Repos
@@ -40,30 +41,34 @@ namespace AntiPlagiarism.Web.Database.Repos
 			}
 		}
 
-		// http://rusanu.com/2010/03/26/using-tables-as-queues/
+		// https://habr.com/ru/post/481556/
 		public async Task<WorkQueueItem> Take(QueueIds queueId, TimeSpan? timeLimit = null)
 		{
 			timeLimit = timeLimit ?? TimeSpan.FromMinutes(5);
-			// readpast пропускает заблокированные строки
-			// rowlock подсказывает блокировать строки, а не страницы
+			// skip locked пропускает заблокированные строки
+			// for update подсказывает блокировать строки, а не страницы
 			var sql = 
-$@"with cte as (
-	select top(1) *
-	from {AntiPlagiarismDb.DefaultSchema}.{nameof(db.WorkQueueItems)} with (rowlock, readpast)
-	where {WorkQueueItem.QueueIdColumnName} = @queueId
-	and ({WorkQueueItem.TakeAfterTimeColumnName} is NULL or {WorkQueueItem.TakeAfterTimeColumnName} < @now)
-	order by {WorkQueueItem.IdColumnName}
+$@"with next_task as (
+	select ""{IdColumnName}"" from {AntiPlagiarismDb.DefaultSchema}.""{nameof(db.WorkQueueItems)}""
+	where ""{QueueIdColumnName}"" = @queueId
+		and (""{TakeAfterTimeColumnName}"" is NULL or ""{TakeAfterTimeColumnName}"" < @now)
+	order by ""{IdColumnName}""
+	limit 1
+	for update skip locked
 )
-update cte SET {WorkQueueItem.TakeAfterTimeColumnName} = @timeLimit
-output inserted.*";
+update {AntiPlagiarismDb.DefaultSchema}.""{nameof(db.WorkQueueItems)}""
+set ""{TakeAfterTimeColumnName}"" = @timeLimit
+from next_task
+where {AntiPlagiarismDb.DefaultSchema}.""{nameof(db.WorkQueueItems)}"".""{IdColumnName}"" = next_task.""{IdColumnName}""
+returning next_task.""{IdColumnName}"", ""{QueueIdColumnName}"", ""{ItemIdColumnName}"", ""{TakeAfterTimeColumnName}"";"; // Если написать *, Id возвращается дважды
 			using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.RepeatableRead }, TransactionScopeAsyncFlowOption.Enabled))
 			{
 				var taken = (await db.WorkQueueItems.FromSqlRaw(
 					sql,
-					new SqlParameter("@queueId", queueId),
-					new SqlParameter("@now", DateTime.UtcNow),
-					new SqlParameter("@timeLimit", DateTime.UtcNow + timeLimit)
-				).ToListAsync()).FirstOrDefault();
+					new NpgsqlParameter<int>("@queueId", (int)queueId),
+					new NpgsqlParameter<DateTime>("@now", DateTime.UtcNow),
+					new NpgsqlParameter<DateTime>("@timeLimit", (DateTime.UtcNow + timeLimit).Value)
+				).AsNoTracking().ToListAsync()).FirstOrDefault();
 				scope.Complete();
 				return taken;
 			}

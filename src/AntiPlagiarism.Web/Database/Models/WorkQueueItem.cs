@@ -17,6 +17,7 @@ namespace AntiPlagiarism.Web.Database.Models
 
 		[Required]
 		public string ItemId { get; set; } // Id элемента другой таблицы, которому соответствует запись в очереди
+		public const string ItemIdColumnName = "ItemId";
 
 		public DateTime? TakeAfterTime { get; set; } // Устанавливается при взятии элемента из очереди. После этого времени разрешено повторно взять элемент из очереди
 		public const string TakeAfterTimeColumnName = "TakeAfterTime";

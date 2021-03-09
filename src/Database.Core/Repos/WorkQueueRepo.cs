@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Database.Models;
 using JetBrains.Annotations;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Z.EntityFramework.Plus;
+using static Database.Models.WorkQueueItem;
 
 namespace Database.Repos
 {
@@ -41,35 +42,39 @@ namespace Database.Repos
 			await db.WorkQueueItems.Where(i => i.Id == id).UpdateAsync(c => new WorkQueueItem {TakeAfterTime = null});
 		}
 
-		// http://rusanu.com/2010/03/26/using-tables-as-queues/
+		// https://habr.com/ru/post/481556/
 		[ItemCanBeNull]
 		public async Task<WorkQueueItem> Take(int queueId, List<string> types, TimeSpan? timeLimit = null)
 		{
 			timeLimit = timeLimit ?? TimeSpan.FromMinutes(5);
-			// readpast пропускает заблокированные строки
-			// rowlock подсказывает блокировать строки, а не страницы
+			// skip locked пропускает заблокированные строки
+			// for update подсказывает блокировать строки, а не страницы
 			var typesCondition = types.Count == 0
 				? ""
-				: $"and {WorkQueueItem.TypeColumnName} IN ({string.Join(", ", types.Select(t => $"'{t}'"))})";
+				: $"and \"{TypeColumnName}\" in ({string.Join(", ", types.Select(t => $"'{t}'"))})";
 			var sql = 
-$@"with cte as (
-	select top(1) *
-	from dbo.{nameof(db.WorkQueueItems)} with (rowlock, readpast)
-	where {WorkQueueItem.QueueIdColumnName} = @queueId
-	and ({WorkQueueItem.TakeAfterTimeColumnName} is NULL or {WorkQueueItem.TakeAfterTimeColumnName} < @now)
-	{typesCondition}
-	order by {WorkQueueItem.PriorityColumnName} desc, {WorkQueueItem.IdColumnName}
+$@"with next_task as (
+	select ""Id"" from ""{nameof(db.WorkQueueItems)}""
+	where ""{QueueIdColumnName}"" = @queueId
+		and (""{TakeAfterTimeColumnName}"" is NULL or ""{TakeAfterTimeColumnName}"" < @now)
+		{typesCondition}
+	order by ""{IdColumnName}"" desc, {IdColumnName}
+	limit 1
+	for update skip locked
 )
-update cte SET {WorkQueueItem.TakeAfterTimeColumnName} = @timeLimit
-output inserted.*";
+update ""{nameof(db.WorkQueueItems)}""
+set ""{TakeAfterTimeColumnName}"" = @timeLimit
+from next_task
+where ""{nameof(db.WorkQueueItems)}"".""Id"" = next_task.""Id""
+returning next_task.""{IdColumnName}"", ""{QueueIdColumnName}"", ""{ItemIdColumnName}"", ""{PriorityColumnName}"", ""{TypeColumnName}"", ""{TakeAfterTimeColumnName}"";"; // Если написать *, Id возвращается дважды
 			using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.RepeatableRead }, TransactionScopeAsyncFlowOption.Enabled))
 			{
 				var taken = (await db.WorkQueueItems.FromSqlRaw(
 					sql,
-					new SqlParameter("@queueId", queueId),
-					new SqlParameter("@now", DateTime.UtcNow),
-					new SqlParameter("@timeLimit", DateTime.UtcNow + timeLimit)
-				).ToListAsync()).FirstOrDefault();
+					new NpgsqlParameter<int>("@queueId", queueId),
+					new NpgsqlParameter<DateTime>("@now", DateTime.UtcNow),
+					new NpgsqlParameter<DateTime>("@timeLimit", (DateTime.UtcNow + timeLimit).Value)
+				).AsNoTracking().ToListAsync()).FirstOrDefault();
 				scope.Complete();
 				return taken;
 			}

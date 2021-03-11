@@ -13,7 +13,7 @@ namespace Database.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202103110736311_IgnoreChanges"; }
+            get { return "202103111309284_IgnoreChanges"; }
         }
         
         string IMigrationMetadata.Source

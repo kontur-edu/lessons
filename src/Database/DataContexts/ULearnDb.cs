@@ -32,6 +32,7 @@ namespace Database.DataContexts
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+
 			modelBuilder.HasDefaultSchema("public");
 
 			modelBuilder.Entity<UserFlashcardsUnlocking>().ToTable("UserFlashcardsUnlocking"); // Так не будет добавлено s в конец, в отличие от объявления поля.

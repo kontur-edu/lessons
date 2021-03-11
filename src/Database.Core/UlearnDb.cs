@@ -37,6 +37,19 @@ namespace Database
 			modelBuilder.HasCollation("case_insensitive", locale: "und@colStrength=secondary", provider: "icu", deterministic: false);
 			modelBuilder.UseDefaultColumnCollation("case_insensitive");
 
+			// По Names будет осуществляться поиск по регулярном выражению. Такой поиск работает только с deterministic collation
+			modelBuilder.Entity<ApplicationUser>()
+				.Property(u => u.Names)
+				.UseCollation("default");
+			modelBuilder.Entity<ApplicationUser>()
+				.Property(u => u.Names)
+				.HasComputedColumnSql(@"""UserName"" || ' ' || ""FirstName"" || ' ' || ""LastName""", stored: true);
+			// Индекс с триграммами. Ускоряет поиск в том числе по регулярному выражению, если в нем есть кусочки простого текста хотя бы на 3 символа.
+			modelBuilder.Entity<ApplicationUser>()
+				.HasIndex(p => p.Names)
+				.HasMethod("gin")
+				.HasOperators("gin_trgm_ops");
+
 			/* IdentityUser.Id is guid in ASP.NET Core, so we can limit it by 64 chars.
 			   If we will not do it, foreign keys to AspNetUsers.Id will fail in ASP.NET Core
 			 */

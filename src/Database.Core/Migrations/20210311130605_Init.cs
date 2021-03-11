@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Database.Migrations
 {
-    public partial class InitPostgres : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,8 +51,7 @@ namespace Database.Migrations
                     LastConfirmationEmailTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Gender = table.Column<short>(type: "smallint", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    Names = table.Column<string>(type: "text", nullable: true)
-                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Names = table.Column<string>(type: "text", nullable: true, computedColumnSql: "\"UserName\" || ' ' || \"FirstName\" || ' ' || \"LastName\"", stored: true, collation: "default"),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                         .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -1985,6 +1984,13 @@ namespace Database.Migrations
                 name: "IX_AspNetUsers_IsDeleted",
                 table: "AspNetUsers",
                 column: "IsDeleted");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_Names",
+                table: "AspNetUsers",
+                column: "Names")
+                .Annotation("Npgsql:IndexMethod", "gin")
+                .Annotation("Npgsql:IndexOperators", new[] { "gin_trgm_ops" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_TelegramChatId",

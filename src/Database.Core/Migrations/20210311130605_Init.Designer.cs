@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(UlearnDb))]
-    [Migration("20210311073142_InitPostgres")]
-    partial class InitPostgres
+    [Migration("20210311130605_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -160,7 +160,9 @@ namespace Database.Migrations
 
                     b.Property<string>("Names")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasComputedColumnSql("\"UserName\" || ' ' || \"FirstName\" || ' ' || \"LastName\"", true)
+                        .UseCollation("default");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -202,6 +204,10 @@ namespace Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted");
+
+                    b.HasIndex("Names")
+                        .HasMethod("gin")
+                        .HasOperators(new[] { "gin_trgm_ops" });
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");

@@ -41,6 +41,7 @@
 			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="create_database\01_create_db.sql" />
 	</ItemGroup>
 	<ItemGroup>
 		<ContentWithTargetPath Include="migrate_database_to_core/01_add_migrations_history.sql">

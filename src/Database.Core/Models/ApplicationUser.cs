@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 using Ulearn.Common;
 
@@ -61,15 +60,8 @@ namespace Database.Models
 
 		public bool IsDeleted { get; set; }
 
-		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-		public string Names
-		{
-			get { return UserName + " " + FirstName + " " + LastName; }
-			private set
-			{
-				/* Empty for EF */
-			}
-		}
+		// Автогенерируется
+		public string Names { get; private set;  }
 
 		public string VisibleName
 		{

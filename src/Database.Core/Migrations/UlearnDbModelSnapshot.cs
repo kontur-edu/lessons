@@ -158,7 +158,9 @@ namespace Database.Migrations
 
                     b.Property<string>("Names")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasComputedColumnSql("\"UserName\" || ' ' || \"FirstName\" || ' ' || \"LastName\"", true)
+                        .UseCollation("default");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -200,6 +202,10 @@ namespace Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IsDeleted");
+
+                    b.HasIndex("Names")
+                        .HasMethod("gin")
+                        .HasOperators(new[] { "gin_trgm_ops" });
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");

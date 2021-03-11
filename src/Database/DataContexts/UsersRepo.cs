@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
@@ -38,7 +37,7 @@ namespace Database.DataContexts
 		{
 			var usersIdsByNamePrefix = string.IsNullOrEmpty(query.NamePrefix)
 				? null
-				: GetUsersByNamePrefix(query.NamePrefix).Select(u => u.Id);
+				: GetUsersByNamePrefix(query.NamePrefix);
 			return FilterUsers(query, usersIdsByNamePrefix, limit);
 
 		}
@@ -73,7 +72,7 @@ namespace Database.DataContexts
 		public List<string> FilterUsersByNamePrefix(string namePrefix)
 		{
 			var deletedUserIds = db.Users.Where(u => u.IsDeleted).Select(u => u.Id).ToList();
-			return GetUsersByNamePrefix(namePrefix).Where(u => !deletedUserIds.Contains(u.Id)).Select(u => u.Id).ToList();
+			return GetUsersByNamePrefix(namePrefix).Where(id => !deletedUserIds.Contains(id)).ToList();
 		}
 
 		/* Pass limit=0 to disable limiting */
@@ -125,17 +124,27 @@ namespace Database.DataContexts
 
 		private const string nameSpace = nameof(UsersRepo);
 
-		[TableValuedFunction(nameof(GetUsersByNamePrefix), nameSpace)]
-		// ReSharper disable once MemberCanBePrivate.Global
-		public IQueryable<UserIdWrapper> GetUsersByNamePrefix(string name)
+		public IQueryable<string> GetUsersByNamePrefix(string name)
 		{
 			if (string.IsNullOrEmpty(name))
-				return db.Users.Where(u => !u.IsDeleted).Select(u => new UserIdWrapper(u.Id));
+				return db.Users.Where(u => !u.IsDeleted).Select(u => u.Id);
 
-			var splittedName = name.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+			var sql = 
+$@"SELECT Id
+FROM public.""AspNetUsers""
+where ""Names"" ~* '(^| )'";
+
+			/*var splittedName = name.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
 			var nameQuery = string.Join(" & ", splittedName.Select(s => "\"" + s.Trim().Replace("\"", "\\\"") + "*\""));
 			var nameParameter = new ObjectParameter("name", nameQuery);
-			return db.ObjectContext().CreateQuery<UserIdWrapper>($"[{nameof(GetUsersByNamePrefix)}](@name)", nameParameter);
+			return db.ObjectContext().CreateQuery<string>($"[{nameof(GetUsersByNamePrefix)}](@name)", nameParameter);
+			var taken = (await db.WorkQueueItems.FromSqlRaw(
+				sql,
+				new NpgsqlParameter<int>("@queueId", queueId),
+				new NpgsqlParameter<DateTime>("@now", DateTime.UtcNow),
+				new NpgsqlParameter<DateTime>("@timeLimit", (DateTime.UtcNow + timeLimit).Value)
+			).AsNoTracking().ToListAsync()).FirstOrDefault();*/
+			return null;
 		}
 
 		public async Task UpdateLastConfirmationEmailTime(ApplicationUser user)
@@ -219,15 +228,4 @@ namespace Database.DataContexts
 	}
 
 	/* System.String is not available for table-valued functions so we need to create ComplexTyped wrapper */
-
-	[ComplexType]
-	public class UserIdWrapper
-	{
-		public UserIdWrapper(string userId)
-		{
-			Id = userId;
-		}
-
-		public string Id { get; set; }
-	}
 }

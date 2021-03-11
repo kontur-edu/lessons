@@ -200,7 +200,7 @@ namespace Ulearn.Web.Api.Controllers
 			).ToList();
 			var coursesInWhichUserHasAnyRole = new HashSet<string>(rolesByCourse.Select(kvp => kvp.Key), StringComparer.OrdinalIgnoreCase);
 			var groupsWhereIAmStudent = (await groupMembersRepo.GetUserGroupsAsync(userId).ConfigureAwait(false))
-				.Where(g => visibleCourses.Contains(g.CourseId) || coursesInWhichUserHasAnyRole.Contains(g.CourseId));
+				.Where(g => visibleCourses.Contains(g.CourseId) || coursesInWhichUserHasAnyRole.Contains(g.CourseId) || isSystemAdministrator);
 			return new CourseRolesResponse
 			{
 				IsSystemAdministrator = isSystemAdministrator,

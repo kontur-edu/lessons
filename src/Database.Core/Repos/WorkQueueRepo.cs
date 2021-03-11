@@ -54,18 +54,18 @@ namespace Database.Repos
 				: $"and \"{TypeColumnName}\" in ({string.Join(", ", types.Select(t => $"'{t}'"))})";
 			var sql = 
 $@"with next_task as (
-	select ""Id"" from ""{nameof(db.WorkQueueItems)}""
+	select ""{IdColumnName}"" from ""{nameof(db.WorkQueueItems)}""
 	where ""{QueueIdColumnName}"" = @queueId
 		and (""{TakeAfterTimeColumnName}"" is NULL or ""{TakeAfterTimeColumnName}"" < @now)
 		{typesCondition}
-	order by ""{IdColumnName}"" desc, {IdColumnName}
+	order by ""{PriorityColumnName}"" desc, ""{IdColumnName}""
 	limit 1
 	for update skip locked
 )
 update ""{nameof(db.WorkQueueItems)}""
 set ""{TakeAfterTimeColumnName}"" = @timeLimit
 from next_task
-where ""{nameof(db.WorkQueueItems)}"".""Id"" = next_task.""Id""
+where ""{nameof(db.WorkQueueItems)}"".""{IdColumnName}"" = next_task.""{IdColumnName}""
 returning next_task.""{IdColumnName}"", ""{QueueIdColumnName}"", ""{ItemIdColumnName}"", ""{PriorityColumnName}"", ""{TypeColumnName}"", ""{TakeAfterTimeColumnName}"";"; // Если написать *, Id возвращается дважды
 			using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew, new TransactionOptions { IsolationLevel = IsolationLevel.RepeatableRead }, TransactionScopeAsyncFlowOption.Enabled))
 			{

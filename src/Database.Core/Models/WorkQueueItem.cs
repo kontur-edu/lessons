@@ -17,7 +17,7 @@ namespace Database.Models
 
 		[Required]
 		public string ItemId { get; set; } // Id элемента другой таблицы, которому соответствует запись в очереди
-		public const string ItemIdColumnName = "Id";
+		public const string ItemIdColumnName = "ItemId";
 
 		public int Priority { get; set; } // Приоритет, чем больше, тем приоритетнее
 		public const string PriorityColumnName = "Priority";

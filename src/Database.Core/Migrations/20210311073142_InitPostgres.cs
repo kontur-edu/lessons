@@ -8,14 +8,21 @@ namespace Database.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:CollationDefinition:case_insensitive", "und@colStrength=secondary,und@colStrength=secondary,icu,False");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Id = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -26,28 +33,43 @@ namespace Database.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
+                    Id = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    FirstName = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    LastName = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Registered = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     LastEdit = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    AvatarUrl = table.Column<string>(type: "text", nullable: true),
+                    AvatarUrl = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     TelegramChatId = table.Column<long>(type: "bigint", nullable: true),
-                    TelegramChatTitle = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    KonturLogin = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    TelegramChatTitle = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    KonturLogin = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     LastConfirmationEmailTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Gender = table.Column<short>(type: "smallint", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    Names = table.Column<string>(type: "text", nullable: true),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Names = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -64,11 +86,14 @@ namespace Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     ArchiveName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -79,7 +104,8 @@ namespace Database.Migrations
                 name: "CommentsPolicies",
                 columns: table => new
                 {
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsCommentsEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     ModerationPolicy = table.Column<int>(type: "integer", nullable: false),
                     OnlyInstructorsCanReply = table.Column<bool>(type: "boolean", nullable: false)
@@ -95,13 +121,19 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    RepoUrl = table.Column<string>(type: "text", nullable: true),
-                    Branch = table.Column<string>(type: "text", nullable: true),
-                    PublicKey = table.Column<string>(type: "text", nullable: true),
-                    PrivateKey = table.Column<string>(type: "text", nullable: true),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    RepoUrl = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Branch = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    PublicKey = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    PrivateKey = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsWebhookEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    PathToCourseXml = table.Column<string>(type: "text", nullable: true),
+                    PathToCourseXml = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     CreateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -115,9 +147,12 @@ namespace Database.Migrations
                 {
                     ConsumerId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Key = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Name = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Key = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Secret = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -130,10 +165,13 @@ namespace Database.Migrations
                 {
                     RequestId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Request = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -146,11 +184,13 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UlearnCourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UlearnCourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     StepikCourseId = table.Column<int>(type: "integer", nullable: false),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     StepId = table.Column<int>(type: "integer", nullable: false),
                     SlideXml = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -173,8 +213,10 @@ namespace Database.Migrations
                 name: "TempCourseErrors",
                 columns: table => new
                 {
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Error = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -185,8 +227,10 @@ namespace Database.Migrations
                 name: "TextBlobs",
                 columns: table => new
                 {
-                    Hash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    Hash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Text = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -199,9 +243,11 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     UnitId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserName = table.Column<string>(type: "text", nullable: false),
+                    UserName = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     PublishTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -216,9 +262,11 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     QueueId = table.Column<int>(type: "integer", nullable: false),
-                    ItemId = table.Column<string>(type: "text", nullable: false),
+                    ItemId = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Priority = table.Column<int>(type: "integer", nullable: false),
-                    Type = table.Column<string>(type: "text", nullable: true),
+                    Type = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     TakeAfterTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
@@ -232,9 +280,12 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    RoleId = table.Column<string>(type: "text", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    RoleId = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    ClaimType = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -253,12 +304,16 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     UnitId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ScoringGroupId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    ScoringGroupId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Score = table.Column<int>(type: "integer", nullable: false),
-                    InstructorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    InstructorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -284,9 +339,12 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "character varying(64)", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    ClaimType = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     ClaimValue = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -303,10 +361,14 @@ namespace Database.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     UserId = table.Column<string>(type: "character varying(64)", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -323,8 +385,10 @@ namespace Database.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "character varying(64)", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     RoleId = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -347,10 +411,14 @@ namespace Database.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "character varying(64)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Value = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -369,11 +437,14 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     PublishTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    Text = table.Column<string>(type: "text", nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsApproved = table.Column<bool>(type: "boolean", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsCorrectAnswer = table.Column<bool>(type: "boolean", nullable: false),
@@ -398,13 +469,17 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    GrantedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    GrantedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     AccessType = table.Column<short>(type: "smallint", nullable: false),
                     GrantTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     Comment = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -428,14 +503,20 @@ namespace Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     LoadingTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     PublishTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    RepoUrl = table.Column<string>(type: "text", nullable: true),
-                    CommitHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    RepoUrl = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CommitHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     PathToCourseXml = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -453,9 +534,12 @@ namespace Database.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -474,9 +558,12 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OwnerId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    ColorHex = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: true),
+                    OwnerId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    ColorHex = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -496,9 +583,12 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    OwnerId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    OwnerId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsArchived = table.Column<bool>(type: "boolean", nullable: false),
                     InviteHash = table.Column<Guid>(type: "uuid", nullable: false),
@@ -526,8 +616,10 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CourseId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -548,10 +640,12 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     Discriminator = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -568,8 +662,10 @@ namespace Database.Migrations
                 name: "RestoreRequests",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -589,9 +685,11 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     HintId = table.Column<int>(type: "integer", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     IsHintHelped = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -613,8 +711,10 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Rate = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -634,8 +734,10 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    AccessToken = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    AccessToken = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     AddedTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -655,14 +757,18 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UlearnCourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UlearnCourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     StepikCourseId = table.Column<int>(type: "integer", nullable: false),
-                    StepikCourseTitle = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    StepikCourseTitle = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsFinished = table.Column<bool>(type: "boolean", nullable: false),
                     IsInitialExport = table.Column<bool>(type: "boolean", nullable: false),
                     IsSuccess = table.Column<bool>(type: "boolean", nullable: false),
-                    Log = table.Column<string>(type: "text", nullable: true),
-                    OwnerId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Log = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    OwnerId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     StartTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     FinishTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
@@ -683,8 +789,10 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    GrantedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    GrantedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     AccessType = table.Column<short>(type: "smallint", nullable: false),
                     GrantTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: false)
@@ -710,10 +818,12 @@ namespace Database.Migrations
                 name: "TempCourses",
                 columns: table => new
                 {
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     LoadingTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     LastUpdateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -732,8 +842,10 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     UnitId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
@@ -753,10 +865,13 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     UnitId = table.Column<Guid>(type: "uuid", nullable: false),
-                    FlashcardId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    FlashcardId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Rate = table.Column<int>(type: "integer", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -777,13 +892,19 @@ namespace Database.Migrations
                 {
                     QuestionId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SlideTitle = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    UserName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Question = table.Column<string>(type: "text", nullable: false),
-                    UnitName = table.Column<string>(type: "text", nullable: false),
+                    SlideTitle = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UserName = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Question = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UnitName = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Time = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -803,8 +924,10 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -825,13 +948,17 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    CourseId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CourseId = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Role = table.Column<int>(type: "integer", nullable: false),
-                    GrantedById = table.Column<string>(type: "text", nullable: true),
+                    GrantedById = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     GrantTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: true),
                     Comment = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -850,8 +977,10 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: false),
@@ -860,6 +989,7 @@ namespace Database.Migrations
                     IsSkipped = table.Column<bool>(type: "boolean", nullable: false),
                     IsPassed = table.Column<bool>(type: "boolean", nullable: false),
                     IpAddress = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -878,13 +1008,19 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    BaseUrl = table.Column<string>(type: "text", nullable: false),
-                    QueueName = table.Column<string>(type: "text", nullable: false),
-                    UserName = table.Column<string>(type: "text", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    BaseUrl = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    QueueName = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UserName = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Password = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -903,9 +1039,12 @@ namespace Database.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     TemplateId = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    InstructorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Parameters = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    InstructorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Parameters = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     IsPreview = table.Column<bool>(type: "boolean", nullable: false)
@@ -937,13 +1076,14 @@ namespace Database.Migrations
                 name: "CertificateTemplateArchives",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    ArchiveName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Content = table.Column<byte[]>(type: "bytea", nullable: false),
                     CertificateTemplateId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CertificateTemplateArchives", x => x.Id);
+                    table.PrimaryKey("PK_CertificateTemplateArchives", x => x.ArchiveName);
                     table.ForeignKey(
                         name: "FK_CertificateTemplateArchives_CertificateTemplates_Certificat~",
                         column: x => x.CertificateTemplateId,
@@ -960,20 +1100,28 @@ namespace Database.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Elapsed = table.Column<TimeSpan>(type: "interval", nullable: true),
-                    DisplayName = table.Column<string>(type: "text", nullable: true),
+                    DisplayName = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsRightAnswer = table.Column<bool>(type: "boolean", nullable: false),
                     IsCompilationError = table.Column<bool>(type: "boolean", nullable: false),
-                    CompilationErrorHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
-                    OutputHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
-                    DebugLogsHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
-                    ExecutionServiceName = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
-                    CheckingAgentName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    CompilationErrorHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    OutputHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    DebugLogsHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    ExecutionServiceName = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CheckingAgentName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Score = table.Column<int>(type: "integer", nullable: true),
                     Points = table.Column<float>(type: "real", nullable: true),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -1010,7 +1158,8 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     CommentId = table.Column<int>(type: "integer", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -1037,7 +1186,8 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     CourseVersionId = table.Column<Guid>(type: "uuid", nullable: false),
                     File = table.Column<byte[]>(type: "bytea", nullable: false)
                 },
@@ -1060,6 +1210,7 @@ namespace Database.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     GroupId = table.Column<int>(type: "integer", nullable: false),
                     ScoringGroupId = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -1079,8 +1230,10 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     GroupId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    GrantedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    GrantedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     AccessType = table.Column<short>(type: "smallint", nullable: false),
                     GrantTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: false)
@@ -1115,7 +1268,8 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     GroupId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     AddingTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
@@ -1167,7 +1321,8 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     TransportId = table.Column<int>(type: "integer", nullable: true),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -1189,7 +1344,8 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     NotificationTransportId = table.Column<int>(type: "integer", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     NotificationType = table.Column<short>(type: "smallint", nullable: false),
                     IsEnabled = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -1211,10 +1367,12 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: false),
                     IgnoreInAttemptsCount = table.Column<bool>(type: "boolean", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -1240,12 +1398,15 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: false),
                     IgnoreInAttemptsCount = table.Column<bool>(type: "boolean", nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     LockedUntil = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LockedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    LockedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsChecked = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -1278,9 +1439,12 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SubmissionId = table.Column<int>(type: "integer", nullable: false),
-                    BlockId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    ItemId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    Text = table.Column<string>(type: "character varying(8192)", maxLength: 8192, nullable: true),
+                    BlockId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    ItemId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Text = table.Column<string>(type: "character varying(8192)", maxLength: 8192, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsRightAnswer = table.Column<bool>(type: "boolean", nullable: false),
                     QuizBlockScore = table.Column<int>(type: "integer", nullable: false),
                     QuizBlockMaxScore = table.Column<int>(type: "integer", nullable: false)
@@ -1302,16 +1466,20 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    SolutionCodeHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false),
+                    SolutionCodeHash = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     CodeHash = table.Column<int>(type: "integer", nullable: false),
                     AutomaticCheckingId = table.Column<int>(type: "integer", nullable: true),
                     AutomaticCheckingIsRightAnswer = table.Column<bool>(type: "boolean", nullable: false),
                     Language = table.Column<short>(type: "smallint", nullable: false),
-                    Sandbox = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true),
+                    Sandbox = table.Column<string>(type: "character varying(40)", maxLength: 40, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     AntiPlagiarismSubmissionId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
@@ -1346,6 +1514,7 @@ namespace Database.Migrations
                     ClientId = table.Column<Guid>(type: "uuid", nullable: false),
                     SubmissionId = table.Column<int>(type: "integer", nullable: false),
                     ClientUserId = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 },
                 constraints: table =>
                 {
@@ -1371,7 +1540,8 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SubmissionId = table.Column<int>(type: "integer", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
@@ -1401,12 +1571,15 @@ namespace Database.Migrations
                     ProhibitFurtherManualCheckings = table.Column<bool>(type: "boolean", nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: true),
                     Percent = table.Column<int>(type: "integer", nullable: true),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     SlideId = table.Column<Guid>(type: "uuid", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    UserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     LockedUntil = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LockedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    LockedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsChecked = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -1440,7 +1613,8 @@ namespace Database.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SubmissionId = table.Column<int>(type: "integer", nullable: false),
                     WatcherId = table.Column<int>(type: "integer", nullable: false),
-                    XQueueHeader = table.Column<string>(type: "text", nullable: false),
+                    XQueueHeader = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsResultSent = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -1472,8 +1646,10 @@ namespace Database.Migrations
                     StartPosition = table.Column<int>(type: "integer", nullable: false),
                     FinishLine = table.Column<int>(type: "integer", nullable: false),
                     FinishPosition = table.Column<int>(type: "integer", nullable: false),
-                    Comment = table.Column<string>(type: "text", nullable: false),
-                    AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Comment = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     HiddenFromTopComments = table.Column<bool>(type: "boolean", nullable: false),
                     AddingTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
@@ -1508,8 +1684,10 @@ namespace Database.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ReviewId = table.Column<int>(type: "integer", nullable: false),
-                    Text = table.Column<string>(type: "text", nullable: false),
-                    AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Text = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    AuthorId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     AddingTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -1536,27 +1714,39 @@ namespace Database.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    InitiatedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CourseId = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    InitiatedById = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     CreateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     AreDeliveriesCreated = table.Column<bool>(type: "boolean", nullable: false),
-                    Discriminator = table.Column<string>(type: "text", nullable: false),
+                    Discriminator = table.Column<string>(type: "text", nullable: false)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     CommentId1 = table.Column<int>(type: "integer", nullable: true),
-                    LikedUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    LikedUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     ParentCommentId = table.Column<int>(type: "integer", nullable: true),
-                    AddedUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
+                    AddedUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     ProcessId = table.Column<int>(type: "integer", nullable: true),
                     GroupId = table.Column<int>(type: "integer", nullable: true),
                     AccessId = table.Column<int>(type: "integer", nullable: true),
-                    UserId = table.Column<string>(type: "character varying(64)", nullable: true),
+                    UserId = table.Column<string>(type: "character varying(64)", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     GroupMemberHasBeenRemovedNotification_GroupId = table.Column<int>(type: "integer", nullable: true),
-                    UserIds = table.Column<string>(type: "text", nullable: true),
-                    UserDescriptions = table.Column<string>(type: "text", nullable: true),
-                    Text = table.Column<string>(type: "text", nullable: true),
+                    UserIds = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    UserDescriptions = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    Text = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     JoinedToYourGroupNotification_GroupId = table.Column<int>(type: "integer", nullable: true),
-                    JoinedUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
-                    NotUploadedPackageNotification_CommitHash = table.Column<string>(type: "text", nullable: true),
-                    NotUploadedPackageNotification_RepoUrl = table.Column<string>(type: "text", nullable: true),
+                    JoinedUserId = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    NotUploadedPackageNotification_CommitHash = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
+                    NotUploadedPackageNotification_RepoUrl = table.Column<string>(type: "text", nullable: true)
+                        .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     CheckingId = table.Column<int>(type: "integer", nullable: true),
                     IsRecheck = table.Column<bool>(type: "boolean", nullable: true),
                     PassedManualQuizCheckingNotification_CheckingId = table.Column<int>(type: "integer", nullable: true),

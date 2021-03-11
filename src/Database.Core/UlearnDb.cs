@@ -34,6 +34,9 @@ namespace Database
 		{
 			base.OnModelCreating(modelBuilder);
 
+			modelBuilder.HasCollation("case_insensitive", locale: "und@colStrength=secondary", provider: "icu", deterministic: false);
+			modelBuilder.UseDefaultColumnCollation("case_insensitive");
+
 			/* IdentityUser.Id is guid in ASP.NET Core, so we can limit it by 64 chars.
 			   If we will not do it, foreign keys to AspNetUsers.Id will fail in ASP.NET Core
 			 */

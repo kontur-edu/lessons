@@ -10,13 +10,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(UlearnDb))]
-    [Migration("20210225124135_InitPostgres")]
+    [Migration("20210311073142_InitPostgres")]
     partial class InitPostgres
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("Npgsql:CollationDefinition:case_insensitive", "und@colStrength=secondary,und@colStrength=secondary,icu,False")
+                .HasAnnotation("Npgsql:DefaultColumnCollation", "case_insensitive")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
@@ -420,7 +422,7 @@ namespace Database.Migrations
 
             modelBuilder.Entity("Database.Models.CertificateTemplateArchive", b =>
                 {
-                    b.Property<string>("Id")
+                    b.Property<string>("ArchiveName")
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
 
@@ -431,7 +433,7 @@ namespace Database.Migrations
                         .IsRequired()
                         .HasColumnType("bytea");
 
-                    b.HasKey("Id");
+                    b.HasKey("ArchiveName");
 
                     b.HasIndex("CertificateTemplateId");
 

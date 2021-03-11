@@ -10,6 +10,7 @@ using Database.Models;
 using Database.Repos;
 using ManualUtils.AntiPlagiarism;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using Ulearn.Core;
 using Ulearn.Core.Configuration;
@@ -34,6 +35,7 @@ namespace ManualUtils
 				.UseNpgsql(configuration.Database, o => o.SetPostgresVersion(13, 2));
 			var adb = new AntiPlagiarismDb(aOptionsBuilder.Options);
 
+			CompareColumns();
 			//await ResendLti(db);
 			//await FindExternalSolutionsPlagiarism.UploadSolutions();
 			//await FindExternalSolutionsPlagiarism.GetRawResults();
@@ -179,6 +181,28 @@ namespace ManualUtils
 			// Где взять GeoLite2-City.mmdb читай в GeoLite2-City.mmdb.readme.txt
 			var courses = new[] { "BasicProgramming", "BasicProgramming2", "Linq", "complexity", "CS2" };
 			GetIpAddresses.Run(db, lastMonthCount: 13, courses, isNotMembersOfGroups: true, onlyRegisteredFrom: true);
+		}
+
+		private static void CompareColumns()
+		{
+			var postgres = File.ReadAllLines(@"C:\Users\vorkulsky\Downloads\postgres.csv")
+				.Select(s => s.Split('\t'))
+				.Select(p => (Table: p[0], Column: p[1]))
+				.GroupBy(p => p.Table)
+				.ToDictionary(p => p.Key, p => p.Select(t => t.Column).ToHashSet());
+			var sqlserver = File.ReadAllLines(@"C:\Users\vorkulsky\Downloads\sql server.txt")
+				.Select(s => s.Split('\t'))
+				.Select(p => (Table: p[1], Column: p[0]))
+				.GroupBy(p => p.Table)
+				.ToDictionary(p => p.Key, p => p.Select(t => t.Column).ToHashSet());
+			foreach (var table in sqlserver.Keys)
+			{
+				if(!postgres.ContainsKey(table))
+					continue;
+				postgres[table].SymmetricExceptWith(sqlserver[table]);
+				if (postgres[table].Count > 0)
+					Console.WriteLine($"{table}:" + string.Join(", ", postgres[table]));
+			}
 		}
 	}
 }

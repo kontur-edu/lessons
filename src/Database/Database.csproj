@@ -37,14 +37,11 @@
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Migrations\202103040838070_InitPostgres.resx">
-      <DependentUpon>202103040838070_InitPostgres.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Migrations\202103090944538_AddUserFlashcardsUnlocking.resx">
-      <DependentUpon>202103090944538_AddUserFlashcardsUnlocking.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Migrations\202103110736311_IgnoreChanges.resx">
+			<DependentUpon>202103110736311_IgnoreChanges.cs</DependentUpon>
+		</EmbeddedResource>
+	</ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.local.json" />
     <Content Include="appsettings.local.json">

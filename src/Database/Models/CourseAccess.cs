@@ -51,7 +51,7 @@ namespace Database.Models
 
 	public enum CourseAccessType : short
 	{
-		/* Редактировать, закреплять, удалять (скрывать) комментарии */
+		/* Реактировать, закреплять, удалять (скрывать) комментарии */
 		[Display(Name = "Редактировать и удалять комментарии")]
 		EditPinAndRemoveComments = 1,
 

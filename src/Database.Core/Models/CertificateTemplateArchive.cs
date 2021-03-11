@@ -9,7 +9,7 @@ namespace Database.Models
 		[Key]
 		[StringLength(128)]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		public string Id { get; set; }
+		public string ArchiveName { get; set; }
 
 		[Required]
 		public byte[] Content { get; set; }

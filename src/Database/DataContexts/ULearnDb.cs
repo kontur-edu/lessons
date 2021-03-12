@@ -25,7 +25,7 @@ namespace Database.DataContexts
 		public ULearnDb(string database)
 			: base(database, throwIfV1Schema: false)
 		{
-			System.Data.Entity.Database.SetInitializer(new NullDatabaseInitializer<ULearnDb>());
+			System.Data.Entity.Database.SetInitializer(new MigrateDatabaseToLatestVersion<ULearnDb, Configuration>());
 			Database.Log = log.Debug;
 		}
 

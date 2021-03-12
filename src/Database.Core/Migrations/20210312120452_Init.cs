@@ -51,7 +51,7 @@ namespace Database.Migrations
                     LastConfirmationEmailTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     Gender = table.Column<short>(type: "smallint", nullable: true),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
-                    Names = table.Column<string>(type: "text", nullable: true, computedColumnSql: "\"UserName\" || ' ' || \"FirstName\" || ' ' || \"LastName\"", stored: true, collation: "default"),
+                    Names = table.Column<string>(type: "text", nullable: true, computedColumnSql: "immutable_concat_ws(' ', nullif(\"UserName\", ''), nullif(\"FirstName\",''), nullif(\"LastName\",''), nullif(\"FirstName\",''))", stored: true, collation: "default"),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                         .Annotation("Npgsql:DefaultColumnCollation", "case_insensitive"),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)

@@ -46,8 +46,15 @@ namespace Database.Models
 		[Index("IsDeleted")]
 		public bool IsDeleted { get; set; }
 
-		// Автогенерируется
-		public string Names { get; private set;  }
+		[DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+		public string Names
+		{
+			get { return UserName + " " + FirstName + " " + LastName + " " + FirstName; }
+			private set
+			{
+				/* Empty for EF */
+			}
+		}
 
 		public string VisibleName
 		{

@@ -159,7 +159,7 @@ namespace Database.Migrations
                     b.Property<string>("Names")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("text")
-                        .HasComputedColumnSql("\"UserName\" || ' ' || \"FirstName\" || ' ' || \"LastName\"", true)
+                        .HasComputedColumnSql("immutable_concat_ws(' ', nullif(\"UserName\", ''), nullif(\"FirstName\",''), nullif(\"LastName\",''), nullif(\"FirstName\",''))", true)
                         .UseCollation("default");
 
                     b.Property<string>("NormalizedEmail")

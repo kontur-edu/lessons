@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Database.Models;
-using EntityFramework.Functions;
 using JetBrains.Annotations;
 using Microsoft.AspNet.Identity;
+using Npgsql;
 using Ulearn.Common;
 using Ulearn.Core;
 
@@ -38,8 +38,7 @@ namespace Database.DataContexts
 			var usersIdsByNamePrefix = string.IsNullOrEmpty(query.NamePrefix)
 				? null
 				: GetUsersByNamePrefix(query.NamePrefix);
-			return FilterUsers(query, usersIdsByNamePrefix, limit);
-
+			return FilterUsers(query, null, usersIdsByNamePrefix, limit);
 		}
 
 		[ItemCanBeNull]
@@ -49,30 +48,32 @@ namespace Database.DataContexts
 				return null;
 			var email = query.NamePrefix;
 			var usersIdsByEmail = db.Users.Where(u => u.Email == email).Select(u => u.Id);
-			return FilterUsers(query, usersIdsByEmail, limit);
+			return FilterUsers(query, usersIdsByEmail, null, limit);
 		}
-		
-		private List<UserRolesInfo> FilterUsers(UserSearchQueryModel query, [CanBeNull]IQueryable<string> userIds, int limit)
+
+		private List<UserRolesInfo> FilterUsers(UserSearchQueryModel query, [CanBeNull]IQueryable<string> userIdsQuery, [CanBeNull]List<string> userIds, int limit)
 		{
 			var roles = db.Roles.ToList();
 			var role = string.IsNullOrEmpty(query.Role) ? null : roles.FirstOrDefault(r => r.Name == query.Role);
 			var users = db.Users.Include(u => u.Roles).Where(u => !u.IsDeleted);
-			if (userIds != null)
-				users = users.Where(u => userIds.Contains(u.Id));
+			if (userIdsQuery != null)
+				users = users.Where(u => userIdsQuery.Contains(u.Id));
 
 			return users
 				.FilterByRole(role)
 				.FilterByUserIds(
 					userRolesRepo.GetListOfUsersWithCourseRole(query.CourseRole, query.CourseId, query.IncludeHighCourseRoles),
-					userRolesRepo.GetListOfUsersByPrivilege(query.OnlyPrivileged, query.CourseId)
+					userRolesRepo.GetListOfUsersByPrivilege(query.OnlyPrivileged, query.CourseId),
+					userIds
 				)
 				.GetUserRolesInfo(limit, roles);
 		}
 
 		public List<string> FilterUsersByNamePrefix(string namePrefix)
 		{
-			var deletedUserIds = db.Users.Where(u => u.IsDeleted).Select(u => u.Id).ToList();
-			return GetUsersByNamePrefix(namePrefix).Where(id => !deletedUserIds.Contains(id)).ToList();
+			if (string.IsNullOrEmpty(namePrefix))
+				return db.Users.Where(u => !u.IsDeleted).Select(u => u.Id).ToList();
+			return GetUsersByNamePrefix(namePrefix).ToList();
 		}
 
 		/* Pass limit=0 to disable limiting */
@@ -122,29 +123,20 @@ namespace Database.DataContexts
 			return db.SaveChangesAsync();
 		}
 
-		private const string nameSpace = nameof(UsersRepo);
-
-		public IQueryable<string> GetUsersByNamePrefix(string name)
+		private static Regex nonWordChars = new Regex(@"[^\w\s\-]*", RegexOptions.Compiled);
+		private List<string> GetUsersByNamePrefix(string name, int limit = 100)
 		{
-			if (string.IsNullOrEmpty(name))
-				return db.Users.Where(u => !u.IsDeleted).Select(u => u.Id);
-
+			var escapedName = nonWordChars.Replace(name, "").Trim();
 			var sql = 
-$@"SELECT Id
-FROM public.""AspNetUsers""
-where ""Names"" ~* '(^| )'";
-
-			/*var splittedName = name.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-			var nameQuery = string.Join(" & ", splittedName.Select(s => "\"" + s.Trim().Replace("\"", "\\\"") + "*\""));
-			var nameParameter = new ObjectParameter("name", nameQuery);
-			return db.ObjectContext().CreateQuery<string>($"[{nameof(GetUsersByNamePrefix)}](@name)", nameParameter);
-			var taken = (await db.WorkQueueItems.FromSqlRaw(
+$@"SELECT ""Id""
+FROM ""AspNetUsers""
+WHERE ""IsDeleted"" = False and ""Names"" ~* @query
+LIMIT {limit};"; // ~* - регвыр ignoreCase
+			var userIds = db.Database.SqlQuery<string>(
 				sql,
-				new NpgsqlParameter<int>("@queueId", queueId),
-				new NpgsqlParameter<DateTime>("@now", DateTime.UtcNow),
-				new NpgsqlParameter<DateTime>("@timeLimit", (DateTime.UtcNow + timeLimit).Value)
-			).AsNoTracking().ToListAsync()).FirstOrDefault();*/
-			return null;
+				new NpgsqlParameter<string>("@query", $@"(^|\s){escapedName}")
+			).ToList();
+			return userIds;
 		}
 
 		public async Task UpdateLastConfirmationEmailTime(ApplicationUser user)

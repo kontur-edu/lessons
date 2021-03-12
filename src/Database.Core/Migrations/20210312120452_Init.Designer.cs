@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Migrations
 {
     [DbContext(typeof(UlearnDb))]
-    [Migration("20210311130605_Init")]
+    [Migration("20210312120452_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -161,7 +161,7 @@ namespace Database.Migrations
                     b.Property<string>("Names")
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("text")
-                        .HasComputedColumnSql("\"UserName\" || ' ' || \"FirstName\" || ' ' || \"LastName\"", true)
+                        .HasComputedColumnSql("immutable_concat_ws(' ', nullif(\"UserName\", ''), nullif(\"FirstName\",''), nullif(\"LastName\",''), nullif(\"FirstName\",''))", true)
                         .UseCollation("default");
 
                     b.Property<string>("NormalizedEmail")

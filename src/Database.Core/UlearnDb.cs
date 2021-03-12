@@ -43,7 +43,7 @@ namespace Database
 				.UseCollation("default");
 			modelBuilder.Entity<ApplicationUser>()
 				.Property(u => u.Names)
-				.HasComputedColumnSql(@"""UserName"" || ' ' || ""FirstName"" || ' ' || ""LastName""", stored: true);
+				.HasComputedColumnSql(@"immutable_concat_ws(' ', nullif(""UserName"", ''), nullif(""FirstName"",''), nullif(""LastName"",''), nullif(""FirstName"",''))", stored: true);
 			// Индекс с триграммами. Ускоряет поиск в том числе по регулярному выражению, если в нем есть кусочки простого текста хотя бы на 3 символа.
 			modelBuilder.Entity<ApplicationUser>()
 				.HasIndex(p => p.Names)

@@ -37,11 +37,6 @@
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
-	<ItemGroup>
-		<EmbeddedResource Update="Migrations\202103111309284_IgnoreChanges.resx">
-			<DependentUpon>202103111309284_IgnoreChanges.cs</DependentUpon>
-		</EmbeddedResource>
-	</ItemGroup>
   <ItemGroup>
     <None Remove="appsettings.local.json" />
     <Content Include="appsettings.local.json">

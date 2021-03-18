@@ -14,10 +14,9 @@ namespace CourseToolHotReloader.Tests
 		public void Test()
 		{
 			var excludeCriterias = new List<string> {".vs/", ".idea/", "/*/*.cs", "obj/"};
-			var ms = ZipUtils.CreateZipFromDirectory(new List<string>{"D://zip/test"}, excludeCriterias, null, Encoding.UTF8);
-			var fileStream = new FileStream("D://zip/result.zip", FileMode.Create, FileAccess.Write);
-			ms.CopyTo(fileStream);
-			fileStream.Close();
+			using (var ms = ZipUtils.CreateZipFromDirectory(new List<string>{"D://zip/test"}, excludeCriterias, null, Encoding.UTF8))
+			using (var fileStream = new FileStream("D://zip/result.zip", FileMode.Create, FileAccess.Write))
+				ms.CopyTo(fileStream);
 		}
 	}
 }

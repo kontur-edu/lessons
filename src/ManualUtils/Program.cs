@@ -89,18 +89,27 @@ namespace ManualUtils
 			var ltiConsumersRepo = new LtiConsumersRepo(db);
 			var slideCheckingsRepo = new SlideCheckingsRepo(db, null);
 			var visitsRepo = new VisitsRepo(db, slideCheckingsRepo);
-			var ltiRequests = await db.LtiRequests.Where(r => r.RequestId > 284927).OrderByDescending(r => r.RequestId).ToListAsync();
+			// current 288064
+			var ltiRequests = await db.LtiRequests.Where(r => r.RequestId > 285417).OrderByDescending(r => r.RequestId).ToListAsync();
 			var courseManager = new CourseManager(CourseManager.GetCoursesDirectory());
 
 			var i = 0;
 			foreach (var ltiRequest in ltiRequests)
 			{
-				var course = courseManager.GetCourse(ltiRequest.CourseId);
-				var slide = course.GetSlideById(ltiRequest.SlideId, true);
-				var score = await visitsRepo.GetScore(ltiRequest.CourseId, ltiRequest.SlideId, ltiRequest.UserId);
-				await LtiUtils.SubmitScore(slide, ltiRequest.UserId, score, ltiRequest.Request, ltiConsumersRepo);
 				i++;
-				Console.WriteLine($"{i} requestId {ltiRequest.RequestId} score {score}");
+				Console.WriteLine($"{i} requestId {ltiRequest.RequestId}");
+				try
+				{
+					var course = courseManager.GetCourse(ltiRequest.CourseId);
+					var slide = course.GetSlideById(ltiRequest.SlideId, true);
+					var score = await visitsRepo.GetScore(ltiRequest.CourseId, ltiRequest.SlideId, ltiRequest.UserId);
+					await LtiUtils.SubmitScore(slide, ltiRequest.UserId, score, ltiRequest.Request, ltiConsumersRepo);
+					Console.WriteLine($"{i} requestId {ltiRequest.RequestId} score {score}");
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex);
+				}
 			}
 		}
 
@@ -126,16 +135,16 @@ namespace ManualUtils
 			var userSolutionsRepo = new UserSolutionsRepo(db, new TextsRepo(db), new WorkQueueRepo(db), null);
 			var time = new DateTime(2021, 1, 30);
 			var submissions = await db.UserExerciseSubmissions.Where(s =>
-				s.AutomaticChecking.DisplayName == "XQueue watcher Stepik.org"
-				&& (s.AutomaticChecking.Status == AutomaticExerciseCheckingStatus.Waiting || s.AutomaticChecking.Status == AutomaticExerciseCheckingStatus.RequestTimeLimit)
-				&& s.AutomaticChecking.Timestamp > time)
+					s.AutomaticChecking.DisplayName == "XQueue watcher Stepik.org"
+					&& (s.AutomaticChecking.Status == AutomaticExerciseCheckingStatus.Waiting || s.AutomaticChecking.Status == AutomaticExerciseCheckingStatus.RequestTimeLimit)
+					&& s.AutomaticChecking.Timestamp > time)
 				.OrderBy(c => c.Timestamp)
 				.ToListAsync();
 			var i = 0;
 			foreach (var submission in submissions)
 			{
 				Console.WriteLine($"{i} from {submissions.Count} {submission.Id}");
-				await userSolutionsRepo.RunAutomaticChecking(submission, TimeSpan.FromSeconds(25), false, -10);
+				await userSolutionsRepo.RunAutomaticChecking(submission.Id, submission.Sandbox, TimeSpan.FromSeconds(25), false, -10);
 				Thread.Sleep(1000);
 				var result = await db.UserExerciseSubmissions
 					.Include(s => s.AutomaticChecking)
@@ -165,7 +174,7 @@ namespace ManualUtils
 			var i = 0;
 			foreach (var mostSimilarSubmission in mostSimilarSubmissions)
 			{
-				if(exist.Contains(mostSimilarSubmission.SubmissionId))
+				if (exist.Contains(mostSimilarSubmission.SubmissionId))
 					continue;
 				adb.MostSimilarSubmissions.Add(mostSimilarSubmission);
 				if (i % 1000 == 0)
@@ -173,8 +182,10 @@ namespace ManualUtils
 					adb.SaveChanges();
 					Console.WriteLine(i);
 				}
+
 				i++;
 			}
+
 			adb.SaveChanges();
 		}
 

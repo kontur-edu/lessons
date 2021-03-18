@@ -91,7 +91,7 @@ namespace uLearn.CSharp
 					zipWithFullProj)
 				.UpdateZip();
 
-			byte[] ResolveCsprojLink(FileInfo file)
+			MemoryStream ResolveCsprojLink(FileInfo file)
 			{
 				return file.Name.Equals(exerciseBlock.CsprojFileName) ? ProjModifier.ModifyCsproj(file, ProjModifier.ReplaceLinksWithItems) : null;
 			}

@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import classNames from 'classnames';
-import { constructPathToStudentSubmissions } from "src/consts/routes";
-import { isInstructor } from "src/utils/courseRoles";
-import { ShortSlideInfo, SlideType } from "src/models/slide";
 
-import { RootState } from "src/models/reduxState";
-
-import Course from '../../Course.js';
 import DownloadedHtmlContent from 'src/components/common/DownloadedHtmlContent.js';
 import { Modal } from "@skbkontur/react-ui";
+
+import { isInstructor } from "src/utils/courseRoles";
+import { getSlideInfoById } from "../../CourseUtils";
+
+import { SlideType } from "src/models/slide";
+import { constructPathToStudentSubmissions } from "src/consts/routes";
+import { RootState } from "src/models/reduxState";
 
 import texts from "./SlideHeader.texts";
 import styles from "../SlideHeader/SlideHeader.less";
@@ -99,7 +100,7 @@ const mapState = (state: RootState, ownProps: ScoreHeaderProps) => {
 
 	const slideProgress = userProgress.progress[courseId]?.[slideId];
 	const courseInfo = courses.fullCoursesInfo[courseId];
-	const slideInfo: ShortSlideInfo = Course.getSlideInfoById(slideId, courseInfo).current;
+	const slideInfo = getSlideInfoById(slideId, courseInfo)?.current;
 	const submissions = submissionsByCourses[courseId]?.[slideId];
 	const hasReviewedSubmissions = submissions
 		? Object.values(submissionsByCourses[courseId][slideId]).some(s => s.manualCheckingPassed)
@@ -114,9 +115,9 @@ const mapState = (state: RootState, ownProps: ScoreHeaderProps) => {
 		isSkipped: slideProgress?.isSkipped ?? false,
 		waitingForManualChecking: slideProgress?.waitingForManualChecking ?? false,
 		prohibitFurtherManualChecking: slideProgress?.prohibitFurtherManualChecking ?? false,
-		maxScore: slideInfo.maxScore,
+		maxScore: slideInfo?.maxScore || 0,
 		hasReviewedSubmissions: hasReviewedSubmissions,
-		showStudentSubmissions: slideInfo.type === SlideType.Exercise && instructor,
+		showStudentSubmissions: slideInfo?.type === SlideType.Exercise && instructor,
 	};
 };
 const connector = connect(mapState);

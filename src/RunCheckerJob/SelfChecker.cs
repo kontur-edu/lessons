@@ -27,7 +27,9 @@ namespace RunCheckerJob
 			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 			var imageName = sandboxDir.Name;
 			var srcDirectory = new DirectoryInfo(Path.GetFullPath(Path.Combine(sandboxDir.FullName, "sample/src/")));
-			var zipBytes = ZipUtils.CreateZipFromDirectory(new List<string> {srcDirectory.FullName}, new List<string> { "node_modules", ".idea" }, null, Encoding.UTF8).ToArray();
+			byte[] zipBytes;
+			using (var stream = ZipUtils.CreateZipFromDirectory(new List<string> { srcDirectory.FullName }, new List<string> { "node_modules", ".idea" }, null, Encoding.UTF8))
+				zipBytes = stream.ToArray();
 			var submissionFile = new FileInfo(Path.GetFullPath(Path.Combine(sandboxDir.FullName, "sample/submission.json")));
 			var submission = JsonConvert.DeserializeObject<CommandRunnerSubmission>(File.ReadAllText(submissionFile.FullName));
 			submission.Id = Utils.NewNormalizedGuid();

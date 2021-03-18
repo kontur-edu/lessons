@@ -38,9 +38,9 @@ namespace Ulearn.Core.Helpers
 				}
 				case UniversalExerciseBlock block:
 				{
-					var studentZipBytes = block.GetZipBytesForStudent();
-					using (var fs = zipFile.OpenWrite())
-						fs.Write(studentZipBytes, 0, studentZipBytes.Length);
+					using (var studentZipMemoryStream = block.GetZipMemoryStreamForStudent())
+						using (var fs = zipFile.OpenWrite())
+							studentZipMemoryStream.CopyTo(fs);
 					return;
 				}
 				default:
@@ -60,7 +60,7 @@ namespace Ulearn.Core.Helpers
 					block.PathsToExcludeForStudent != null && block.PathsToExcludeForStudent.Any(p => p == filepath);
 		}
 
-		private static byte[] GetFileContentInStudentZip(CsProjectExerciseBlock block, FileInfo file)
+		private static MemoryStream GetFileContentInStudentZip(CsProjectExerciseBlock block, FileInfo file)
 		{
 			if (!file.Name.Equals(block.CsprojFileName, StringComparison.InvariantCultureIgnoreCase))
 				return null;

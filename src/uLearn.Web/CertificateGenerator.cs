@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Database;
 using Database.DataContexts;
 using Database.Models;
 using Vostok.Logging.Abstractions;
@@ -56,7 +57,7 @@ namespace uLearn.Web
 			this.visitsRepo = visitsRepo;
 		}
 
-		public CertificateGenerator(ULearnDb db, CourseManager courseManager)
+		public CertificateGenerator(ULearnDb db, WebCourseManager courseManager)
 			: this(new UserQuizzesRepo(db),
 				new UserSolutionsRepo(db, courseManager),
 				new SlideCheckingsRepo(db),

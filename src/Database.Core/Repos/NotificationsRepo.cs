@@ -471,16 +471,16 @@ namespace Database.Repos
 			return db.NotificationDeliveries.Where(d => d.NotificationTransportId == notificationTransport.Id && d.CreateTime > from);
 		}
 
-		public IQueryable<NotificationDelivery> GetTransportsDeliveriesQueryable(List<int> notificationTransportsIds, DateTime from)
+		public IQueryable<NotificationDelivery> GetTransportsDeliveriesQueryable(IList<int> notificationTransportsIds, DateTime from)
 		{
 			return db.NotificationDeliveries
 				.Include(d => d.Notification)
 				.Where(d => notificationTransportsIds.Contains(d.NotificationTransportId) && d.CreateTime > from);
 		}
 
-		public async Task<DateTime?> GetLastDeliveryTimestampAsync(NotificationTransport notificationTransport)
+		public async Task<DateTime?> GetLastDeliveryTimestampAsync(int notificationTransportId)
 		{
-			var lastNotification = await db.NotificationDeliveries.Where(d => d.NotificationTransportId == notificationTransport.Id)
+			var lastNotification = await db.NotificationDeliveries.Where(d => d.NotificationTransportId == notificationTransportId)
 				.OrderByDescending(d => d.CreateTime)
 				.FirstOrDefaultAsync()
 				;

@@ -9,11 +9,11 @@ import {
 } from "src/models/groups";
 
 // Groups
-export function getCourseGroups(courseId: string): Promise<Response> {
+export function getCourseGroups(courseId: string): Promise<{ groups: GroupInfo[] }> {
 	return api.get("groups?course_id=" + courseId);
 }
 
-export function getCourseArchivedGroups(courseId: string): Promise<Response> {
+export function getCourseArchivedGroups(courseId: string): Promise<{ groups: GroupInfo[] }> {
 	return api.get("groups?course_id=" + courseId + "&archived=true");
 }
 

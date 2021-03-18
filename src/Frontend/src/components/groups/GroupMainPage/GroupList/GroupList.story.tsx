@@ -1,5 +1,5 @@
 import React from "react";
-import GroupList from "./GroupList.js";
+import GroupList from "./GroupList";
 
 import "./groupList.less";
 
@@ -7,14 +7,16 @@ export default {
 	title: "Group/GroupList",
 };
 
-export const Default = (): React.ReactNode => <GroupList courseId={ '1' } groups={ getGroups() }/>;
+const mock = () => ({});
+export const Default = (): React.ReactNode => <GroupList toggleArchived={ mock } deleteGroup={ mock } loading={ false }
+														 userId={ '1' } courseId={ '1' } groups={ getGroups() }/>;
 
 Default.storyName = "default";
 
 function getGroups() {
 	return [
 		{
-			id: 17,
+			id: '17',
 			createTime: "2018-10-19T13:46:28.153",
 			name: "asdfasdfasdfasdf",
 			isArchived: false,
@@ -23,7 +25,6 @@ function getGroups() {
 				firstName: "",
 				lastName: "",
 				visibleName: "paradeeva",
-				avatarUrl: null,
 				gender: null,
 			},
 			inviteHash: "b7638c37-62c6-49a9-898c-38788169987c",
@@ -35,9 +36,10 @@ function getGroups() {
 			studentsCount: 0,
 			accesses: [],
 			apiUrl: "/groups/17",
+			areYouStudent: false,
 		},
 		{
-			id: 14,
+			id: '14',
 			createTime: null,
 			name: "asdfghj",
 			isArchived: false,
@@ -46,7 +48,6 @@ function getGroups() {
 				firstName: "",
 				lastName: "",
 				visibleName: "paradeeva",
-				avatarUrl: null,
 				gender: null,
 			},
 			inviteHash: "e22214b7-774c-4f14-b80c-910c6e715301",
@@ -58,6 +59,7 @@ function getGroups() {
 			studentsCount: 0,
 			accesses: [],
 			apiUrl: "/groups/14",
+			areYouStudent: false,
 		},
 	];
 }

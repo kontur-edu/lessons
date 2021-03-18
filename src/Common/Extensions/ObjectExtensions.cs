@@ -34,7 +34,7 @@ namespace Ulearn.Common.Extensions
 		{
 			var settings = removeWhitespaces ? withoutSpacesSettings : defaultSettings;
 
-			using (var ms = new MemoryStream())
+			using (var ms = StaticRecyclableMemoryStreamManager.Manager.GetStream())
 			using (var innerWriter = XmlWriter.Create(ms, settings))
 			{
 				using (var writer = expandEmptyTags ? new XmlTextWriterPreventAutoClosingEmptyTags(innerWriter) : innerWriter)

@@ -47,7 +47,7 @@ namespace uLearn.Web.Controllers
 		{
 		}
 
-		public AnalyticsController(ULearnDb db, CourseManager courseManager)
+		public AnalyticsController(ULearnDb db, WebCourseManager courseManager)
 		{
 			this.db = db;
 			this.courseManager = courseManager;

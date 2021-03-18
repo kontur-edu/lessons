@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Text;
 using Ionic.Zip;
 using JetBrains.Annotations;
+using Ulearn.Common;
 
 namespace Ulearn.Core
 {
@@ -38,8 +39,8 @@ namespace Ulearn.Core
 		{
 			var filesToAdd = Directory.GetFiles(sourceDirectoryName, "*", SearchOption.AllDirectories);
 			var entryNames = GetEntryNames(filesToAdd, sourceDirectoryName, includeBaseDirectory);
-			var zipFileStream = new MemoryStream();
-			using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create))
+			var zipFileStream = StaticRecyclableMemoryStreamManager.Manager.GetStream();
+			using (var archive = new ZipArchive(zipFileStream, ZipArchiveMode.Create, leaveOpen: true))
 			{
 				for (var i = 0; i < filesToAdd.Length; i++)
 				{
@@ -47,11 +48,10 @@ namespace Ulearn.Core
 					{
 						continue;
 					}
-
 					archive.CreateEntryFromFile(filesToAdd[i], entryNames[i], compressionLevel);
 				}
 			}
-
+			zipFileStream.Position = 0;
 			return zipFileStream;
 		}
 

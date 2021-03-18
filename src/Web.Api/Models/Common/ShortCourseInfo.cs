@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
 namespace Ulearn.Web.Api.Models.Common
 {
@@ -16,5 +17,8 @@ namespace Ulearn.Web.Api.Models.Common
 		
 		[DataMember]
 		public bool IsTempCourse { get; set; }
+		
+		[DataMember]
+		public DateTime? Timestamp { get; set; }
 	}
 }

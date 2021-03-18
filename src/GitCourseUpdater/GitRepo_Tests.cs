@@ -20,8 +20,8 @@ namespace GitCourseUpdater
 			var publicKey = File.ReadAllText(publicKeyPath.FullName);
 			using (IGitRepo repo = new GitRepo(url, new DirectoryInfo(reposBaseDir), publicKey, privateKey, keysTempDirectory))
 			{
-				var zip = repo.GetCurrentStateAsZip();
-				File.WriteAllBytes(Path.Combine(assemblyPath, "result.zip"), zip.ToArray());
+				using (var zip = repo.GetCurrentStateAsZip())
+					File.WriteAllBytes(Path.Combine(assemblyPath, "result.zip"), zip.ToArray());
 				var lastCommitInfo = repo.GetCurrentCommitInfo();
 				Assert.AreEqual(lastCommitInfo.Hash, "bd2f024b57ea7b603447c5dd6e650d0e72a8c6d0");
 				var info = repo.GetCommitInfo("37d6b0857fd3ae6135dcd2cec6899c1e318f9040");

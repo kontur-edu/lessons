@@ -26,7 +26,7 @@ namespace uLearn.Web.Controllers
 		{
 		}
 
-		public CertificatesController(ULearnDb db, CourseManager courseManager)
+		public CertificatesController(ULearnDb db, WebCourseManager courseManager)
 		{
 			this.courseManager = courseManager;
 

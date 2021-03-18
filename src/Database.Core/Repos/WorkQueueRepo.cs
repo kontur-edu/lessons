@@ -44,7 +44,7 @@ namespace Database.Repos
 
 		// https://habr.com/ru/post/481556/
 		[ItemCanBeNull]
-		public async Task<WorkQueueItem> Take(int queueId, List<string> types, TimeSpan? timeLimit = null)
+		public async Task<WorkQueueItem> TakeNoTracking(int queueId, List<string> types, TimeSpan? timeLimit = null)
 		{
 			timeLimit = timeLimit ?? TimeSpan.FromMinutes(5);
 			// skip locked пропускает заблокированные строки

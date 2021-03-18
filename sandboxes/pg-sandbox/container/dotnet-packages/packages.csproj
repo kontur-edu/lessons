@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SkbKontur.DbCourse.DataLayer" Version="1.0.5" />
-      <PackageReference Include="SkbKontur.DbCourse.TestsCommon" Version="1.0.5" />
+      <PackageReference Include="SkbKontur.DbCourse.DataLayer" Version="1.0.7" />
+      <PackageReference Include="SkbKontur.DbCourse.TestsCommon" Version="1.0.7" />
       <PackageReference Include="NUnit.Engine.Api" Version="3.12.0" />
     </ItemGroup>
 

@@ -26,7 +26,7 @@ namespace Ulearn.Core.CSharp.Validators
 		{
 			var forStatement = cycleStatement as ForStatementSyntax;
 			var methodInvocations = (forStatement != null
-					? forStatement.Condition.DescendantNodes().Concat(forStatement.Statement.DescendantNodes())
+					? (forStatement.Condition?.DescendantNodes()).EmptyIfNull().Concat(forStatement.Statement.DescendantNodes())
 					: cycleStatement.DescendantNodes())
 				.OfType<InvocationExpressionSyntax>()
 				.ToList();

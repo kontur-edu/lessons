@@ -41,9 +41,9 @@ namespace Ulearn.Web.Api.Controllers
 
 		public BaseController(IWebCourseManager courseManager, UlearnDb db, IUsersRepo usersRepo)
 		{
-			this.courseManager = courseManager ?? throw new ArgumentException(nameof(courseManager));
-			this.db = db ?? throw new ArgumentException(nameof(db));
-			this.usersRepo = usersRepo ?? throw new ArgumentException(nameof(usersRepo));
+			this.courseManager = courseManager;
+			this.db = db;
+			this.usersRepo = usersRepo;
 		}
 
 		public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)

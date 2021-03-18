@@ -30,7 +30,6 @@ import {
 import { Language, } from "src/consts/languages";
 import { constructPathToAcceptedSolutions, } from "src/consts/routes";
 import { DeviceType } from "src/consts/deviceType";
-import { AccountState } from "src/redux/account";
 import {
 	AutomaticExerciseCheckingResult as CheckingResult,
 	AutomaticExerciseCheckingResult,
@@ -43,6 +42,7 @@ import { SlideUserProgress } from "src/models/userProgress";
 import { ExerciseBlockProps } from "src/models/slide";
 
 import CodeMirror, { Doc, Editor, EditorChange, EditorConfiguration, MarkerRange, TextMarker } from "codemirror";
+import 'codemirror/lib/codemirror.css';
 import 'codemirror/addon/edit/matchbrackets';
 import 'codemirror/addon/hint/show-hint';
 import 'codemirror/addon/hint/show-hint.css';
@@ -57,7 +57,7 @@ import texts from './Exercise.texts';
 
 
 interface DispatchFunctionsProps {
-	sendCode: (courseId: string, slideId: string, value: string, language: Language, isLti: boolean,) => unknown;
+	sendCode: (courseId: string, slideId: string, value: string, language: Language,) => unknown;
 	addReviewComment: (courseId: string, slideId: string, submissionId: number, reviewId: number,
 		text: string
 	) => unknown;
@@ -71,20 +71,19 @@ interface FromSlideProps {
 	slideId: string,
 	maxScore: number,
 	forceInitialCode: boolean,
-	isLti: boolean,
 }
 
 interface FromMapStateToProps {
 	isAuthenticated: boolean,
 	lastCheckingResponse: RunSolutionResponse | null,
-	author: AccountState,
+	userId?: string | null,
 	slideProgress: SlideUserProgress,
 	submissionError: string | null,
 	deviceType: DeviceType,
 }
 
 interface Props extends ExerciseBlockProps, DispatchFunctionsProps, FromSlideProps, FromMapStateToProps {
-	className: string,
+	className?: string,
 }
 
 enum ModalType {
@@ -203,8 +202,12 @@ class Exercise extends React.Component<Props, State> {
 			this.loadSlideSubmission();
 		}
 
-		window.addEventListener("beforeunload", this.saveCodeDraftToCache);
+		window.addEventListener("beforeunload", this.saveCodeDraftToCacheEvent);
 	}
+
+	saveCodeDraftToCacheEvent = (): void => {
+		this.saveCodeDraftToCache();
+	};
 
 	loadSlideSubmission = (): void => {
 		const { slideId, submissions, } = this.props;
@@ -227,7 +230,7 @@ class Exercise extends React.Component<Props, State> {
 			slideProgress,
 			isAuthenticated,
 		} = this.props;
-		const { currentSubmission, submissionLoading, showOutput, selectedReviewId, } = this.state;
+		const { currentSubmission, submissionLoading, selectedReviewId, value, } = this.state;
 
 		if(submissionError && submissionError !== prevProps.submissionError) {
 			Toast.push("При добавлении или удалении комментария произошла ошибка");
@@ -235,6 +238,7 @@ class Exercise extends React.Component<Props, State> {
 
 		if(forceInitialCode !== prevProps.forceInitialCode) {
 			if(forceInitialCode) {
+				this.saveCodeDraftToCache();
 				this.resetCode();
 			} else {
 				this.loadSlideSubmission();
@@ -246,6 +250,7 @@ class Exercise extends React.Component<Props, State> {
 			this.setState({
 				submissionLoading: false,
 			});
+			this.saveCodeDraftToCache(prevProps.slideId, value);
 			this.loadSlideSubmission();
 			return;
 		}
@@ -253,39 +258,44 @@ class Exercise extends React.Component<Props, State> {
 		const hasNewLastCheckingResponse = lastCheckingResponse
 			&& lastCheckingResponse !== prevProps.lastCheckingResponse; // Сравнение по ссылкам
 		if(hasNewLastCheckingResponse && lastCheckingResponse) {
-			const { submission, solutionRunStatus } = lastCheckingResponse;
+			const { submission, solutionRunStatus, } = lastCheckingResponse;
 
-			if(submission) {
+			if(submission && submission.automaticChecking?.result !== AutomaticExerciseCheckingResult.WrongAnswer
+				&& submission.automaticChecking?.result !== AutomaticExerciseCheckingResult.CompilationError) {
 				this.loadSubmissionToState(submissions.find(s => s.id === submission.id));
+
+				if(solutionRunStatus === SolutionRunStatus.Success) {
+					const { automaticChecking } = submission;
+					if((!automaticChecking || automaticChecking.result === CheckingResult.RightAnswer)
+						&& !slideProgress.isSkipped
+						&& IsFirstRightAnswer(submissions, submission)
+					) {
+						this.openModal({
+							type: ModalType.congrats,
+							score: lastCheckingResponse.score,
+							waitingForManualChecking: lastCheckingResponse.waitingForManualChecking,
+						});
+					}
+				}
 			} else {
 				this.setState({
 					visibleCheckingResponse: lastCheckingResponse,
 				});
 			}
-			if(submissionLoading) {
+
+			if(solutionRunStatus === SolutionRunStatus.CompilationError
+				|| submission?.automaticChecking?.result === AutomaticExerciseCheckingResult.WrongAnswer
+				|| submission?.automaticChecking?.result === AutomaticExerciseCheckingResult.CompilationError) {
 				this.setState({
-					submissionLoading: false,
-				});
-			}
-			if(!showOutput) {
-				this.setState({
+					isEditable: true,
 					showOutput: true,
 				});
 			}
 
-			if(submission && solutionRunStatus === SolutionRunStatus.Success) {
-				const { automaticChecking } = submission;
-
-				if((!automaticChecking || automaticChecking.result === CheckingResult.RightAnswer)
-					&& !slideProgress.isSkipped
-					&& IsFirstRightAnswer(submissions, submission)
-				) {
-					this.openModal({
-						type: ModalType.congrats,
-						score: lastCheckingResponse.score,
-						waitingForManualChecking: lastCheckingResponse.waitingForManualChecking,
-					});
-				}
+			if(submissionLoading) {
+				this.setState({
+					submissionLoading: false,
+				});
 			}
 		} else if(currentSubmission) {
 			const submission = submissions.find(s => s.id === currentSubmission.id);
@@ -312,18 +322,22 @@ class Exercise extends React.Component<Props, State> {
 		};
 	};
 
-	saveCodeDraftToCache = (): void => {
-		const { slideId, forceInitialCode, isAuthenticated } = this.props;
-		const { value, } = this.state;
+	saveCodeDraftToCache = (slideId?: string, value?: string, language?: Language): void => {
+		const { forceInitialCode, isAuthenticated } = this.props;
+		const { valueChanged, } = this.state;
 
-		if(!forceInitialCode && isAuthenticated) {
-			this.saveCodeToCache(slideId, value);
+		if(valueChanged && !forceInitialCode && isAuthenticated) {
+			saveExerciseCodeToCache(
+				slideId || this.props.slideId,
+				value || this.state.value,
+				moment().format(),
+				language || this.state.language);
 		}
 	};
 
 	componentWillUnmount(): void {
 		this.saveCodeDraftToCache();
-		window.removeEventListener("beforeunload", this.saveCodeDraftToCache);
+		window.removeEventListener("beforeunload", this.saveCodeDraftToCacheEvent);
 	}
 
 	render(): React.ReactElement {
@@ -372,7 +386,7 @@ class Exercise extends React.Component<Props, State> {
 
 	renderControlledCodeMirror = (opts: EditorConfiguration): React.ReactElement => {
 		const {
-			expectedOutput, submissions, author,
+			expectedOutput, submissions, userId,
 			slideProgress, maxScore, languages,
 			courseId, slideId, hideSolutions, renderedHints,
 			attemptsStatistics, isAuthenticated
@@ -385,7 +399,7 @@ class Exercise extends React.Component<Props, State> {
 		} = this.state;
 
 		const isReview = !isEditable && currentReviews.length > 0;
-		const automaticChecking = currentSubmission?.automaticChecking ?? visibleCheckingResponse?.automaticChecking;
+		const automaticChecking = currentSubmission?.automaticChecking ?? visibleCheckingResponse?.automaticChecking ?? visibleCheckingResponse?.submission?.automaticChecking;
 		const selectedSubmissionIsLast = SubmissionIsLast(submissions, currentSubmission);
 		const selectedSubmissionIsLastSuccess = GetLastSuccessSubmission(submissions) === currentSubmission;
 		const isMaxScore = slideProgress.score === maxScore;
@@ -409,6 +423,7 @@ class Exercise extends React.Component<Props, State> {
 				expectedOutput);
 		const isAcceptedSolutionsWillNotDiscardScore = submissions.filter(
 			s => s.automaticChecking?.result === AutomaticExerciseCheckingResult.RightAnswer).length > 0 || slideProgress.isSkipped;
+		const outputMessage = visibleCheckingResponse?.message || visibleCheckingResponse?.submission?.automaticChecking?.output;
 
 		return (
 			<React.Fragment>
@@ -430,7 +445,7 @@ class Exercise extends React.Component<Props, State> {
 					/>
 					{ exerciseCodeDoc && isReview &&
 					<Review
-						userId={ author.id }
+						userId={ userId }
 						addReviewComment={ this.addReviewComment }
 						deleteReviewComment={ this.deleteReviewComment }
 						selectedReviewId={ selectedReviewId }
@@ -466,10 +481,10 @@ class Exercise extends React.Component<Props, State> {
 					/> }
 				</Controls>
 				}
-				{ showOutput && HasOutput(visibleCheckingResponse?.message, automaticChecking, expectedOutput) &&
+				{ showOutput && HasOutput(outputMessage, automaticChecking, expectedOutput) &&
 				<ExerciseOutput
 					solutionRunStatus={ visibleCheckingResponse?.solutionRunStatus ?? SolutionRunStatus.Success }
-					message={ visibleCheckingResponse?.message }
+					message={ outputMessage }
 					expectedOutput={ expectedOutput }
 					automaticChecking={ automaticChecking }
 					submissionColor={ submissionColor }
@@ -537,6 +552,7 @@ class Exercise extends React.Component<Props, State> {
 	onSubmissionsSelectValueChange = (id: unknown): void => {
 		const { submissions, } = this.props;
 
+		this.saveCodeDraftToCache();
 		if(id === this.newTry.id) {
 			this.loadNewTry();
 		}
@@ -613,11 +629,6 @@ class Exercise extends React.Component<Props, State> {
 	};
 
 	loadSubmissionToState = (submission?: SubmissionInfoRedux): void => {
-		const { valueChanged, } = this.state;
-
-		if(valueChanged) {
-			this.saveCodeDraftToCache();
-		}
 		this.clearAllTextMarkers();
 
 		// Firstly we updating code in code mirror
@@ -633,8 +644,7 @@ class Exercise extends React.Component<Props, State> {
 					visibleCheckingResponse: undefined,
 					currentReviews: [],
 				}, () =>
-					this.setCurrentSubmission(submission,
-					)
+					this.setCurrentSubmission(submission)
 			);
 		}
 	};
@@ -791,7 +801,7 @@ class Exercise extends React.Component<Props, State> {
 				const showAcceptedSolutions = !waitingForManualChecking && !hideSolutions;
 
 				return (
-					score &&
+					score && score > 0 &&
 					<CongratsModal
 						showAcceptedSolutions={ showAcceptedSolutions ? this.openAcceptedSolutionsModal : undefined }
 						score={ score }
@@ -904,7 +914,7 @@ class Exercise extends React.Component<Props, State> {
 		const { slideId, exerciseInitialCode, } = this.props;
 
 		this.resetCode();
-		this.saveCodeToCache(slideId, exerciseInitialCode);
+		this.saveCodeDraftToCache(slideId, exerciseInitialCode);
 	};
 
 	resetCode = (): void => {
@@ -914,7 +924,7 @@ class Exercise extends React.Component<Props, State> {
 		this.clearAllTextMarkers();
 		this.setState({
 			value: exerciseInitialCode,
-			valueChanged: false,
+			valueChanged: true,
 			isEditable: true,
 			currentSubmission: null,
 			visibleCheckingResponse: undefined,
@@ -975,13 +985,14 @@ class Exercise extends React.Component<Props, State> {
 
 	sendExercise = (): void => {
 		const { value, language } = this.state;
-		const { courseId, slideId, sendCode, isLti, } = this.props;
+		const { courseId, slideId, sendCode, } = this.props;
 
 		this.setState({
 			submissionLoading: true,
+			showOutput: false,
 		});
 
-		sendCode(courseId, slideId, value, language, isLti);
+		sendCode(courseId, slideId, value, language);
 	};
 
 	addReviewComment = (reviewId: number, text: string): void => {
@@ -1121,12 +1132,6 @@ class Exercise extends React.Component<Props, State> {
 		}
 	};
 
-	saveCodeToCache = (slideId: string, value: string): void => {
-		const { language, } = this.state;
-
-		saveExerciseCodeToCache(slideId, value, moment().format(), language);
-	};
-
 	loadLatestCode = (slideId: string): void => {
 		const { submissions, } = this.props;
 		const { language, } = this.state;
@@ -1142,7 +1147,7 @@ class Exercise extends React.Component<Props, State> {
 			const codeFromCacheTime = moment(code.time);
 
 			if(lastSubmissionTime.diff(codeFromCacheTime, 'seconds') >= 0) { //if last submission is newer then last saved
-				this.saveCodeToCache(slideId, lastSubmission.code);
+				this.saveCodeDraftToCache(slideId, lastSubmission.code);
 				newValue = lastSubmission.code;
 			}
 
@@ -1155,7 +1160,7 @@ class Exercise extends React.Component<Props, State> {
 
 		if(submissions.length > 0) {
 			const lastSubmission = submissions[this.lastSubmissionIndex];
-			this.saveCodeToCache(slideId, lastSubmission.code);
+			this.saveCodeDraftToCache(slideId, lastSubmission.code);
 			this.setState({
 				value: lastSubmission.code,
 				language: lastSubmission.language,

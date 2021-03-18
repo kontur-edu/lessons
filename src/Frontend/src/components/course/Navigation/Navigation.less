@@ -58,7 +58,29 @@
   transition: transform 300ms ease 0s;
 }
 
-@media (min-width: @minLaptopWidth) {
+.contentWrapper ol:last-child {
+  margin-bottom: 50px;
+}
+
+.shadow {
+  box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.23);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+@media (min-width: @navigationGrowthWidth) {
+  .root {
+    width: @maxNavigationMenuWidth;
+    max-width: @maxNavigationMenuWidth;
+  }
+
+  .contentWrapper {
+    width: @maxNavigationMenuWidth;
+    bottom: 0;
+    transform: translateX(-@maxNavigationMenuWidth);
+  }
+}
+
+@media (min-width: @navigationAppearWidth) {
   .overlay {
     display: none;
   }
@@ -73,17 +95,5 @@
     max-height: calc(100vh - @headerHeight);
     transform: translateX(0);
     transition: none;
-  }
-}
-
-@media (min-width: @navigationGrowthWidth) {
-  .root {
-    width: @maxNavigationMenuWidth;
-    max-width: @maxNavigationMenuWidth;
-  }
-
-  .contentWrapper {
-    width: @maxNavigationMenuWidth;
-    bottom: 0;
   }
 }

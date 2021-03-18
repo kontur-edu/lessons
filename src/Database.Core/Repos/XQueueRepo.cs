@@ -56,15 +56,15 @@ namespace Database.Repos
 
 		public async Task AddXQueueSubmission(XQueueWatcher watcher, string xQueueHeader, string courseId, Guid slideId, string code)
 		{
-			var submission = await userSolutionsRepo.AddUserExerciseSubmission(
+			var submissionId = await userSolutionsRepo.AddUserExerciseSubmission(
 				courseId, slideId, code, null, null, watcher.UserId,
 				"uLearn", $"XQueue watcher {watcher.Name}",
 				Language.CSharp, null, true
 			);
-			await userSolutionsRepo.RunAutomaticChecking(submission, TimeSpan.FromSeconds(25), false, 0);
+			await userSolutionsRepo.RunAutomaticChecking(submissionId, null, TimeSpan.FromSeconds(25), false, 0);
 			db.XQueueExerciseSubmissions.Add(new XQueueExerciseSubmission
 			{
-				SubmissionId = submission.Id,
+				SubmissionId = submissionId,
 				WatcherId = watcher.Id,
 				XQueueHeader = xQueueHeader,
 				IsResultSent = false,

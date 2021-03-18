@@ -39,10 +39,10 @@ namespace Database.Core.Tests
 		{
 			var feedRepo = serviceProvider.GetService<FeedRepo>();
 
-			var transport = await feedRepo.GetUsersFeedNotificationTransport(userId).ConfigureAwait(false);
-			Console.WriteLine($@"Feed notification transport: {transport}");
+			var transportId = await feedRepo.GetUsersFeedNotificationTransportId(userId).ConfigureAwait(false);
+			Console.WriteLine($@"Feed notification transport: {transportId}");
 
-			var notifications = await feedRepo.GetNotificationForFeedNotificationDeliveries<object>(userId, null, transport).ConfigureAwait(false);
+			var notifications = await feedRepo.GetNotificationForFeedNotificationDeliveries<object>(userId, null, transportId.Value).ConfigureAwait(false);
 
 			foreach (var notification in notifications)
 			{

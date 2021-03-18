@@ -1,7 +1,7 @@
 import React from "react";
 
 import { BlocksWrapper, Exercise, Image, Spoiler, StaticCode, Text, Video, } from "./Blocks";
-import CourseLoader from "src/components/course/Course/CourseLoader/CourseLoader.js";
+import CourseLoader from "src/components/course/Course/CourseLoader";
 
 import { loadSlide } from "src/actions/slides";
 import { connect } from "react-redux";

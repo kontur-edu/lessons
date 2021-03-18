@@ -129,6 +129,7 @@ namespace CourseToolHotReloader.ApiClient
 		private async Task<TempCourseUpdateResponse> UpdateTempCourse(MemoryStream memoryStream, string url, HttpMethod httpMethod)
 		{
 			using var client = HttpClient();
+			memoryStream.Position = 0;
 			var fileContent = new ByteArrayContent(memoryStream.ToArray());
 			var multiContent = new MultipartFormDataContent { { fileContent, "files", "course.zip" } };
 			var response = httpMethod == HttpMethod.Patch ? await client.PatchAsync(url, multiContent) : await client.PutAsync(url, multiContent);

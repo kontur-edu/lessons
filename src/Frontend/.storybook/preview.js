@@ -35,8 +35,8 @@ const viewports = {
 	mobile: {
 		name: 'mobile',
 		styles: {
-			width: '320px',
-			height: '240px',
+			width: '480px',
+			height: '800px',
 		},
 	},
 };

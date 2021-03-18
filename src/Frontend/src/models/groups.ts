@@ -45,7 +45,7 @@ export interface GroupScoringGroupInfo {
 
 export interface GroupInfo {
 	id: string,
-	createTime?: string,
+	createTime?: string | null,
 	name: string,
 	isArchived: boolean,
 	owner: ShortUserInfo,

@@ -47,6 +47,11 @@ namespace uLearn.Web
 				constraints: new { slideId = @"(.*_)?[{|\(]?[0-9A-F]{8}[-]?([0-9A-F]{4}[-]?){3}[0-9A-F]{12}[\)|}]?" }
 			);
 			routes.MapRoute(
+				name: "Exercise.StepikStudentZip",
+				url: "Exercise/StudentZip",
+				defaults: new { controller = "Exercise", action = "StudentZip" }
+			);
+			routes.MapRoute(
 				name: "Certificates",
 				url: "CertificatesList",
 				defaults: new { controller = "Certificates", action = "Index" }

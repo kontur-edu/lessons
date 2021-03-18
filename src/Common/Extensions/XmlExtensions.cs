@@ -37,14 +37,14 @@ namespace Ulearn.Common.Extensions
 		public static T DeserializeXml<T>(this byte[] content)
 		{
 			var serializer = new XmlSerializer(typeof(T));
-			using (var stream = new MemoryStream(content))
+			using (var stream = StaticRecyclableMemoryStreamManager.Manager.GetStream(content))
 				return (T)serializer.Deserialize(stream);
 		}
 
 		public static object DeserializeXml(this byte[] content, Type type)
 		{
 			var serializer = new XmlSerializer(type);
-			using (var stream = new MemoryStream(content))
+			using (var stream = StaticRecyclableMemoryStreamManager.Manager.GetStream(content))
 				return serializer.Deserialize(stream);
 		}
 	}

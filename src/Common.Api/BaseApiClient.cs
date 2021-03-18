@@ -99,17 +99,19 @@ namespace Ulearn.Common.Api
 			}
 
 			TResult result;
-			string jsonResult;
+			string jsonResult = null;
 			try
 			{
-				MemoryStream ms = null;
 				if (response.Response.HasStream)
 				{
-					ms = new MemoryStream();
-					response.Response.Stream.CopyTo(ms);
-				} else if (response.Response.HasContent)
-					ms = response.Response.Content.ToMemoryStream();
-				jsonResult = Encoding.UTF8.GetString(ms.ToArray());
+					var reader = new StreamReader(response.Response.Stream, Encoding.UTF8);
+					jsonResult = await reader.ReadToEndAsync();
+				}
+				else if (response.Response.HasContent)
+				{
+					var content = response.Response.Content;
+					jsonResult = Encoding.UTF8.GetString(content.Buffer, content.Offset, content.Length);
+				}
 				result = JsonConvert.DeserializeObject<TResult>(jsonResult);
 			}
 			catch (Exception e)

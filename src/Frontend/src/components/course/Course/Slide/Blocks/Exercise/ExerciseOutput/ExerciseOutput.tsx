@@ -72,9 +72,12 @@ class ExerciseOutput extends React.Component<OutputTypeProps> {
 		return (
 			<div className={ style }>
 				<span className={ styles.outputHeader }>
-					{ <React.Fragment>{ showIcon
-						? <Warning/>
-						: null } { header }</React.Fragment>
+					{ <React.Fragment>
+						{ showIcon
+							? <Warning className={ styles.outputIcon }/>
+							: null }
+						{ header }
+					</React.Fragment>
 					} 
 				</span>
 				{ isSimpleTextOutput

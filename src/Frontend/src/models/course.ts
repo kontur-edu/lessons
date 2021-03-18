@@ -1,30 +1,37 @@
 import { ShortSlideInfo } from "./slide";
+import { ScoringGroupsIds } from "src/consts/scoringGroup";
 
 interface CourseInfo {
 	id: string;
 	title: string;
-	description: string;
+	timestamp?: string;
 	units: UnitInfo[];
 	nextUnitPublishTime: string | null;
-	scoring: ScoringGroup;
+	scoring: ScoringInfo;
 	containsFlashcards: boolean;
 	isTempCourse: boolean;
 	tempCourseError: string | null;
 }
 
-interface ScoringGroup {
+interface ScoringInfo {
 	id: string;
 	name: string;
 	abbr: string | null;
 	description: string | null;
 	weight: number; // decimal
+	groups: ScoringGroup[];
+}
+
+interface ScoringGroup {
+	id: ScoringGroupsIds;
+	weight: number;
 }
 
 interface UnitInfo {
 	id: string;
 	title: string;
-	isNotPublished: boolean | undefined;
-	publicationDate: string | undefined;
+	isNotPublished?: boolean;
+	publicationDate?: string;
 	slides: ShortSlideInfo[];
 	additionalScores: UnitScoringGroupInfo[];
 }
@@ -67,4 +74,25 @@ export interface ShortCourseInfo {
 	isTempCourse: boolean,
 }
 
-export { CourseInfo, ScoringGroup, UnitInfo, UnitScoringGroupInfo, InfoByUnit };
+interface UnitsInfo {
+	[p: string]: UnitInfo;
+}
+
+interface PageInfo {
+	isLti: boolean;
+	isReview: boolean;
+	isAcceptedSolutions: boolean;
+	isNavigationVisible: boolean;
+	isAcceptedAlert: boolean;
+}
+
+export {
+	CourseInfo,
+	ScoringInfo,
+	UnitInfo,
+	UnitScoringGroupInfo,
+	InfoByUnit,
+	ScoringGroup,
+	UnitsInfo,
+	PageInfo,
+};

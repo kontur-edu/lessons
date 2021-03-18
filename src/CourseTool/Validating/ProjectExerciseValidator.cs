@@ -158,7 +158,7 @@ namespace uLearn.CourseTool.Validating
 			var tempExFolder = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ExerciseFolder_From_StudentZip"));
 
 			exerciseStudentZipBuilder.BuildStudentZip(slide, tempExZipFilePath);
-			Utils.UnpackZip(tempExZipFilePath.ReadAllContent(), tempExFolder.FullName);
+			ZipHelper.UnpackZip(tempExZipFilePath.ReadAllContent(), tempExFolder.FullName);
 			try
 			{
 				ReportErrorIfStudentsZipHasWrongAnswerOrSolutionFiles(tempExFolder);

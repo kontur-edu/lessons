@@ -49,6 +49,7 @@ namespace GitCourseUpdater
 		private static object @lock = new object(); // Потокобезопасность не гарантируется библиотекой libgit2
 
 		// url example git@github.com:user/myrepo.git
+		// В GitRepo используется Monitor. Он должен быть освобожден в том же потоке, что и взят.
 		public GitRepo(string url, DirectoryInfo reposBaseDir, string publicKey, string privateKey, DirectoryInfo keysTempDirectory)
 		{
 			this.url = url;

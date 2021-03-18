@@ -215,7 +215,7 @@
   .rootWrapper {
     width: @laptopSlideWidth;
     max-width: @laptopSlideWidth;
-    margin-left: calc(@navigationMenuWidth + (100vw - @navigationMenuWidth - @laptopSlideWidth) / 2);
+    margin-left: calc(@maxNavigationMenuWidth + (100vw - @maxNavigationMenuWidth - @laptopSlideWidth) / 2);
     padding: @laptopSlidePadding 0 calc(@desktopSlidePadding + @additionalFooterMargins) 0;
   }
 
@@ -233,12 +233,6 @@
 
   .commentsWrapper {
     margin-bottom: @desktopSlidePadding;
-  }
-}
-
-@media (min-width: @navigationGrowthWidth) {
-  .rootWrapper {
-    margin-left: calc(@maxNavigationMenuWidth + (100vw - @maxNavigationMenuWidth - @laptopSlideWidth) / 2);
   }
 }
 

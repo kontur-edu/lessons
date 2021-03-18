@@ -1,82 +1,38 @@
 @import "../../../../../variables.less";
 
 .root {
-  width: 100%;
-  margin-top: auto;
+  padding: 8px 24px 32px 24px;
 
-  position: sticky;
-  display: flex;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
-
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px 20px 14px;
-  background: #fff;
-  border: none;
-  border-top: 1px solid @borderColor;
-  box-shadow: none;
   text-decoration: none;
-  text-align: left;
   cursor: pointer;
 
-  &:hover {
-    color: #ffffff;
-    background-color: @linkColor;
-    text-decoration: none;
-
-    & .header,
-    & .text {
-      color: #ffffff;
-    }
-  }
+  color: @linkColor;
 
   &:active,
-  &:focus {
-    text-decoration: none;
+  &:focus,
+  &:hover {
+    color: @linkColor;
   }
-}
-
-.wrapper {
-  overflow: hidden;
-}
-
-.header {
-  margin: 0;
-  text-transform: uppercase;
-  font-size: 10px;
-  font-weight: lighter;
-  line-height: 1.2;
-  letter-spacing: 1.2px;
-  color: @additionalColor;
 }
 
 .title {
+  font-family: @defaultFonts;
+
+  font-size: 18px;
+  line-height: 24px;
+  font-style: normal;
+  font-weight: 600;
+
   margin: 0;
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 1.33;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.arrow {
-  position: relative;
-  top: 5px;
-
-  color: @geinsboro;
-  flex-shrink: 0;
-}
-
-
 @media (min-width: @navigationGrowthWidth) {
-  .root {
-    padding: 13px 12px 20px 24px;
-  }
-
-  .text {
-    font-size: 18px;
+  .title {
+    font-size: 20px;
+    line-height: 28px;
   }
 }

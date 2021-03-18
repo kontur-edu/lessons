@@ -1,0 +1,138 @@
+@import "../../../../variables.less";
+
+.root {
+  padding: 16px 8px 8px 16px;
+
+  background: @white;
+
+  &.insideModule {
+    padding-bottom: 12px;
+    box-shadow: -1px 1px 4px rgba(0, 0, 0, 0.23);
+  }
+}
+
+.courseTitle {
+  font-size: 20px;
+  line-height: 28px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 0 8px;
+}
+
+.unitRoot {
+  position: relative;
+}
+
+.unitTitle {
+  font-size: 16px;
+  line-height: 22px;
+
+  font-style: normal;
+  font-weight: 600;
+
+  margin: 0 32px 0 0;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.returnToCourseLink {
+  margin-bottom: 8px;
+
+  font-family: @defaultFonts;
+}
+
+.returnToCourseLinkIcon {
+  font-size: 12px;
+  line-height: 20px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.returnToCourseLinkText {
+  font-size: 14px;
+  line-height: 20px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.progressBarWrapper {
+  &:not(:last-child) {
+    margin-bottom: 8px;
+  }
+}
+
+.circleProgressBarWrapper {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  right: 0;
+  top: 3px;
+}
+
+.linkToGroupsStatementsWrapper {
+  margin: 0 0 8px;
+  padding: 0;
+
+  font-family: @defaultFonts;
+  font-size: 12px;
+  line-height: 16px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+
+@media (min-width: @navigationGrowthWidth) {
+  .root {
+    padding: 24px 16px 24px 24px;
+  }
+
+  .courseTitle {
+    margin: 0 0 16px;
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .linkToGroupsStatementsWrapper {
+    margin: 0 0 16px;
+    font-size: 16px;
+    line-height: 22px;
+
+    &.insideModule {
+      margin: 0 0 12px;
+      font-size: 14px;
+      line-height: 20px;
+    }
+  }
+
+  .returnToCourseLink {
+    margin-bottom: 12px;
+  }
+
+  .returnToCourseLinkText {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .progressBarWrapper {
+    &:not(:last-child) {
+      margin-bottom: 12px;
+    }
+  }
+
+  .unitTitle {
+    font-size: 24px;
+    line-height: 32px;
+    margin: 0 44px 0 0;
+  }
+
+  .circleProgressBarWrapper {
+    width: 20px;
+    height: 20px;
+    top: 8px;
+  }
+}

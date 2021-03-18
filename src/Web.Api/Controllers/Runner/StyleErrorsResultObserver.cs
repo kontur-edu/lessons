@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Database;
 using Database.Models;
 using Database.Repos;
@@ -6,7 +7,6 @@ using Database.Repos.Users;
 using Ulearn.Core.Courses.Slides.Exercises;
 using Ulearn.Core.Metrics;
 using Ulearn.Core.RunCheckerJobApi;
-using Ulearn.Web.Api.Controllers.Slides;
 
 namespace Ulearn.Web.Api.Controllers.Runner
 {
@@ -48,14 +48,23 @@ namespace Ulearn.Web.Api.Controllers.Runner
 			if (ulearnBotUserId == null)
 				ulearnBotUserId = await usersRepo.GetUlearnBotUserId();
 
-			var exerciseMetricId = ExerciseController.GetExerciseMetricId(submission.CourseId, exerciseSlide);
+			var exerciseMetricId = RunnerSetResultController.GetExerciseMetricId(submission.CourseId, exerciseSlide);
+
+			await CreateStyleErrorsReviewsForSubmission(submission.Id, result.StyleErrors, exerciseMetricId);
+		}
+
+		public async Task<List<ExerciseCodeReview>> CreateStyleErrorsReviewsForSubmission(int? submissionId, List<StyleError> styleErrors, string exerciseMetricId)
+		{
+			if (ulearnBotUserId == null)
+				ulearnBotUserId = await usersRepo.GetUlearnBotUserId();
 
 			metricSender.SendCount($"exercise.{exerciseMetricId}.StyleViolation");
 
-			foreach (var error in result.StyleErrors)
+			var result = new List<ExerciseCodeReview>();
+			foreach (var error in styleErrors)
 			{
-				await slideCheckingsRepo.AddExerciseCodeReview(
-					submission.Id,
+				var review = await slideCheckingsRepo.AddExerciseCodeReview(
+					submissionId,
 					ulearnBotUserId,
 					error.Span.StartLinePosition.Line,
 					error.Span.StartLinePosition.Character,
@@ -63,6 +72,7 @@ namespace Ulearn.Web.Api.Controllers.Runner
 					error.Span.EndLinePosition.Character,
 					error.Message
 				);
+				result.Add(review);
 
 				var errorName = error.ErrorType;
 				metricSender.SendCount("exercise.style_error");
@@ -70,6 +80,7 @@ namespace Ulearn.Web.Api.Controllers.Runner
 				metricSender.SendCount($"exercise.{exerciseMetricId}.style_error");
 				metricSender.SendCount($"exercise.{exerciseMetricId}.style_error.{errorName}");
 			}
+			return result;
 		}
 	}
 }

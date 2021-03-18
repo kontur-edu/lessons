@@ -35,7 +35,7 @@ namespace Database
 			try
 			{
 				LoadCoursesIfNotYet();
-				CheckTempCoursesAndReloadIfNecessary(courseId);
+				TryCheckTempCoursesAndReloadIfNecessary(courseId);
 				course = base.GetCourse(courseId);
 			}
 			catch (Exception e) when (e is KeyNotFoundException || e is CourseNotFoundException || e is CourseLoadingException)
@@ -67,7 +67,8 @@ namespace Database
 					&& loadedVersionId != publishedVersion.Id)
 				{
 					log.Info($"Загруженная версия курса {courseId} отличается от актуальной ({loadedVersionId.ToString()} != {publishedVersion.Id}). Обновляю курс.");
-					course = ReloadCourse(courseId);
+					if (TryReloadCourse(courseId))
+						course = base.GetCourse(courseId);
 				}
 
 				loadedCourseVersions[courseId.ToLower()] = publishedVersion.Id;
@@ -118,7 +119,7 @@ namespace Database
 			try
 			{
 				LoadCoursesIfNotYet();
-				CheckTempCoursesAndReloadIfNecessary(null);
+				TryCheckTempCoursesAndReloadIfNecessary(null);
 			}
 			catch (Exception e)
 			{
@@ -127,37 +128,44 @@ namespace Database
 			return base.GetCourses();
 		}
 
-		private void CheckTempCoursesAndReloadIfNecessary(string courseIdToUpdate = null)
+		private void TryCheckTempCoursesAndReloadIfNecessary(string courseIdToUpdate = null)
 		{
-			if (new DateTime(tempCoursesUpdateTime) > DateTime.Now.Subtract(tempCourseUpdateEvery))
-				return;
-			if (courseIdToUpdate != null && IsTempCourseUpdatedRecent(courseIdToUpdate))
-				return;
-			if (courseIdToUpdate == null)
-				Interlocked.Exchange(ref tempCoursesUpdateTime, DateTime.Now.Ticks);
-
-			var tempCoursesRepo = new TempCoursesRepo();
-			var tempCourses = tempCoursesRepo.GetTempCourses();
-			foreach (var tempCourse in tempCourses)
+			try
 			{
-				var courseId = tempCourse.CourseId;
-				Course course = null;
-				try
+				if (new DateTime(tempCoursesUpdateTime) > DateTime.Now.Subtract(tempCourseUpdateEvery))
+					return;
+				if (courseIdToUpdate != null && IsTempCourseUpdatedRecent(courseIdToUpdate))
+					return;
+				if (courseIdToUpdate == null)
+					Interlocked.Exchange(ref tempCoursesUpdateTime, DateTime.Now.Ticks);
+
+				var tempCoursesRepo = new TempCoursesRepo();
+				var tempCourses = tempCoursesRepo.GetTempCourses();
+				foreach (var tempCourse in tempCourses)
 				{
-					course = base.GetCourse(courseId); // Не используется FindCourse, иначе бесконечная рекурсия
+					var courseId = tempCourse.CourseId;
+					Course course = null;
+					try
+					{
+						course = base.GetCourse(courseId); // Не используется FindCourse, иначе бесконечная рекурсия
+					}
+					catch (Exception ex)
+					{
+						log.Error(ex);
+					}
+					if (course == null || course.GetSlides(true).Count == 0
+						|| courseId == courseIdToUpdate && tempCourse.LastUpdateTime < tempCourse.LoadingTime)
+					{
+						TryReloadCourse(courseId);
+						tempCoursesRepo.UpdateTempCourseLastUpdateTimeAsync(courseId).Wait();
+						courseVersionFetchTime[courseId] = DateTime.Now;
+					} else if (tempCourse.LastUpdateTime > tempCourse.LoadingTime)
+						courseVersionFetchTime[courseId] = DateTime.Now;
 				}
-				catch (Exception ex)
-				{
-					// ignored
-				}
-				if (course == null || course.GetSlides(true).Count == 0
-					|| courseId == courseIdToUpdate && tempCourse.LastUpdateTime < tempCourse.LoadingTime)
-				{
-					ReloadCourse(courseId);
-					tempCoursesRepo.UpdateTempCourseLastUpdateTimeAsync(courseId).Wait();
-					courseVersionFetchTime[courseId] = DateTime.Now;
-				} else if (tempCourse.LastUpdateTime > tempCourse.LoadingTime)
-					courseVersionFetchTime[courseId] = DateTime.Now;
+			}
+			catch (Exception ex)
+			{
+				log.Error(ex);
 			}
 		}
 

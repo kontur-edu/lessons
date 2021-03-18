@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using Ulearn.Common;
 using Ulearn.Common.Extensions;
 using Ulearn.Core.Courses.Slides.Exercises;
 using Ulearn.Core.Courses.Slides.Exercises.Blocks;
@@ -54,7 +55,7 @@ namespace Ulearn.Core.Courses.Slides
 			var xmlDocument = new XmlDocument();
 			try
 			{
-				using (var stream = new MemoryStream(content))
+				using (var stream = StaticRecyclableMemoryStreamManager.Manager.GetStream(content))
 					xmlDocument.Load(stream);
 			}
 			catch (Exception e)

@@ -17,8 +17,8 @@ interface SlideHeaderProps {
 	slideId: string,
 	isHiddenSlide: boolean,
 	userRoles: UserRoles,
-	slideType: SlideType,
-	openUnitId?: string,
+	slideType?: SlideType | null,
+	openUnitId?: string | null,
 }
 
 const SlideHeader: React.FC<SlideHeaderProps> = (props) => {

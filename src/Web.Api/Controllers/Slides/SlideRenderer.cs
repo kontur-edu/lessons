@@ -57,9 +57,9 @@ namespace Ulearn.Web.Api.Controllers.Slides
 				ScoringGroup = slide.ScoringGroup,
 				Type = GetSlideType(slide),
 				QuestionsCount = slide.Blocks.OfType<AbstractQuestionBlock>().Count(),
-				GitEditLink = getGitEditLink(slide)
-
-				// TODO: кол-во попыток
+				ContainsVideo = slide.Blocks.OfType<YoutubeBlock>().Any(),
+				GitEditLink = getGitEditLink(slide),
+				QuizMaxTriesCount = slide is QuizSlide quizSlide ? quizSlide.MaxTriesCount : 0,
 			};
 		}
 

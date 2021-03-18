@@ -1,20 +1,30 @@
 import React from "react";
-import Navigation from "./Navigation.js";
+import Navigation from "./Navigation";
 import { SlideType } from "src/models/slide";
-
+import { MenuItem, } from "./types";
 
 const _Navigation = (): React.ReactNode => (
 	<Navigation
-		title="Первое знакомство с C#"
-		courseName="Основы программирования"
-		courseUrl="https://ulearn.me/Course/BasicProgramming"
-		items={ getModuleNav() }
-		courseProgress={ { "current": 191, "max": 3111 } }
+		courseId={'basic'}
+		navigationOpened
+		courseTitle="Основы программирования"
+		unitTitle="Первое знакомство с C#"
+		unitProgress={ {
+			doneSlidesCount: 50,
+			inProgressSlidesCount: 25,
+			slidesCount: 100,
+			statusesBySlides: {},
+			current: 10,
+			max: 20,
+		} }
+		unitItems={ getModuleNav() }
+		nextUnit={ null }
+		onCourseClick={ () => ({}) }
 	/>
 );
 
 
-function getModuleNav() {
+function getModuleNav(): MenuItem<SlideType>[] {
 	return [
 		{
 			url:
@@ -137,24 +147,17 @@ function getModuleNav() {
 			title: "Задачи на семинар",
 		},
 	].map((item) => {
+		const menuItem = item as MenuItem<SlideType>;
 		if(Math.random() > 0.5) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			item.visited = true;
+			menuItem.visited = true;
 		}
 
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		if(item.visited && item.type !== SlideType.Lesson) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			item.maxScore = Math.round(Math.random() * 10);
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			item.score = Math.round(Math.random() * item.maxScore);
+		if(menuItem.visited && menuItem.type !== SlideType.Lesson) {
+			menuItem.maxScore = Math.round(Math.random() * 10);
+			menuItem.score = Math.round(Math.random() * menuItem.maxScore);
 		}
 
-		return item;
+		return menuItem;
 	});
 }
 

@@ -39,7 +39,7 @@ namespace uLearn.Web.Controllers
 		public const int MaxFillInBlockSize = 8 * 1024;
 
 		private readonly ULearnDb db = new ULearnDb();
-		private readonly CourseManager courseManager = WebCourseManager.Instance;
+		private readonly WebCourseManager courseManager = WebCourseManager.Instance;
 		private readonly MetricSender metricSender;
 
 		private readonly UserQuizzesRepo userQuizzesRepo;
@@ -287,7 +287,9 @@ namespace uLearn.Web.Controllers
 
 			return Json(new
 			{
-				url = Url.RouteUrl("Course.SlideById", new { courseId = courseId, slideId = slide.Url, send = 1 })
+				url = isLti
+					? Url.Action("LtiSlide", "Course", new { courseId = courseId, slideId = slide.Id, send = 1 })
+					: Url.RouteUrl("Course.SlideById", new { courseId = courseId, slideId = slide.Url, send = 1 })
 			});
 		}
 

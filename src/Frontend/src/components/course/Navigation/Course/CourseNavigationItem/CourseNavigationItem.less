@@ -12,10 +12,10 @@
   position: relative;
   display: flex;
   justify-content: space-between;
-  padding: 8px 12px 8px 14px;
-  color: @linkColor;
+  align-items: baseline;
+  padding: 12px 32px 12px 16px;
   text-decoration: none;
-  font-weight: 300;
+  font-weight: 600;
 
   &:hover {
     color: #ffffff;
@@ -28,38 +28,39 @@
   background-color: @backgroundGray;
 }
 
-
 .text {
   font-size: 16px;
-  line-height: 1.33;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 22px;
 
   .active & {
-    font-weight: 500;
+    font-weight: 600;
   }
 }
 
 .progressWrapper {
+  position: absolute;
   box-sizing: content-box;
-  width: 47px;
+  width: 16px;
+  padding-top: 4px;
   flex-shrink: 0;
-  padding-top: 8px;
-  padding-left: 5px;
+  right: 8px;
 }
 
 .isNotPublishedIcon {
-  float: left;
-  margin-right: 10px;
+  margin-left: 4px;
 }
 
-@media (min-width: @maxLaptopWidth) {
+@media (min-width: @navigationGrowthWidth) {
   .itemLink {
-    padding: 10px 19px 10px 24px;
+    padding: 16px 40px 16px 24px;
   }
 
   .text {
     font-size: 18px;
+    line-height: 24px;
+  }
+
+  .progressWrapper {
+    right: 16px;
   }
 }
-

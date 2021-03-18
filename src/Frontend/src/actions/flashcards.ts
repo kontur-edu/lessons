@@ -51,7 +51,8 @@ export const loadFlashcards = (courseId: string): (dispatch: Dispatch) => void =
 			.then(result => {
 				dispatch(loadFlashcardsSuccessAction(courseId, result.units));
 			})
-			.catch(() => {
+			.catch(err => {
+				console.error(err);
 				dispatch(loadFlashcardsFailAction());
 			});
 	};

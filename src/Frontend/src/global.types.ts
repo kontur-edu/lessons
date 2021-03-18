@@ -6,6 +6,7 @@ declare global {
 			}
 		},
 		reactHistory: unknown,
+		documentReadyFunctions: (() => void)[],
 	}
 }
 

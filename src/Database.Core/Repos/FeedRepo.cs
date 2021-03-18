@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Database.Models;
 using Database.Models.Comments;
+using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Vostok.Logging.Abstractions;
 
@@ -71,7 +72,12 @@ namespace Database.Repos
 			return await notificationsRepo.FindUsersNotificationTransport<FeedNotificationTransport>(userId);
 		}
 
-		public async Task<FeedNotificationTransport> GetCommentsFeedNotificationTransport()
+		public async Task<int?> GetUsersFeedNotificationTransportId(string userId)
+		{
+			return (await GetUsersFeedNotificationTransport(userId))?.Id;
+		}
+
+		public async Task<int?> GetCommentsFeedNotificationTransportId()
 		{
 			var transport = await notificationsRepo.FindUsersNotificationTransport<FeedNotificationTransport>(null);
 			if (transport == null)
@@ -80,22 +86,21 @@ namespace Database.Repos
 				throw new Exception("Can't find common (comments) feed notification transport");
 			}
 
-			return transport;
+			return transport.Id;
 		}
 
-		public async Task<DateTime?> GetLastDeliveryTimestamp(FeedNotificationTransport notificationTransport)
+		public async Task<DateTime?> GetLastDeliveryTimestamp(int notificationTransportId)
 		{
-			return await notificationsRepo.GetLastDeliveryTimestampAsync(notificationTransport);
+			return await notificationsRepo.GetLastDeliveryTimestampAsync(notificationTransportId);
 		}
 
-		public async Task<int> GetNotificationsCount(string userId, DateTime from, params FeedNotificationTransport[] transports)
+		public async Task<int> GetNotificationsCount(string userId, DateTime from, params int[] transportIds)
 		{
 			var nextSecond = from.AddSeconds(1);
-			var transportsIds = new List<FeedNotificationTransport>(transports).Select(t => t.Id).ToList();
 			var userCourses = await visitsRepo.GetUserCourses(userId);
 			var deliveriesQueryable = db.NotificationDeliveries
 				.Select(d => new {d.NotificationTransportId, d.Notification.CourseId, d.Notification.InitiatedById, d.CreateTime})
-				.Where(d => transportsIds.Contains(d.NotificationTransportId))
+				.Where(d => transportIds.Contains(d.NotificationTransportId))
 				.Where(d => userCourses.Contains(d.CourseId))
 				.Where(d => d.InitiatedById != userId)
 				.Where(d => d.CreateTime >= nextSecond);
@@ -104,9 +109,8 @@ namespace Database.Repos
 			return totalCount;
 		}
 
-		public async Task<List<Notification>> GetNotificationForFeedNotificationDeliveries<TProperty>(string userId, Expression<Func<Notification, TProperty>> includePath, params FeedNotificationTransport[] transports)
+		public async Task<List<Notification>> GetNotificationForFeedNotificationDeliveries<TProperty>(string userId, Expression<Func<Notification, TProperty>> includePath, params int[] transportsIds)
 		{
-			var transportsIds = new List<FeedNotificationTransport>(transports).Select(t => t.Id).ToList();
 			var userCourses = await visitsRepo.GetUserCourses(userId);
 			const int count = 99;
 			var notifications = await notificationsRepo.GetTransportsDeliveriesQueryable(transportsIds, DateTime.MinValue)

@@ -28,7 +28,7 @@ namespace uLearn.Web.Controllers
 	[ULearnAuthorize]
 	public class AccountController : BaseUserController
 	{
-		private readonly CourseManager courseManager = WebCourseManager.Instance;
+		private readonly WebCourseManager courseManager = WebCourseManager.Instance;
 
 		private readonly UserRolesRepo userRolesRepo;
 		private readonly GroupsRepo groupsRepo;

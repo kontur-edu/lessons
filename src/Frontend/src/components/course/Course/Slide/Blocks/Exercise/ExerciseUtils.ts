@@ -1,6 +1,8 @@
 import {
+	AutomaticExerciseCheckingResult,
 	AutomaticExerciseCheckingResult as CheckingResult,
-	SolutionRunStatus, SubmissionInfo
+	SolutionRunStatus,
+	SubmissionInfo
 } from "src/models/exercise";
 
 enum SubmissionColor {
@@ -62,11 +64,16 @@ function IsFirstRightAnswer(submissions: SubmissionInfo[], successSubmission: Su
 	return successSubmissions.length > 0 && successSubmissions[successSubmissions.length - 1] === successSubmission;
 }
 
+function isSubmissionShouldBeEditable(submission: SubmissionInfo): boolean {
+	return submission.automaticChecking?.result !== AutomaticExerciseCheckingResult.RightAnswer && submission.automaticChecking?.result !== AutomaticExerciseCheckingResult.NotChecked;
+}
+
 export {
 	GetSubmissionColor,
 	SubmissionColor,
 	HasSuccessSubmission,
 	SubmissionIsLast,
 	GetLastSuccessSubmission,
-	IsFirstRightAnswer
+	IsFirstRightAnswer,
+	isSubmissionShouldBeEditable,
 };

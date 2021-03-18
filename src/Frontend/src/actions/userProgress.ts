@@ -47,6 +47,12 @@ export const userProgressUpdate = (courseId: string, slideId: string
 	return (dispatch: Dispatch<UserProgressUpdateAction>) => {
 		dispatch(userProgressUpdateAction(courseId, slideId, { visited: true }));
 		updateUserProgressInCourse(courseId, slideId)
+			.then(r => {
+				const userId = Object.keys(r.userProgress)[0];
+				const newTimestamp = r.userProgress[userId].visitedSlides[slideId].timestamp;
+				dispatch(userProgressUpdateAction(courseId, slideId,
+					{ timestamp: newTimestamp }));
+			})
 			.catch((err: Error) => {
 				console.error(err); // TODO rozentor handle error
 			});

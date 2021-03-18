@@ -10,6 +10,7 @@ using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Ulearn.Common;
 using Ulearn.Common.Extensions;
 using Ulearn.Core.Configuration;
 
@@ -67,11 +68,8 @@ namespace uLearn.Web.Controllers
 
 		private T GetJsonObjectFromRequestBody<T>()
 		{
-			var memstream = new MemoryStream();
 			Request.InputStream.Position = 0;
-			Request.InputStream.CopyTo(memstream);
-			memstream.Position = 0;
-			using (var reader = new StreamReader(memstream))
+			using (var reader = new StreamReader(Request.InputStream))
 				return reader.ReadToEnd().DeserializeJson<T>();
 		}
 

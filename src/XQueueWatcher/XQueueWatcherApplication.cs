@@ -39,7 +39,7 @@ namespace XQueueWatcher
 		protected override void ConfigureServices(IServiceCollection services, IVostokHostingEnvironment hostingEnvironment)
 		{
 			base.ConfigureServices(services, hostingEnvironment);
-			services.AddDbContextPool<UlearnDb>(
+			services.AddDbContext<UlearnDb>( // AddDbContextPool: DbContext Pooling does not dispose LazyLoader https://github.com/dotnet/efcore/issues/11308
 				options => options
 					.UseLazyLoadingProxies()
 					.UseNpgsql(configuration.Database, o => o.SetPostgresVersion(13, 2))

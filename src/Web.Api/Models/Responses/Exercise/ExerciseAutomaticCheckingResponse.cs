@@ -76,7 +76,8 @@ namespace Ulearn.Web.Api.Models.Responses.Exercise
 				return result;
 			}
 			result.Result = checking.IsRightAnswer ? AutomaticExerciseCheckingResult.RightAnswer : AutomaticExerciseCheckingResult.WrongAnswer;
-			result.Reviews = botReviews;
+			if(checking.IsRightAnswer)
+				result.Reviews = botReviews;
 			return result;
 		}
 

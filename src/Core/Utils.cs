@@ -1,30 +1,10 @@
 ﻿using System;
 using System.IO;
-using Ionic.Zip;
 
 namespace Ulearn.Core
 {
 	public static class Utils
 	{
-		public static void UnpackZip(byte[] data, string pathToExtractDir)
-		{
-			using (var ms = new MemoryStream(data))
-			{
-				using (var zip = ZipFile.Read(ms))
-				{
-					foreach (var file in zip)
-						try
-						{
-							file.Extract(pathToExtractDir, ExtractExistingFileAction.OverwriteSilently);
-						}
-						catch (Exception e)
-						{
-							throw new IOException("File " + file.FileName, e);
-						}
-				}
-			}
-		}
-
 		public static string NewNormalizedGuid()
 		{
 			return Guid.NewGuid().ToString("D");

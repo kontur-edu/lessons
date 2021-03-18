@@ -5,9 +5,9 @@ import { Language } from "src/consts/languages";
 import { ReviewCommentResponse, RunSolutionResponse } from "src/models/exercise";
 
 export function submitCode(courseId: string, slideId: string, code: string,
-	language: Language, isLti: boolean,
+	language: Language
 ): Promise<RunSolutionResponse> {
-	const query = buildQuery({ language, isLti }) || '';
+	const query = buildQuery({ language }) || '';
 	return api.post<RunSolutionResponse>(
 		`slides/${ courseId }/${ slideId }/exercise/submit` + query,
 		api.createRequestParams({ solution: code }));

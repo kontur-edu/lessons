@@ -3,6 +3,9 @@ const base = require('../config/webpack.config.base');
 const { merge } = require('webpack-merge');
 
 module.exports = {
+	core: {
+		builder: "webpack5",
+	},
 	stories: ['../src/**/**.story.@(js|jsx|tsx)'],
 	addons: [
 		'@storybook/addon-essentials',
@@ -25,7 +28,7 @@ module.exports = {
 						options: {
 							modules: {
 								mode: 'local',
-								localIdentName: '[name]__[local]--[fullhash:base64:5]',
+								localIdentName: '[name]__[local]--[hash:base64:5]',
 							}
 						},
 					},

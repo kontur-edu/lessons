@@ -101,15 +101,18 @@ namespace Ulearn.Web.Api.Controllers
 			var tempCoursesIds = (await tempCoursesRepo.GetTempCoursesAsync())
 				.Select(t => t.CourseId)
 				.ToHashSet();
+			var coursesList = courses.ToList();
+			var coursesLastVisits = await visitsRepo.GetLastVisitsForCourses(coursesList.Select(c => c.Id).ToHashSet(), UserId);
 			return new CoursesListResponse
 			{
-				Courses = courses
+				Courses = coursesList
 					.Select(c => new ShortCourseInfo
 					{
 						Id = c.Id,
 						Title = tempCoursesIds.Contains(c.Id) ? tempCourseLabel + c.Title : c.Title,
 						ApiUrl = Url.Action("CourseInfo", "Courses", new { courseId = c.Id }),
-						IsTempCourse = tempCoursesIds.Contains(c.Id)
+						IsTempCourse = tempCoursesIds.Contains(c.Id),
+						Timestamp = coursesLastVisits.TryGetValue(c.Id, out var date) ? date : null,
 					}
 				).ToList()
 			};
@@ -218,7 +221,7 @@ namespace Ulearn.Web.Api.Controllers
 				IsNotPublished = isNotPublished,
 				PublicationDate = publicationDate,
 				Slides = slides.ToList(),
-				AdditionalScores = GetAdditionalScores(unit)
+				AdditionalScores = GetAdditionalScores(unit),
 			};
 		}
 

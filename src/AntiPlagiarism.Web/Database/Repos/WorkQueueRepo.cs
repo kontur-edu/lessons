@@ -13,7 +13,7 @@ namespace AntiPlagiarism.Web.Database.Repos
 	public interface IWorkQueueRepo
 	{
 		Task Add(QueueIds queueId, string itemId);
-		Task<WorkQueueItem> Take(QueueIds queueId, TimeSpan? timeLimit = null);
+		Task<WorkQueueItem> TakeNoTracking(QueueIds queueId, TimeSpan? timeLimit = null);
 		Task Remove(int id);
 	}
 	
@@ -42,7 +42,7 @@ namespace AntiPlagiarism.Web.Database.Repos
 		}
 
 		// https://habr.com/ru/post/481556/
-		public async Task<WorkQueueItem> Take(QueueIds queueId, TimeSpan? timeLimit = null)
+		public async Task<WorkQueueItem> TakeNoTracking(QueueIds queueId, TimeSpan? timeLimit = null)
 		{
 			timeLimit = timeLimit ?? TimeSpan.FromMinutes(5);
 			// skip locked пропускает заблокированные строки

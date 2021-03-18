@@ -16,7 +16,7 @@ namespace Database.DataContexts
 		private readonly ULearnUserManager userManager;
 		private readonly UserSolutionsRepo userSolutionsRepo;
 
-		public XQueueRepo(ULearnDb db, CourseManager courseManager)
+		public XQueueRepo(ULearnDb db, WebCourseManager courseManager)
 		{
 			this.db = db;
 			userManager = new ULearnUserManager(db);

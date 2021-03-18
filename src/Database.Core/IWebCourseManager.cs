@@ -27,7 +27,6 @@ namespace Database
 		DirectoryInfo GetExtractedVersionDirectory(Guid versionId);
 		FileInfo GetCourseVersionFile(Guid versionId);
 		string GetStagingCoursePath(string courseId);
-		Course LoadCourseFromDirectory(DirectoryInfo dir);
 		string GetPackageName(string courseId);
 		string GetPackageName(Guid versionId);
 		DateTime GetLastWriteTime(string courseId);
@@ -36,8 +35,8 @@ namespace Database
 		bool HasPackageFor(string courseId);
 		void WaitWhileCourseIsLocked(string courseId);
 		void MoveCourse(Course course, DirectoryInfo sourceDirectory, DirectoryInfo destinationDirectory);
-		void ReloadCourse(string courseId);
-		Course ReloadCourseFromDirectory(DirectoryInfo directory);
+		bool TryReloadCourse(string courseId);
+		void ReloadCourseNotSafe(string courseId);
 		void ExtractTempCourseChanges(string tempCourseId);
 		bool TryCreateTempCourse(string courseId, string courseTitle, Guid firstVersionId);
 		void NotifyCourseChanged(string courseId);

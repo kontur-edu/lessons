@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Ionic.Zip;
 using JetBrains.Annotations;
+using Microsoft.IO;
 
 namespace Ulearn.Common
 {
@@ -39,7 +40,7 @@ namespace Ulearn.Common
 						continue;
 					zip.UpdateEntry(zipUpdateData.Path, zipUpdateData.Data);
 				}
-				var ms = new MemoryStream();
+				var ms = StaticRecyclableMemoryStreamManager.Manager.GetStream();
 				zip.Save(ms);
 				ms.Position = 0;
 				return ms;

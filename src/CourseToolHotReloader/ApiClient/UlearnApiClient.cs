@@ -30,17 +30,15 @@ namespace CourseToolHotReloader.ApiClient
 
 		public async Task<TempCourseUpdateResponse> SendCourseUpdates(string path, IList<ICourseUpdate> updates, IList<ICourseUpdate> deletedFiles, string courseId, List<string> excludeCriterias)
 		{
-			var ms = ZipUpdater.CreateZipByUpdates(path, updates, deletedFiles, excludeCriterias);
-			
-			return await httpMethods.UploadCourse(ms, courseId);
+			using (var ms = ZipUpdater.CreateZipByUpdates(path, updates, deletedFiles, excludeCriterias))
+				return await httpMethods.UploadCourse(ms, courseId);
 		}
 
 		[ItemCanBeNull]
 		public async Task<TempCourseUpdateResponse> SendFullCourse(string path, string courseId, List<string> excludeCriterias)
 		{
-			var ms = ZipUpdater.CreateZipByFolder(path, excludeCriterias);
-
-			return await httpMethods.UploadFullCourse(ms, courseId);
+			using (var ms = ZipUpdater.CreateZipByFolder(path, excludeCriterias))
+				return await httpMethods.UploadFullCourse(ms, courseId);
 		}
 		
 		public async Task<TempCourseUpdateResponse> CreateCourse(string courseId)

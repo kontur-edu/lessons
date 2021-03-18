@@ -195,19 +195,22 @@ namespace Ulearn.Core.Courses.Slides.Exercises.Blocks
 
 		public override RunnerSubmission CreateSubmission(string submissionId, string code)
 		{
-			return new CommandRunnerSubmission
+			using (var stream = GetZipForChecker(code))
 			{
-				Id = submissionId,
-				ZipFileData = GetZipBytesForChecker(code),
-// ReSharper disable once PossibleInvalidOperationException
-				Language = Language.Value,
-				DockerImageName = DockerImageName,
-				RunCommand = RunCommand,
-				TimeLimit = TimeLimit
-			};
+				return new CommandRunnerSubmission
+				{
+					Id = submissionId,
+					ZipFileData = stream.ToArray(),
+					// ReSharper disable once PossibleInvalidOperationException
+					Language = Language.Value,
+					DockerImageName = DockerImageName,
+					RunCommand = RunCommand,
+					TimeLimit = TimeLimit
+				};
+			}
 		}
 
-		private byte[] GetZipBytesForChecker(string code)
+		private MemoryStream GetZipForChecker(string code)
 		{
 			var codeFile = GetCodeFile(code);
 			return ExerciseCheckerZipsCache.GetZip(this, codeFile.Path, codeFile.Data);
@@ -243,7 +246,7 @@ namespace Ulearn.Core.Courses.Slides.Exercises.Blocks
 			return new FileContent { Path = UserCodeFilePath, Data = Encoding.UTF8.GetBytes(fullCode) };
 		}
 
-		public byte[] GetZipBytesForStudent()
+		public MemoryStream GetZipMemoryStreamForStudent()
 		{
 			var excluded = (PathsToExcludeForStudent ?? new string[0])
 				.Concat(initialPatterns)
@@ -254,10 +257,10 @@ namespace Ulearn.Core.Courses.Slides.Exercises.Blocks
 
 			var toUpdate = ReplaceWithInitialFiles().ToList();
 
-			var zipBytes = ZipUtils.CreateZipFromDirectory(new List<string> { ExerciseDirectory.FullName }, excluded, toUpdate, Encoding.UTF8).ToArray();
+			var zipMemoryStream = ZipUtils.CreateZipFromDirectory(new List<string> { ExerciseDirectory.FullName }, excluded, toUpdate, Encoding.UTF8);
 
-			log.Info($"Собираю zip-архив для студента: zip-архив собран, {zipBytes.Length} байтов");
-			return zipBytes;
+			log.Info($"Собираю zip-архив для студента: zip-архив собран, {zipMemoryStream.Length} байтов");
+			return zipMemoryStream;
 		}
 
 		private IEnumerable<FileContent> ReplaceWithInitialFiles()

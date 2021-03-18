@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Database.Models;
+using JetBrains.Annotations;
 using Ulearn.Common;
 
 namespace Database.Repos
@@ -15,6 +16,7 @@ namespace Database.Repos
 		Task<NotificationTransport> FindNotificationTransport(int transportId);
 		Task EnableNotificationTransport(int transportId, bool isEnabled = true);
 		Task<List<NotificationTransport>> GetUsersNotificationTransports(string userId, bool includeDisabled = false);
+		[ItemCanBeNull]
 		Task<T> FindUsersNotificationTransport<T>(string userId, bool includeDisabled = false) where T : NotificationTransport;
 		Task SetNotificationTransportSettings(string courseId, int transportId, NotificationType type, bool isEnabled);
 		Task<DefaultDictionary<int, NotificationTransportSettings>> GetNotificationTransportsSettings(string courseId, NotificationType type, List<int> transportIds);
@@ -33,7 +35,7 @@ namespace Database.Repos
 		Task<List<NotificationType>> GetNotificationTypes(string userId, string courseId);
 		Task<List<T>> FindNotifications<T>(Expression<Func<T, bool>> func, Expression<Func<T, object>> includePath = null) where T : Notification;
 		IQueryable<NotificationDelivery> GetTransportDeliveriesQueryable(NotificationTransport notificationTransport, DateTime from);
-		IQueryable<NotificationDelivery> GetTransportsDeliveriesQueryable(List<int> notificationTransportsIds, DateTime from);
-		Task<DateTime?> GetLastDeliveryTimestampAsync(NotificationTransport notificationTransport);
+		IQueryable<NotificationDelivery> GetTransportsDeliveriesQueryable(IList<int> notificationTransportsIds, DateTime from);
+		Task<DateTime?> GetLastDeliveryTimestampAsync(int notificationTransportId);
 	}
 }

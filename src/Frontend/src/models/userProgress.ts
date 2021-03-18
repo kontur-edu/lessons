@@ -14,6 +14,7 @@ interface SlideUserProgress {
 	prohibitFurtherManualChecking: boolean,
 	visited: boolean,
 	isSkipped: boolean,
+	timestamp: string,
 }
 
 export { UsersProgressResponse, UserProgress, SlideUserProgress };

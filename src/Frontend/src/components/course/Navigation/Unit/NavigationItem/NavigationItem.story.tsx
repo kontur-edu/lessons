@@ -1,72 +1,132 @@
 import React from "react";
-import NavigationItem from "./NavigationItem.js";
+import NavigationItem from "./NavigationItem";
 import { SlideType } from "src/models/slide";
+
+const mock = () => ({});
+const metro = {
+	isFirstItem: false,
+	isLastItem: false,
+	connectToPrev: false,
+	connectToNext: false,
+};
 
 const _NavigationItem = (): React.ReactNode => (
 	<nav>
-		<NavigationItem text="Пункт меню со счетом" score={ 0.45 } url={ "" }/>
 		<NavigationItem
-			text="Пункт меню со счетом и описанием"
+			onClick={ mock }
+			isActive={ false }
+			id={ '1' }
+			maxScore={ 1 }
+			type={ SlideType.Lesson }
+			visited={ false }
+			metro={ metro }
+			title="Пункт меню со счетом"
+			score={ 0.45 }
+			url={ "" }/>
+		<NavigationItem
+			onClick={ mock }
+			isActive={ false } id={ '1' }
+			maxScore={ 1 }
+			type={ SlideType.Lesson }
+			visited={ false }
+			metro={ metro }
+			title="Пункт меню со счетом и описанием"
 			url={ "" }
-			description="Задание"
 			score={ 0 }
 		/>
 		<NavigationItem
-			text="Пункт меню с метро"
-			url={ "" }
-			visited
+			onClick={ mock }
+			isActive={ false }
+			id={ '1' }
+			maxScore={ 1 }
+			score={ 0 }
+			visited={ false }
 			type={ SlideType.Lesson }
+			title="Пункт меню с метро"
+			url={ "" }
 			metro={ {
+				...metro,
 				connectToPrev: true,
 			} }
 		/>
 		<NavigationItem
-			text="Пункт меню с метро"
+			title="Пункт меню с метро"
 			url={ "" }
 			type={ SlideType.Lesson }
-			metro={ {} }
+			onClick={ mock }
+			isActive={ false }
+			id={ '1' }
+			maxScore={ 1 }
+			visited={ false }
+			metro={ metro }
+			score={ 0 }
 		/>
 		<NavigationItem
-			text="Пункт меню с иконкой"
+			title="Пункт меню с иконкой"
 			url={ "" }
 			type={ SlideType.Quiz }
-			metro={ {} }
+			onClick={ mock }
+			isActive={ false }
+			id={ '1' }
+			maxScore={ 1 }
+			visited={ false }
+			metro={ metro }
+			score={ 0 }
 		/>
 		<NavigationItem
-			text="Пункт меню с иконкой и описанием и счетом"
+			id={ '1' }
+			title="Пункт меню с иконкой и описанием и счетом"
 			url={ "" }
-			hasMetro
 			score={ 3 }
 			maxScore={ 5 }
-			description="Ждет код-ревью • 3 попытки осталось"
 			isActive
 			type={ SlideType.Quiz }
-			metro={ {} }
+			onClick={ mock }
+			visited={ false }
+			metro={ metro }
 		/>
 		<NavigationItem
-			text="Пункт меню с иконкой"
+			title="Пункт меню с иконкой"
 			url={ "" }
 			type={ SlideType.Exercise }
-			metro={ {} }
+			id={ '1' }
+			score={ 3 }
+			maxScore={ 5 }
+			isActive={ false }
+			onClick={ mock }
+			visited={ false }
+			metro={ metro }
 		/>
 		<NavigationItem
-			text="Пункт меню с иконкой"
+			title="Пункт меню с иконкой"
 			url={ "" }
 			visited
 			type={ SlideType.Quiz }
+			id={ '1' }
+			score={ 3 }
+			maxScore={ 5 }
+			isActive={ false }
+			onClick={ mock }
 			metro={ {
+				...metro,
 				connectToNext: true,
 			} }
 		/>
 		<NavigationItem
-			text="Пункт меню с иконкой"
+			title="Пункт меню с иконкой"
 			url={ "" }
 			visited
 			type={ SlideType.Exercise }
 			metro={ {
+				...metro,
 				connectToPrev: true,
 				isLastItem: true,
 			} }
+			id={ '1' }
+			score={ 3 }
+			maxScore={ 5 }
+			isActive={ false }
+			onClick={ mock }
 		/>
 	</nav>
 );

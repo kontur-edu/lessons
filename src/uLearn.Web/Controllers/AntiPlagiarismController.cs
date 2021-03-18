@@ -47,7 +47,7 @@ namespace uLearn.Web.Controllers
 			this.groupsRepo = groupsRepo;
 		}
 
-		public AntiPlagiarismController(ULearnDb db, CourseManager courseManager)
+		public AntiPlagiarismController(ULearnDb db, WebCourseManager courseManager)
 			: this(new UserSolutionsRepo(db, courseManager), new GroupsRepo(db, courseManager))
 		{
 			this.courseManager = courseManager;

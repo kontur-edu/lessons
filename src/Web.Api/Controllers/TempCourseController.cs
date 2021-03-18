@@ -212,10 +212,9 @@ namespace Ulearn.Web.Api.Controllers
 			DeleteEmptySubdirectories(courseDirectory.FullName);
 			courseManager.ExtractTempCourseChanges(courseId);
 
-			var extractedCourseDirectory = courseManager.GetExtractedCourseDirectory(courseId);
 			try
 			{
-				courseManager.ReloadCourseFromDirectory(extractedCourseDirectory);
+				courseManager.ReloadCourseNotSafe(courseId);
 				courseManager.UpdateCourseVersion(courseId, Guid.Empty);
 				courseManager.NotifyCourseChanged(courseId);
 			}

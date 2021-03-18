@@ -2,7 +2,6 @@ import { ReactNode } from "react";
 import { Language } from "src/consts/languages";
 import { SubmissionInfoRedux } from "src/models/reduxState";
 import { AttemptsStatistics, SubmissionInfo } from "src/models/exercise";
-import { DeviceType } from "src/consts/deviceType";
 
 interface ShortSlideInfo {
 	id: string;
@@ -11,10 +10,12 @@ interface ShortSlideInfo {
 	slug: string; // Человекочитаемый фрагмент url для слайда
 	maxScore: number;
 	scoringGroup: string | null;
+	containsVideo: boolean;
 	type: SlideType;
 	apiUrl: string;
 	questionsCount: number; // Количество вопросов в quiz
-	gitEditLink: string | undefined;
+	quizMaxTriesCount: number; // Макс число попыток для quiz
+	gitEditLink?: string;
 }
 
 enum SlideType {
@@ -64,7 +65,7 @@ interface ExerciseBlock extends Block<BlockTypes.exercise> {
 	slideId: string,
 	courseId: string,
 	forceInitialCode: boolean,
-	maxScore: number,
+	maxScore?: number,
 	submissions?: SubmissionInfo[],//we're moving this field to other state in redux reducer
 	isLti: boolean,
 }

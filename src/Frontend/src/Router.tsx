@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 
 import AnyPage from "src/pages/AnyPage";
-import GroupListPage from "src/pages/course/groups/GroupListPage.js";
+import GroupListPage from "src/pages/course/groups/GroupListPage";
 import GroupPage from "src/pages/course/groups/GroupPage.js";
-import Course from 'src/pages/course/CoursePage.js';
+import Course from 'src/pages/course/CoursePage';
 
 import { getQueryStringParameter } from "src/utils";
 import { AccountState } from "src/redux/account";

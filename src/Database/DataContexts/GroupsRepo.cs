@@ -30,9 +30,9 @@ namespace Database.DataContexts
 		private readonly VisitsRepo visitsRepo;
 		private readonly UserRolesRepo userRolesRepo;
 
-		private readonly CourseManager courseManager;
+		private readonly WebCourseManager courseManager;
 
-		public GroupsRepo(ULearnDb db, CourseManager courseManager)
+		public GroupsRepo(ULearnDb db, WebCourseManager courseManager)
 		{
 			this.db = db;
 			this.courseManager = courseManager;

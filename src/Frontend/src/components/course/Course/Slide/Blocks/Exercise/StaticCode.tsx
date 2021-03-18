@@ -8,6 +8,7 @@ import classNames from "classnames";
 
 import { Language } from "src/consts/languages";
 import { Editor, EditorConfiguration } from "codemirror";
+import "codemirror/lib/codemirror.css";
 
 import styles from './Exercise.less';
 import texts from "src/components/course/Course/Slide/Blocks/Exercise/Exercise.texts";

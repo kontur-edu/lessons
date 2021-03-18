@@ -57,7 +57,7 @@ namespace AntiPlagiarism.Web.CodeAnalyzing
 
 		private async Task<Submission> ExtractSnippetsFromSubmissionFromQueue()
 		{
-			var queueItem = await workQueueRepo.Take(QueueIds.NewSubmissionsQueue).ConfigureAwait(false);
+			var queueItem = await workQueueRepo.TakeNoTracking(QueueIds.NewSubmissionsQueue).ConfigureAwait(false);
 			if (queueItem == null)
 				return null;
 			var submissionId = int.Parse(queueItem.ItemId);

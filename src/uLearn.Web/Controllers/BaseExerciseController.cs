@@ -44,7 +44,7 @@ namespace uLearn.Web.Controllers
 		{
 		}
 
-		public BaseExerciseController(ULearnDb db, CourseManager courseManager, MetricSender metricSender)
+		public BaseExerciseController(ULearnDb db, WebCourseManager courseManager, MetricSender metricSender)
 		{
 			this.db = db;
 			this.courseManager = courseManager;

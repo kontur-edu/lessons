@@ -86,8 +86,6 @@ namespace Database.Models
 		[NotMapped]
 		public List<ExerciseCodeReview> NotDeletedReviews => Reviews.Where(r => !r.IsDeleted).ToList();
 
-		public bool IsWebSubmission => string.Equals(CourseId, "web", StringComparison.OrdinalIgnoreCase) && SlideId == Guid.Empty;
-
 		public List<ExerciseCodeReview> GetAllReviews()
 		{
 			var manualCheckingReviews = ManualCheckings.SelectMany(c => c.NotDeletedReviews);

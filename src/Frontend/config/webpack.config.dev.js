@@ -136,7 +136,7 @@ module.exports = merge([base, {
 					},
 					{
 						loader: 'file-loader',
-						exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
+						exclude: [/\.(js|jsx|mjs|ts|tsx)$/, /\.html$/, /\.json$/],
 						options: {
 							name: 'static/media/[name].[hash:8].[ext]',
 						},
@@ -164,7 +164,10 @@ module.exports = merge([base, {
 		}),
 		new CaseSensitivePathsPlugin(),
 		new WatchMissingNodeModulesPlugin(paths.appNodeModules),
-		new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/, /\.less\.d\.ts$/, /\.css\.d\.ts$/),
+		new webpack.IgnorePlugin({
+			resourceRegExp: /^\.\/locale$/,
+			contextRegExp: /moment$/,
+		})
 	],
 	performance: {
 		hints: false,

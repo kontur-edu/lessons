@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Ulearn.Common;
 
 namespace GitCourseUpdater
 {
@@ -47,7 +48,7 @@ namespace GitCourseUpdater
 			var e = rsa.ExportParameters(false).Exponent;
 			string buffer64;
 			var sshrsaBytes = Encoding.Default.GetBytes("ssh-rsa");
-			using (var ms = new MemoryStream())
+			using (var ms = StaticRecyclableMemoryStreamManager.Manager.GetStream())
 			{
 				ms.Write(ToBytes(sshrsaBytes.Length), 0, 4);
 				ms.Write(sshrsaBytes, 0, sshrsaBytes.Length);
@@ -57,6 +58,7 @@ namespace GitCourseUpdater
 				ms.Write(new byte[] { 0 }, 0, 1); //Add a 0 to Emulate PuttyGen
 				ms.Write(n, 0, n.Length);
 				ms.Flush();
+				ms.Position = 0;
 				buffer64 = Convert.ToBase64String(ms.ToArray());
 			}
 

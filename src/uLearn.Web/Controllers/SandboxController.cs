@@ -20,7 +20,7 @@ namespace uLearn.Web.Controllers
 	public class SandboxController : Controller
 	{
 		private readonly UserSolutionsRepo solutionsRepo;
-		private readonly CourseManager courseManager = WebCourseManager.Instance;
+		private readonly WebCourseManager courseManager = WebCourseManager.Instance;
 
 		private static readonly TimeSpan timeout = TimeSpan.FromSeconds(30);
 

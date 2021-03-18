@@ -119,7 +119,7 @@ namespace Ulearn.Web.Api
 			base.ConfigureServices(services, hostingEnvironment);
 
 			/* TODO (andgein): use UlearnDbFactory here */
-			services.AddDbContextPool<UlearnDb>(
+			services.AddDbContext<UlearnDb>( // AddDbContextPool: DbContext Pooling does not dispose LazyLoader https://github.com/dotnet/efcore/issues/11308
 				options => options
 					.UseLazyLoadingProxies()
 					.UseNpgsql(configuration.Database, o => o.SetPostgresVersion(13, 2))

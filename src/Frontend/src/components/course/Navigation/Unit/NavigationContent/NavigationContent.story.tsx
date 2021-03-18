@@ -1,14 +1,14 @@
 import React from "react";
-import NavigationContent from "./NavigationContent.js";
+import NavigationContent from "./NavigationContent";
 import { SlideType } from "src/models/slide";
+import { MenuItem } from "../../types";
 
 
 const ModuleNav = (): React.ReactNode => (
-	<NavigationContent items={ getModuleNav() }/>
+	<NavigationContent onClick={ () => ({}) } items={ getModuleNav() }/>
 );
 
-
-function getModuleNav() {
+function getModuleNav(): MenuItem<SlideType>[] {
 	return [
 		{
 			url:
@@ -130,21 +130,15 @@ function getModuleNav() {
 			type: SlideType.Lesson,
 			title: "Задачи на семинар",
 		},
-	].map((item) => {
-		if(Math.random() > 0.5) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			item.complete = true;
-		}
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		if(item.complete && item.type !== SlideType.Lesson) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			item.progress = Math.random();
-		}
-
-		return item;
+	].map((item, index, array) => {
+		return {
+			...item,
+			id: '1',
+			score: index % 2 === 0 ? index : 0,
+			maxScore: array.length,
+			isActive: index === array.length / 2,
+			visited: index % 2 === 0,
+		};
 	});
 }
 

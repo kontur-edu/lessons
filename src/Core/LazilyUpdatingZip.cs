@@ -15,11 +15,11 @@ namespace Ulearn.Core
 		private readonly DirectoryInfo dir;
 		private readonly string[] excludedDirs;
 		private readonly Func<FileInfo, bool> needExcludeFile;
-		private readonly Func<FileInfo, byte[]> getFileContent;
+		private readonly Func<FileInfo, MemoryStream> getFileContent;
 		private readonly FileInfo zipFile;
 		private readonly IEnumerable<FileContent> filesToAdd;
 
-		public LazilyUpdatingZip(DirectoryInfo dir, string[] excludedDirs, Func<FileInfo, bool> needExcludeFile, Func<FileInfo, byte[]> getFileContent, IEnumerable<FileContent> filesToAdd, FileInfo zipFile)
+		public LazilyUpdatingZip(DirectoryInfo dir, string[] excludedDirs, Func<FileInfo, bool> needExcludeFile, Func<FileInfo, MemoryStream> getFileContent, IEnumerable<FileContent> filesToAdd, FileInfo zipFile)
 		{
 			this.dir = dir;
 			this.excludedDirs = excludedDirs;
@@ -42,7 +42,14 @@ namespace Ulearn.Core
 					if (newContent == null)
 						zip.AddFile(f.FullName, Path.GetDirectoryName(f.GetRelativePath(dir.FullName)));
 					else
-						zip.AddEntry(f.GetRelativePath(dir.FullName), newContent);
+						zip.AddEntry(
+							f.GetRelativePath(dir.FullName),
+							_ =>
+							{
+								newContent.Position = 0;
+								return newContent;
+							}, (_, s) => s.Dispose()
+						);
 				}
 
 				foreach (var fileToAdd in filesToAdd)

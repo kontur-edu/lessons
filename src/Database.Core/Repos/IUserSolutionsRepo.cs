@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Database.Models;
-using uLearn;
+using JetBrains.Annotations;
 using Ulearn.Common;
 using Ulearn.Core;
 using Ulearn.Core.RunCheckerJobApi;
-using Ulearn.Core.Telegram;
 
 namespace Database.Repos
 {
 	public interface IUserSolutionsRepo
 	{
-		Task<UserExerciseSubmission> AddUserExerciseSubmission(
+		Task<int> AddUserExerciseSubmission(
 			string courseId, Guid slideId,
 			string code, string compilationError, string output,
 			string userId, string executionServiceName, string displayName,
@@ -42,15 +41,12 @@ namespace Database.Repos
 		Task<bool> IsCheckingSubmissionByUser(string courseId, Guid slideId, string userId, DateTime periodStart, DateTime periodFinish);
 		Task<HashSet<Guid>> GetIdOfPassedSlides(string courseId, string userId);
 		IQueryable<UserExerciseSubmission> GetAllSubmissions(int max, int skip);
-		Task<AutomaticExerciseCheckingStatus?> GetSubmissionAutomaticCheckingStatus(int id);
 		Task<UserExerciseSubmission> FindSubmissionByIdNoTracking(int id);
 		Task<UserExerciseSubmission> FindSubmissionById(string id);
 		Task<List<UserExerciseSubmission>> FindSubmissionsByIds(IEnumerable<int> checkingsIds);
 		Task SaveResult(RunningResults result, Func<UserExerciseSubmission, Task> onSave);
-		Task RunAutomaticChecking(UserExerciseSubmission submission, TimeSpan timeout, bool waitUntilChecked, int priority);
+		Task RunAutomaticChecking(int submissionId, [CanBeNull]string sandbox, TimeSpan timeout, bool waitUntilChecked, int priority);
 		Task<Dictionary<int, string>> GetSolutionsForSubmissions(IEnumerable<int> submissionsIds);
-		Task WaitAnyUnhandledSubmissions(TimeSpan timeout);
-		Task WaitUntilSubmissionHandled(TimeSpan timeout, int submissionId);
 		Task<UserExerciseSubmission> GetUnhandledSubmission(string agentName, List<string> sandboxes);
 	}
 }

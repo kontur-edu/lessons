@@ -10,7 +10,7 @@ import GroupMembers from "src/components/groups/GroupSettingsPage/GroupMembers/G
 import GroupSettings from "src/components/groups/GroupSettingsPage/GroupSettings/GroupSettings";
 import Error404 from "src/components/common/Error/Error404.tsx";
 import styles from "./groupPage.less";
-import { Page } from "../../index";
+import Page from "../../index";
 import { changeCurrentCourseAction } from "src/actions/course";
 
 class GroupPage extends Component {

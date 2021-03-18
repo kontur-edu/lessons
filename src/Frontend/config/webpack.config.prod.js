@@ -172,7 +172,7 @@ module.exports = merge([base, {
 					},
 					{
 						loader: 'file-loader',
-						exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
+						exclude: [/\.(js|jsx|mjs|ts|tsx)$/, /\.html$/, /\.json$/],
 						options: {
 							name: 'static/media/[name].[hash:8].[ext]',
 						},
@@ -251,7 +251,10 @@ module.exports = merge([base, {
 		// solution that requires the user to opt into importing specific locales.
 		// https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
 		// You can remove this if you don't use Moment.js:
-		new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/, /\.less\.d\.ts$/, /\.css\.d\.ts$/),
+		new webpack.IgnorePlugin({
+			resourceRegExp: /^\.\/locale$/,
+			contextRegExp: /moment$/,
+		})
 	],
 	optimization: {
 		minimize: true,

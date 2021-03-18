@@ -8,6 +8,7 @@ using Ulearn.Core.Courses;
 using Ulearn.Core.Courses.Slides;
 using Ulearn.Core.Courses.Slides.Blocks;
 using Ulearn.Core.Courses.Slides.Exercises.Blocks;
+using Ulearn.Core.Courses.Units;
 using Ulearn.Core.Model.Edx;
 using Ulearn.Core.Model.Edx.EdxComponents;
 using uLearn.CSharp;
@@ -34,7 +35,6 @@ namespace uLearn.CourseTool
 
 		private const string youtubeIdFromCourse = "GZS36w_fxdg";
 		private static readonly Guid slideIdFromCourse = Guid.Parse("108C89D9-36F0-45E3-BBEE-B93AC971063F");
-		private CourseManager courseManager;
 		private readonly DirectoryInfo testCourseDirectory = new DirectoryInfo(@"..\..\..\..\courses\ForTests\Slides");
 		private const string ulearnBaseUrl = "https://192.168.33.1:44300";
 		private const string ltiId = "edx";
@@ -46,8 +46,8 @@ namespace uLearn.CourseTool
 			Directory.SetCurrentDirectory(TestsHelper.TestDirectory);
 			if (!Directory.Exists(testFolderName))
 				Directory.CreateDirectory(testFolderName);
-			courseManager = new CourseManager(new DirectoryInfo("."));
-			course = courseManager.LoadCourseFromDirectory(testCourseDirectory);
+			var loader = new CourseLoader(new UnitLoader(new XmlSlideLoader()));
+			course = loader.Load(testCourseDirectory);
 		}
 
 		[TearDown]

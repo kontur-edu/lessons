@@ -4,7 +4,6 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Database.Migrations;
 using Database.Models;
 using EntityFramework.Functions;
 using Vostok.Logging.Abstractions;
@@ -25,7 +24,7 @@ namespace Database.DataContexts
 		public ULearnDb(string database)
 			: base(database, throwIfV1Schema: false)
 		{
-			System.Data.Entity.Database.SetInitializer(new MigrateDatabaseToLatestVersion<ULearnDb, Configuration>());
+			System.Data.Entity.Database.SetInitializer(new NullDatabaseInitializer<ULearnDb>());
 			Database.Log = log.Debug;
 		}
 

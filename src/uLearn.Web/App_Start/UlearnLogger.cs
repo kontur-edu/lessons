@@ -43,10 +43,17 @@ namespace uLearn.Web
 		public override string ToString()
 		{
 			var context = HttpContext.Current;
-			var realIp = context?.Request.Headers[xRealIpHeaderName];
-			if (!string.IsNullOrEmpty(realIp))
-				return realIp;
-			return context?.Request.UserHostAddress ?? "";
+			try
+			{
+				var realIp = context?.Request.Headers[xRealIpHeaderName];
+				if (!string.IsNullOrEmpty(realIp))
+					return realIp;
+				return context?.Request.UserHostAddress ?? "";
+			}
+			catch (HttpException ex) // context?.Request throw if no Request (in App Start) 
+			{
+				return "";
+			}
 		}
 	}
 }

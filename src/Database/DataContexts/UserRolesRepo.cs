@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Database.Models;
@@ -146,15 +145,15 @@ namespace Database.DataContexts
 				);
 		}
 
-		public async Task<List<UserRole>> GetUserRolesHistory(string userId)
+		public List<UserRole> GetUserRolesHistory(string userId)
 		{
-			return await db.UserRoles.Where(x => x.UserId == userId).ToListAsync();
+			return db.UserRoles.Where(x => x.UserId == userId).ToList();
 		}
 
-		public async Task<List<UserRole>> GetUserRolesHistoryByCourseId(string userId, string courseId)
+		public List<UserRole> GetUserRolesHistoryByCourseId(string userId, string courseId)
 		{
 			courseId = courseId.ToLower();
-			return await db.UserRoles.Where(x => x.UserId == userId && x.CourseId == courseId).ToListAsync();
+			return db.UserRoles.Where(x => x.UserId == userId && x.CourseId == courseId).ToList();
 		}
 
 		public List<string> GetCoursesWhereUserIsInRole(string userId, CourseRole minCourseRoleType)

@@ -162,12 +162,12 @@ namespace Database.DataContexts
 			return GetActualEnabledCourseAccesses(courseId: courseId, userId: userId).Any(a => a.AccessType == accessType);
 		}
 
-		public async Task<List<CourseAccess>> GetUserAccessHistory(string userId)
+		public List<CourseAccess> GetUserAccessHistory(string userId)
 		{
 			return db.CourseAccesses.Where(x => x.UserId == userId).ToList();
 		}
 
-		public async Task<List<CourseAccess>> GetUserAccessHistoryByCourseId(string userId, string courseId)
+		public List<CourseAccess> GetUserAccessHistoryByCourseId(string userId, string courseId)
 		{
 			courseId = courseId.ToLower();
 			return db.CourseAccesses.Where(x => x.UserId == userId && x.CourseId == courseId).ToList();

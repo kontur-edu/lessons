@@ -11,13 +11,11 @@ using Database;
 using Database.DataContexts;
 using Database.Extensions;
 using Database.Models;
-using JetBrains.Annotations;
 using Microsoft.AspNet.Identity;
 using uLearn.Web.Extensions;
 using uLearn.Web.FilterAttributes;
 using uLearn.Web.Models;
 using Ulearn.Common.Extensions;
-using Ulearn.Core;
 using Ulearn.Core.Configuration;
 using Ulearn.Core.Courses;
 using Vostok.Logging.Abstractions;
@@ -301,8 +299,8 @@ namespace uLearn.Web.Controllers
 
 			var course = courseManager.GetCourse(courseId);
 			var model = new UserCourseToggleHistoryModel(user, course,
-				ToSingleCourseRolesHistoryModel(await userRolesRepo.GetUserRolesHistoryByCourseId(userId, courseId)),
-				ToSingleCourseAccessHistoryModel(await coursesRepo.GetUserAccessHistoryByCourseId(userId, courseId)));
+				ToSingleCourseRolesHistoryModel(userRolesRepo.GetUserRolesHistoryByCourseId(userId, courseId)),
+				ToSingleCourseAccessHistoryModel(coursesRepo.GetUserAccessHistoryByCourseId(userId, courseId)));
 			return View(model);
 		}
 
@@ -329,8 +327,8 @@ namespace uLearn.Web.Controllers
 
 			var courseGroups = userCourses.ToDictionary(c => c.Id, c => groupsRepo.GetUserGroupsNamesAsString(c.Id, userId, User, actual: true, archived: false, maxCount: 10));
 			var courseArchivedGroups = userCourses.ToDictionary(c => c.Id, c => groupsRepo.GetUserGroupsNamesAsString(c.Id, userId, User, actual: false, archived: true, maxCount: 10));
-			var coursesWithRoles = (await userRolesRepo.GetUserRolesHistory(userId)).Select(x => x.CourseId.ToLower()).Distinct().ToList();
-			var coursesWithAccess = (await coursesRepo.GetUserAccessHistory(userId)).Select(x => x.CourseId.ToLower()).Distinct().ToList();
+			var coursesWithRoles = userRolesRepo.GetUserRolesHistory(userId).Select(x => x.CourseId.ToLower()).Distinct().ToList();
+			var coursesWithAccess = coursesRepo.GetUserAccessHistory(userId).Select(x => x.CourseId.ToLower()).Distinct().ToList();
 
 			return View(new ProfileModel
 			{
